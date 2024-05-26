@@ -1,0 +1,142 @@
+nav{
+    float: left;
+    width: 290px;
+    height: 100vh;
+    background-color: var(--panel);
+}
+
+#nav__toggle{
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    cursor: pointer;
+    z-index: 1;
+
+    width: 20px;
+    height: 20px;
+    display: none;
+
+    font-size: 1.6rem;
+}
+
+#groups{
+    width: 60px;
+    height: 100vh;
+    float: left;
+    background-color: var(--server);
+    padding-inline: 6px;
+}
+
+.group{
+    width: 48px;
+    height: 48px;
+    margin: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-bottom: 5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.group_chatActive::after{
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 48px;
+    left: -3px;
+    top: 0;
+    background-color: var(--accent);
+}
+
+.group img{
+    height: 50px;
+    margin-left: -5px;
+}
+
+#navs{
+    float: left;
+    width: 230px;
+    height: 100vh;
+}
+
+#navs button{
+    width: 90%;
+    background-color: var(--panel);
+    border: 2px solid var(--panel);
+    color: var(--txt);
+    padding: 7px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: border-color 0.5s;
+    margin-block: 3px;
+}
+
+#navs button:hover{
+    border-color: var(--accent);
+}
+
+#navs__main, #navs__groups{
+    width: 100%;
+    height: calc(100vh - 60px);
+}
+
+#navs__user{
+    width: 100%;
+    height: 60px;
+    background-color: var(--userProfile);
+}
+
+#navs__groups__name{
+    padding: 10px;
+    width: 100%;
+    height: 3.4rem;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+#navs__groups__channels details summary{
+    text-align: left;
+    padding-left: 1rem;
+    font-size: 1.2rem;
+}
+
+#navs__groups__channels details div{
+    text-align: left;
+    padding-left: 1rem;
+    cursor: pointer;
+    margin-block: 0.5rem;
+    font-size: 1.1rem;
+    transition: margin-left 0.5s;
+}
+
+#navs__groups__channels details div:hover{
+    margin-left: 0.5rem;
+}
+
+#navs .unreadPriv{
+    border-color: var(--accent);
+    font-weight: bold;
+}
+
+#navs .priv_chatActive{
+    color: var(--accent);
+}
+
+#navs .channel_textActive{
+    color: var(--accent);
+}
+
+@media screen and (max-width: 800px){
+    nav{
+        position: absolute;
+        left: -360px;
+        transition: 0.5s;
+    }
+
+    #nav__toggle{
+        display: block;
+    }
+}

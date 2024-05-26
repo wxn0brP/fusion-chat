@@ -1,0 +1,12 @@
+{
+    "ignore": [
+        "front",
+        "app",
+        "fc-index",
+        "fc-app",
+        "app-test"
+    ],
+    "events": {
+        "restart": "clear"
+    }
+}

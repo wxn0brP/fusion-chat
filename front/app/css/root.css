@@ -1,0 +1,15 @@
+:root{
+    --messHover: #151516;
+    --menu: #333;
+    --server: #000;
+    --messBtnHover: #444;
+    --inp: #2a2a2a;
+    --userProfile: #090b0c;
+
+	--accent: #5D3FD3;
+    --accentRGB: 93, 63, 211;
+
+    font-size: 14px;
+    --good1: #20a472;
+    --good2: #4D3C7F;
+}

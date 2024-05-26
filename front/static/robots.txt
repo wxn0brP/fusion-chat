@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /reset/
+Disallow: /reset-kod/
+Disallow: /regiser-kod/
+Sitemap: https://ifp.ct8.pl/sitemap.xml

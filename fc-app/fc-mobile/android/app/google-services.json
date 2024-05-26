@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1096116747684",
+    "project_id": "fusionchat-f8dad",
+    "storage_bucket": "fusionchat-f8dad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1096116747684:android:3d1540df008f50ded1d531",
+        "android_client_info": {
+          "package_name": "com.fusionchat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChYJUR-slTif_12YYMfqlLuiArqLxaS8g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

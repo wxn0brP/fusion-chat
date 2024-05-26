@@ -1,0 +1,18 @@
+.context-menu{
+    position: absolute;
+    display: none;
+    background-color: var(--panel);
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 100;
+    border: 1px solid var(--border);
+
+    box-shadow: 0 10px 25px rgba(var(--accentRGB), .5);
+}
+
+.context-menu__item{
+    padding: 5px;
+    cursor: pointer;
+    text-align: left;
+    margin-block: 3px;
+}

@@ -1,0 +1,11 @@
+# dir
+node_modules
+data
+config
+.vscode
+app-test
+
+# files
+.env
+yarn.lock
+package-lock.json

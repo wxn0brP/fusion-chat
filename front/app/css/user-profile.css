@@ -1,0 +1,39 @@
+#navs__user{
+    position: relative;
+}
+
+#navs__user img{
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    /* object-fit: cover; */
+    /* border: 2px solid var(--accent); */
+}
+
+#navs__user__name{
+    position: absolute;
+    left: 65px;
+    top: 11px;
+    width: 105px;
+    font-size: 1.2rem;
+    text-align: left;
+}
+
+#navs__user__status{
+    position: absolute;
+    left: 65px;
+    top: 32px;
+    width: 105px;
+    text-align: left;
+}
+
+#navs__user__setting{
+    position: absolute;
+    left: 194px;
+    top: 14px;
+    font-size: 20px;    
+    cursor: pointer;
+}

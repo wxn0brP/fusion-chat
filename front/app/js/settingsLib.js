@@ -1,0 +1,136 @@
+class SettingsManager{
+    constructor(settings, container, saveCallback, exitCallback){
+        this.settings = settings;
+        this.saveCallback = saveCallback;
+        this.exitCallback = exitCallback;
+        this.container = container;
+        this.init();
+    }
+
+    init(){
+        this.container.innerHTML = '';
+
+        this.settings.forEach(category => {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'settings__category';
+            categoryDiv.innerHTML = `<h1>${category.name}</h1>`;
+
+            category.settings.forEach(setting => {
+                const settingElement = document.createElement('div');
+                settingElement.className = 'settings__setting';
+
+                const label = document.createElement('label');
+                label.textContent = setting.name;
+                settingElement.appendChild(label);
+
+                let inputElement;
+
+                switch(setting.type){
+                    case 'checkbox':
+                        inputElement = this.createCheckbox(setting);
+                    break;
+                    case 'text':
+                        inputElement = this.createTextInput(setting);
+                    break;
+                    case 'select':
+                        inputElement = this.createSelectInput(setting);
+                    break;
+                    case 'button':
+                        inputElement = this.createButton(setting);
+                    break;
+                    default:
+                    break;
+                }
+
+                if(inputElement){
+                    settingElement.appendChild(inputElement);
+                    if(setting.css){
+                        inputElement.css(setting.css);
+                    }
+                }
+
+                categoryDiv.appendChild(settingElement);
+            });
+
+            this.container.appendChild(categoryDiv);
+        });
+
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Save';
+        saveButton.className = 'settings__exitButton';
+        saveButton.onclick = () => this.saveSettings();
+
+        const exitButton = document.createElement('button');
+        exitButton.textContent = 'Exit without save';
+        exitButton.className = 'settings__exitButton';
+        exitButton.onclick = () => this.exitWithoutSaving();
+
+        this.container.appendChild(document.createElement('br'));
+        this.container.appendChild(saveButton);
+        this.container.appendChild(exitButton);
+        this.container.fadeIn();
+    }
+
+    createCheckbox(setting){
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = setting.defaultValue;
+        return checkbox;
+    }
+
+    createTextInput(setting){
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = setting.defaultValue;
+        return input;
+    }
+
+    createSelectInput(setting){
+        const select = document.createElement('select');
+        setting.options.forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option;
+            optionElement.textContent = option;
+            if(option === setting.defaultValue){
+                optionElement.selected = true;
+            }
+            select.appendChild(optionElement);
+        });
+        return select;
+    }
+
+    createButton(setting){
+        const button = document.createElement('button');
+        button.textContent = setting.name;
+        button.onclick = setting.onclick;
+        return button;
+    }
+
+    saveSettings(){
+        if(this.saveCallback && typeof this.saveCallback === 'function'){
+            this.saveCallback(this.getCurrentSettings());
+        }
+        this.container.innerHTML = '';
+        this.container.fadeOut();
+    }
+
+    exitWithoutSaving(){
+        if(this.exitCallback && typeof this.exitCallback === 'function'){
+            this.exitCallback();
+        }
+        this.container.innerHTML = '';
+        this.container.fadeOut();
+    }
+
+    getCurrentSettings(){
+        const currentSettings = {};
+        this.container.querySelectorAll('.settings__setting').forEach(settingElement => {
+            const label = settingElement.querySelector('label');
+            const input = settingElement.querySelector('input, select, ul');
+            if(label && input){
+                currentSettings[label.textContent] = input.type === 'checkbox' ? input.checked : input.value;
+            }
+        });
+        return currentSettings;
+    }
+}

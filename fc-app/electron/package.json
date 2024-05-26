@@ -1,0 +1,47 @@
+{
+    "name": "fc",
+    "version": "0.0.1",
+    "main": "index.js",
+    "author": {
+        "name": "wxn0brP",
+        "email": "fusion@fusion.ct8.pl"
+    },
+    "license": "MIT",
+    "private": false,
+    "devDependencies": {
+        "electron": "^30.0.2"
+    },
+    "dependencies": {
+        "axios": "^1.7.2",
+        "opn": "^6.0.0"
+    },
+    "homepage": "https://fusion.ct8.pl",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder build --publish never",
+        "deploy": "electron-builder build -wl --publish always",
+        "deploy-win": "electron-builder build --win --publish always",
+        "deploy-linux": "electron-builder build --linux --publish always"
+    },
+    "build": {
+        "productName": "FusionChat",
+        "appId": "com.wxn0brP.fc",
+        "publish": {
+            "provider": "github",
+            "owner": "wxn0brP",
+            "repo": "fc-desktop"
+        },
+        "win": {
+            "icon": "favicon.png"
+        },
+        "linux": {
+            "target": ["deb", "tar.gz"],
+            "icon": "favicon.png"
+        },
+        "files": [
+            "index.js",
+            "preload.js",
+            "favicon.png"
+        ]
+    }
+    }

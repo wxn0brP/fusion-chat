@@ -1,0 +1,64 @@
+#settings{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    
+    background-color: var(--back);
+    color: var(--txt);
+    
+    padding: 20px;
+    z-index: 10;
+}
+
+#settings .settings__exitButton{
+    padding: 10px;
+    border-radius: 5px;
+    background-color: var(--back);
+    color: var(--txt);
+    border: 1px solid var(--border);
+    margin: 5px;
+    cursor: pointer;
+}
+
+#settings .settings__category{
+    text-align: left;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 10px;
+    width: 800px;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#settings .settings__category:not(:last-child){
+    margin-bottom: 1rem;
+}
+
+#settings .settings__category h1{
+    margin-bottom: 1rem;
+}
+
+#settings .settings__category .settings__setting:not(:last-child){
+    margin-bottom: 1rem;
+}
+
+#settings .settings__category label{
+    margin-right: 1rem;
+}
+
+#settings .settings__category :where(input[type="text"], input[type="checkbox"], select, button){
+    background-color: var(--back);
+    color: var(--txt);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+@media screen and (max-width: 800px){
+    #settings .settings__category{
+        max-width: 90vw;
+    }
+}
