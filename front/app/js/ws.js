@@ -59,3 +59,11 @@ socket.on("markAsRead", (toR, chnl, id) => {
         if(friendChat) renderFunc.privsRead();
     }catch{}
 });
+
+socket.on("usersInChat", (data) => {
+    renderFunc.usersInChat(data);
+})
+
+socket.on("userProfile", (data) => {
+    renderFunc.userProfile(data);
+})
