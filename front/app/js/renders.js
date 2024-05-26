@@ -5,6 +5,7 @@ const navs__user__status = document.querySelector("#navs__user__status");
 const userProfileDiv = document.querySelector("#userProfile");
 const navs__groups__name = document.querySelector("#navs__groups__name");
 const navs__groups__channels = document.querySelector("#navs__groups__channels");
+const usersInChatDiv = document.querySelector("#usersInChat");
 
 const renderFunc = {
     privs(){
@@ -73,7 +74,7 @@ const renderFunc = {
         userProfileDiv.innerHTML = `
             <img src="${data.img || "/favicon.svg"}" alt="User logo">
             <h1>${data.name}</h1>
-            <p>${data.status}</p>
+            <p>${data.status} | ${data.statusText}</p>
         `.trim();
 
         renderUtils.initPopup(userProfileDiv);
@@ -89,6 +90,15 @@ const renderFunc = {
             socket.emit("getSeverSettings", id);
         })
         navs__groups__name.appendChild(settingsBtn);
+
+        const usersDisplayBtn = document.createElement("span");
+        usersDisplayBtn.innerHTML = "👥";
+        usersDisplayBtn.style.cursor = "pointer";
+        usersDisplayBtn.style.fontSize = "1.1rem";
+        usersDisplayBtn.addEventListener("click", () => {
+            socket.emit("usersInChat", id);
+        })
+        navs__groups__name.appendChild(usersDisplayBtn);
 
         function buildChannel(name, id, type, root){
             const btn = document.createElement("div");
@@ -146,7 +156,21 @@ const renderFunc = {
         }
 
         coreFunc.changeChnl(vars.chat.chnl);
-    }
+    },
+
+    usersInChat(data){
+        usersInChatDiv.innerHTML = "";
+        data.forEach((user) => {
+            const userDiv = document.createElement("div");
+            userDiv.innerHTML = apis.www.changeUserID(user);
+            userDiv.addEventListener("click", () => {
+                socket.emit("userProfile", user);
+            });
+            usersInChatDiv.appendChild(userDiv);
+        });
+
+        renderUtils.initPopup(usersInChatDiv);
+    },
 }
 
 const renderUtils = {

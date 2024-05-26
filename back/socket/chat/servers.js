@@ -91,7 +91,22 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
+
+    socket.ontimeout("usersInChat", 1000, async (id) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
+        
+            const users = await global.db.usersPerms.find(id, (r) => !!r.uid);
+            const usersData = users.map(u => u.uid);
+
+            socket.emit("usersInChat", usersData);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
 }
+
 
 async function saveDbChanges(doc, changes, idName="_id"){
     const { itemsToAdd, itemsToRemove, itemsToUpdate } = changes;
