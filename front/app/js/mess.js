@@ -88,7 +88,7 @@ const messFunc = {
 
     editMessClose(){
         editCloseDiv.style.display = "none";
-        messInput.value = "";
+        messInput.value = "";elements
         vars.temp.editId = null;
         coreFunc.focusInp();
     },
@@ -119,7 +119,29 @@ const messFunc = {
     handleEmocji(e){
         emocjiDiv.fadeOut();
         messInput.value += e;
-    }
+    },
+
+    hideFromMessageInfo(){
+        function getTimeFromMess(mess){
+            const id = mess.id.replace("mess__", "");
+            return parseInt(id.split("-")[0], 36);
+        }
+
+        const delayTime = 20 * 1000; // 20 seconds
+        const messages = document.querySelectorAll(".mess_message");
+        for(let i=1; i<messages.length; i++){
+            const message = messages[i];
+            const messageBefore = messages[i-1];
+
+            const messageFrom = message.querySelector(".mess_from");
+            const messageBeforeFrom = messageBefore.querySelector(".mess_from");
+            if(messageFrom.innerHTML != messageBeforeFrom.innerHTML) continue;
+
+            const time = getTimeFromMess(message);
+            const timeBefore = getTimeFromMess(messageBefore);
+            messageFrom.style.display = time - timeBefore < delayTime ? "none" : "block";
+        }
+    },
 }
 
 messFunc.replyClose();
@@ -159,6 +181,7 @@ socket.on("mess", (data) => {
     socket.emit("markAsRead", vars.chat.to, vars.chat.chnl, data._id);
     vars.lastMess[tom][vars.chat.chnl].read = data._id;
     renderFunc.privs();
+    messFunc.hideFromMessageInfo();
 });
 
 socket.on("getMess", (data) => {
@@ -180,6 +203,7 @@ socket.on("getMess", (data) => {
                 messagesDiv.add(div);
             }
         });
+        messFunc.hideFromMessageInfo();
         setTimeout(coreFunc.socrollToBottom, 30);
     }catch(e){
         lo(e);
@@ -191,6 +215,7 @@ socket.on("getMess", (data) => {
 
 socket.on("deleteMess", (id) => {
     document.querySelector("#mess__"+id)?.remove();
+    messFunc.hideFromMessageInfo();
 });
 
 socket.on("editMess", (id, msg, time) => {
@@ -204,6 +229,7 @@ socket.on("editMess", (id, msg, time) => {
     responeMessages.forEach(mess => {
         mess.innerHTML = msg;
     });
+    messFunc.hideFromMessageInfo();
 });
 
 (function initEmocji(){
