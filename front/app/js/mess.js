@@ -53,7 +53,12 @@ const messFunc = {
 
         const fromDiv = document.createElement("div");
         fromDiv.classList.add("mess_from");
-        fromDiv.innerHTML = apis.www.changeUserID(data.fr);
+        const fromDivSpan = document.createElement("span");
+        fromDivSpan.innerHTML = apis.www.changeUserID(data.fr);
+        fromDivSpan.addEventListener("click", () => {
+            socket.emit("userProfile", data.fr);
+        });
+        fromDiv.appendChild(fromDivSpan);
         messDiv.appendChild(fromDiv);
 
         const messContentDiv = document.createElement("div");
@@ -135,7 +140,7 @@ const messFunc = {
 
             const messageFrom = message.querySelector(".mess_from");
             const messageBeforeFrom = messageBefore.querySelector(".mess_from");
-            if(messageFrom.innerHTML != messageBeforeFrom.innerHTML) continue;
+            if(messageFrom.innerContent != messageBeforeFrom.innerContent) continue;
 
             const time = getTimeFromMess(message);
             const timeBefore = getTimeFromMess(messageBefore);

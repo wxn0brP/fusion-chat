@@ -69,8 +69,13 @@ main{
     background-color: var(--menu);
 }
 
-.mess_from{
+.mess_from span{
     font-weight: bold;
+    cursor: pointer;
+}
+
+.mess_from span:hover{
+    text-decoration: underline;
 }
 
 #replyClose, #editClose{
