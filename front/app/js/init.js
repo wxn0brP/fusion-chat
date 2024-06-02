@@ -22,6 +22,7 @@ if(!localStorage.getItem("token")) window.location = "/login";
 
     async function loadJs(){
         const srcs = [
+            "/libs/peerjs.min.js",
             "var",
             "utils",
             "debug",
