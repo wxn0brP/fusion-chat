@@ -1,7 +1,9 @@
 #voice_call{
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
     width: 350px;
     height: 200px;
     background-color: var(--back);
@@ -15,15 +17,16 @@
     max-width: 90vw;
 }
 
-#voice_call_end{
+#voice_call button{
     background-color: var(--back);
     color: var(--txt);
     border: 1px solid var(--accent);
     border-radius: 5px;
     padding: 5px;
     cursor: pointer;
+    margin-right: 10px;
 }
 
-#voice_call_end:hover{
+#voice_call button:hover{
     border-color: red;
 }
