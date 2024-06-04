@@ -80,14 +80,14 @@ const renderFunc = {
         renderUtils.initPopup(userProfileDiv);
     },
 
-    serverInit(id, name, categories){
+    serverInit(sid, name, categories){
         navs__groups__name.innerHTML = name;
         const settingsBtn = document.createElement("span");
         settingsBtn.innerHTML = "⚙️";
         settingsBtn.style.cursor = "pointer";
         settingsBtn.style.fontSize = "1.1rem";
         settingsBtn.addEventListener("click", () => {
-            socket.emit("getSeverSettings", id);
+            socket.emit("getSeverSettings", sid);
         })
         navs__groups__name.appendChild(settingsBtn);
 
@@ -96,21 +96,20 @@ const renderFunc = {
         usersDisplayBtn.style.cursor = "pointer";
         usersDisplayBtn.style.fontSize = "1.1rem";
         usersDisplayBtn.addEventListener("click", () => {
-            socket.emit("usersInChat", id);
+            socket.emit("usersInChat", sid);
         })
         navs__groups__name.appendChild(usersDisplayBtn);
 
-        function buildChannel(name, id, type, root){
+        function buildChannel(name, cid, type, root){
             const btn = document.createElement("div");
             btn.onclick = () => {
                 if(type == "text"){
-                    coreFunc.changeChnl(id);
+                    coreFunc.changeChnl(cid);
                 }else if(type == "voice"){
-                    // serverCall(id);
-                    uiFunc.uiMsg("Voice channels are not yet supported");
+                    voiceFunc.joinToVoiceChannel(sid+"="+cid);
                 }
             };
-            btn.id = "channel_"+id;
+            btn.id = "channel_"+cid;
             btn.clA("channel_"+type);
     
             let typeEmoticon = "";

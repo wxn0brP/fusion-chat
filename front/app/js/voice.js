@@ -108,7 +108,7 @@ const voiceFunc = {
 
     endCall(){
         voiceFunc.peers.forEach((peer) => {
-            peer.close();
+            peer.destroy();
         });
         socket.emit("leaveVoiceChannel");
 
