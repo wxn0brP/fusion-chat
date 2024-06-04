@@ -140,7 +140,7 @@ const messFunc = {
 
             const messageFrom = message.querySelector(".mess_from");
             const messageBeforeFrom = messageBefore.querySelector(".mess_from");
-            if(messageFrom.innerContent != messageBeforeFrom.innerContent) continue;
+            if(messageFrom.innerText != messageBeforeFrom.innerText) continue;
 
             const time = getTimeFromMess(message);
             const timeBefore = getTimeFromMess(messageBefore);
