@@ -1,0 +1,29 @@
+#voice_call{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 350px;
+    height: 200px;
+    background-color: var(--back);
+    z-index: 10;
+    display: none;
+    text-align: left;
+
+    border: 1px solid var(--accent);
+    border-radius: 1rem;
+    padding: 1rem;
+    max-width: 90vw;
+}
+
+#voice_call_end{
+    background-color: var(--back);
+    color: var(--txt);
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+#voice_call_end:hover{
+    border-color: red;
+}

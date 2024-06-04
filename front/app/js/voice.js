@@ -51,9 +51,10 @@ const voiceFunc = {
     async joinToVoiceChannel(to){
         const stream = await voiceUtils.getStream({ audio: true, video: false });
         voiceFunc.local_stream = stream;
-
+        
         socket.emit("joinVoiceChannel", to);
         socket.emit("getVoiceChannelUsers", to);
+        voiceHTML.div.fadeIn();
     },
 
     makeConnectionHandler(to){
@@ -103,6 +104,22 @@ const voiceFunc = {
         voiceHTML.mediaContainer.appendChild(audio);
 
         return audio;
+    },
+
+    endCall(){
+        voiceFunc.peers.forEach((peer) => {
+            peer.close();
+        });
+        socket.emit("leaveVoiceChannel");
+
+        voiceFunc.peers = [];
+        voiceHTML.div.fadeOut();
+        voiceHTML.mediaContainer.innerHTML = "";
+
+        voiceFunc.local_stream.getTracks().forEach((track) => {
+            track.stop();
+        });
+        voiceFunc.local_stream = new MediaStream();
     }
 }
 

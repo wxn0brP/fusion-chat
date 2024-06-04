@@ -24,18 +24,30 @@ module.exports = (socket) => {
         }
     });
 
-    socket.ontimeout("leaveVoiceChannel", 100, async (to) => {
-        try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(to, 0, 30)) return socket.emit("error", "valid data");
+    function leaveVoiceChannel(){
+        rooms.forEach((users, to) => {
+            users.forEach((user) => {
+                if(user.user._id != socket.user._id) return;
+                rooms.get(to).splice(rooms.get(to).indexOf(socket), 1);
+            });
+        });
+    }
 
-            if(!rooms.has(to)) return;
-            rooms.get(to).splice(rooms.get(to).indexOf(socket), 1);
-            if(rooms.get(to).length == 0) rooms.delete(to);
+    socket.ontimeout("leaveVoiceChannel", 100, async () => {
+        try{
+            leaveVoiceChannel();
         }catch(e){
             socket.logError(e);
         }
     });
+
+    socket.on("disconnect", () => {
+        try{
+            leaveVoiceChannel();
+        }catch(e){
+            socket.logError(e);
+        }
+    })
 
     socket.ontimeout("getVoiceChannelUsers", 100, async (to) => {
         try{
@@ -51,14 +63,4 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
-
-    socket.on("disconnect", () => {
-        if(!socket.user) return;
-        rooms.forEach((users, to) => {
-            users.forEach((user) => {
-                if(user.user._id != socket.user._id) return;
-                rooms.get(to).splice(rooms.get(to).indexOf(socket), 1);
-            });
-        });
-    })
 }
