@@ -141,6 +141,12 @@ const renderFunc = {
         }
     
         navs__groups__channels.innerHTML = "";
+        if(categories.length === 0 || categories.every(category => category.chnls.length === 0)){
+            navs__groups__channels.innerHTML = "No channels in this server";
+            vars.chat.chnl = null;
+            return;
+        }
+
         categories.forEach(category => {
             buildCategory(category.name, category.chnls, navs__groups__channels);
         });
