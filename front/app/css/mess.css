@@ -85,6 +85,10 @@ main{
     cursor: pointer;
 }
 
+:where(#replyClose, #editClose)::before{
+    content: 'X - ';
+}
+
 .editMessText{
     font-size: 0.7rem;
     margin-left: 5px;
