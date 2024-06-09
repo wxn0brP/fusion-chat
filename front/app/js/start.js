@@ -3,5 +3,6 @@
     debugFunc.init();
 
     coreFunc.changeChat("main");
+    translateFunc.init();
     socket.connect();
 })();

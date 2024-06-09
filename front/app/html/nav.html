@@ -1,21 +1,19 @@
 <nav>
     <div id="groups">
-        <div class="group" onclick="coreFunc.changeChat('main')">
-            <img src="/favicon.svg" alt="MAIN">
-        </div>
+        <div class="group" onclick="coreFunc.changeChat('main')" translate>Add Channel</div>
         <hr>
         <div id="groups__content">
 
         </div>
         <div style="width: 1px; height: 10rem;"></div>
         <hr>
-        <div class="group" onclick="buttonFunc.createGroup()">+</div>
-        <div class="group" onclick="buttonFunc.joinGroup()">Join</div>
-        <div class="group" onclick="voiceHTML.div.fadeIn()">Voice Show</div>
+        <div class="group" onclick="buttonFunc.createGroup()" translate>Create Group</div>
+        <div class="group" onclick="buttonFunc.joinGroup()" translate>Join Channel</div>
+        <div class="group" onclick="voiceHTML.div.fadeIn()" translate>Voice Show</div>
     </div>
     <div id="navs">
         <div id="navs__main">
-            <button onclick="buttonFunc.addPriv()">Add priv chat</button>
+            <button onclick="buttonFunc.addPriv()" translate>Add Private Channel</button>
             <hr>
             <br />
             <div id="navs__priv"></div>
@@ -24,13 +22,7 @@
             <div id="navs__groups__name"></div>
             <hr>
             <br />
-            <div id="navs__groups__channels">
-                <!-- <button>#general</button>
-                <button>#random</button>
-                <button>#other</button>
-                <button>#other</button>
-                <button>#other</button> -->
-            </div>
+            <div id="navs__groups__channels"></div>
         </div>
         <div id="navs__user">
             <img src="/assets/hatwoo.svg" alt="">

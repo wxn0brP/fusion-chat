@@ -36,6 +36,7 @@ if(!localStorage.getItem("token")) window.location = "/login";
             "settingsServerLib",
             "swipeLib",
 
+            "translate",
             "format",
             "mess",
             "contextMenu",
