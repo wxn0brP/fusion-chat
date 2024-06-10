@@ -13,14 +13,15 @@ class SettingsManager{
         this.settings.forEach(category => {
             const categoryDiv = document.createElement('div');
             categoryDiv.className = 'settings__category';
-            categoryDiv.innerHTML = `<h1>${category.name}</h1>`;
+            categoryDiv.innerHTML = `<h1>${category.txt || category.name}</h1>`;
 
             category.settings.forEach(setting => {
                 const settingElement = document.createElement('div');
                 settingElement.className = 'settings__setting';
 
                 const label = document.createElement('label');
-                label.textContent = setting.name;
+                label.textContent = setting.txt || setting.name;
+                label.setAttribute("data-txt", setting.name);
                 settingElement.appendChild(label);
 
                 let inputElement;
@@ -56,12 +57,12 @@ class SettingsManager{
         });
 
         const saveButton = document.createElement('button');
-        saveButton.textContent = 'Save';
+        saveButton.textContent = translateFunc.get('Save');
         saveButton.className = 'settings__exitButton';
         saveButton.onclick = () => this.saveSettings();
 
         const exitButton = document.createElement('button');
-        exitButton.textContent = 'Exit without save';
+        exitButton.textContent = translateFunc.get('Exit without save');
         exitButton.className = 'settings__exitButton';
         exitButton.onclick = () => this.exitWithoutSaving();
 
@@ -128,7 +129,7 @@ class SettingsManager{
             const label = settingElement.querySelector('label');
             const input = settingElement.querySelector('input, select, ul');
             if(label && input){
-                currentSettings[label.textContent] = input.type === 'checkbox' ? input.checked : input.value;
+                currentSettings[label.getAttribute('data-txt')] = input.type === 'checkbox' ? input.checked : input.value;
             }
         });
         return currentSettings;

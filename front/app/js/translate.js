@@ -20,7 +20,8 @@ const translateFunc = {
         localStorage.setItem("lang", lang);
 
         if(lang == "en"){
-            this.translate({});
+            this.locale = {};
+            this.translateHTML();
             return;
         }
 

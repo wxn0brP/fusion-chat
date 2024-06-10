@@ -14,5 +14,12 @@
 "Delete":"Usuń",
 "Reply":"Odpowiedz",
 "Hide":"Ukryj",
-"Disconnect":"Rozłącz"
+"Disconnect":"Rozłącz",
+"Status":"Status",
+"Status text":"Tekst statusu",
+"Language":"Jezyk",
+"Logout":"Wyloguj",
+"User settings":"Ustawienia użytkownika",
+"Save":"Zapisz",
+"Exit without save":"Wyjdź bez zapisania"
 }
