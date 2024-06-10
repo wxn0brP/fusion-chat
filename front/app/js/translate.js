@@ -24,7 +24,7 @@ const translateFunc = {
             return;
         }
 
-        this.locale = JSON5.parse(cw.get("lang/"+lang+".json5"));
+        this.locale = JSON.parse(cw.get("lang/"+lang+".json"));
         this.translateHTML();
     },
 
