@@ -16,6 +16,9 @@ const settingsFunc = {
                     socket.emit("updateStatus", vars.user.status, vars.user.statusText);
                     renderFunc.localUserProfile();
                 }
+                if(settings["Language"] != undefined){
+                    if(settings["Language"] != localStorage.getItem("lang")) translateFunc.load(settings["Language"]);
+                }
             },
             () => {}
         );
@@ -44,20 +47,24 @@ const settingsFunc = {
 const settingsDataUser = () => [
     {
         name: "User settings",
+        txt: translateFunc.get("User settings"),
         settings: [
             {
                 name: "Status",
+                txt: translateFunc.get("Status"),
                 type: "select",
                 defaultValue: vars.user.status || "online",
                 options: ["online", "away", "offline"]
             },
             {
                 name: "Status text",
+                txt: translateFunc.get("Status text"),
                 type: "text",
                 defaultValue: vars.user.statusText || ""
             },
             {
                 name: "Logout",
+                txt: translateFunc.get("Logout"),
                 type: "button",
                 onclick: () => {
                     if(!confirm("Are you sure you want to log out?")) return;
@@ -71,6 +78,13 @@ const settingsDataUser = () => [
                 css: {
                     color: "red"
                 }
+            },
+            {
+                "name": "Language",
+                "txt": translateFunc.get("Language"),
+                "type": "select",
+                "defaultValue": localStorage.getItem("lang") || "en",
+                "options": translateFunc.localesList
             }
         ]
     }
