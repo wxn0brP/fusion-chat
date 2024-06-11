@@ -42,7 +42,7 @@ module.exports = (socket) => {
             }
     
             let message = msg.trim();
-            if(msg.length > 500) return socket.emit("error", "msg jest za długie");
+            if(msg.length > 500) return socket.emit("error", "msg is too long - getMess");
             
             let data = {
                 fr: socket.user._id,
