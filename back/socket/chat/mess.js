@@ -1,5 +1,6 @@
 const chatMgmt = require("../../logic/chatMgmt");
 const valid = require("../../logic/validData");
+const permissionSystem = require("../../logic/permission-system");
 
 module.exports = (socket) => {
     socket.ontimeout("mess", 200,
@@ -99,7 +100,7 @@ module.exports = (socket) => {
             if(!valid.str(toM, 0, 30) || !valid.str(_id, 0, 30) || !valid.str(msg, 0, 500)){
                 return socket.emit("error", "valid data");
             }
-    
+
             const friendChat = toM.startsWith("$");
             let to = toM;
             if(friendChat){
@@ -107,7 +108,7 @@ module.exports = (socket) => {
                 const p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
             }
-    
+
             const mess = await global.db.mess.findOne(to, { _id });
             if(!mess){
                 return socket.emit("error", "message does not exist");
@@ -115,7 +116,7 @@ module.exports = (socket) => {
             if(mess.fr !== socket.user._id){
                 return socket.emit("error", "not authorized");
             }
-    
+
             const time = global.getTime();
             await global.db.mess.updateOne(to, { _id }, { msg, lastEdit: time });
 
@@ -137,7 +138,7 @@ module.exports = (socket) => {
             if(!valid.str(toM, 0, 30) || !valid.str(_id, 0, 30)){
                 return socket.emit("error", "valid data");
             }
-    
+
             const friendChat = toM.startsWith("$");
             let to = toM;
             if(friendChat){
@@ -145,15 +146,18 @@ module.exports = (socket) => {
                 const p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
             }
-    
+
             const mess = await global.db.mess.findOne(to, { _id });
             if(!mess){
                 return socket.emit("error", "message does not exist");
             }
             if(mess.fr !== socket.user._id){
-                return socket.emit("error", "not authorized");
+                const perm = new permissionSystem(to);
+                if(!perm.userPermison(socket.user._id, "msgMgmt")){
+                    return socket.emit("error", "not authorized");
+                }
             }
-    
+
             await global.db.mess.removeOne(to, { _id });
             if(friendChat){
                 sendToSocket(socket.user._id,       "deleteMess", _id);
