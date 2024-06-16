@@ -183,7 +183,13 @@ socket.on("mess", (data) => {
     }
 
     messFunc.addMess(data);
-    socket.emit("markAsRead", vars.chat.to, vars.chat.chnl, data._id);
+    vars.temp.makeIsRead = data._id;
+    setTimeout(() => {
+        if(vars.temp.makeIsRead != data._id) return;
+        vars.temp.makeIsRead = null;
+        socket.emit("markAsRead", vars.chat.to, vars.chat.chnl, data._id);
+    }, 1000);
+    
     vars.lastMess[tom][vars.chat.chnl].read = data._id;
     renderFunc.privs();
     messFunc.hideFromMessageInfo();
