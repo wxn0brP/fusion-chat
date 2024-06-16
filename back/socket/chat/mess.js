@@ -74,11 +74,14 @@ module.exports = (socket) => {
             if(!friendChat){
                 data.toM = to;
                 let chat = await global.db.usersPerms.find(to, r => r.uid);
+                const server = (await global.db.groupSettings.findOne(to, { _id: "set"}));
+                const title = "(S) " + server.name;
+
                 chat.forEach(u => {
                     u = u.uid;
                     if(u == socket.user._id) return;
                     sendToSocket(u, "mess", data);
-                    // sendNewMsgToFireBase(socket.user._id, u, data);
+                    global.fireBaseMessage.newMsgInfo(title, u, data);
                 })
             }else{
                 let toSend = req.to.replace("$","");
@@ -87,7 +90,9 @@ module.exports = (socket) => {
 
                 data.toM = socket.user._id;
                 sendToSocket(toSend, "mess", data);
-                global.fireBaseMessage.newMsgInfo(socket.user._id, toSend, data);
+
+                const user = await global.db.data.findOne("user", { _id: socket.user._id });
+                global.fireBaseMessage.newMsgInfo(user.name, toSend, data);
             }
         }catch(e){
             socket.logError(e);

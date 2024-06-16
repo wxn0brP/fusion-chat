@@ -19,18 +19,12 @@ global.fireBaseMessage = {
         if(tokens.length == 0) return;
         tokens = tokens.map(t => t.token);
         
-        let title = "Nowa Wiadomość od ";
-        if(data.to.startsWith("$")){
-            const user = (await global.db.data.findOne("user", { _id: from }));
-            title += user.name;
-        }else{
-            const server = id//(await global.db.data.findOne("serverSettings", { id })).o.settings;
-            title += "(S) " + server.name;
-        }
+        let title = "New message from "+from;
         let body = data.msg;
         
         try{
             tokens.forEach(async token => {
+                lo(token, title, body);
                 try{
                     await global.firebaseAdmin.messaging().send({
                         notification: { title, body },
