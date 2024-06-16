@@ -75,10 +75,10 @@ const messFunc = {
         setTimeout(() => {
             const errMargin = 70; // (px)
             const isScrollAtBottom = messagesDiv.scrollTop + messagesDiv.clientHeight + messDiv.clientHeight + errMargin >= messagesDiv.scrollHeight;
+            if(data.res) format.responeMess(data.res, messDiv);
             if(socroll && isScrollAtBottom){
                 messDiv.scrollIntoView({behavior: "smooth"});
             }
-            if(data.res) format.responeMess(data.res, messDiv);
         }, 100);
 
         contextMenu.menuClickEvent(messDiv, (e) => {
