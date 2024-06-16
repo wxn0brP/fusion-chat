@@ -24,7 +24,6 @@ global.fireBaseMessage = {
         
         try{
             tokens.forEach(async token => {
-                lo(token, title, body);
                 try{
                     await global.firebaseAdmin.messaging().send({
                         notification: { title, body },
