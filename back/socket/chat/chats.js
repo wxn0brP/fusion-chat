@@ -70,6 +70,9 @@ module.exports = (socket) => {
             if(priv) return socket.emit("error", "already priv");
 
             await chatMgmt.createPriv(toId, socket.user._id);
+
+            const groups = await global.db.userDatas.find(toId, r => !!r.group);
+            global.sendToSocket(toId, "getGroups", groups || []);
         }catch(e){
             socket.logError(e);
         }
