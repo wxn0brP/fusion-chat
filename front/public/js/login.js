@@ -47,12 +47,12 @@ document.querySelector("form").addEventListener("submit", (e) => {
     e.preventDefault();
     let login = loginDiv.value;
     if(!login){
-        errDiv.html("Login nie może być pusty");
+        errDiv.html("Login is empty");
         return;
     }
     let pass = passDiv.value;
     if(!pass){
-        errDiv.html("Hasło nie może być puste");
+        errDiv.html("Password is empty");
         return;
     }
     login = login.trim();
