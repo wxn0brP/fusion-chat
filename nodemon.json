@@ -4,7 +4,8 @@
         "app",
         "fc-index",
         "fc-app",
-        "app-test"
+        "app-test",
+        "bots"
     ],
     "events": {
         "restart": "clear"
