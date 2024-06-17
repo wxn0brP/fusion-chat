@@ -1,0 +1,13 @@
+{
+  "name": "bot1",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "wxn0brP",
+  "license": "MIT",
+  "scripts": {
+    "link": "cd ../fc-bot && yarn link && cd ../bot1 && yarn link fc-bot"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
