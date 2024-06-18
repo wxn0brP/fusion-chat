@@ -28,8 +28,8 @@ function genId(parts, fill=1){
  * @returns {string} The unique random identifier.
  */
 function getUniqueRandom(time, partsA, s=0){
-    let parts = partsA.map(l => getRandom(l));
-    let id = [time, ...parts].join("-");
+    const parts = partsA.map(l => getRandom(l));
+    const id = [time, ...parts].join("-");
     if(usedIdsMap.has(id)){
         s++;
         if(s < 25) return getUniqueRandom(time, partsA, s);
