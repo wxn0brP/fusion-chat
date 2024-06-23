@@ -14,7 +14,13 @@ app.use("/", express.static("front/static"));
 const pageBreak = process.env.pageBreak;
 if(pageBreak == "true"){
     app.use((req, res) => {
-        res.status(401).send("pt");
+        res.status(503).send(`
+            <link rel="stylesheet" href="/style.css"></link>
+            <link rel="shortcut icon" href="/favicon.svg" type="image/x-icon">
+            <title>Fusion Chat</title>
+            <br />
+            <h1>Sorry! Server go to chase squirrels. Be back soon, hopefully with better speed!</h1>
+        `.trim());
     });
 }
 
