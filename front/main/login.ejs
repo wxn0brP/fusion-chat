@@ -1,0 +1,85 @@
+<div id="div-gen"></div>
+<form>
+    <div class="content" id="loginC">
+        <h2>Sign In</h2>
+        <div class="form">
+            <div class="inputBox">
+                <input type="text" id="login" required>
+                <i>Username</i>
+            </div>
+            <div class="inputBox">
+                <input type="password" id="pass" required>
+                <i>Password</i>
+            </div>
+            <div class="links">
+                <a href="/reset">Forgot Password</a>
+                <a href="/register">Signup</a>
+                <span onclick="changeCodeStatus(true);" style="color: var(--accent); cursor: pointer;">QR</span>
+            </div>
+            <div id="err"></div>
+            <div class="inputBox">
+                <input type="submit" value="Login">
+            </div>
+        </div>
+    </div>
+    <div id="qrcode-div" style="display: none;">
+        <div onclick="changeCodeStatus(false);" id="Xcode">X</div>
+        <br />
+        <div id="qrcode-qr"></div>
+    </div>
+</form>
+
+<style>
+    #qrcode-div{
+        max-width: 380px;
+        max-height: 380px;
+        width: 99vw;
+        height: 99vw;
+        z-index: 50;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #Xcode{
+        width: 2rem;
+        height: 2rem;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        border-radius: 1rem;
+        background-color: var(--panel);
+        color: var(--accent);
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+
+    #qrcode-qr{
+        padding: 8px;
+        border-radius: 5px;
+        background-color: grey;
+    }
+
+    form .content .form .inputBox span{
+        padding: 5px;
+        background: var(--accent);
+        color: #000;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: border-radius 1s;
+        box-shadow: 0 10px 35px var(--accent);
+    }
+
+    form .content .form .inputBox span:hover{
+        border-radius: 1.5rem;
+    }
+</style>
+
+<script src="/js/div-gen.js"></script>
+<script src="/libs/socket.io.min.js"></script>
+<script src="/libs/qrcode.min.js"></script>
+<script src="/js/login.js"></script>
+<link rel="stylesheet" href="/fc-form.css">

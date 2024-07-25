@@ -1,32 +1,33 @@
----
-import Layout from "../layouts/Layout.astro";
-import Nav from "../components/Nav.astro";
----
+<%- include('main/nav') %>
+<main>
+    <section>
+        <label for="android"><img src="/assets/icon/android.svg" alt="android"></label>
+        <button id="android" data-d="fc-mobile">Download</button>
+    </section>
 
-<Layout title="Download Fusion Chat">
-	<Nav />
-	<main class="mx-auto px-4 text-white text-center text-xl">
-		<section>
-			<label for="android"><img src="/icon/android.svg" alt="android"></label>
-			<button id="android" data-d="fc-mobile">Download</button>
-		</section>
-
-		<section>
-			<label for="windows"><img src="/icon/windows.svg" alt="windows"></label>
-			<button id="windows" data-d="fc-desktop">Download</button>
-		</section>
-		<section>
-			<label for="linux"><img src="/icon/linux.svg" alt="linux"></label>
-			<button id="linux" data-d="ifp-desktop">Download</button>
-		</section>
-	</main>
-</Layout>
+    <section>
+        <label for="windows"><img src="/assets/icon/windows.svg" alt="windows"></label>
+        <button id="windows" data-d="fc-desktop">Download</button>
+    </section>
+    <section>
+        <label for="linux"><img src="/assets/icon/linux.svg" alt="linux"></label>
+        <button id="linux" data-d="ifp-desktop">Download</button>
+    </section>
+</main>
 
 <style>
 	main{
 		width: 800px;
 		max-width: calc(100% - 2rem);
 		line-height: 1.6;
+
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        color: white;
+        text-align: center;
+        font-size: 1.25rem;
 	}
 
 	main section{
@@ -41,14 +42,15 @@ import Nav from "../components/Nav.astro";
 	}
 
 	main button{
+		color: var(--txt);
 		background-color: var(--back);
-		border: 3px solid var(--accentC);
+		border: 3px solid var(--accent);
 		border-radius: 1rem;
 		padding: 1rem;
 	}
 
 	main button:hover{
-		background-color: var(--accentC);
+		background-color: var(--accent);
 	}
 
 	a{
