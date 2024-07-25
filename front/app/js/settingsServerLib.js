@@ -17,12 +17,14 @@ class SettingsServerManager{
         this.editChannelDiv = this.initCategoryElement();
         this.roleDiv = this.initCategoryElement();
         this.editRoleDiv = this.initCategoryElement();
+        this.userRoleManagerDiv = this.initCategoryElement();
 
         this.renderMata();
         this.renderChannels();
         this.editChannelDiv.style.display = 'none';
         this.renderRoles();
         this.editRoleDiv.style.display = 'none';
+        this.renderUserRoleManager();
 
         const saveButton = document.createElement('button');
         saveButton.textContent = 'Save';
@@ -245,11 +247,10 @@ class SettingsServerManager{
             {
                 name: string,
                 rid: string, // role id
-                p: string array, // permissions
+                p: string[], // permissions
                 parent: string // parent role id
             }
         */
-        //
 
         this.settings.roles = this.sortRoles(this.settings.roles);
         const roles = this.settings.roles;
@@ -271,8 +272,6 @@ class SettingsServerManager{
             this.addSeparator(container, 10);
             const roleDiv = document.createElement('div');
             roleDiv.innerHTML = `<span style="font-size: 1.2rem; margin-right: 0.5rem;">- ${role.name}</span>`;
-
-            //TODO Implement create, edit, delete roles functionality
 
             this.initButton(roleDiv, "Move up", () => {
                 if(index === 0) return;
@@ -370,6 +369,46 @@ class SettingsServerManager{
             });
         }
         containerElement.fadeIn();
+    }
+
+    renderUserRoleManager(){
+        this.userRoleManagerDiv.innerHTML = '<h1>User roles</h1>';
+        const users = this.settings.users;
+        const _this = this;
+        function renderUser(user){
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.innerHTML = apis.www.changeUserID(user.uid);
+            details.appendChild(summary);
+            const div = document.createElement('div');
+            
+            const roles = _this.settings.roles;
+            const userRoles = user.roles;
+            const checkboxs = [];
+            
+            roles.forEach(role => {
+                const roleDiv = document.createElement('div');
+                const checkbox = _this.initCheckbox(roleDiv, role.name, userRoles.includes(role.rid));
+                checkboxs.push({id: role.rid, checkbox});
+                div.appendChild(roleDiv);
+            });
+
+            _this.initButton(div, "Update", () => {
+                const newRoles = [];
+                checkboxs.forEach(c => {
+                    const { id, checkbox } = c;
+                    if(checkbox.checked) newRoles.push(id);
+                })
+                _this.settings.users.find(u => u === user).roles = newRoles;
+                _this.renderUserRoleManager();
+            });
+
+            details.appendChild(div);
+            return details;
+        }
+        users.forEach(user => {
+            this.userRoleManagerDiv.appendChild(renderUser(user));
+        });
     }
 
     /* logic */

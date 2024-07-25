@@ -1,7 +1,14 @@
 function processDbChanges(oldData, newData, trackParams = [], idName="_id"){
     // Helper function to check if objects are equal based on trackParams
     const areObjectsEqual = (obj1, obj2, params) => {
-        return params.every(param => obj1[param] === obj2[param]);
+        return params.every(param => {
+            if(Array.isArray(obj1[param])){
+                return Array.isArray(obj1[param]) && Array.isArray(obj2[param]) &&
+                        obj1[param].length === obj2[param].length &&
+                        obj1[param].every(value => obj2[param].includes(value));
+            }
+            return obj1[param] === obj2[param]
+        });
     };
 
     const itemsToAdd = newData.filter(newItem => !oldData.some(oldItem => oldItem[idName] === newItem[idName]));
