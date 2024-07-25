@@ -51,18 +51,27 @@ module.exports = (socket) => {
             const userPerm = await perm.userPermison(socket.user._id, "admin");
             if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
 
-            const serverMeta = await global.db.groupSettings.findOne(id, { _id: "set" });
+            const meta = await global.db.groupSettings.findOne(id, { _id: "set" });
             const categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
             const channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
             const roles = await perm.getRoles();
+            const users = await global.db.usersPerms.find(id, (r) => !!r.uid);
 
-            socket.emit("getSeverSettings", serverMeta, categories, channels, roles, id);
+            const data = {
+                meta,
+                categories,
+                channels,
+                roles,
+                users: users.map(u => { return { uid: u.uid, roles: u.roles }}),
+            };
+
+            socket.emit("getSeverSettings", data, id);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("setSeverSettings", 5_00, async (id, meta, n_categories, n_channels, n_roles) => {
+    socket.ontimeout("setSeverSettings", 5_00, async (id, data) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
@@ -74,19 +83,22 @@ module.exports = (socket) => {
             const o_categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
             const o_channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
             const o_roles = await perm.getRoles();
+            const o_users = await global.db.usersPerms.find(id, (r) => !!r.uid);
 
-            const pcaci = processCategoriesAndChannelIds(n_categories, n_channels);
-            n_roles = processRolesIds(n_roles);
+            const pcaci = processCategoriesAndChannelIds(data.categories, data.channels);
+            const n_roles = processRolesIds(data.roles);
 
             const categoriesChanges = processDbChanges(o_categories, pcaci.categories, ["name","i"], "cid");
             const channelsChanges = processDbChanges(o_channels, pcaci.channels, ["name","i"], "chid");
             const rolesChanges = processDbChanges(o_roles, n_roles, ["rid", "parent", "name"], "rid");
+            const usersChanges = processDbChanges(o_users, data.users, ["uid", "roles"], "uid");
 
             await saveDbChanges(id, categoriesChanges, "cid");
             await saveDbChanges(id, channelsChanges, "chid");
             await saveDbChanges(id, rolesChanges, "rid");
+            for(const item of usersChanges.itemsToUpdate) await global.db.usersPerms.update(id, (u) => u.uid == item.uid, item);
 
-            await global.db.groupSettings.updateOne(id, { _id: "set" }, meta);
+            await global.db.groupSettings.updateOne(id, { _id: "set" }, data.meta);
         }catch(e){
             socket.logError(e);
         }

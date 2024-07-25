@@ -24,20 +24,12 @@ const settingsFunc = {
         );
     },
 
-    showServerSettings(o_meta, o_categories, o_channels, o_roles, id){
-        const ssmData = {
-            meta: o_meta,
-            categories: o_categories,
-            channels: o_channels,
-            roles: o_roles
-        }
-
+    showServerSettings(dataI, id){
         new SettingsServerManager(
-            ssmData,
+            dataI,
             settingDiv,
             (data) => {
-                const { meta, categories, channels, roles } = data;
-                socket.emit("setSeverSettings", id, meta, categories, channels, roles);
+                socket.emit("setSeverSettings", id, data);
             },
             () => {}
         );
