@@ -35,7 +35,7 @@ body{
 }
 
 .card:hover{
-	background: var(--accentC);
+	background: var(--accent);
 	transition: 0s;
 }
 
@@ -65,7 +65,7 @@ form .content{
 
 form .content h2{
 	font-size: 2em;
-	color: var(--accentC);
+	color: var(--accent);
 	text-transform: uppercase;
 }
 
@@ -124,20 +124,20 @@ form .content .form .links a{
 }
 
 form .content .form .links a:nth-child(2){
-	color: var(--accentC);
+	color: var(--accent);
 	font-weight: 600;
 }
 
 form .content .form .inputBox input[type="submit"]{
 	padding: 10px;
-	background: var(--accentC);
+	background: var(--accent);
 	color: #000;
 	font-weight: 600;
 	font-size: 1.35em;
 	letter-spacing: 0.05em;
 	cursor: pointer;
     transition: border-radius .5s;
-	box-shadow: 0 15px 35px var(--accentC);
+	box-shadow: 0 15px 35px var(--accent);
 }
 
 form .content .form .inputBox input[type="submit"]:hover{

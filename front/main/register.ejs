@@ -1,0 +1,91 @@
+<div id="div-gen"></div>
+<form class="signin">
+    <div class="content" id="loginC">
+        <h2>Register</h2>
+        <div class="form">
+            <div class="inputBox">
+                <input type="text" id="login" required>
+                <i>Username</i>
+            </div>
+            <div class="inputBox">
+                <input type="email" id="email" required>
+                <i>E-mail</i>
+            </div>
+            <div class="inputBox">
+                <input type="password" id="pass1" required>
+                <i>Password</i>
+                <span onclick="passVis(1)">👁️</span>
+            </div>
+            <div class="inputBox">
+                <input type="password" id="pass2" required>
+                <i>Password</i>
+                <span onclick="passVis(2)">👁️</span>
+            </div>
+            <meter max="4" low="2" high="3" optimum="4" id="strength-meter"></meter>
+            <div id="requirements">
+                <div class="requirement" id="length-req">Min. 8 characters</div>
+                <div class="requirement" id="lowercase-req">At least 1 lowercase letter</div>
+                <div class="requirement" id="uppercase-req">At least 1 uppercase letter</div>
+                <div class="requirement" id="number-req">At least 1 number</div>
+                <div class="requirement" id="special-req">At least 1 special character</div>
+            </div>
+            <div id="err"></div>
+            <div class="inputBox">
+                <input type="submit" value="Register">
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    #requirements{
+        margin-top: 10px;
+    }
+
+    .requirement{
+        margin-right: 10px;
+        font-size: 20px;
+    }
+
+    .requirement::before{
+        position: absolute;
+        left: -20px;
+    }
+
+    .requirement.x::before{
+        content: "X";
+        color: #ff6666;
+    }
+
+    .requirement.v::before{
+        content: "V";
+        color: #66ff66;
+    }
+
+    .inputBox{
+        position: relative;
+    }
+
+    .inputBox span{
+        position: absolute;
+        right: 5px;
+        top: 1rem;
+        background-color: transparent;
+        border: none;
+        display: none;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+    }
+
+    .inputBox input:valid ~ span,
+    .inputBox input:focus ~ span{
+        display: block;
+    }
+</style>
+
+<script src="/js/div-gen.js"></script>
+<script src="/js/pass-valid.js"></script>
+<script src="/js/register.js"></script>
+<link rel="stylesheet" href="/fc-form.css">

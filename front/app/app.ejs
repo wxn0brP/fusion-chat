@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="/favicon.svg" type="image/x-icon">
+        <title>Fusion Chat</title>
+        <link rel="stylesheet" href="/style.css">
+        <link rel="stylesheet" href="css/require.css">
+    </head>
+    <body>
+        <noscript class="delete" time="500">This page require JS to work</noscript>
+        <div id="app">
+            <%- include('html/nav') %> 
+            <%- include('html/mess') %> 
+            <%- include('html/context-menu') %> 
+            <%- include('html/pop-up') %> 
+
+            <div id="loadingScreen" class="delete" time="4000">
+                <img id="loadingScreenAnim" src="/assets/hatwoo.svg" alt="Loading..." />
+            </div>
+        </div>
+        <div id="assets" style="display: none;"></div>
+
+        <% const scripts = [
+            "var",
+            "utils",
+            "debug",
+            "ws",
+            "apis",
+            "coreFunc",
+            "uiFunc",
+            
+            "contextMenuLib",
+            "settingsLib",
+            "settingsServerLib",
+            "swipeLib",
+
+            "translate",
+            "format",
+            "mess",
+            "contextMenu",
+            "buttons",
+            "settings",
+            "renders",
+            "voice",
+            
+            "warning",
+            "start",
+            "features",
+
+            "init"
+        ] %>
+        
+        <div id="scripts" style="display: none;">
+            <script src="/core.js"></script>
+            <script src="/libs/json5.min.js"></script>
+            <script src="/libs/socket.io.min.js"></script>
+            <script src="/libs/peerjs.min.js"></script>
+            <% scripts.forEach(script => { %>
+                <script src="js/<%= script %>.js"></script>
+            <% }) %>
+        </div>
+    </body>
+</html>

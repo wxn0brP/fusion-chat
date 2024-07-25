@@ -13,6 +13,8 @@
     --aHover: #98DBC6;
     --border: #5D3FD3;
     --panel: #101111;
+	--accent: #5D3FD3;
+    --accentRGB: 93, 63, 211;
 }
 
 *{

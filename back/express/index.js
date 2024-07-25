@@ -2,9 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
-const fs = require("fs");
 const app = express();
 global.app = app;
+app.set('view engine', 'ejs');
+app.set('views', 'front');
 
 app.use(require("cors")({
     origin: "*"
@@ -50,7 +51,15 @@ app.use((req, res, next) => {
 require("./route");
 
 app.use((req, res) => {
-    res.status(404).send(fs.readFileSync("front/astro/404.html", "utf-8"));
+    res.render("main/404", (err, body) => {
+        if(err) throw err;
+        res.render("layout/main", {
+            layout: {
+                title: "404",
+            },
+            body
+        });
+    });
 });
 
 module.exports = app;
