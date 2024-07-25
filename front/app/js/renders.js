@@ -74,7 +74,7 @@ const renderFunc = {
         userProfileDiv.innerHTML = `
             <img src="${data.img || "/favicon.svg"}" alt="User logo">
             <h1>${data.name}</h1>
-            <p>${data.status} | ${data.statusText}</p>
+            <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
         `.trim();
 
         renderUtils.initPopup(userProfileDiv);
