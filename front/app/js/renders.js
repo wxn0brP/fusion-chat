@@ -96,7 +96,7 @@ const renderFunc = {
         usersDisplayBtn.style.cursor = "pointer";
         usersDisplayBtn.style.fontSize = "1.1rem";
         usersDisplayBtn.addEventListener("click", () => {
-            socket.emit("usersInChat", sid);
+            renderFunc.usersInChat(vars.servers.users.map(u => u.uid));
         })
         navs__groups__name.appendChild(usersDisplayBtn);
 

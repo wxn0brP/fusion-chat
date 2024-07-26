@@ -60,10 +60,11 @@ socket.on("markAsRead", (toR, chnl, id) => {
     }catch{}
 });
 
-socket.on("usersInChat", (data) => {
-    renderFunc.usersInChat(data);
-})
+socket.on("updateDataOfServer", (users, roles) => {
+    vars.servers.users = users;
+    vars.servers.roles = roles;
+});
 
 socket.on("userProfile", (data) => {
     renderFunc.userProfile(data);
-})
+});

@@ -104,15 +104,31 @@ module.exports = (socket) => {
         }
     });
 
-    socket.ontimeout("usersInChat", 1000, async (id) => {
+    socket.ontimeout("updateDataOfServer", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
         
-            const users = await global.db.usersPerms.find(id, (r) => !!r.uid);
-            const usersData = users.map(u => u.uid);
+            const perm = new permissionSystem(id);
+            const roles = await perm.getRoles();
+            const rolesData = roles.map(r => {
+                return {
+                    name: r.name,
+                }
+            });
 
-            socket.emit("usersInChat", usersData);
+            const rolesMap = new Map();
+            for(const role of roles) rolesMap.set(role.rid, role.name);
+
+            const users = await global.db.usersPerms.find(id, (r) => !!r.uid);
+            const usersData = users.map(u => {
+                return {
+                    uid: u.uid,
+                    roles: u.roles.map(r => rolesMap.get(r)),
+                }
+            });
+
+            socket.emit("updateDataOfServer", usersData, rolesData);
         }catch(e){
             socket.logError(e);
         }
