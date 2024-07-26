@@ -335,16 +335,23 @@ class SettingsServerManager{
             });
         }
 
+        this.addSeparator(containerElement, 5);
+        const colorInput = document.createElement('input');
+        colorInput.type = 'color';
+        colorInput.value = role.color || "white";
+        containerElement.appendChild(colorInput);
+
         this.addSeparator(containerElement, 15);
         this.initButton(containerElement, "Save", () => {
-            this.settings.roles.find(r => r === role).name = nameInput.value;
+            role.name = nameInput.value;
+            role.color = colorInput.value;
 
             if(role.p != "all"){
                 const newPerms = [];
                 checkboxs.forEach((checkbox, perm) => {
                     if(checkbox.checked) newPerms.push(perm);
                 })
-                this.settings.roles.find(r => r === role).p = newPerms;
+                role.p = newPerms;
             }
 
             this.renderRoles();
