@@ -42,7 +42,7 @@ module.exports = (socket) => {
         }
     });
 
-    socket.ontimeout("getSeverSettings", 5_00, async (id) => {
+    socket.ontimeout("getSeverSettings", 5_000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
@@ -71,7 +71,7 @@ module.exports = (socket) => {
         }
     });
 
-    socket.ontimeout("setSeverSettings", 5_00, async (id, data) => {
+    socket.ontimeout("setSeverSettings", 5_000, async (id, data) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
@@ -111,11 +111,7 @@ module.exports = (socket) => {
         
             const perm = new permissionSystem(id);
             const roles = await perm.getRoles();
-            const rolesData = roles.map(r => {
-                return {
-                    name: r.name,
-                }
-            });
+            const rolesData = roles.map(({ name, color }) => { return { name, color }});
 
             const rolesMap = new Map();
             for(const role of roles) rolesMap.set(role.rid, role.name);
