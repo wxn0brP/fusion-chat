@@ -46,6 +46,7 @@ const coreFunc = {
             navs__groups.style.display = "block";
             vars.chat.chnl = null;
             socket.emit("setUpServer", id);
+            socket.emit("updateDataOfServer", id);
         }
 
         if(div) div.classList.add((id.startsWith("$") ? "priv" : "group") + "_chatActive");
