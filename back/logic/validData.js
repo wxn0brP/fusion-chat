@@ -85,5 +85,24 @@ module.exports = {
      */
     objAjv(schema){
         return ajv.compile(schema);
+    },
+
+    /**
+     * Check if an id is valid.
+     *
+     * @function
+     * @param {string} id - The id to validate.
+     * @returns {boolean} True if the id is valid, false otherwise.
+     */
+    id(id){
+        if(typeof id !== "string") return false;
+        const parts = id.split("-");
+        if(parts.length != 3) return false;
+
+        const regex = /^[a-z0-9]+$/;
+        for(const part of parts){
+            if(!regex.test(part)) return false;
+        }
+        return true;
     }
 }

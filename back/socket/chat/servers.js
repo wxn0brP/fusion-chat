@@ -11,7 +11,7 @@ module.exports = (socket) => {
     socket.ontimeout("setUpServer", 100, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const serverMeta = await global.db.groupSettings.findOne(id, { _id: "set" });
             const name = serverMeta.name;
@@ -49,7 +49,7 @@ module.exports = (socket) => {
     socket.ontimeout("getSeverSettings", 5_000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const perm = new permissionSystem(id);
             const userPerm = await perm.userPermison(socket.user._id, "admin");
@@ -78,7 +78,7 @@ module.exports = (socket) => {
     socket.ontimeout("setSeverSettings", 5_000, async (id, data) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const perm = new permissionSystem(id);
             const userPerm = await perm.userPermison(socket.user._id, "admin");
@@ -113,7 +113,7 @@ module.exports = (socket) => {
     socket.ontimeout("updateDataOfServer", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
         
             const perm = new permissionSystem(id);
             const roles = await perm.getRoles();
