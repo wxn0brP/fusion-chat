@@ -1,10 +1,8 @@
 if(!localStorage.getItem("token")) window.location = "/login";
 
-(() => {
-    document.querySelectorAll("[loadInner]").forEach(e => {
-        e.innerHTML = cw.get(e.getAttribute("loadInner"));
-    });
-})();
+document.querySelectorAll("[loadInner]").forEach(e => {
+    e.innerHTML = cw.get(e.getAttribute("loadInner"));
+});
 
 window.onload = () => {
     document.querySelectorAll(".delete").forEach(e => {

@@ -40,6 +40,8 @@ const coreFunc = {
             navs__groups.style.display = "none";
             vars.chat.chnl = "main";
             coreFunc.loadChat();
+            vars.servers.users = [];
+            vars.servers.roles = [];
         }else{
             document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeChat(id);
             navs__main.style.display = "none";
