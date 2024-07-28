@@ -1,4 +1,6 @@
 const SchemaC = require("../db/shema");
+const Ajv = require("ajv");
+const ajv = new Ajv();
 
 module.exports = {
     /**
@@ -72,5 +74,16 @@ module.exports = {
         if(!schema) return typeof data == "object" && !Array.isArray(data);
         const validator = new SchemaC(schema);
         return validator.validate(data, false);
+    },
+
+    /**
+     * Validate an object against a provided schema or check if it's a plain object.
+     *
+     * @function
+     * @param {Object} schema - A schema to validate the object against.
+     * @returns {Object} An Ajv schema object.
+     */
+    objAjv(schema){
+        return ajv.compile(schema);
     }
 }
