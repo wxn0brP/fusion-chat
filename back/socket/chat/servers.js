@@ -3,6 +3,10 @@ const permissionSystem = require("../../logic/permission-system");
 const genId = require("../../db/gen");
 const processDbChanges = require("../../logic/processDbChanges");
 
+const validShema = {
+    setServerSettings: valid.objAjv(require("./valid/setServerSettings")),
+}
+
 module.exports = (socket) => {
     socket.ontimeout("setUpServer", 100, async (id) => {
         try{
@@ -79,6 +83,8 @@ module.exports = (socket) => {
             const perm = new permissionSystem(id);
             const userPerm = await perm.userPermison(socket.user._id, "admin");
             if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
+
+            if(!validShema.setServerSettings(data)) return socket.emit("error", "valid data");
 
             const o_categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
             const o_channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
