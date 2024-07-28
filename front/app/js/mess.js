@@ -42,7 +42,7 @@ const messFunc = {
 
         /*
             .mess_message #mess__$id
-                .mess_from
+                .mess_from attr: _author
                 .mess_content attr: _plain
         */
 
@@ -53,6 +53,7 @@ const messFunc = {
 
         const fromDiv = document.createElement("div");
         fromDiv.classList.add("mess_from");
+        fromDiv.setAttribute("_author", data.fr);
         const fromDivSpan = document.createElement("span");
         fromDivSpan.innerHTML = apis.www.changeUserID(data.fr);
         fromDivSpan.addEventListener("click", () => {
@@ -147,6 +148,41 @@ const messFunc = {
             messageFrom.style.display = time - timeBefore < delayTime ? "none" : "block";
         }
     },
+
+    colorRole(){
+        const messages = document.querySelectorAll(".mess_message");
+        const roles = vars.servers.roles;
+        const users = vars.servers.users;
+        const userColor = new Map();
+
+        messages.forEach(mess => {
+            const author = mess.querySelector(".mess_from").getAttribute("_author");
+
+            if(userColor.has(author)){
+                messFunc.colorRoleMess(mess, userColor.get(author));
+                return;
+            }
+
+            const user = users.find(u => u.uid == author);
+            if(!user) return;
+            let color;
+
+            for(let i=0; i<roles.length; i++){
+                if(user.roles.includes(roles[i].name)){
+                    color = roles[i].color;
+                    userColor.set(author, color);
+                    messFunc.colorRoleMess(mess, color);
+                    return;
+                }
+            }
+            messFunc.colorRoleMess(mess, "");
+        });
+    },
+
+    colorRoleMess(mess, color){
+        const span = mess.querySelector(".mess_from > span");
+        span.style.color = color;
+    }
 }
 
 messFunc.replyClose();
@@ -193,6 +229,7 @@ socket.on("mess", (data) => {
     vars.lastMess[tom][vars.chat.chnl].read = data._id;
     renderFunc.privs();
     messFunc.hideFromMessageInfo();
+    messFunc.colorRole();
 });
 
 socket.on("getMess", (data) => {
@@ -222,6 +259,7 @@ socket.on("getMess", (data) => {
         div.innerHTML = `<span style="color: red;">"Failed to load the message! :("</span>`;
         messagesDiv.add(div);
     }
+    messFunc.colorRole();
 });
 
 socket.on("deleteMess", (id) => {
