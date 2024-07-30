@@ -42,6 +42,9 @@ const coreFunc = {
             coreFunc.loadChat();
             vars.servers.users = [];
             vars.servers.roles = [];
+            vars.servers.text = [];
+            messInput.placeholder = translateFunc.get("Write message here") + "...";
+            messInput.disabled = false;
         }else{
             document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeChat(id);
             navs__main.style.display = "none";
@@ -62,6 +65,15 @@ const coreFunc = {
         document.querySelector("#channel_"+id).classList.add("channel_textActive");
         
         coreFunc.loadChat();
+
+        const isText = vars.servers.text.includes(id);
+        if(isText){
+            messInput.placeholder = translateFunc.get("Write message here") + "...";
+            messInput.disabled = false;
+        }else{
+            messInput.placeholder = translateFunc.get("You can't write in this channel") + "!";
+            messInput.disabled = true;
+        }
     },
 
     loadChat(){

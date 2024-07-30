@@ -15,6 +15,9 @@ module.exports = (socket) => {
 
             const serverMeta = await global.db.groupSettings.findOne(id, { _id: "set" });
             const name = serverMeta.name;
+            const permission = new permissionSystem(id);
+            const roles = await permission.getUserRoles(socket.user._id);
+            const admin = await permission.userPermison(socket.user._id, "all");
 
             const buildChannels = [];
             const categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
@@ -26,13 +29,29 @@ module.exports = (socket) => {
                 let chnls = channels.filter(c => c.category == category.cid);
                 chnls = chnls.sort((a, b) => a.i - b.i);
                 chnls = chnls.map(c => {
+                    const visables = [];
+                    const texts = [];
+                    const alt = c.rp.length == 0 || admin;
+
+                    c.rp.forEach(rp => {
+                        const [id, p] = rp.split("/");
+                        if(p == "visible") visables.push(id);
+                        if(p == "text") texts.push(id);
+                    });
+
+                    const visable = alt || visables.some(id => roles.includes(id));
+                    if(!visable) return null;
+
+                    const text = alt || texts.some(id => roles.includes(id));
                     return {
                         id: c.chid,
                         name: c.name,
                         type: c.type,
+                        text,
                     }
-                });
+                }).filter(c => !!c);
 
+                if(chnls.length == 0) continue;
                 buildChannels.push({
                     id: category.cid,
                     name: category.name,
