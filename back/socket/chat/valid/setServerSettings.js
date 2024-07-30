@@ -6,9 +6,10 @@ module.exports = {
             properties: {
                 name: { type: "string" },
                 owner: { type: "string" },
-                _id: { type: "string" }
+                _id: { type: "string" },
             },
-            required: ["name", "owner", "_id"]
+            required: ["name", "owner", "_id"],
+            additionalProperties: false
         },
         categories: {
             type: "array",
@@ -19,7 +20,8 @@ module.exports = {
                     name: { type: "string" },
                     i: { type: "number" }
                 },
-                required: ["cid", "name", "i"]
+                required: ["cid", "name", "i"],
+                additionalProperties: false
             }
         },
         channels: {
@@ -31,9 +33,14 @@ module.exports = {
                     name: { type: "string" },
                     type: { type: "string", enum: ["text", "voice"] },
                     category: { type: "string" },
-                    i: { type: "number" }
+                    i: { type: "number" },
+                    rp: {
+                        type: "array",
+                        items: { type: "string", channelRP: true },
+                    }
                 },
-                required: ["chid", "name", "type", "category", "i"]
+                required: ["chid", "name", "type", "category", "i", "rp"],
+                additionalProperties: false
             }
         },
         roles: {
@@ -46,13 +53,14 @@ module.exports = {
                     parent: { type: "string" },
                     p: {
                         anyOf: [
-                            { type: "string" },
-                            { type: "array", items: { type: "string" } }
+                            { type: "string", enum: ["all"] },
+                            { type: "array", items: { type: "string", enum: ["text", "voice", "menage text", "menage server"] } }
                         ]
                     },
                     color: { type: "string" }
                 },
-                required: ["rid", "name", "parent", "p"]
+                required: ["rid", "name", "parent", "p"],
+                additionalProperties: false
             }
         },
         users: {
@@ -66,9 +74,11 @@ module.exports = {
                         items: { type: "string" }
                     }
                 },
-                required: ["uid", "roles"]
+                required: ["uid", "roles"],
+                additionalProperties: false
             }
         }
     },
-    required: ["meta", "categories", "channels", "roles", "users"]
+    required: ["meta", "categories", "channels", "roles", "users"],
+    additionalProperties: false
 };
