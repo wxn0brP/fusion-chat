@@ -106,3 +106,19 @@ module.exports = {
         return true;
     }
 }
+
+ajv.addKeyword({
+    keyword: "channelRP",
+    type: 'string',
+    compile: function(schema, parentSchema){
+        return function(data) {
+            const parts = data.split('/');
+            if(parts.length !== 2) return false;
+            
+            const [id, perm] = parts;
+            const validPerms = ["text", "visable"];
+
+            return module.exports.id(id) && validPerms.includes(perm);
+        };
+    },
+});

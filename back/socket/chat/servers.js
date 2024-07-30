@@ -95,8 +95,8 @@ module.exports = (socket) => {
             const n_roles = processRolesIds(data.roles);
 
             const categoriesChanges = processDbChanges(o_categories, pcaci.categories, ["name","i"], "cid");
-            const channelsChanges = processDbChanges(o_channels, pcaci.channels, ["name","i"], "chid");
-            const rolesChanges = processDbChanges(o_roles, n_roles, ["rid", "parent", "name", "color"], "rid");
+            const channelsChanges = processDbChanges(o_channels, pcaci.channels, ["name","i","rp"], "chid");
+            const rolesChanges = processDbChanges(o_roles, n_roles, ["rid", "parent", "name", "color", "p"], "rid");
             const usersChanges = processDbChanges(o_users, data.users, ["uid", "roles"], "uid");
 
             await saveDbChanges(id, categoriesChanges, "cid");

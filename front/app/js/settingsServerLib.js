@@ -112,7 +112,8 @@ class SettingsServerManager{
                     name: name || "New Channel",
                     type: type || "text",
                     category: category.cid,
-                    i: channels.filter(channel => channel.category === category.cid).length
+                    i: channels.filter(channel => channel.category === category.cid).length,
+                    rp: []
                 };
                 this.settings.channels.push(newChannel);
                 this.renderChannels(); 
@@ -187,10 +188,43 @@ class SettingsServerManager{
         containerElement.innerHTML = '<h1>Edit channel</h1>';
 
         const nameInp = this.initInputText(containerElement, 'Name', channel.name);
+        const _this = this;
+
+        const allPerm = [
+            "text",
+            "visable",
+        ];
+
+        function renderRole(role){
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.innerHTML = role.name;
+            details.appendChild(summary);
+
+            allPerm.forEach(perm => {
+                const checkbox = _this.initCheckbox(details, perm, false);
+                checkbox.checked = channel.rp.includes(role.rid + "/" + perm);
+                checkbox.setAttribute('data-role', role.rid);
+                checkbox.setAttribute('data-perm', perm);
+            });
+            containerElement.appendChild(details);
+            _this.addSeparator(details, 5);
+        }
+
+        this.settings.roles.forEach(renderRole);
 
         this.addSeparator(containerElement, 15);
         this.initButton(containerElement, "Save", () => {
-            this.settings.channels.find(ch => ch === channel).name = nameInp.value;
+            channel.name = nameInp.value;
+            channel.rp = [];
+
+            containerElement.querySelectorAll("input[type=checkbox][data-role][data-perm]").forEach(checkbox => {
+                if(!checkbox.checked) return;
+                const role = checkbox.getAttribute('data-role');
+                const perm = checkbox.getAttribute('data-perm');
+                channel.rp.push(role + "/" + perm);
+            });
+
             this.renderChannels();
             containerElement.fadeOut();
         });
@@ -326,8 +360,8 @@ class SettingsServerManager{
             const allPerms = [
                 "text",
                 "voice",
-                "manage channels",
-                "manage roles",
+                "manage text",
+                "manage server",
             ];
             allPerms.forEach(perm => {
                 const checkbox = this.initCheckbox(containerElement, perm, role.p.includes(perm));
