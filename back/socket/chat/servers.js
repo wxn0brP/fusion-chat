@@ -110,7 +110,7 @@ module.exports = (socket) => {
         }
     });
 
-    socket.ontimeout("updateDataOfServer", 1000, async (id) => {
+    socket.ontimeout("syncUserRoles", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
@@ -130,7 +130,7 @@ module.exports = (socket) => {
                 }
             });
 
-            socket.emit("updateDataOfServer", usersData, rolesData);
+            socket.emit("syncUserRoles", usersData, rolesData);
         }catch(e){
             socket.logError(e);
         }

@@ -60,7 +60,7 @@ socket.on("markAsRead", (toR, chnl, id) => {
     }catch{}
 });
 
-socket.on("updateDataOfServer", (users, roles) => {
+socket.on("syncUserRoles", (users, roles) => {
     vars.servers.users = users;
     vars.servers.roles = roles;
 });
