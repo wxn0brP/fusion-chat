@@ -105,6 +105,8 @@ module.exports = (socket) => {
             for(const item of usersChanges.itemsToUpdate) await global.db.usersPerms.update(id, (u) => u.uid == item.uid, item);
 
             await global.db.groupSettings.updateOne(id, { _id: "set" }, data.meta);
+
+            global.sendToChatUsers(id, "refreshData", id, "*", ["setUpServer", "syncUserRoles"], id);
         }catch(e){
             socket.logError(e);
         }
