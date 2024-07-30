@@ -136,6 +136,7 @@ const renderFunc = {
     
             channels.forEach(channel => {
                 buildChannel(channel.name, channel.id, channel.type, detail);
+                vars.servers.text.push(channel.id);
             });
             root.appendChild(detail);
         }
@@ -147,6 +148,7 @@ const renderFunc = {
             return;
         }
 
+        vars.servers.text = [];
         categories.forEach(category => {
             buildCategory(category.name, category.chnls, navs__groups__channels);
         });
