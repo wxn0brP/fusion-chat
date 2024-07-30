@@ -68,3 +68,16 @@ socket.on("syncUserRoles", (users, roles) => {
 socket.on("userProfile", (data) => {
     renderFunc.userProfile(data);
 });
+
+socket.on("refreshData", (server, chnl, evt, ...moreData) => {
+    if(server != vars.chat.to && server !== "*") return;
+    if(chnl != vars.chat.chnl && chnl !== "*") return;
+
+    if(typeof evt == "string"){
+        evt = [evt];
+    }
+
+    evt.forEach(e => {
+        socket.emit(e, ...moreData);
+    });
+})
