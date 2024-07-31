@@ -75,7 +75,7 @@ app.use((req, res) => {
         if(err) throw err;
         res.render("layout/main", {
             layout: {
-                title: "404",
+                title: "Fusion Chat | Page Not Found",
             },
             body
         });
