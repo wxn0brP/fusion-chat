@@ -106,6 +106,10 @@ const renderFunc = {
                 if(type == "text"){
                     coreFunc.changeChnl(cid);
                 }else if(type == "voice"){
+                    if(!vars.servers.text.includes(cid)){
+                        uiFunc.uiMsg(translateFunc.get("You can't have permission to join this voice channel") + "!");
+                        return;
+                    }
                     voiceFunc.joinToVoiceChannel(sid+"="+cid);
                 }
             };
@@ -136,7 +140,7 @@ const renderFunc = {
     
             channels.forEach(channel => {
                 buildChannel(channel.name, channel.id, channel.type, detail);
-                vars.servers.text.push(channel.id);
+                if(channel.text) vars.servers.text.push(channel.id);
             });
             root.appendChild(detail);
         }

@@ -23,5 +23,6 @@
 "Save":"Zapisz",
 "Exit without save":"Wyjdź bez zapisania",
 "Write message here":"Wpisz wiadomość tutaj",
-"You can't write in this channel":"Nie można pisć w tym kanału"
+"You can't write in this channel":"Nie można pisć w tym kanału",
+"You can't have permission to join this voice channel":"Nie może mieć uprawnien do dołączenia do tego głosowego kanału"
 }

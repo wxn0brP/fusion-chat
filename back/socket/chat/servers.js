@@ -35,7 +35,7 @@ module.exports = (socket) => {
 
                     c.rp.forEach(rp => {
                         const [id, p] = rp.split("/");
-                        if(p == "visible") visables.push(id);
+                        if(p == "visable") visables.push(id);
                         if(p == "text") texts.push(id);
                     });
 
