@@ -41,6 +41,12 @@ module.exports = (socket) => {
             }else{
                 if(!chatMgmt.chatExsists(to)) return socket.emit("error", "chat is not exists - getMess");
             }
+
+            if(!friendChat){
+                const perm = await getChnlPerm(socket.user._id, to, chnl); 
+                if(!perm.visable) return socket.emit("error", "channel is not exists - getMess");
+                if(!perm.text) return socket.emit("error", "not perm to write - getMess");
+            }
     
             let message = msg.trim();
             if(msg.length > 500) return socket.emit("error", "msg is too long - getMess");
@@ -195,6 +201,11 @@ module.exports = (socket) => {
                 to = chatMgmt.combinateId(p1, p2);
             }
 
+            if(!friendChat){
+                const perm = await getChnlPerm(socket.user._id, to, chnl);
+                if(!perm.visable) return socket.emit("error", "channel is not exist");
+            }
+
             const responeAll = await global.db.mess.find(to, { chnl }, { reverse: true, max: end+start });
             const respone = responeAll.slice(start, end);
 
@@ -241,4 +252,32 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
+}
+
+global.getChnlPerm = async function(user, server, chnl){
+    const permission = new permissionSystem(server);
+    const channel = await global.db.groupSettings.findOne(server, c => c.chid == chnl);
+    if(!channel) return {
+        visable: false,
+        text: false
+    };
+
+    const userRoles = await permission.getUserRoles(user);
+    const alt = channel.rp.length == 0 || await permission.userPermison(user, "all");
+
+    const visables = [];
+    const texts = [];
+    channel.rp.forEach(rp => {
+        const [id, p] = rp.split("/");
+        if(p == "visable") visables.push(id);
+        if(p == "text") texts.push(id);
+    });
+
+    const visable = alt || visables.some(id => userRoles.includes(id));
+    const text = alt || texts.some(id => userRoles.includes(id));
+
+    return {
+        visable,
+        text
+    };
 }
