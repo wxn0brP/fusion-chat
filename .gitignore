@@ -4,6 +4,7 @@ data
 config
 .vscode
 app-test
+userFiles
 
 # files
 .env

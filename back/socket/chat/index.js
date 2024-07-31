@@ -4,6 +4,7 @@ const servers = require("./servers");
 const voice = require("./voice");
 const settings = require("./settings");
 const chats = require("./chats");
+const evt = require("./evt");
 
 const tmpBan = new Map();
 
@@ -97,4 +98,5 @@ io.of("/").on("connection", (socket) => {
     voice(socket);
     settings(socket);
     chats(socket);
+    evt(socket);
 });
