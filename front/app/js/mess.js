@@ -6,6 +6,7 @@ const editCloseDiv = document.querySelector("#editClose");
 const sendBtn = document.querySelector("#barc__sendBtn");
 const sendBtnImg = document.querySelector("#barc__sendBtn__img");
 const emocjiDiv = document.querySelector("#emocjiDiv");
+const linkClickDiv = document.querySelector("#linkClick");
 
 const maxMessLen = 2000; 
 const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
@@ -109,6 +110,24 @@ const messFunc = {
 
         sendBtnImg.style.setProperty("--fil", prop);
         sendBtn.disabled = len == 0 || len > maxMessLen;
+    },
+
+    linkClick(e){
+        e.preventDefault();
+        const url = e.target.getAttribute("href");
+        if(!url) return;
+
+        const urlParts = url.split("/");
+        const urlClored =
+            urlParts[0] + "//" +
+            "<span>" + urlParts[2] + "</span>" +
+            "/" + urlParts.slice(3).join("/")
+        
+        linkClickDiv.fadeIn();
+        linkClickDiv.querySelector("#linkClick_link").innerHTML = urlClored;
+        linkClickDiv.querySelector("#linkClick_yes").addEventListener("click", () => {
+            window.open(url, "_blank");
+        })
     },
 
     emocji(){

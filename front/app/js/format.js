@@ -26,7 +26,7 @@ const format = {
         text = text.replace(/--(.*?)--/g, '<strike>$1</strike>');
         text = text.replace(/__(.*?)__/g, '<u>$1</u>');
 
-        text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" onclick="linkClick(event)">$1</a>');
+        text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" onclick="messFunc.linkClick(event)">$1</a>');
         text = text.replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>');
 
         text = text.replace(/##([0-9A-Fa-f]{3,6})\s(.*?)\s#c/g, '<span style="color:#$1">$2</span>');
