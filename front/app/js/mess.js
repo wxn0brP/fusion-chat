@@ -182,7 +182,80 @@ const messFunc = {
     colorRoleMess(mess, color){
         const span = mess.querySelector(".mess_from > span");
         span.style.color = color;
-    }
+    },
+
+    sendFile(f){
+        if(f){
+            read(f);
+        }else{
+            const input = document.createElement("input");
+            input.type = "file";
+            input.click();
+            input.addEventListener("change", e => read(e.target.files[0]));
+        }
+    
+        function read(file){
+            if(file.size > 8 * 1024 * 1024){
+                uiFunc.uiMsg(translateFunc.get('File size exceeds 8MB limit') + ".");
+                return;
+            }
+            if(file.name.length > 60){
+                uiFunc.uiMsg(translateFunc.get('File name exceeds 60 char limit') + ".");
+                return;
+            }
+        
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const fileData = {
+                    name: file.name,
+                    size: file.size,
+                    data: event.target.result
+                };
+        
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/uploadFile");
+        
+                xhr.onload = () => {
+                    debugFunc.msg(JSON.parse(xhr.responseText));
+                    if(xhr.status === 200){
+                        uiFunc.uiMsg(translateFunc.get('File uploaded successfully') + ".");
+                        const path = JSON.parse(xhr.responseText).path;
+                        const mess = location.origin + path;
+                        
+                        const data = {
+                            to: vars.chat.to,
+                            chnl: vars.chat.chnl,
+                            msg: mess,
+                        }
+                        socket.emit("mess", data);
+                    }else{
+                        uiFunc.uiMsg(translateFunc.get('Failed to upload file') + ": " + xhr.statusText);
+                    }
+                };
+        
+                xhr.onerror = () => {
+                    uiFunc.uiMsg(translateFunc.get('An error occurred during the file upload') + ".");
+                };
+
+                const token = localStorage.getItem('token');
+                if(!token){
+                    uiFunc.uiMsg(translateFunc.get('No authentication token found') + ".");
+                    return;
+                }
+        
+                xhr.setRequestHeader("Authorization", token);
+        
+                const formData = new FormData();
+                formData.append("file", new Blob([fileData.data]), fileData.name);
+                formData.append("name", fileData.name);
+                formData.append("size", fileData.size);
+        
+                xhr.send(formData);
+            };
+        
+            reader.readAsArrayBuffer(file);
+        }        
+    },
 }
 
 messFunc.replyClose();
@@ -301,6 +374,41 @@ socket.on("editMess", (id, msg, time) => {
             div.className = 'emocji';
             div.onclick = () => messFunc.handleEmocji(emoticon);
             emoticonMenu.appendChild(div);
+        }
+    });
+})();
+
+messInput.addEventListener("paste", function(e){
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    
+    for(const item of items){
+        if(item.type.indexOf("image") === -1) continue;
+        e.preventDefault();
+        messFunc.sendFile(item.getAsFile())
+    };
+});
+
+(function initDragAndDrop(){
+    const app = document.querySelector("#app");
+    app.addEventListener("dragover", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    app.addEventListener("dragenter", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    app.addEventListener("drop", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+
+        if(vars.chat.to == "main") return;
+
+        const files = e.dataTransfer.files;
+        for(const file of files){
+            messFunc.sendFile(file);
         }
     });
 })();

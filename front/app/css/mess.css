@@ -28,7 +28,7 @@ main{
 }
 
 #mess-input{
-    width: calc(100% - 5rem);
+    width: calc(100% - 120px);
     height: 40px;
     border: none;
     border-radius: 10px;
@@ -43,7 +43,7 @@ main{
 }
 
 #barc__others{
-    width: 80px;
+    width: 110px;
     height: 50px;
     display: flex;
     align-items: center;
@@ -55,6 +55,8 @@ main{
     cursor: pointer;
     background-color: var(--menu);
     color: var(--txt);
+    margin-left: 7px;
+    padding-top: 2px;
 }
 
 .mess_message{
@@ -132,7 +134,7 @@ main{
     font-family: 'emocji';
 }
 
-#barc__emocji{
+#barc__emocji, #barc__sendFile{
     width: 2.5rem;
     border: none;
     cursor: pointer;

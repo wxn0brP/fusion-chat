@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
+const { auth } = require('../logic/auth');
 const app = express();
 global.app = app;
 app.set('view engine', 'ejs');
@@ -29,6 +30,7 @@ app.use("/", express.static("front/public"));
 app.use("/assets", express.static("front/assets"));
 app.use("/app", express.static("front/app"));
 app.use("/meta", express.static("front/meta"));
+app.use("/userFiles", express.static("userFiles"));
 
 //parser
 app.use(cookieParser());
@@ -47,6 +49,25 @@ app.use((req, res, next) => {
     req.session = session;
     next();
 });
+
+global.authenticateMiddleware = async (req, res, next) => {
+    const token = req.headers['authorization'];
+    if(!token){
+        return res.status(401).json({ err: true, msg: 'Access denied. No token provided.' });
+    }
+
+    try{
+        const user = await auth(token);
+        if(!user){
+            return res.status(401).json({ err: true, msg: 'Invalid token.' });
+        }
+        req.user = user._id;
+        next();
+    }catch(err){
+        res.status(500).json({ err: true, msg: 'An error occurred during authentication.' });
+    }
+};
+
 require("./route");
 
 app.use((req, res) => {
