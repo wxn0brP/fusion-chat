@@ -1,8 +1,6 @@
 main{
-    float: left;
-    width: calc(100vw - 290px);
-    height: 100vh;
-
+    flex-grow: 1;
+    height: 100%;
 }
 
 #messages{
