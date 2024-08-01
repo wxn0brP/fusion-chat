@@ -2,7 +2,6 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const genId = require('../../db/gen');
-const valid = require('../../logic/validData');
 
 const config = require("../../../config/file");
 const uploadDir = 'userFiles';
@@ -42,20 +41,9 @@ const upload = multer({
     limits: { fileSize: config.maxFileSize }
 }).single('file');
 
-function deleteFile(req){
-    const file = req.file;
-    const filePath = path.join(file.destination, file.filename)
-    fs.unlink(filePath, (err) => {
-        if(!err) return;
-        lo(err);
-        global.db.logs.add("error", err);
-    });
-}
-
 app.post('/uploadFile', global.authenticateMiddleware, limitUploads, (req, res) => {
     upload(req, res, (err) => {
         if(err){
-            deleteFile(req);
             if(err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE'){
                 return res.status(400).json({ err: true, msg: 'File size exceeds ' + config.maxFileSize/1024/1024 + 'MB limit.' });
             }
@@ -63,19 +51,6 @@ app.post('/uploadFile', global.authenticateMiddleware, limitUploads, (req, res) 
         }
 
         const file = req.file;
-        const { name, size } = req.body;
-        const parsedSize = parseInt(size, 10);
-        
-        if(!valid.str(name, 1, 60) || !valid.num(parsedSize, 0, config.maxFileSize)){
-            deleteFile(req);
-            return res.status(400).json({ err: true, msg: 'Invalid metadata.' });
-        }
-
-        if(file.size != parsedSize || file.originalname != name){
-            deleteFile(req);
-            return res.status(400).json({ err: true, msg: 'Metadata does not match the file.' });
-        }
-
         const filePath = "/" + path.join(file.destination, file.filename);
 
         res.json({ err: false, msg: 'File uploaded successfully.', path: filePath });

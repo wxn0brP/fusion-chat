@@ -212,68 +212,29 @@ const messFunc = {
             input.click();
             input.addEventListener("change", e => read(e.target.files[0]));
         }
-    
-        function read(file){
-            if(file.size > 8 * 1024 * 1024){
-                uiFunc.uiMsg(translateFunc.get("File size exceeds $ limit", "8MB") + ".");
-                return;
-            }
-            if(file.name.length > 60){
-                uiFunc.uiMsg(translateFunc.get("File name exceeds $ char limit", 60) + ".");
-                return;
-            }
-        
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const fileData = {
-                    name: file.name,
-                    size: file.size,
-                    data: event.target.result
-                };
-        
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "/uploadFile");
-        
-                xhr.onload = () => {
-                    debugFunc.msg(JSON.parse(xhr.responseText));
-                    if(xhr.status === 200){
-                        uiFunc.uiMsg(translateFunc.get("File uploaded successfully") + ".");
-                        const path = JSON.parse(xhr.responseText).path;
-                        const mess = location.origin + path;
-                        
-                        const data = {
-                            to: vars.chat.to,
-                            chnl: vars.chat.chnl,
-                            msg: mess,
-                        }
-                        socket.emit("mess", data);
-                    }else{
-                        uiFunc.uiMsg(translateFunc.get("Failed to upload file") + ": " + xhr.statusText);
-                    }
-                };
-        
-                xhr.onerror = () => {
-                    uiFunc.uiMsg(translateFunc.get("An error occurred during the file upload") + ".");
-                };
 
-                const token = localStorage.getItem("token");
-                if(!token){
-                    uiFunc.uiMsg(translateFunc.get("No authentication data found") + ".");
-                    return;
-                }
-        
-                xhr.setRequestHeader("Authorization", token);
-        
-                const formData = new FormData();
-                formData.append("file", new Blob([fileData.data]), fileData.name);
-                formData.append("name", fileData.name);
-                formData.append("size", fileData.size);
-        
-                xhr.send(formData);
-            };
-        
-            reader.readAsArrayBuffer(file);
-        }        
+        function read(f){
+            const opt = {
+                file: f,
+                callback: (xhr) => {
+                    const path = JSON.parse(xhr.responseText).path;
+                    const mess = location.origin + path;
+                    
+                    const data = {
+                        to: vars.chat.to,
+                        chnl: vars.chat.chnl,
+                        msg: mess,
+                    }
+                    socket.emit("mess", data);
+                },
+                maxSize: 8*1024*1024,
+                maxName: 60,
+                endpoint: "/uploadFile"
+            }
+
+            fileFunc.read(opt);
+        }
+    
     },
 }
 
