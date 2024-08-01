@@ -36,7 +36,8 @@ const translateFunc = {
         });
     },
 
-    get(text){
-        return this.locale[text] || text;
+    get(text, ...data){
+        text = this.locale[text] || text;
+        return text.replace(/\$/g, () => data.shift() || '$') 
     },
 }

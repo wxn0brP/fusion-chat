@@ -215,11 +215,11 @@ const messFunc = {
     
         function read(file){
             if(file.size > 8 * 1024 * 1024){
-                uiFunc.uiMsg(translateFunc.get('File size exceeds 8MB limit') + ".");
+                uiFunc.uiMsg(translateFunc.get("File size exceeds $ limit", "8MB") + ".");
                 return;
             }
             if(file.name.length > 60){
-                uiFunc.uiMsg(translateFunc.get('File name exceeds 60 char limit') + ".");
+                uiFunc.uiMsg(translateFunc.get("File name exceeds $ char limit", 60) + ".");
                 return;
             }
         
@@ -237,7 +237,7 @@ const messFunc = {
                 xhr.onload = () => {
                     debugFunc.msg(JSON.parse(xhr.responseText));
                     if(xhr.status === 200){
-                        uiFunc.uiMsg(translateFunc.get('File uploaded successfully') + ".");
+                        uiFunc.uiMsg(translateFunc.get("File uploaded successfully") + ".");
                         const path = JSON.parse(xhr.responseText).path;
                         const mess = location.origin + path;
                         
@@ -248,17 +248,17 @@ const messFunc = {
                         }
                         socket.emit("mess", data);
                     }else{
-                        uiFunc.uiMsg(translateFunc.get('Failed to upload file') + ": " + xhr.statusText);
+                        uiFunc.uiMsg(translateFunc.get("Failed to upload file") + ": " + xhr.statusText);
                     }
                 };
         
                 xhr.onerror = () => {
-                    uiFunc.uiMsg(translateFunc.get('An error occurred during the file upload') + ".");
+                    uiFunc.uiMsg(translateFunc.get("An error occurred during the file upload") + ".");
                 };
 
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem("token");
                 if(!token){
-                    uiFunc.uiMsg(translateFunc.get('No authentication token found') + ".");
+                    uiFunc.uiMsg(translateFunc.get("No authentication data found") + ".");
                     return;
                 }
         

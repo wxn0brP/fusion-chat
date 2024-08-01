@@ -59,7 +59,7 @@ io.of("/").on("connection", (socket) => {
                     });
                     if(lastTime.i == 5){
                         const t = Math.ceil(timeout/1000*penalty+1);
-                        socket.emit("error", `Detected spam. Please wait ${t} seconds and try again. Your behavior has been logged.`);
+                        socket.emit("error", `Detected spam. Please wait $ seconds and try again. Your behavior has been logged.`, t);
                         global.db.logs.add("spam", {
                             user: socket.user._id,
                             evt,

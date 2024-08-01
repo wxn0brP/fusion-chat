@@ -18,8 +18,8 @@ socket.on("connect", () => {
     socket.emit("getPrivs");
 });
 
-socket.on("error", (...data) => {
-    uiFunc.uiMsg(data.join("<br />"));
+socket.on("error", (text, ...data) => {
+    uiFunc.uiMsg(translateFunc.get(text, ...data));
     debugFunc.msg(...data)
 });
 
