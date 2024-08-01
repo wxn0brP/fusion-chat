@@ -6,9 +6,13 @@ function dir(path){
 function file(path, value="", prefix="config/"){
     if(!fs.existsSync(prefix+path)) fs.writeFileSync(prefix+path, value);
 }
+function preFile(path, pre, prefix="config/"){
+    if(!fs.existsSync(prefix+path)) fs.copyFileSync("back/config-base/"+pre+".js", prefix+path);
+}
 
 dir("data");
 dir("config");
 dir("userFiles");
 file("banedIP.json", "[]");
 file("mailConfig.json", "{}");
+preFile("file.js", "file");
