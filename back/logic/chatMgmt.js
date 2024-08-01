@@ -73,6 +73,7 @@ async function createChat(name, ownerId){
         type: "text",
         category: categoryId,
         i: 0,
+        rp: []
     }, false);
 
     await global.db.groupSettings.add(chatId, {
@@ -81,6 +82,7 @@ async function createChat(name, ownerId){
         type: "voice",
         category: categoryId,
         i: 1,
+        rp: []
     }, false);
 
     await global.db.mess.checkFile(chatId);
