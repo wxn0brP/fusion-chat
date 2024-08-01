@@ -18,8 +18,8 @@ socket.on("connect", () => {
     socket.emit("getPrivs");
 });
 
-socket.on("error", (...data) => {
-    uiFunc.uiMsg(data.join("<br />"));
+socket.on("error", (text, ...data) => {
+    uiFunc.uiMsg(translateFunc.get(text, ...data));
     debugFunc.msg(...data)
 });
 
@@ -60,7 +60,7 @@ socket.on("markAsRead", (toR, chnl, id) => {
     }catch{}
 });
 
-socket.on("updateDataOfServer", (users, roles) => {
+socket.on("syncUserRoles", (users, roles) => {
     vars.servers.users = users;
     vars.servers.roles = roles;
 });
@@ -68,3 +68,16 @@ socket.on("updateDataOfServer", (users, roles) => {
 socket.on("userProfile", (data) => {
     renderFunc.userProfile(data);
 });
+
+socket.on("refreshData", (server, chnl, evt, ...moreData) => {
+    if(server != vars.chat.to && server !== "*") return;
+    if(chnl != vars.chat.chnl && chnl !== "*") return;
+
+    if(typeof evt == "string"){
+        evt = [evt];
+    }
+
+    evt.forEach(e => {
+        socket.emit(e, ...moreData);
+    });
+})

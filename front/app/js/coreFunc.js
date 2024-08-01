@@ -40,13 +40,18 @@ const coreFunc = {
             navs__groups.style.display = "none";
             vars.chat.chnl = "main";
             coreFunc.loadChat();
+            vars.servers.users = [];
+            vars.servers.roles = [];
+            vars.servers.text = [];
+            messInput.placeholder = translateFunc.get("Write message here") + "...";
+            messInput.disabled = false;
         }else{
             document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeChat(id);
             navs__main.style.display = "none";
             navs__groups.style.display = "block";
             vars.chat.chnl = null;
             socket.emit("setUpServer", id);
-            socket.emit("updateDataOfServer", id);
+            socket.emit("syncUserRoles", id);
         }
 
         if(div) div.classList.add((id.startsWith("$") ? "priv" : "group") + "_chatActive");
@@ -60,6 +65,15 @@ const coreFunc = {
         document.querySelector("#channel_"+id).classList.add("channel_textActive");
         
         coreFunc.loadChat();
+
+        const isText = vars.servers.text.includes(id);
+        if(isText){
+            messInput.placeholder = translateFunc.get("Write message here") + "...";
+            messInput.disabled = false;
+        }else{
+            messInput.placeholder = translateFunc.get("You can't write in this channel") + "!";
+            messInput.disabled = true;
+        }
     },
 
     loadChat(){

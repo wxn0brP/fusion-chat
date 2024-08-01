@@ -45,7 +45,7 @@ module.exports = (socket) => {
     socket.ontimeout("exitGroup", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
 
             await chatMgmt.exitChat(id, socket.user._id);
         }catch(e){
@@ -81,7 +81,7 @@ module.exports = (socket) => {
     socket.ontimeout("joinGroup", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const exists = await global.db.userDatas.findOne(socket.user._id, { group: id });
             if(exists) return socket.emit("error", "already in group");
@@ -95,7 +95,7 @@ module.exports = (socket) => {
     socket.ontimeout("userProfile", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(id, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const userN = await global.db.data.findOne("user", { _id: id });
             if(!userN) return socket.emit("error", "user not found");

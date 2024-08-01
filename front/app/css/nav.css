@@ -1,7 +1,11 @@
-nav{
-    float: left;
-    width: 290px;
+#app{
+    display: flex;
     height: 100vh;
+}
+
+nav{
+    width: 290px;
+    height: 100%;
     background-color: var(--panel);
 }
 

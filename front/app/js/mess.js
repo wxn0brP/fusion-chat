@@ -6,6 +6,7 @@ const editCloseDiv = document.querySelector("#editClose");
 const sendBtn = document.querySelector("#barc__sendBtn");
 const sendBtnImg = document.querySelector("#barc__sendBtn__img");
 const emocjiDiv = document.querySelector("#emocjiDiv");
+const linkClickDiv = document.querySelector("#linkClick");
 
 const maxMessLen = 2000; 
 const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
@@ -42,7 +43,7 @@ const messFunc = {
 
         /*
             .mess_message #mess__$id
-                .mess_from
+                .mess_from attr: _author
                 .mess_content attr: _plain
         */
 
@@ -53,6 +54,7 @@ const messFunc = {
 
         const fromDiv = document.createElement("div");
         fromDiv.classList.add("mess_from");
+        fromDiv.setAttribute("_author", data.fr);
         const fromDivSpan = document.createElement("span");
         fromDivSpan.innerHTML = apis.www.changeUserID(data.fr);
         fromDivSpan.addEventListener("click", () => {
@@ -110,6 +112,24 @@ const messFunc = {
         sendBtn.disabled = len == 0 || len > maxMessLen;
     },
 
+    linkClick(e){
+        e.preventDefault();
+        const url = e.target.getAttribute("href");
+        if(!url) return;
+
+        const urlParts = url.split("/");
+        const urlClored =
+            urlParts[0] + "//" +
+            "<span>" + urlParts[2] + "</span>" +
+            "/" + urlParts.slice(3).join("/")
+        
+        linkClickDiv.fadeIn();
+        linkClickDiv.querySelector("#linkClick_link").innerHTML = urlClored;
+        linkClickDiv.querySelector("#linkClick_yes").addEventListener("click", () => {
+            window.open(url, "_blank");
+        })
+    },
+
     emocji(){
         emocjiDiv.fadeIn();
         function end(){
@@ -146,6 +166,114 @@ const messFunc = {
             const timeBefore = getTimeFromMess(messageBefore);
             messageFrom.style.display = time - timeBefore < delayTime ? "none" : "block";
         }
+    },
+
+    colorRole(){
+        const messages = document.querySelectorAll(".mess_message");
+        const roles = vars.servers.roles;
+        const users = vars.servers.users;
+        const userColor = new Map();
+
+        messages.forEach(mess => {
+            const author = mess.querySelector(".mess_from").getAttribute("_author");
+
+            if(userColor.has(author)){
+                messFunc.colorRoleMess(mess, userColor.get(author));
+                return;
+            }
+
+            const user = users.find(u => u.uid == author);
+            if(!user) return;
+            let color;
+
+            for(let i=0; i<roles.length; i++){
+                if(user.roles.includes(roles[i].name)){
+                    color = roles[i].color;
+                    userColor.set(author, color);
+                    messFunc.colorRoleMess(mess, color);
+                    return;
+                }
+            }
+            messFunc.colorRoleMess(mess, "");
+        });
+    },
+
+    colorRoleMess(mess, color){
+        const span = mess.querySelector(".mess_from > span");
+        span.style.color = color;
+    },
+
+    sendFile(f){
+        if(f){
+            read(f);
+        }else{
+            const input = document.createElement("input");
+            input.type = "file";
+            input.click();
+            input.addEventListener("change", e => read(e.target.files[0]));
+        }
+    
+        function read(file){
+            if(file.size > 8 * 1024 * 1024){
+                uiFunc.uiMsg(translateFunc.get("File size exceeds $ limit", "8MB") + ".");
+                return;
+            }
+            if(file.name.length > 60){
+                uiFunc.uiMsg(translateFunc.get("File name exceeds $ char limit", 60) + ".");
+                return;
+            }
+        
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const fileData = {
+                    name: file.name,
+                    size: file.size,
+                    data: event.target.result
+                };
+        
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/uploadFile");
+        
+                xhr.onload = () => {
+                    debugFunc.msg(JSON.parse(xhr.responseText));
+                    if(xhr.status === 200){
+                        uiFunc.uiMsg(translateFunc.get("File uploaded successfully") + ".");
+                        const path = JSON.parse(xhr.responseText).path;
+                        const mess = location.origin + path;
+                        
+                        const data = {
+                            to: vars.chat.to,
+                            chnl: vars.chat.chnl,
+                            msg: mess,
+                        }
+                        socket.emit("mess", data);
+                    }else{
+                        uiFunc.uiMsg(translateFunc.get("Failed to upload file") + ": " + xhr.statusText);
+                    }
+                };
+        
+                xhr.onerror = () => {
+                    uiFunc.uiMsg(translateFunc.get("An error occurred during the file upload") + ".");
+                };
+
+                const token = localStorage.getItem("token");
+                if(!token){
+                    uiFunc.uiMsg(translateFunc.get("No authentication data found") + ".");
+                    return;
+                }
+        
+                xhr.setRequestHeader("Authorization", token);
+        
+                const formData = new FormData();
+                formData.append("file", new Blob([fileData.data]), fileData.name);
+                formData.append("name", fileData.name);
+                formData.append("size", fileData.size);
+        
+                xhr.send(formData);
+            };
+        
+            reader.readAsArrayBuffer(file);
+        }        
     },
 }
 
@@ -193,6 +321,7 @@ socket.on("mess", (data) => {
     vars.lastMess[tom][vars.chat.chnl].read = data._id;
     renderFunc.privs();
     messFunc.hideFromMessageInfo();
+    messFunc.colorRole();
 });
 
 socket.on("getMess", (data) => {
@@ -222,6 +351,7 @@ socket.on("getMess", (data) => {
         div.innerHTML = `<span style="color: red;">"Failed to load the message! :("</span>`;
         messagesDiv.add(div);
     }
+    messFunc.colorRole();
 });
 
 socket.on("deleteMess", (id) => {
@@ -263,6 +393,41 @@ socket.on("editMess", (id, msg, time) => {
             div.className = 'emocji';
             div.onclick = () => messFunc.handleEmocji(emoticon);
             emoticonMenu.appendChild(div);
+        }
+    });
+})();
+
+messInput.addEventListener("paste", function(e){
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    
+    for(const item of items){
+        if(item.type.indexOf("image") === -1) continue;
+        e.preventDefault();
+        messFunc.sendFile(item.getAsFile())
+    };
+});
+
+(function initDragAndDrop(){
+    const app = document.querySelector("#app");
+    app.addEventListener("dragover", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    app.addEventListener("dragenter", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    app.addEventListener("drop", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+
+        if(vars.chat.to == "main") return;
+
+        const files = e.dataTransfer.files;
+        for(const file of files){
+            messFunc.sendFile(file);
         }
     });
 })();

@@ -19,6 +19,7 @@ const vars = {
     privs: [],
     servers: {
         users: [],
-        roles: []
+        roles: [],
+        text: [],
     }
 }
