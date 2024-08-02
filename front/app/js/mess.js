@@ -204,8 +204,7 @@ const messFunc = {
     },
 
     colorRoleMess(mess, color){
-        const span = mess.querySelector(".mess_from > span");
-        span.style.color = color;
+        mess.querySelector(".mess_from > div").style.color = color;
     },
 
     sendFile(f){

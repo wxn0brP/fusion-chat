@@ -217,7 +217,7 @@ const renderUtils = {
         return sortedData;
     },
 
-    openPopup(popup){
+    initPopup(popup){
         if(!popup) return;
 
         const isAlreadyOpen = popup.getAttribute("opened");
