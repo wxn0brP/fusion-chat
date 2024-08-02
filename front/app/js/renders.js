@@ -217,16 +217,35 @@ const renderUtils = {
         return sortedData;
     },
 
-    initPopup(div){
-        if(!div) return;
+    openPopup(popup){
+        if(!popup) return;
 
-        function end(){
-            div.fadeOut();
-            document.body.removeEventListener("click", end);
+        const isAlreadyOpen = popup.getAttribute("opened");
+        if(isAlreadyOpen){
+            popup.setAttribute("opened", "2");
+            return;
         }
-        div.fadeIn();
+
+        popup.setAttribute("opened", "1");
+        popup.fadeIn();
+
+        const closePopup = () => {
+            setTimeout(() => {
+                const isPopupStillOpen = popup.getAttribute("opened") === "2";
+                if(isPopupStillOpen){
+                    popup.setAttribute("opened", "1");
+                    return;
+                }
+                popup.fadeOut();
+                document.body.removeEventListener("click", closePopup);
+                setTimeout(() => {
+                    popup.removeAttribute("opened");
+                }, 800);
+            }, 100);
+        };
+
         setTimeout(() => {
-            document.body.addEventListener("click", end);
+            document.body.addEventListener("click", closePopup);
         }, 100);
     },
 }
