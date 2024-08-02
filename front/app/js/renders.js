@@ -72,7 +72,7 @@ const renderFunc = {
         if(!data) return;
 
         userProfileDiv.innerHTML = `
-            <img src="${data.img || "/favicon.svg"}" alt="User logo">
+            <img src="/profileImg?id=${data._id}" alt="User logo">
             <h1>${data.name}</h1>
             <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
         `.trim();
