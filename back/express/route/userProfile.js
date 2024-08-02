@@ -1,5 +1,5 @@
 const multer = require('multer');
-const sharp = require('sharp');
+const { Image } = require("image-js");
 const path = require('path');
 const fs = require('fs');
 
@@ -32,14 +32,12 @@ app.post('/profileUpload', global.authenticateMiddleware, (req, res) => {
         }
 
         const userId = req.user;
-        const fileExtension = 'png';
-        const filePath = path.join(UPLOAD_DIR, `${userId}.${fileExtension}`);
+        const filePath = path.join(UPLOAD_DIR, `${userId}.png`);
 
         try{
-            await sharp(req.file.buffer)
-                .resize(128, 128)
-                .toFormat(fileExtension)
-                .toFile(filePath);
+            const image = await Image.load(req.file.buffer);
+            const processedImage = await cropAndResize(image, 128, 128);
+            await processedImage.save(filePath, { format: 'png', compressionLevel: 0 });
 
             res.json({ err: false, msg: 'Profile picture uploaded successfully.', path: filePath });
         }catch(error){
@@ -72,3 +70,17 @@ app.get("/isProfileImg", (req, res) => {
     const file = "userFiles/profiles/"+id+".png";
     res.json(fs.existsSync(file));
 });
+
+async function cropAndResize(image, targetWidth, targetHeight) {
+    const { width: originalWidth, height: originalHeight } = image;
+
+    const scale = Math.max(targetWidth / originalWidth, targetHeight / originalHeight);
+    const newWidth = originalWidth * scale;
+    const newHeight = originalHeight * scale;
+
+    const x = (newWidth - targetWidth) / 2;
+    const y = (newHeight - targetHeight) / 2;
+
+    const scaledImage = image.resize(newWidth, newHeight);
+    return scaledImage.crop(x, y, targetWidth, targetHeight);
+}
