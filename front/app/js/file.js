@@ -49,23 +49,17 @@ const fileFunc = {
         reader.readAsArrayBuffer(file);
     },
 
-    profile(){
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = ['image/png', 'image/jpeg', "image/jpg", 'image/gif', 'image/webp'].join(', ');
-        input.click();
-        input.addEventListener("change", e => {
-            const opt = {
-                file: e.target.files[0],
-                callback: () => {
-                    lo("File uploaded successfully");
-                },
-                maxSize: 1024*1024,
-                maxName: 60,
-                endpoint: "/profileUpload"
-            }
-    
-            fileFunc.read(opt);
-        });
+    profile(file){
+        const opt = {
+            file,
+            callback: () => {
+                lo("File uploaded successfully");
+            },
+            maxSize: 1024*1024,
+            maxName: 60,
+            endpoint: "/profileUpload"
+        }
+
+        fileFunc.read(opt);
     }
 };

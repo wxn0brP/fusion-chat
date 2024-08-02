@@ -1,6 +1,7 @@
 const multer = require('multer');
 const sharp = require('sharp');
 const path = require('path');
+const fs = require('fs');
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 const ALLOWED_FILE_TYPES = ['image/png', 'image/jpeg', "image/jpg", 'image/gif', 'image/webp'];
@@ -45,4 +46,29 @@ app.post('/profileUpload', global.authenticateMiddleware, (req, res) => {
             res.status(500).json({ err: true, msg: 'An error occurred while processing the image.' });
         }
     });
+});
+
+app.get("/profileImg", (req, res) => {
+    function def(){
+        res.set("X-Content-Default", "true");
+        res.send(fs.readFileSync("front/static/favicon.svg"));
+    }
+
+    const id = req.query.id;
+    if(!id) return def();
+
+    const file = "userFiles/profiles/"+id+".png";
+
+    if(fs.existsSync(file)){
+        res.set("X-Content-Default", "false");
+        res.send(fs.readFileSync(file));
+    }else def();
+});
+
+app.get("/isProfileImg", (req, res) => {
+    const id = req.query.id;
+    if(!id) return res.json(false);
+
+    const file = "userFiles/profiles/"+id+".png";
+    res.json(fs.existsSync(file));
 });

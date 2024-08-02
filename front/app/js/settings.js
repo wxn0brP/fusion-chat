@@ -40,6 +40,7 @@ const settingsDataUser = () => [
     {
         name: "User settings",
         txt: translateFunc.get("User settings"),
+        type: "obj",
         settings: [
             {
                 name: "Status",
@@ -79,6 +80,42 @@ const settingsDataUser = () => [
                 "options": translateFunc.localesList
             }
         ]
+    },
+    {
+        name: "Profile",
+        txt: translateFunc.get("Profile"),
+        type: "fn",
+        settings: () => {
+            const div = document.createElement("div");
+            div.tmpData = {};
+            div.innerHTML = `
+                <div id="_1" style="display: flex; align-items: center; column-gap: 2rem;"></div>
+            `.trim();
+            const conteiner = div.querySelector('#_1');
+
+            const imgPrev = document.createElement('img');
+            imgPrev.src = "/profileImg?id=" + vars.user._id + "&t=" + Date.now();
+            imgPrev.style = "width: 128px; height: 128px; object-fit: cover;";
+            conteiner.appendChild(imgPrev);
+
+            const imgSel = document.createElement('input');
+            imgSel.type = 'file';
+            imgSel.accept = ['image/png', 'image/jpeg', "image/jpg", 'image/gif', 'image/webp'].join(', ');
+            imgSel.addEventListener("change", e => {
+                div.tmpData.img = e.target.files[0];
+                imgPrev.src = URL.createObjectURL(e.target.files[0]);
+            });
+            conteiner.appendChild(imgSel);
+
+            return div;
+        },
+        save: (div) => {
+            if(div.tmpData.img){
+                fileFunc.profile(div.tmpData.img);
+            }
+            
+            return {}
+        }
     }
 ]
 
