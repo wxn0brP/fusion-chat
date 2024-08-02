@@ -51,7 +51,7 @@ app.post('/profileUpload', global.authenticateMiddleware, (req, res) => {
 app.get("/profileImg", (req, res) => {
     function def(){
         res.set("X-Content-Default", "true");
-        res.send(fs.readFileSync("front/static/favicon.svg"));
+        res.send(fs.readFileSync("front/static/favicon.png"));
     }
 
     const id = req.query.id;

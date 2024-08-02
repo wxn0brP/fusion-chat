@@ -55,7 +55,12 @@ const messFunc = {
         const fromDiv = document.createElement("div");
         fromDiv.classList.add("mess_from");
         fromDiv.setAttribute("_author", data.fr);
-        const fromDivSpan = document.createElement("span");
+
+        const fromDivImg = document.createElement("img");
+        fromDivImg.src = "/profileImg?id=" + data.fr;
+        fromDiv.appendChild(fromDivImg);
+
+        const fromDivSpan = document.createElement("div");
         fromDivSpan.innerHTML = apis.www.changeUserID(data.fr);
         fromDivSpan.addEventListener("click", () => {
             socket.emit("userProfile", data.fr);
