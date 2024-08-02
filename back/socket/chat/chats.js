@@ -114,6 +114,7 @@ module.exports = (socket) => {
                 name: userN.name,
                 status: userStatusType,
                 statusText: userStatusText,
+                _id: id,
             }
 
             socket.emit("userProfile", userData);
