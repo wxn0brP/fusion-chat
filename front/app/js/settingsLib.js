@@ -9,49 +9,66 @@ class SettingsManager{
 
     init(){
         this.container.innerHTML = '';
+        const saveFns = [];
+        const fns = {
+            createButton: this.createButton,
+            createCheckbox: this.createCheckbox,
+            createTextInput: this.createTextInput,
+            createSelectInput: this.createSelectInput,
+        }
 
         this.settings.forEach(category => {
             const categoryDiv = document.createElement('div');
             categoryDiv.className = 'settings__category';
             categoryDiv.innerHTML = `<h1>${category.txt || category.name}</h1>`;
+            
+            if(category.type == "obj"){
+                category.settings.forEach(setting => {
+                    const settingElement = document.createElement('div');
+                    settingElement.className = 'settings__setting';
 
-            category.settings.forEach(setting => {
-                const settingElement = document.createElement('div');
-                settingElement.className = 'settings__setting';
+                    const label = document.createElement('label');
+                    label.textContent = setting.txt || setting.name;
+                    label.setAttribute("data-txt", setting.name);
+                    settingElement.appendChild(label);
 
-                const label = document.createElement('label');
-                label.textContent = setting.txt || setting.name;
-                label.setAttribute("data-txt", setting.name);
-                settingElement.appendChild(label);
+                    let inputElement;
 
-                let inputElement;
-
-                switch(setting.type){
-                    case 'checkbox':
-                        inputElement = this.createCheckbox(setting);
-                    break;
-                    case 'text':
-                        inputElement = this.createTextInput(setting);
-                    break;
-                    case 'select':
-                        inputElement = this.createSelectInput(setting);
-                    break;
-                    case 'button':
-                        inputElement = this.createButton(setting);
-                    break;
-                    default:
-                    break;
-                }
-
-                if(inputElement){
-                    settingElement.appendChild(inputElement);
-                    if(setting.css){
-                        inputElement.css(setting.css);
+                    switch(setting.type){
+                        case 'checkbox':
+                            inputElement = this.createCheckbox(setting);
+                        break;
+                        case 'text':
+                            inputElement = this.createTextInput(setting);
+                        break;
+                        case 'select':
+                            inputElement = this.createSelectInput(setting);
+                        break;
+                        case 'button':
+                            inputElement = this.createButton(setting);
+                        break;
+                        default:
+                        break;
                     }
-                }
 
-                categoryDiv.appendChild(settingElement);
-            });
+                    if(inputElement){
+                        settingElement.appendChild(inputElement);
+                        if(setting.css){
+                            inputElement.css(setting.css);
+                        }
+                    }
+
+                    categoryDiv.appendChild(settingElement);
+                });
+            }else
+            if(category.type == "fn"){
+                const div = category.settings(fns);
+                categoryDiv.appendChild(div);
+                saveFns.push({
+                    div,
+                    save: category.save
+                })
+            }
 
             this.container.appendChild(categoryDiv);
         });
@@ -59,7 +76,7 @@ class SettingsManager{
         const saveButton = document.createElement('button');
         saveButton.textContent = translateFunc.get('Save');
         saveButton.className = 'settings__exitButton';
-        saveButton.onclick = () => this.saveSettings();
+        saveButton.onclick = () => this.saveSettings(saveFns);
 
         const exitButton = document.createElement('button');
         exitButton.textContent = translateFunc.get('Exit without save');
@@ -107,9 +124,13 @@ class SettingsManager{
         return button;
     }
 
-    saveSettings(){
+    saveSettings(saveFns){
         if(this.saveCallback && typeof this.saveCallback === 'function'){
-            this.saveCallback(this.getCurrentSettings());
+            const dataStatic = this.getCurrentSettings();
+            const datasFn = saveFns.map(saveFn => saveFn.save(saveFn.div));
+
+            const data = Object.assign({}, dataStatic, ...datasFn);
+            this.saveCallback(data);
         }
         this.container.innerHTML = '';
         this.container.fadeOut();
