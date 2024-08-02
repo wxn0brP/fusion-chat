@@ -13,6 +13,7 @@ function preFile(path, pre, prefix="config/"){
 dir("data");
 dir("config");
 dir("userFiles");
+dir("userFiles/profiles");
 file("banedIP.json", "[]");
 file("mailConfig.json", "{}");
 preFile("file.js", "file");
