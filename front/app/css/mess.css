@@ -69,13 +69,27 @@ main{
     background-color: var(--menu);
 }
 
-.mess_from span{
+.mess_message .mess_from div{
+    margin-top: -37px;
+    margin-bottom: 2px;
+    margin-left: 35px;
     font-weight: bold;
     cursor: pointer;
 }
 
-.mess_from span:hover{
+.mess_message .mess_from div:hover{
     text-decoration: underline;
+}
+
+.mess_message img{
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.mess_message .mess_content{
+    margin-left: 35px;
 }
 
 #replyClose, #editClose{
