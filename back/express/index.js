@@ -73,7 +73,7 @@ require("./route");
 app.use((req, res) => {
     res.render("main/404", (err, body) => {
         if(err) throw err;
-        res.render("layout/main", {
+        res.status(404).render("layout/main", {
             layout: {
                 title: "Fusion Chat | Page Not Found",
             },

@@ -5,6 +5,7 @@
 
 nav{
     width: 290px;
+    min-width: 290px;
     height: 100%;
     background-color: var(--panel);
 }
