@@ -100,7 +100,7 @@ const messFunc = {
 
     editMessClose(){
         editCloseDiv.style.display = "none";
-        messInput.value = "";elements
+        messInput.value = "";
         vars.temp.editId = null;
         coreFunc.focusInp();
     },
