@@ -171,12 +171,46 @@ const renderFunc = {
 
     usersInChat(data){
         usersInChatDiv.innerHTML = "";
-        data.forEach((user) => {
+        const roles = vars.servers.roles;
+        const users = vars.servers.users;
+        const userColor = new Map();
+
+        function getColor(id){
+            if(userColor.has(id)){
+                return userColor.get(id);
+            }
+
+            const user = users.find(u => u.uid == id);
+            if(!user) return;
+            if(user.roles.length == 0) return "";
+            let color;
+
+            for(let i=0; i<roles.length; i++){
+                if(user.roles.includes(roles[i].name)){
+                    color = roles[i].color;
+                    userColor.set(id, color);
+                    return color;
+                }
+            }
+            return "";
+        }
+
+        data.forEach((userID) => {
             const userDiv = document.createElement("div");
-            userDiv.innerHTML = apis.www.changeUserID(user);
+
             userDiv.addEventListener("click", () => {
-                socket.emit("userProfile", user);
+                socket.emit("userProfile", userID);
             });
+
+            const userImg = document.createElement("img");
+            userImg.src = "/profileImg?id="+userID;
+            userDiv.appendChild(userImg);
+
+            const nameDiv = document.createElement("div");
+            nameDiv.innerHTML = apis.www.changeUserID(userID);
+            nameDiv.style.color = getColor(userID);
+            userDiv.appendChild(nameDiv);
+
             usersInChatDiv.appendChild(userDiv);
         });
 

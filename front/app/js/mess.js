@@ -189,6 +189,7 @@ const messFunc = {
 
             const user = users.find(u => u.uid == author);
             if(!user) return;
+            if(user.roles.length == 0) return;
             let color;
 
             for(let i=0; i<roles.length; i++){
