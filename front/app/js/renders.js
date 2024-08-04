@@ -183,11 +183,10 @@ const renderFunc = {
             const user = users.find(u => u.uid == id);
             if(!user) return;
             if(user.roles.length == 0) return "";
-            let color;
 
             for(let i=0; i<roles.length; i++){
                 if(user.roles.includes(roles[i].name)){
-                    color = roles[i].color;
+                    const color = roles[i].color;
                     userColor.set(id, color);
                     return color;
                 }
