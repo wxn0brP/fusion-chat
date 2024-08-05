@@ -104,6 +104,17 @@ module.exports = {
             if(!regex.test(part)) return false;
         }
         return true;
+    },
+
+    /**
+     * Check if a value is a boolean.
+     *
+     * @function
+     * @param {boolean} data - The boolean to validate.
+     * @returns {boolean} True if the value is a boolean, false otherwise.
+     */
+    bool(data){
+        return typeof data == "boolean";
     }
 }
 

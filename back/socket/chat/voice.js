@@ -63,4 +63,30 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
+
+    socket.ontimeout("callToUser", 100, async (id) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
+
+            const sockets = global.getSocket(id);
+            if(sockets.length == 0) return socket.emit("callToUserAnswer", id, false);
+
+            global.sendToSocket(id, "callToUser", socket.user._id);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("callToUserAnswer", 100, async (id, answer) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.bool(answer)) return socket.emit("error", "valid data");
+
+            global.sendToSocket(id, "callToUserAnswer", socket.user._id, answer);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
 }
