@@ -7,10 +7,63 @@ const voiceConfig = {
     prefix: "FusionChat-",
 }
 
+const voiceDebug = {
+    logBuffer: [],
+    maxLogSize: 1000,
+    filters: {
+        info: true,
+        warn: true,
+        error: true
+    },
+    log(level, user, action, message){
+        if(!this.filters[level]) return;
+
+        const time = new Date();
+        const logEntry = { time, level: level.toUpperCase(), user, action, message };
+        
+        if(this.logBuffer.length >= this.maxLogSize){
+            this.logBuffer.shift();
+        }
+        this.logBuffer.push(logEntry);
+        
+        debugFunc.msg(`[${time.toLocaleTimeString()}] [${logEntry.level}] [User: ${logEntry.user}] [Action: ${logEntry.action}] ${logEntry.message}`);
+    },
+    info(user, action, message){
+        this.log('info', user, action, message);
+    },
+    warn(user, action, message){
+        this.log('warn', user, action, message);
+    },
+    error(user, action, message){
+        this.log('error', user, action, message);
+    },
+    getLogs(){
+        return this.logBuffer;
+    },
+    clearLogs(){
+        this.logBuffer = [];
+    },
+    setFilter(level, state){
+        this.filters[level] = state;
+    },
+    exportLogs(){
+        const logData = JSON.stringify(this.logBuffer, null, 2);
+        const blob = new Blob([logData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `logs-${vars.user._id}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+}
+
 const voiceUtils = {
     initPeer(fr, to){
         const id = voiceUtils.formatCallid(fr, to);
-        debugFunc.msg("init peer conn; id: " + id);
+        voiceDebug.info(fr, 'initPeer', `Initializing peer connection; id: ${id}`);
         return new Peer(id, {
             secure: true,
             port: 443,
@@ -19,10 +72,20 @@ const voiceUtils = {
     },
 
     async getStream(obj){
-        if(navigator.mediaDevices?.getUserMedia) return await navigator.mediaDevices.getUserMedia(obj);
-        else if(navigator.webkitGetUserMedia) return await navigator.webkitGetUserMedia(obj);
-        else if(navigator.mozGetUserMedia) return await nnavigator.mozGetUserMedia(obj);
-        else return new MediaStream();
+        try{
+            if(navigator.mediaDevices?.getUserMedia){
+                return await navigator.mediaDevices.getUserMedia(obj);
+            }else if(navigator.webkitGetUserMedia){
+                return await navigator.webkitGetUserMedia(obj);
+            }else if(navigator.mozGetUserMedia){
+                return await navigator.mozGetUserMedia(obj);
+            }else{
+                throw new Error("getUserMedia not supported");
+            }
+        }catch(error){
+            voiceDebug.error('unknown', 'getStream', `Error getting stream: ${error.message}`);
+            return new MediaStream();
+        }
     },
 
     formatCallid(fr, to){
@@ -35,11 +98,11 @@ const voiceUtils = {
             fr: vars.user._id
         }
         peer.on("open", () => {
-            debugFunc.msg("open peer; to: "+to + "; fr: "+vars.user._id);
+            voiceDebug.info(vars.user._id, 'postSetupPeer', `Peer connection opened; to: ${to}`);
         });
 
         peer.on("close", () => {
-            debugFunc.msg("close peer; to: "+to + "; fr: "+vars.user._id);
+            voiceDebug.warn(vars.user._id, 'postSetupPeer', `Peer connection closed; to: ${to}`);
         });
     }
 }
@@ -48,13 +111,21 @@ const voiceFunc = {
     local_stream: new MediaStream(),
     peers: [],
 
+    async initCall(){
+        try{
+            const stream = await voiceUtils.getStream({ audio: true, video: false });
+            voiceFunc.local_stream = stream;
+            voiceHTML.div.style.display = "block";
+        }catch(error){
+            voiceDebug.error(vars.user._id, 'initCall', `Error joining voice channel: ${error.message}`);
+        }
+    },
+
     async joinToVoiceChannel(to){
-        const stream = await voiceUtils.getStream({ audio: true, video: false });
-        voiceFunc.local_stream = stream;
-        
+        await voiceFunc.initCall();
         socket.emit("joinVoiceChannel", to);
         socket.emit("getVoiceChannelUsers", to);
-        voiceHTML.div.fadeIn();
+        voiceDebug.info(vars.user._id, 'initCall', `Joined voice channel: ${to}`);
     },
 
     makeConnectionHandler(to){
@@ -63,12 +134,12 @@ const voiceFunc = {
         voiceUtils.postSetupPeer(peer, to);
 
         peer.on("call", (call) => {
-            debugFunc.msg("call mkh; to: "+to + "; fr: "+vars.user._id);
+            voiceDebug.info(vars.user._id, 'makeConnectionHandler', `Incoming call; to: ${to}`);
             call.answer(voiceFunc.local_stream);
 
             call.on("stream", (stream) => {
                 voiceFunc.addMediaHtml(stream, to);
-                debugFunc.msg("call stream mkh; to: "+to + "; fr: "+vars.user._id);
+                voiceDebug.info(vars.user._id, 'makeConnectionHandler', `Stream received; to: ${to}`);
             });
         });
 
@@ -83,10 +154,10 @@ const voiceFunc = {
         peer.on("open", () => {
             const id = voiceUtils.formatCallid(vars.user._id, to);
             const call = peer.call(id, voiceFunc.local_stream);
-            debugFunc.msg("call to: "+id+"; fr: "+peer._id);
+            voiceDebug.info(vars.user._id, 'makeConnectionCaller', `Outgoing call to: ${id}`);
             call.on("stream", (stream) => {
                 voiceFunc.addMediaHtml(stream, to);
-                debugFunc.msg("call stream mkc; to: "+to + "; fr: "+vars.user._id);
+                voiceDebug.info(vars.user._id, 'makeConnectionCaller', `Stream received from call; to: ${to}`);
             });
         })
 
@@ -102,6 +173,7 @@ const voiceFunc = {
         audio.style.display = "none";
 
         voiceHTML.mediaContainer.appendChild(audio);
+        voiceDebug.info(vars.user._id, 'addMediaHtml', `Added media HTML for call: ${id}`);
 
         return audio;
     },
@@ -120,11 +192,25 @@ const voiceFunc = {
             track.stop();
         });
         voiceFunc.local_stream = new MediaStream();
+        voiceDebug.info(vars.user._id, 'endCall', "Call ended and cleaned up.");
+
+        const isConfirm = confirm(translateFunc.get("Would you like to export the journal") + "?");
+        if(isConfirm) voiceDebug.exportLogs();
+    },
+
+    startCall(){
+        const id = vars.chat.to.replace("$","");
+        if(id == "main") return;
+
+        const isConfirm = confirm(translateFunc.get("Are you sure you want to call $", apis.www.changeUserID(id)) + "?");
+        if(!isConfirm) return;
+
+        socket.emit("callToUser", id);
     }
 }
 
 socket.on("joinVoiceChannel", (to) => {
-    debugFunc.msg("makeConnectionHandler " + to);
+    voiceDebug.info(vars.user._id, 'socket', `Handling joinVoiceChannel for ${to}`);
     voiceFunc.makeConnectionHandler(to);
 });
 
@@ -132,7 +218,31 @@ socket.on("getVoiceChannelUsers", (tos) => {
     tos.forEach((to) => {
         if(to == vars.user._id) return;
 
-        debugFunc.msg("makeConnectionCaller " + to);
+        voiceDebug.info(vars.user._id, 'socket', `Handling getVoiceChannelUsers for ${to}`);
         voiceFunc.makeConnectionCaller(to);
     });
+});
+
+socket.on("callToUser", (id) => {
+    const isConfirm = confirm(translateFunc.get("$ is calling you. Accept", apis.www.changeUserID(id)) + "?");
+    socket.emit("callToUserAnswer", id, isConfirm);
+
+    if(!isConfirm) return;
+
+    voiceDebug.info(vars.user._id, 'socket', `Handling callToUser for ${id}`);
+    voiceFunc.initCall();
+    voiceFunc.makeConnectionHandler(id);
+});
+
+socket.on("callToUserAnswer", (id, answer) => {
+    if(!answer){
+        alert(translateFunc.get("Call rejected"));
+        return;
+    }
+
+    voiceDebug.info(vars.user._id, 'socket', `Handling callToUserAnswer for ${id}`);
+    voiceFunc.initCall();
+    setTimeout(() => {
+        voiceFunc.makeConnectionCaller(id);
+    }, 1000);
 });
