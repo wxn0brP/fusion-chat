@@ -19,6 +19,7 @@ module.exports = (socket) => {
 
             rooms.get(to).forEach(s => {
                 s.emit("joinVoiceChannel", socket.user._id);
+                s.emit("refreshData", "*", "*", "getVoiceChannelUsers", to, false);
             });
             rooms.get(to).push(socket);
         }catch(e){
@@ -31,6 +32,11 @@ module.exports = (socket) => {
             users.forEach((user) => {
                 if(user.user._id != socket.user._id) return;
                 rooms.get(to).splice(rooms.get(to).indexOf(socket), 1);
+                
+                users.forEach(s => {
+                    s.emit("refreshData", "*", "*", "getVoiceChannelUsers", to, false);
+                    s.emit("leaveVoiceChannel", socket.user._id);
+                })
             });
         });
     }
@@ -51,16 +57,15 @@ module.exports = (socket) => {
         }
     })
 
-    socket.ontimeout("getVoiceChannelUsers", 100, async (to) => {
+    socket.ontimeout("getVoiceChannelUsers", 100, async (to, make) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(to, 0, 30)) return socket.emit("error", "valid data");
 
             if(!rooms.has(to)) return socket.emit("getVoiceChannelUsers", []);
             const data = rooms.get(to).map(s => s.user._id);
-            setTimeout(() => {
-                socket.emit("getVoiceChannelUsers", data);
-            }, 2_000); // wait for other set up peer
+
+            socket.emit("getVoiceChannelUsers", data, make);
         }catch(e){
             socket.logError(e);
         }

@@ -1,6 +1,7 @@
 const voiceHTML = {
     div: document.querySelector("#voice_call"),
     mediaContainer: document.querySelector("#voice_call_media"),
+    users: document.querySelector("#voice_call_users"),
 }
 
 const voiceConfig = {
@@ -103,7 +104,6 @@ const voiceUtils = {
 
         peer.on("close", () => {
             voiceDebug.warn(vars.user._id, 'postSetupPeer', `Peer connection closed; to: ${to}`);
-            uiFunc.uiMsg(translateFunc.get("User $ has left", apis.www.changeUserID(to)) + ".");
         });
     }
 }
@@ -116,7 +116,7 @@ const voiceFunc = {
         try{
             const stream = await voiceUtils.getStream({ audio: true, video: false });
             voiceFunc.local_stream = stream;
-            voiceHTML.div.style.display = "block";
+            voiceHTML.div.fadeIn();
         }catch(error){
             voiceDebug.error(vars.user._id, 'initCall', `Error joining voice channel: ${error.message}`);
         }
@@ -125,7 +125,7 @@ const voiceFunc = {
     async joinToVoiceChannel(to){
         await voiceFunc.initCall();
         socket.emit("joinVoiceChannel", to);
-        socket.emit("getVoiceChannelUsers", to);
+        socket.emit("getVoiceChannelUsers", to, true);
         voiceDebug.info(vars.user._id, 'initCall', `Joined voice channel: ${to}`);
     },
 
@@ -145,7 +145,6 @@ const voiceFunc = {
 
             call.on("close", () => {
                 voiceDebug.warn(vars.user._id, 'makeConnectionHandler', `Call closed; to: ${to}`);
-                uiFunc.uiMsg(translateFunc.get("User $ has left", apis.www.changeUserID(to)) + ".");
             });
         });
 
@@ -168,7 +167,6 @@ const voiceFunc = {
 
             call.on("close", () => {
                 voiceDebug.warn(vars.user._id, 'makeConnectionCaller', `Call closed; to: ${to}`);
-                uiFunc.uiMsg(translateFunc.get("User $ has left", apis.www.changeUserID(to)) + ".");
             });
         })
 
@@ -206,9 +204,11 @@ const voiceFunc = {
         voiceDebug.info(vars.user._id, 'endCall', "Call ended and cleaned up.");
 
         socket.emit("callLogs", voiceDebug.getLogs());
-        const isConfirm = confirm(translateFunc.get("Would you like to export the journal") + "?");
-        if(isConfirm) voiceDebug.exportLogs();
 
+        if(!debugFunc.isDebug){
+            const isConfirm = confirm(translateFunc.get("Would you like to export the journal") + "?");
+            if(isConfirm) voiceDebug.exportLogs();
+        }
     },
 
     startCall(){
@@ -227,12 +227,21 @@ socket.on("joinVoiceChannel", (to) => {
     voiceFunc.makeConnectionHandler(to);
 });
 
-socket.on("getVoiceChannelUsers", (tos) => {
-    tos.forEach((to) => {
-        if(to == vars.user._id) return;
+socket.on("getVoiceChannelUsers", (users, make) => {
+    if(make){
+        users.forEach((to) => {
+            if(to == vars.user._id) return;
+    
+            voiceDebug.info(vars.user._id, 'socket', `Handling getVoiceChannelUsers for ${to}`);
+            voiceFunc.makeConnectionCaller(to);
+        });
+    }
 
-        voiceDebug.info(vars.user._id, 'socket', `Handling getVoiceChannelUsers for ${to}`);
-        voiceFunc.makeConnectionCaller(to);
+    voiceHTML.users.innerHTML = "";
+    users.forEach((user) => {
+        const li = document.createElement("li");
+        li.innerHTML = apis.www.changeUserID(user);
+        voiceHTML.users.appendChild(li);
     });
 });
 
@@ -243,8 +252,7 @@ socket.on("callToUser", (id) => {
     if(!isConfirm) return;
 
     voiceDebug.info(vars.user._id, 'socket', `Handling callToUser for ${id}`);
-    voiceFunc.initCall();
-    voiceFunc.makeConnectionHandler(id);
+    voiceFunc.joinToVoiceChannel(id + "=" + vars.user._id);
 });
 
 socket.on("callToUserAnswer", (id, answer) => {
@@ -254,8 +262,11 @@ socket.on("callToUserAnswer", (id, answer) => {
     }
 
     voiceDebug.info(vars.user._id, 'socket', `Handling callToUserAnswer for ${id}`);
-    voiceFunc.initCall();
     setTimeout(() => {
-        voiceFunc.makeConnectionCaller(id);
+        voiceFunc.joinToVoiceChannel(vars.user._id + "=" + id);
     }, 1000);
+});
+
+socket.on("leaveVoiceChannel", (id) => {
+    uiFunc.uiMsg(translateFunc.get("$ left the voice channel", apis.www.changeUserID(id)));
 });
