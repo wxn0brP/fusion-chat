@@ -1,5 +1,6 @@
 const navs__main = document.querySelector("#navs__main");
 const navs__groups = document.querySelector("#navs__groups");
+const navs__main__call = document.querySelector("#navs__main__call");
 
 const coreFunc = {
     changeChat(id, div=null){
@@ -13,6 +14,7 @@ const coreFunc = {
 
             navs__main.style.display = "block";
             navs__groups.style.display = "none";
+            navs__main__call.style.display = "none";
 
             messagesDiv.innerHTML = `
                 <div style="text-align: center; font-size: 2rem;">
@@ -45,6 +47,7 @@ const coreFunc = {
             vars.servers.text = [];
             messInput.placeholder = translateFunc.get("Write message here") + "...";
             messInput.disabled = false;
+            navs__main__call.style.display = "";
         }else{
             document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeChat(id);
             navs__main.style.display = "none";
