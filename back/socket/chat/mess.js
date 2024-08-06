@@ -252,6 +252,32 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
+
+    socket.ontimeout("reactToMess", 100, async (server, msgId, react) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(server) || !valid.id(msgId) || !valid.str(react, 0, 30)) return socket.emit("error", "valid data");
+        
+            const msg = await global.db.mess.findOne(server, { _id: msgId });
+            if(!msg) return socket.emit("error", "msg does not exist");
+
+            const reacts = msg.reacts || {};
+            if(!reacts[react]) reacts[react] = [];
+            
+            if(reacts[react].includes(socket.user._id)){
+                reacts[react] = reacts[react].filter(id => id != socket.user._id);
+                if(reacts[react].length == 0) delete reacts[react];
+            }else{
+                reacts[react].push(socket.user._id);
+            }
+
+            await global.db.mess.updateOne(server, { _id: msgId }, { reacts });
+
+            global.sendToChatUsers(server, "reactToMess", socket.user._id, server, msgId, react);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
 }
 
 global.getChnlPerm = async function(user, server, chnl){

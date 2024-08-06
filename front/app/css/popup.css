@@ -99,17 +99,32 @@
 
     text-align: left;
     width: 600px;
+    max-height: 60vh;
+    overflow-y: scroll;
 }
 
-#usersInChat div{
-    margin-top: 1rem;
+#usersInChat > div{
+    margin-block: 0.3rem;
     padding: 1rem;
     border-radius: 1rem;
     width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    cursor: pointer;
 }
 
-#usersInChat div:hover{
-    background-color: var(--accent);
+#usersInChat > div:hover{
+    background-color: rgba(var(--accentRGB), .4);
+}
+
+#usersInChat img{
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 #linkClick{
