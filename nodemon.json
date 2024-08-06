@@ -2,6 +2,7 @@
     "ignore": [
         "front",
         "app",
+        "data",
         "fc-index",
         "fc-app",
         "app-test",
