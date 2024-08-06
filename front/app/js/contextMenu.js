@@ -61,6 +61,12 @@ const contextFunc = {
                 navigator.clipboard.writeText(id);
                 uiFunc.uiMsg("Copied message ID!");
             break;
+            case "add_reaction":
+                messFunc.emocjiPopup((e) => {
+                    if(!e) return;
+                    socket.emit("reactToMess", vars.chat.to, id, e);
+                });
+            break;
         }
     },
 

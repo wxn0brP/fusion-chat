@@ -77,6 +77,26 @@ const messFunc = {
             messContentDiv.innerHTML += editMessText.replace("$$", coreFunc.formatDateFormUnux(parseInt(data.e, 36)));
         }
 
+        if(data.reacts){
+            const reactsDiv = document.createElement("div");
+            reactsDiv.classList.add("mess_reacts");
+
+            const keys = Object.keys(data.reacts);
+            for(let key of keys){
+                const users = data.reacts[key];
+                const span = document.createElement("span");
+                span.setAttribute("_key", key);
+                span.setAttribute("_users", users.join(","));
+                span.addEventListener("click", () => {
+                    socket.emit("reactToMess", vars.chat.to, data._id, key);
+                });
+                reactsDiv.appendChild(span);
+            }
+
+            messFunc.styleMessReacts(reactsDiv);
+            messDiv.appendChild(reactsDiv);
+        }
+
         up ? messagesDiv.addUp(messDiv) : messagesDiv.add(messDiv);
 
         setTimeout(() => {
@@ -135,19 +155,32 @@ const messFunc = {
         })
     },
 
-    emocji(){
+    emocjiPopup(cb){
         emocjiDiv.fadeIn();
+        function evt(e){
+            cb(e.detail);
+        }
+
         function end(){
             document.removeEventListener("click", end);
-            messFunc.handleEmocji("");
+            emocjiDiv.removeEventListener("emocji", evt);
+            emocjiDiv.fadeOut();
+            cb("");
         }
         setTimeout(() => {
             document.addEventListener("click", end);
+            emocjiDiv.addEventListener("emocji", evt);
         }, 100);
     },
 
+    emocji(){
+        messFunc.emocjiPopup((emoticon) => {
+            messFunc.handleEmocji(emoticon);
+        });
+    },
+
     handleEmocji(e){
-        emocjiDiv.fadeOut();
+        if(!e) return;
         messInput.value += e;
     },
 
@@ -239,8 +272,27 @@ const messFunc = {
 
             fileFunc.read(opt);
         }
-    
     },
+
+    styleMessReacts(reactsDiv){
+        const spans = reactsDiv.querySelectorAll("span");
+        spans.forEach(span => {
+            const users = span.getAttribute("_users").split(",");
+
+            if(users.length == 0 || users[0] == ""){
+                span.remove();
+                return;
+            }
+
+            span.classList.remove("userReacted");
+            if(users.includes(vars.user._id)){
+                span.classList.add("userReacted");
+            }
+
+            span.title = users.map(u => apis.www.changeUserID(u)).join(", ");
+            span.innerHTML = span.getAttribute("_key") + " " + users.length;
+        });
+    }
 }
 
 messFunc.replyClose();
@@ -299,7 +351,8 @@ socket.on("getMess", (data) => {
                     msg: mess.msg,
                     _id: mess._id,
                     e: mess.lastEdit ? mess.lastEdit : false,
-                    res: mess.res
+                    res: mess.res,
+                    reacts: mess.reacts || {},
                 }, false, true);
             }catch(e){
                 lo(e);
@@ -339,6 +392,38 @@ socket.on("editMess", (id, msg, time) => {
     messFunc.hideFromMessageInfo();
 });
 
+socket.on("reactToMess", (uid, server, messId, react) => {
+    if(vars.chat.to.replace("$","") != server) return;
+    
+    const mess = document.querySelector("#mess__"+messId);
+    if(!mess) return;
+
+    const reactSpan = mess.querySelector(`span[_key="${react}"]`);
+    if(!reactSpan){
+        const span = document.createElement("span");
+        span.setAttribute("_key", react);
+        span.setAttribute("_users", uid);
+        span.innerHTML = react + " 1";
+        span.title = apis.www.changeUserID(uid);
+        span.addEventListener("click", () => {
+            socket.emit("reactToMess", server, messId, react);
+        });
+        mess.querySelector(".mess_reacts").appendChild(span);
+        messFunc.styleMessReacts(mess.querySelector(".mess_reacts"));
+        return;
+    }
+
+    let users = reactSpan.getAttribute("_users").split(",");
+    if(users.includes(uid)){
+        users = users.filter(u => u != uid);
+    }else{
+        users.push(uid);
+    }
+
+    reactSpan.setAttribute("_users", users.join(","));
+    messFunc.styleMessReacts(mess.querySelector(".mess_reacts"));
+});
+
 (function initEmocji(){
     const emoticonMenu = document.querySelector("#emocjiDiv_container");
 
@@ -351,13 +436,20 @@ socket.on("editMess", (id, msg, time) => {
         // [9984, 10175]
     ];
 
+    function emit(emoticon){
+        const event = new CustomEvent('emocji', {
+            detail: emoticon,
+        });
+        emocjiDiv.dispatchEvent(event);
+    }
+
     emotkiUnicode.forEach(range => {
         for(let i = range[0]; i <= range[1]; i++){
             const emoticon = String.fromCodePoint(i);
             const div = document.createElement('div');
             div.textContent = emoticon;
             div.className = 'emocji';
-            div.onclick = () => messFunc.handleEmocji(emoticon);
+            div.onclick = () => emit(emoticon);
             emoticonMenu.appendChild(div);
         }
     });
