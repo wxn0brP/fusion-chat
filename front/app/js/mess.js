@@ -1,10 +1,8 @@
 const messagesDiv = document.querySelector("#messages");
 const messInput = document.querySelector("#mess-input");
-const barDiv = document.querySelector("#bar");
 const replyCloseDiv = document.querySelector("#replyClose");
 const editCloseDiv = document.querySelector("#editClose");
 const sendBtn = document.querySelector("#barc__sendBtn");
-const sendBtnImg = document.querySelector("#barc__sendBtn__img");
 const emocjiDiv = document.querySelector("#emocjiDiv");
 const linkClickDiv = document.querySelector("#linkClick");
 
@@ -35,7 +33,7 @@ const messFunc = {
         messInput.value = "";
         messFunc.replyClose();
         coreFunc.focusInp();
-        messFunc.sendBtnStyle();
+        messStyle.sendBtnStyle();
     },
 
     addMess(data, socroll=true, up=false){
@@ -93,7 +91,7 @@ const messFunc = {
                 reactsDiv.appendChild(span);
             }
 
-            messFunc.styleMessReacts(reactsDiv);
+            messStyle.styleMessReacts(reactsDiv);
             messDiv.appendChild(reactsDiv);
         }
 
@@ -123,18 +121,6 @@ const messFunc = {
         messInput.value = "";
         vars.temp.editId = null;
         coreFunc.focusInp();
-    },
-
-    sendBtnStyle(){
-        const len = messInput.value.trim().length;
-        let prop = "";
-
-        if(len == 0) prop = "grey";
-        else if(len <= maxMessLen) prop = "green";
-        else if(len > maxMessLen) prop = "red";
-
-        sendBtnImg.style.setProperty("--fil", prop);
-        sendBtn.disabled = len == 0 || len > maxMessLen;
     },
 
     linkClick(e){
@@ -184,63 +170,6 @@ const messFunc = {
         messInput.value += e;
     },
 
-    hideFromMessageInfo(){
-        function getTimeFromMess(mess){
-            const id = mess.id.replace("mess__", "");
-            return parseInt(id.split("-")[0], 36);
-        }
-
-        const delayTime = 20 * 1000; // 20 seconds
-        const messages = document.querySelectorAll(".mess_message");
-        for(let i=1; i<messages.length; i++){
-            const message = messages[i];
-            const messageBefore = messages[i-1];
-
-            const messageFrom = message.querySelector(".mess_from");
-            const messageBeforeFrom = messageBefore.querySelector(".mess_from");
-            if(messageFrom.innerText != messageBeforeFrom.innerText) continue;
-
-            const time = getTimeFromMess(message);
-            const timeBefore = getTimeFromMess(messageBefore);
-            messageFrom.style.display = time - timeBefore < delayTime ? "none" : "block";
-        }
-    },
-
-    colorRole(){
-        const messages = document.querySelectorAll(".mess_message");
-        const roles = vars.servers.roles;
-        const users = vars.servers.users;
-        const userColor = new Map();
-
-        messages.forEach(mess => {
-            const author = mess.querySelector(".mess_from").getAttribute("_author");
-
-            if(userColor.has(author)){
-                messFunc.colorRoleMess(mess, userColor.get(author));
-                return;
-            }
-
-            const user = users.find(u => u.uid == author);
-            if(!user) return;
-            if(user.roles.length == 0) return;
-            let color;
-
-            for(let i=0; i<roles.length; i++){
-                if(user.roles.includes(roles[i].name)){
-                    color = roles[i].color;
-                    userColor.set(author, color);
-                    messFunc.colorRoleMess(mess, color);
-                    return;
-                }
-            }
-            messFunc.colorRoleMess(mess, "");
-        });
-    },
-
-    colorRoleMess(mess, color){
-        mess.querySelector(".mess_from > div").style.color = color;
-    },
-
     sendFile(f){
         if(f){
             read(f);
@@ -272,220 +201,7 @@ const messFunc = {
 
             fileFunc.read(opt);
         }
-    },
-
-    styleMessReacts(reactsDiv){
-        const spans = reactsDiv.querySelectorAll("span");
-        spans.forEach(span => {
-            const users = span.getAttribute("_users").split(",");
-
-            if(users.length == 0 || users[0] == ""){
-                span.remove();
-                return;
-            }
-
-            span.classList.remove("userReacted");
-            if(users.includes(vars.user._id)){
-                span.classList.add("userReacted");
-            }
-
-            span.title = users.map(u => apis.www.changeUserID(u)).join(", ");
-            span.innerHTML = span.getAttribute("_key") + " " + users.length;
-        });
     }
 }
 
 messFunc.replyClose();
-
-messInput.addEventListener("keydown", (e) => {
-    //if shift + enter - new line
-    if(e.key == "Enter" && e.shiftKey) return;
-
-    if(e.key == "Enter"){
-        e.preventDefault();
-        messFunc.sendMess();
-    }
-});
-
-messInput.addEventListener("input", messFunc.sendBtnStyle);
-
-socket.on("mess", (data) => {
-    const tom = data.toM.replace("$", "");
-
-    if(!vars.lastMess[tom]) vars.lastMess[tom] = {};
-    if(!vars.lastMess[tom][vars.chat.chnl]) vars.lastMess[tom][vars.chat.chnl] = { read: null, mess: null };
-    vars.lastMess[tom][vars.chat.chnl].mess = data._id;
-
-    if(data.to != "@"){
-        if(vars.chat.to !== data.to){
-            if(data.to.startsWith("$")){
-                uiFunc.uiMsg("Recive message from "+apis.www.changeUserID(data.fr));
-            }
-        }
-        if(vars.chat.to !== data.to || vars.chat.chnl !== data.chnl){
-            renderFunc.privs();
-            return;
-        }
-    }
-
-    messFunc.addMess(data);
-    vars.temp.makeIsRead = data._id;
-    setTimeout(() => {
-        if(vars.temp.makeIsRead != data._id) return;
-        vars.temp.makeIsRead = null;
-        socket.emit("markAsRead", vars.chat.to, vars.chat.chnl, data._id);
-    }, 1000);
-    
-    vars.lastMess[tom][vars.chat.chnl].read = data._id;
-    renderFunc.privs();
-    messFunc.hideFromMessageInfo();
-    messFunc.colorRole();
-});
-
-socket.on("getMess", (data) => {
-    try{
-        data.forEach((mess) => {
-            try{
-                messFunc.addMess({
-                    fr: mess.fr,
-                    msg: mess.msg,
-                    _id: mess._id,
-                    e: mess.lastEdit ? mess.lastEdit : false,
-                    res: mess.res,
-                    reacts: mess.reacts || {},
-                }, false, true);
-            }catch(e){
-                lo(e);
-                lo(mess);
-                const div = document.createElement("div");
-                div.innerHTML = `<span style="color: red;">Failed to load this message!</span>`;
-                messagesDiv.add(div);
-            }
-        });
-        messFunc.hideFromMessageInfo();
-        setTimeout(coreFunc.socrollToBottom, 30);
-    }catch(e){
-        lo(e);
-        const div = document.createElement("div");
-        div.innerHTML = `<span style="color: red;">"Failed to load the message! :("</span>`;
-        messagesDiv.add(div);
-    }
-    messFunc.colorRole();
-});
-
-socket.on("deleteMess", (id) => {
-    document.querySelector("#mess__"+id)?.remove();
-    messFunc.hideFromMessageInfo();
-});
-
-socket.on("editMess", (id, msg, time) => {
-    const messageDiv = document.querySelector("#mess__"+id+" .mess_content");
-    if(!messageDiv) return;
-    messageDiv.setAttribute("_plain", msg);
-    format.formatMess(msg, messageDiv);
-    messageDiv.innerHTML += editMessText.replace("$$", coreFunc.formatDateFormUnux(parseInt(time, 36)));
-
-    const responeMessages = document.querySelectorAll(`[resMsgID=${id}] .res_msg`);
-    responeMessages.forEach(mess => {
-        mess.innerHTML = msg;
-    });
-    messFunc.hideFromMessageInfo();
-});
-
-socket.on("reactToMess", (uid, server, messId, react) => {
-    if(vars.chat.to.replace("$","") != server) return;
-    
-    const mess = document.querySelector("#mess__"+messId);
-    if(!mess) return;
-
-    const reactSpan = mess.querySelector(`span[_key="${react}"]`);
-    if(!reactSpan){
-        const span = document.createElement("span");
-        span.setAttribute("_key", react);
-        span.setAttribute("_users", uid);
-        span.innerHTML = react + " 1";
-        span.title = apis.www.changeUserID(uid);
-        span.addEventListener("click", () => {
-            socket.emit("reactToMess", server, messId, react);
-        });
-        mess.querySelector(".mess_reacts").appendChild(span);
-        messFunc.styleMessReacts(mess.querySelector(".mess_reacts"));
-        return;
-    }
-
-    let users = reactSpan.getAttribute("_users").split(",");
-    if(users.includes(uid)){
-        users = users.filter(u => u != uid);
-    }else{
-        users.push(uid);
-    }
-
-    reactSpan.setAttribute("_users", users.join(","));
-    messFunc.styleMessReacts(mess.querySelector(".mess_reacts"));
-});
-
-(function initEmocji(){
-    const emoticonMenu = document.querySelector("#emocjiDiv_container");
-
-    const emotkiUnicode = [
-        [128512, 128591],
-        // [127744, 127884],
-        // [128640, 128704],
-        // [127462, 127487],
-        // [9728, 9983],
-        // [9984, 10175]
-    ];
-
-    function emit(emoticon){
-        const event = new CustomEvent('emocji', {
-            detail: emoticon,
-        });
-        emocjiDiv.dispatchEvent(event);
-    }
-
-    emotkiUnicode.forEach(range => {
-        for(let i = range[0]; i <= range[1]; i++){
-            const emoticon = String.fromCodePoint(i);
-            const div = document.createElement('div');
-            div.textContent = emoticon;
-            div.className = 'emocji';
-            div.onclick = () => emit(emoticon);
-            emoticonMenu.appendChild(div);
-        }
-    });
-})();
-
-messInput.addEventListener("paste", function(e){
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    
-    for(const item of items){
-        if(item.type.indexOf("image") === -1) continue;
-        e.preventDefault();
-        messFunc.sendFile(item.getAsFile())
-    };
-});
-
-(function initDragAndDrop(){
-    const app = document.querySelector("#app");
-    app.addEventListener("dragover", function(e){
-        e.preventDefault();
-        e.stopPropagation();
-    });
-
-    app.addEventListener("dragenter", function(e){
-        e.preventDefault();
-        e.stopPropagation();
-    });
-
-    app.addEventListener("drop", function(e){
-        e.preventDefault();
-        e.stopPropagation();
-
-        if(vars.chat.to == "main") return;
-
-        const files = e.dataTransfer.files;
-        for(const file of files){
-            messFunc.sendFile(file);
-        }
-    });
-})();
