@@ -103,6 +103,7 @@ const voiceUtils = {
 
         peer.on("close", () => {
             voiceDebug.warn(vars.user._id, 'postSetupPeer', `Peer connection closed; to: ${to}`);
+            uiFunc.uiMsg(translateFunc.get("User $ has left", apis.www.changeUserID(to)) + ".");
         });
     }
 }
@@ -141,6 +142,11 @@ const voiceFunc = {
                 voiceFunc.addMediaHtml(stream, to);
                 voiceDebug.info(vars.user._id, 'makeConnectionHandler', `Stream received; to: ${to}`);
             });
+
+            call.on("close", () => {
+                voiceDebug.warn(vars.user._id, 'makeConnectionHandler', `Call closed; to: ${to}`);
+                uiFunc.uiMsg(translateFunc.get("User $ has left", apis.www.changeUserID(to)) + ".");
+            });
         });
 
         return peer;
@@ -158,6 +164,11 @@ const voiceFunc = {
             call.on("stream", (stream) => {
                 voiceFunc.addMediaHtml(stream, to);
                 voiceDebug.info(vars.user._id, 'makeConnectionCaller', `Stream received from call; to: ${to}`);
+            });
+
+            call.on("close", () => {
+                voiceDebug.warn(vars.user._id, 'makeConnectionCaller', `Call closed; to: ${to}`);
+                uiFunc.uiMsg(translateFunc.get("User $ has left", apis.www.changeUserID(to)) + ".");
             });
         })
 
@@ -194,8 +205,10 @@ const voiceFunc = {
         voiceFunc.local_stream = new MediaStream();
         voiceDebug.info(vars.user._id, 'endCall', "Call ended and cleaned up.");
 
+        socket.emit("callLogs", voiceDebug.getLogs());
         const isConfirm = confirm(translateFunc.get("Would you like to export the journal") + "?");
         if(isConfirm) voiceDebug.exportLogs();
+
     },
 
     startCall(){
