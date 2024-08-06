@@ -93,6 +93,20 @@ main{
     margin-left: 35px;
 }
 
+.mess_message .mess_reacts span{
+    margin-right: 5px;
+    cursor: pointer;
+    background-color: var(--menu);
+    color: var(--txt);
+    padding: 3px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.mess_message .mess_reacts span.userReacted{
+    background-color: var(--accent);
+}
+
 #replyClose, #editClose{
     top: 20px;
     left: 50%;
