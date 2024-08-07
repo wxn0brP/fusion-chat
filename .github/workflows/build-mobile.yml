@@ -47,7 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
           ACTIONS_STEP_DEBUG: true
         with:
-          # repository: wxn0brP/fc-mobile
+          repo: wxn0brP/fc-mobile
           tag_name: v${{ env.VERSION }}
           release_name: v${{ env.VERSION }}
           body: Release of Fusion Chat APK version ${{ env.VERSION }}
