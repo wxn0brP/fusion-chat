@@ -45,6 +45,7 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
+          ACTIONS_STEP_DEBUG: true
         with:
           repository: wxn0brP/fc-mobile
           tag_name: v${{ env.VERSION }}
@@ -57,6 +58,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
+          ACTIONS_STEP_DEBUG: true
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: fc-app/fc-mobile/android/app/build/outputs/apk/release/app-release.apk
