@@ -1,67 +1,32 @@
-name: Build and Deploy Electron App
+name: Copy Electron Files and Trigger Build
 
 on:
   push:
     paths:
-      - 'fc-app/electron/package.json'
+      - 'fc-app/electron/**'
 
 jobs:
-  build:
+  copy-and-trigger-build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout the source repository
         uses: actions/checkout@v2
-        with:
-          submodules: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16'
 
-      - name: Install dependencies
-        working-directory: fc-app/electron
-        run: npm install
-
-      - name: Install Wine
+      - name: Copy Electron files to the target repository
         run: |
-          sudo dpkg --add-architecture i386
-          sudo apt update
-          sudo apt install -y wine64 wine32
-
-      - name: Build the Electron app
-        working-directory: fc-app/electron
-        run: npm run build
-
-      - name: Package the Electron app
-        working-directory: fc-app/electron
-        run: npm run package
-
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: electron-app
-          path: fc-app/electron/release/
-
-      - name: Configure Git for deployment
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git remote add deploy 'https://github.com/wxn0brP/fc-desktop.git'
-          git fetch deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Copy artifacts to new repo
-        run: |
-          mkdir fc-electron
-          cp -R fc-app/electron/release/* fc-electron/
-          cd fc-electron
-          git init
-          git remote add origin 'https://github.com/wxn0brP/fc-desktop.git'
+          git clone https://github.com/wxn0brP/fc-desktop.git fc-desktop
+          cp -r fc-app/electron/* fc-desktop/
+          cd fc-desktop
+          git config user.name "wxn0brP"
+          git config user.email "fusion@fusion.ct8.pl"
           git add .
-          git commit -m "Deploy new version"
-          git push --force origin main
+          git commit -m "Update Electron files from fusion-chat"
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
