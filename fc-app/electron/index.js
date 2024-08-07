@@ -3,9 +3,10 @@ const {
     BrowserWindow,
     Notification,
     ipcMain,
+    globalShortcut,
 } = require('electron');
 
-const lo = console.log;
+global.lo = console.log;
 const updateF = require("./update");
 const config = require("./config");
 const opn = require('opn');
@@ -31,30 +32,18 @@ async function createWindow(){
     });
     mainWin.setIcon(__dirname+"/favicon.png");
 
-    // if(osType == "win32"){
-    //     conf.exitAppB = false;
-    //     mainWin.on('close', (event) => {
-    //         if(conf.exitAppB) return;
-    //         event.preventDefault();
-    //         mainWin.hide();
-    //     });
-    //     var tray = new Tray("favicon.png");
-    //     const contextMenu = Menu.buildFromTemplate([
-    //         { label: 'Otwórz', click: () => changeState() },
-    //         { type: 'separator' },
-    //         { label: 'Zamknij', click: () => quitApp() }
-    //     ]);
-    //     tray.on('click', () => changeState());
-    //     tray.on('right-click', () => {
-    //         tray.popUpContextMenu(contextMenu);
-    //     });
-    // }
+    mainWin.loadURL(config.link+"/app/");
+    mainWin.maximize();
 
-    mainWin.loadURL(config.link+"/app/index.html");
+    if(dev){
+        setTimeout(() => {
+            sendToFront({ type: "debug", msg: "ready back" });
+        }, 5_000);
 
-    setTimeout(() => {
-        sendToFront({ type: "debug", msg: "ready back" });
-    }, 10_000)
+        globalShortcut.register("F12", () => {
+            mainWin.webContents.toggleDevTools();
+        });
+    }
 }
 
 app.on('ready', () => { 
@@ -127,28 +116,11 @@ function sendToFront(data){
     mainWin.webContents.send("electronFront", JSON.stringify(data));
 }
 
-// function changeState(){
-//     if(mainWin.isFocused()){
-//         mainWin.hide();
-//     }else{
-//         mainWin.show();
-//         mainWin.focus();
-//     }
-// }
-
-// function quitApp(){
-//     dialog.showMessageBox(mainWin, {
-//         type: 'question',
-//         buttons: ['Zamknij', 'Anuluj'],
-//         defaultId: 0,
-//         title: 'Potwierdzenie',
-//         message: 'Czy na pewno chcesz zamknąć aplikację?'
-//     })
-//     .then((result) => {
-//         if(result.response === 0){
-//             conf.exitAppB = true;
-//             mainWin = null;
-//             app.quit();
-//         }
-//     });
-// }
+function changeState(){
+    if(mainWin.isFocused()){
+        mainWin.hide();
+    }else{
+        mainWin.show();
+        mainWin.focus();
+    }
+}
