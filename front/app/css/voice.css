@@ -30,3 +30,12 @@
 #voice_call button:hover{
     border-color: red;
 }
+
+#voice_call_users_container{
+    margin-top: 1rem;
+    padding-left: 1rem;
+}
+
+#voice_call_users{
+    padding-left: 1rem;
+}
