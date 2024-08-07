@@ -1,0 +1,27 @@
+name: Copy React Native Files and Trigger Build
+
+on:
+  push:
+    paths:
+      - 'fc-app/fc-mobile/**'
+
+jobs:
+  copy-and-trigger-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the source repository
+        uses: actions/checkout@v2
+
+      - name: Copy React Native files to the target repository
+        env:
+          FC_DESKTOP_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
+        run: |
+          git clone https://github.com/wxn0brP/fc-mobile.git fc-mobile
+          cp -r fc-app/fc-mobile/* fc-mobile/
+          cd fc-mobile
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Update React Native files from fusion-chat"
+          git push https://wxn0brP:${{ secrets.FC_DESKTOP_TOKEN }}@github.com/wxn0brP/fc-mobile.git main
