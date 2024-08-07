@@ -9,7 +9,7 @@ jobs:
   install-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout source repository
         uses: actions/checkout@v3
 
       - name: Install npm dependencies
@@ -20,8 +20,8 @@ jobs:
   build-android:
     needs: install-and-test
     runs-on: ubuntu-latest
-    steps: 
-      - name: Checkout repository
+    steps:
+      - name: Checkout source repository
         uses: actions/checkout@v3
 
       - name: Install JDK 17
@@ -45,3 +45,28 @@ jobs:
         with:
           name: app-release.apk
           path: fc-app/fc-mobile/android/app/build/outputs/apk/release/app-release.apk
+
+  publish-release:
+    needs: build-android
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v3
+        with:
+          repository: wxn0brP/fc-mobile
+          token: ${{ secrets.FC_DESKTOP_TOKEN }}
+          path: fc-mobile
+
+      - name: Copy APK to target repository
+        run: |
+          cp fc-app/fc-mobile/android/app/build/outputs/apk/release/app-release.apk fc-mobile/
+
+      - name: Commit and Push APK to target repository
+        run: |
+          cd fc-mobile
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add app-release.apk
+          git commit -m "Add release APK from CI"
+          git push
