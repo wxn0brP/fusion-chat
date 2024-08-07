@@ -28,11 +28,11 @@ jobs:
           cd fc-app/fc-mobile/android
           ./gradlew assembleRelease
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-release.apk
-          path: fc-app/fc-mobile/android/app/build/outputs/apk/release/
+      # - name: Upload Artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: app-release.apk
+      #     path: fc-app/fc-mobile/android/app/build/outputs/apk/release/
 
       - name: Get version from package.json
         id: get_version
@@ -47,7 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
           ACTIONS_STEP_DEBUG: true
         with:
-          repository: wxn0brP/fc-mobile
+          # repository: wxn0brP/fc-mobile
           tag_name: v${{ env.VERSION }}
           release_name: v${{ env.VERSION }}
           body: Release of Fusion Chat APK version ${{ env.VERSION }}
