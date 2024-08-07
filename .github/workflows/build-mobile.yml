@@ -6,19 +6,7 @@ on:
       - 'fc-app/fc-mobile/**'
 
 jobs:
-  install-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source repository
-        uses: actions/checkout@v3
-
-      - name: Install npm dependencies
-        run: |
-          cd fc-app/fc-mobile
-          npm install
-
   build-android:
-    needs: install-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source repository
@@ -44,29 +32,32 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: app-release.apk
-          path: fc-app/fc-mobile/android/app/build/outputs/apk/release/app-release.apk
+          path: fc-app/fc-mobile/android/app/build/outputs/apk/release/
 
-  publish-release:
-    needs: build-android
-    runs-on: ubuntu-latest
-    if: success()
-    steps:
-      - name: Checkout target repository
-        uses: actions/checkout@v3
+      - name: Get version from package.json
+        id: get_version
+        run: |
+          VERSION=$(node -p "require('./fc-app/fc-mobile/package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
         with:
-          repository: wxn0brP/fc-mobile
-          token: ${{ secrets.FC_DESKTOP_TOKEN }}
-          path: fc-mobile
+          tag_name: v${{ env.VERSION }}
+          release_name: Fusion Chat Release
+          body: Release of Fusion Chat APK version ${{ env.VERSION }}
+          draft: false
+          prerelease: false
 
-      - name: Copy APK to target repository
-        run: |
-          cp fc-app/fc-mobile/android/app/build/outputs/apk/release/app-release.apk fc-mobile/
-
-      - name: Commit and Push APK to target repository
-        run: |
-          cd fc-mobile
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add app-release.apk
-          git commit -m "Add release APK from CI"
-          git push
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: fc-app/fc-mobile/android/app/build/outputs/apk/release/app-release.apk
+          asset_name: fusion-chat-${{ env.VERSION }}.apk
+          asset_content_type: application/vnd.android.package-archive
