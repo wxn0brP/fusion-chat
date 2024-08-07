@@ -19,6 +19,8 @@ jobs:
           node-version: '16'
 
       - name: Copy Electron files to the target repository
+        env:
+          FC_DESKTOP_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
         run: |
           git clone https://github.com/wxn0brP/fc-desktop.git fc-desktop
           cp -r fc-app/electron/* fc-desktop/
@@ -27,6 +29,4 @@ jobs:
           git config user.email "fusion@fusion.ct8.pl"
           git add .
           git commit -m "Update Electron files from fusion-chat"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git push https://wxn0brP:${{ secrets.FC_DESKTOP_TOKEN }}@github.com/wxn0brP/fc-desktop.git main
