@@ -1,4 +1,4 @@
-name: Copy Electron Files and Trigger Build
+name: Build Electron
 
 on:
   push:
@@ -13,15 +13,9 @@ jobs:
       - name: Checkout the source repository
         uses: actions/checkout@v2
 
-      - name: Copy Electron files to the target repository
+      - name: Build
         env:
-          FC_DESKTOP_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
         run: |
-          git clone https://github.com/wxn0brP/fc-desktop.git fc-desktop
-          cp -r fc-app/electron/* fc-desktop/
-          cd fc-desktop
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add .
-          git commit -m "Update Electron files from fusion-chat"
-          git push https://wxn0brP:${{ secrets.FC_DESKTOP_TOKEN }}@github.com/wxn0brP/fc-desktop.git main
+          cd fc-app/electron
+          npx electron-builder --publish always --win --linux
