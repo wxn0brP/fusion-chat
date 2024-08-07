@@ -1,0 +1,58 @@
+name: Build and Deploy Electron App
+
+on:
+  push:
+    paths:
+      - 'fc-app/electron/package.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        working-directory: fc-app/electron
+        run: npm install
+
+      - name: Build the Electron app
+        working-directory: fc-app/electron
+        run: npm run build
+
+      - name: Package the Electron app
+        working-directory: fc-app/electron
+        run: npm run package
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: electron-app
+          path: fc-app/electron/release/
+
+      - name: Configure Git for deployment
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git remote add deploy 'git@github.com:wxn0brP/fc-electron.git'
+          git fetch deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copy artifacts to new repo
+        run: |
+          mkdir fc-electron
+          cp -R fc-app/electron/release/* fc-electron/
+          cd fc-electron
+          git init
+          git add .
+          git commit -m "Deploy new version"
+          git push --force deploy main
