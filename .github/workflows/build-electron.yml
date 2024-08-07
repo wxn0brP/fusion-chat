@@ -24,6 +24,12 @@ jobs:
         working-directory: fc-app/electron
         run: npm install
 
+      - name: Install Wine
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install -y wine64 wine32
+
       - name: Build the Electron app
         working-directory: fc-app/electron
         run: npm run build
@@ -42,7 +48,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git remote add deploy 'git@github.com:wxn0brP/fc-electron.git'
+          git remote add deploy 'https://github.com/wxn0brP/fc-desktop.git'
           git fetch deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -53,6 +59,9 @@ jobs:
           cp -R fc-app/electron/release/* fc-electron/
           cd fc-electron
           git init
+          git remote add origin 'https://github.com/wxn0brP/fc-desktop.git'
           git add .
           git commit -m "Deploy new version"
-          git push --force deploy main
+          git push --force origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
