@@ -130,6 +130,18 @@ nav{
     color: var(--accent);
 }
 
+.priv_chat div{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#navs__priv img{
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
 #navs .channel_textActive{
     color: var(--accent);
 }
