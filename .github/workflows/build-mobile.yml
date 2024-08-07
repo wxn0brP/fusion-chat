@@ -40,16 +40,17 @@ jobs:
           VERSION=$(node -p "require('./fc-app/fc-mobile/package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Create Release
+      - name: Create Release in Target Repository
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
         with:
+          repository: wxn0brP/fc-mobile
           tag_name: v${{ env.VERSION }}
-          release_name: Fusion Chat Release
+          release_name: v${{ env.VERSION }}
           body: Release of Fusion Chat APK version ${{ env.VERSION }}
-          draft: false
+          draft: true
           prerelease: false
 
       - name: Upload APK to Release
