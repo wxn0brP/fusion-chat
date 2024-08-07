@@ -13,9 +13,27 @@ jobs:
       - name: Checkout the source repository
         uses: actions/checkout@v2
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.x'
+      
+      - name: cd
+        run: |
+          cd fc-app/electron
+          
+      - name: Setup wine for Windows build
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install -y wine32 wine64
+
+      - name: Install dependencies
+        run: |
+          npm install
+
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
         run: |
-          cd fc-app/electron
           npx electron-builder --publish always --win --linux
