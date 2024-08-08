@@ -2,90 +2,94 @@ name: React Native Android Build and Publish
 
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
     paths:
-      - 'fc-app/fc-mobile/**'
-      # - 'fc-app/fc-mobile/package.json'
+      - 'fc-app/fc-mobile/package.json'
 
   workflow_dispatch:
   
 jobs:
   build-android:
     runs-on: ubuntu-latest
-    outputs:
-      apk-path: ${{ steps.build.outputs.apk-path }}
-      version: ${{ steps.get_version.outputs.version }}
     steps:
-      - name: Checkout source repository
-        uses: actions/checkout@v3
-
-      - name: Install JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Install npm dependencies
-        run: |
-          cd fc-app/fc-mobile
-          npm install
-
-      - name: Build Android Release
-        id: build
-        run: |
-          cd fc-app/fc-mobile/android
-          ./gradlew assembleRelease
-          echo "apk-path=fc-app/fc-mobile/android/app/build/outputs/apk/release/app-release.apk" >> $GITHUB_ENV
-
-      - name: Get version from package.json
-        id: get_version
-        run: |
-          VERSION=$(node -p "require('./fc-app/fc-mobile/package.json').version")
-          echo "::set-output name=version::$VERSION"
-
-  release-android:
+    - name: Checkout source repository
+      uses: actions/checkout@v3
+      
+    - name: Install JDK 17  
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        
+    - name: Install npm dependencies
+      run: |
+        cd fc-app/fc-mobile
+        npm install
+        
+    - name: Build Android Release
+      run: |
+        cd fc-app/fc-mobile/android
+        ./gradlew assembleRelease
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release.apk
+        path: fc-app/fc-mobile/android/app/build/outputs/apk/release/
+        
+  release:
     needs: build-android
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source repository
-        uses: actions/checkout@v3
-
-      - name: Create Release in Target Repository
-        id: create_release
-        run: |
-          VERSION=${{ needs.build-android.outputs.version }}
-          REPO="wxn0brP/fc-mobile"
-          TAG="v${VERSION}"
-          BODY="Release of Fusion Chat APK version ${VERSION}"
-          
-          # Create Release
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d "{\"tag_name\":\"${TAG}\",\"name\":\"${TAG}\",\"body\":\"${BODY}\",\"draft\":false,\"prerelease\":false}" \
-            "https://api.github.com/repos/${REPO}/releases"
-        env:
-          GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
-
-      - name: Upload APK to Release in Target Repository
-        run: |
-          VERSION=${{ needs.build-android.outputs.version }}
-          REPO="wxn0brP/fc-mobile"
-          TAG="v${VERSION}"
-          ASSET_NAME="fusion-chat-${VERSION}.apk"
-          APK_PATH=${{ needs.build-android.outputs.apk-path }}
-          
-          # Find the upload URL from the release response
-          UPLOAD_URL=$(curl -s \
-            -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${REPO}/releases/tags/${TAG}" \
-            | jq -r '.upload_url' | sed -e "s/{?name,label}//")
-          
-          # Upload APK
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
-            -H "Content-Type: application/vnd.android.package-archive" \
-            --data-binary "@${APK_PATH}" \
-            "${UPLOAD_URL}?name=${ASSET_NAME}"
+    - name: Checkout source repository
+      uses: actions/checkout@v3
+      
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: app-release.apk
+        
+    - name: Get version from package.json
+      id: get_version
+      run: |
+        VERSION=$(node -p "require('./fc-app/fc-mobile/package.json').version")
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        
+    - name: Create Release in Target Repository  
+      id: create_release
+      run: |
+        VERSION=${{ steps.get_version.outputs.VERSION }}
+        REPO="wxn0brP/fc-mobile"
+        TAG="v${VERSION}"
+        BODY="Release of Fusion Chat APK version ${VERSION}"
+        
+        # Create Release
+        curl -X POST \
+          -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d "{\"tag_name\":\"${TAG}\",\"name\":\"${TAG}\",\"body\":\"${BODY}\",\"draft\":false,\"prerelease\":false}" \
+          "https://api.github.com/repos/${REPO}/releases"
+      env:
+        GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
+        
+    - name: Upload APK to Release in Target Repository
+      run: |
+        VERSION=${{ steps.get_version.outputs.VERSION }}  
+        REPO="wxn0brP/fc-mobile"
+        TAG="v${VERSION}"
+        ASSET_NAME="fusion-chat-${VERSION}.apk"
+        
+        # Find the upload URL from the release response
+        UPLOAD_URL=$(curl -s \
+          -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/${REPO}/releases/tags/${TAG}" \
+          | jq -r '.upload_url' | sed -e "s/{?name,label}//")
+        
+        # Upload APK  
+        curl -X POST \
+          -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
+          -H "Content-Type: application/vnd.android.package-archive" \
+          --data-binary "@app-release.apk" \
+          "${UPLOAD_URL}?name=${ASSET_NAME}"
