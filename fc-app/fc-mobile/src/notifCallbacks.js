@@ -7,7 +7,7 @@ const openExternalLink = (url) => {
 
 const callbacks = {
     updateCall: () => {
-        openExternalLink(config.link+"/get");
+        openExternalLink(config.link+"/get?auto=true");
     }
 }
 

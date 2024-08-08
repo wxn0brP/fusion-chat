@@ -15,7 +15,15 @@ const renderFunc = {
             const privDiv = document.createElement("button");
             privDiv.classList.add("priv_chat");
             privDiv.id = "priv_chat_"+id;
-            privDiv.innerHTML = apis.www.changeUserID(id);
+
+            const structDiv = document.createElement("div");
+
+            const profileImg = document.createElement("img");
+            profileImg.src = "/profileImg?id=" + id;
+            structDiv.appendChild(profileImg);
+
+            structDiv.innerHTML += apis.www.changeUserID(id);
+            privDiv.appendChild(structDiv);
             navs__priv.appendChild(privDiv);
 
             privDiv.addEventListener("click", () => {
