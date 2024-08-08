@@ -1,6 +1,6 @@
 import { Notifications } from 'react-native-notifications';
 import { PermissionsAndroid } from 'react-native';
-import callbacks from './callbacks';
+import callbacks from './notifCallbacks';
 
 const initNotifications = () => {
     const channelId = 'channel_fc';

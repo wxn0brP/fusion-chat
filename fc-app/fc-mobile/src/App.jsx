@@ -1,49 +1,29 @@
 import React, { useEffect } from 'react';
 import { AppState } from 'react-native';
 import { WebView } from 'react-native-webview';
-import NotificationModule from './NotificationModule';
-import messaging from '@react-native-firebase/messaging';
-import axios from "axios";
+import notificationModule from './notificationModule';
 import updateFunc from "./update";
 import config from "./config";
+import firebase from "./firebase";
+import permission from "./permission";
 
 const lo = console.log;
-const url = config.link;
 
 const ReactNativeApp = () => {
     const webViewRef = React.useRef(null);
     var webviewUrl = "";
 
-    const requestUserPermission = async () => {
-        const authStatus = await messaging().requestPermission();
-        const enabled =
-            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-      
-        if(enabled) console.log('Authorization Firebase status:', authStatus);
-    }
-
-    const registerApp = async (id, user) => {
-        const token = await messaging().getToken();
-        const res = await axios.post(url+"/notif-reg", {
-            token,
-            id,
-            user
-        });
-        console.log("res token add", res.data);
-    }
-
     const handleReceiveMessage = (event) => {
         let data = JSON.parse(event.nativeEvent.data);
         switch(data.type){
             case "notif":
-                handleSendNotif(data)
+                notificationModule.showNotification(data.title, data.msg);
             break;
             case "firebase":
-                registerApp(data._id, data.user);
+                firebase.registerApp(data._id, data.user);
             break;
             case "debug":
-                console.log(data.msg);
+                lo(data.msg);
             break;
         }
     }
@@ -53,12 +33,8 @@ const ReactNativeApp = () => {
             if(!webViewRef.current) return;
             webViewRef.current.injectJavaScript(`apis.api.receiveMessage('${JSON.stringify(data)}')`)
         }catch(e){
-            console.log(e);
+            lo(e);
         }
-    }
-    
-    const handleSendNotif = (data) => {
-        NotificationModule.showNotification(data.title, data.msg);
     }
 
     useEffect(() => {
@@ -75,24 +51,24 @@ const ReactNativeApp = () => {
     }, []);
 
     useEffect(() => {
-        requestUserPermission();
+        permission.requestUserPermission();
     }, []);
 
     (async () => {
-        await NotificationModule.checkApplicationPermission();
-        NotificationModule.initNotifications();
+        await notificationModule.checkApplicationPermission();
+        notificationModule.initNotifications();
         
         console.log("Checking for updates...");
         const update = await updateFunc();
         if(update){
             console.log("Update available");
-            NotificationModule.showNotification("Update Required", "Please update the app", "updateCall");
+            notificationModule.showNotification("Update Required", "Please update the app", "updateCall");
         }
     })();
 
     return (
         <WebView
-            source={{ uri: url+'/app' }}
+            source={{ uri: config.link+'/app' }}
             onMessage={e => handleReceiveMessage(e)}
             onNavigationStateChange={(navState) => {
                 webviewUrl = navState.url;
@@ -103,3 +79,4 @@ const ReactNativeApp = () => {
 }
 
 export default ReactNativeApp;
+
