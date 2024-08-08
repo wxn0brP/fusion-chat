@@ -1,24 +1,38 @@
+const errMessesDiv = document.querySelector("#errMesses");
+
 const uiFunc = {
-    uiMessage(data, bg="", time=6000, classe=""){
+    async uiMessage(message, backgroundColor="", displayTime=6000, className=""){
         const div = document.createElement("div");
-        div.innerHTML = data;
-        if(!!bg) div.style.backgroundColor = bg;
-        document.querySelector("#errMesses").add(div);
-        const def = "-"+(div.clientHeight+30)+"px";
-        div.style.top = def;
-        if(!!classe) div.classList.add(classe);
-    
-        setTimeout(() => {
-            div.style.top = "10px";
-        }, 111);
-    
-        setTimeout(() => {
-            div.style.top = def;
-        }, time - 2100);
-       
-        setTimeout(() => {
-            // div.remove();
-        }, time);
+        div.textContent = message;
+        if(backgroundColor) div.style.backgroundColor = backgroundColor;
+
+        const defaultPosition = `-${div.offsetHeight + 50}px`;
+        div.style.top = defaultPosition;
+        if(className) div.classList.add(className);
+
+        const padding = 10;
+        let topPosition = calculateTopPosition();
+
+        function calculateTopPosition(){
+            let top = 0;
+            for(const child of errMessesDiv.children)
+                top += child.offsetHeight + padding;
+            return top;
+        }
+
+        errMessesDiv.appendChild(div);
+        await delay(100);
+        div.style.top = `${10 + topPosition}px`;
+
+        await delay(displayTime - 700);
+        div.style.top = defaultPosition;
+
+        await delay(700);
+        for(const child of errMessesDiv.children){
+            const currentTop = parseInt(child.style.top.replace("px", ""));
+            child.style.top = `${currentTop - padding - div.offsetHeight}px`;
+        }
+        div.remove();
     },
     
     uiMsg(data, extraTime=0){
