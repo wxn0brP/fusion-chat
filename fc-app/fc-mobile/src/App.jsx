@@ -11,7 +11,7 @@ const lo = console.log;
 
 const ReactNativeApp = () => {
     const webViewRef = React.useRef(null);
-    var webviewUrl = "";
+    const [webviewUrl, setWebviewUrl] = React.useState("");
 
     const handleReceiveMessage = (event) => {
         let data = JSON.parse(event.nativeEvent.data);
@@ -23,8 +23,10 @@ const ReactNativeApp = () => {
                 firebase.registerApp(data._id, data.user);
             break;
             case "debug":
-                lo(data.msg);
+                console.log(data.msg);
             break;
+            default:
+                console.log("unknown message", data);
         }
     }
 
@@ -33,8 +35,12 @@ const ReactNativeApp = () => {
             if(!webViewRef.current) return;
             webViewRef.current.injectJavaScript(`apis.api.receiveMessage('${JSON.stringify(data)}')`)
         }catch(e){
-            lo(e);
+            console.error(e);
         }
+    }
+
+    const handleNavigationStateChange = (navState) => {
+        setWebviewUrl(navState.url);
     }
 
     useEffect(() => {
@@ -48,31 +54,29 @@ const ReactNativeApp = () => {
             }
         };
         AppState.addEventListener('change', handleAppStateChange);
-    }, []);
-
-    useEffect(() => {
-        permission.requestUserPermission();
-    }, []);
-
-    (async () => {
-        await notificationModule.checkApplicationPermission();
-        notificationModule.initNotifications();
         
-        console.log("Checking for updates...");
-        const update = await updateFunc();
-        if(update){
-            console.log("Update available");
-            notificationModule.showNotification("Update Required", "Please update the app", "updateCall");
+        const initApp = async () => {
+            await notificationModule.checkApplicationPermission();
+            notificationModule.initNotifications();
+            
+            console.log("Checking for updates...");
+            const update = await updateFunc();
+            if(update){
+                console.log("Update available");
+                notificationModule.showNotification("Update Required", "Please update the app", "updateCall");
+            }
         }
-    })();
+
+        permission.requestUserPermission();
+        initApp();
+    }, []);
+
 
     return (
         <WebView
             source={{ uri: config.link+'/app' }}
             onMessage={e => handleReceiveMessage(e)}
-            onNavigationStateChange={(navState) => {
-                webviewUrl = navState.url;
-            }}
+            onNavigationStateChange={handleNavigationStateChange}
             ref={webViewRef}
         />
     );
