@@ -27,7 +27,7 @@ jobs:
           cd fc-app/fc-mobile
           npm install
 
-  build:
+  build-android:
     needs: install
     runs-on: ubuntu-latest
     steps:
