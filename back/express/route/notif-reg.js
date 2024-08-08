@@ -7,6 +7,10 @@ app.post("/notif-reg", async (req, res) => {
 
     const dbToken = await global.db.data.findOne("fireBaseUser", { token });
     if(!dbToken) await global.db.data.add("fireBaseUser", { token, _id: id });
+
+    if(dbToken && dbToken._id !== id){
+        await global.db.data.updateOne("fireBaseUser", { token }, { _id: id });
+    }
     
     res.json({ err: false, msg: "ok" });
 });
