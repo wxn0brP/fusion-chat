@@ -33,7 +33,9 @@ jobs:
     steps:
       - name: Build Android Release
         run: |
-          cd fc-app/fc-mobile/android
+          cd fc-app/fc-mobile
+          ls
+          cd android
           ./gradlew assembleRelease
         
   release:
