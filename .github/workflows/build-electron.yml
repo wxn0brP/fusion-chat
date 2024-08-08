@@ -2,8 +2,10 @@ name: Build Electron
 
 on:
   push:
+    branches:
+      - main
     paths:
-      - 'fc-app/electron/**'
+      - 'fc-app/electron/package.json'
 
 jobs:
   copy-and-trigger-build:
