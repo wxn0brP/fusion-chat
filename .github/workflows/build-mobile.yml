@@ -2,12 +2,18 @@ name: React Native Android Build and Publish
 
 on:
   push:
+    # branches:
+    #   - main
     paths:
       - 'fc-app/fc-mobile/**'
+      # - 'fc-app/fc-mobile/package.json'
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    outputs:
+      apk-path: ${{ steps.build.outputs.apk-path }}
+      version: ${{ steps.get_version.outputs.version }}
     steps:
       - name: Checkout source repository
         uses: actions/checkout@v3
@@ -24,26 +30,29 @@ jobs:
           npm install
 
       - name: Build Android Release
+        id: build
         run: |
           cd fc-app/fc-mobile/android
           ./gradlew assembleRelease
-
-      # - name: Upload Artifact
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: app-release.apk
-      #     path: fc-app/fc-mobile/android/app/build/outputs/apk/release/
+          echo "apk-path=fc-app/fc-mobile/android/app/build/outputs/apk/release/app-release.apk" >> $GITHUB_ENV
 
       - name: Get version from package.json
         id: get_version
         run: |
           VERSION=$(node -p "require('./fc-app/fc-mobile/package.json').version")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=version::$VERSION"
+
+  release-android:
+    needs: build-android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v3
 
       - name: Create Release in Target Repository
         id: create_release
         run: |
-          VERSION=${{ env.VERSION }}
+          VERSION=${{ needs.build-android.outputs.version }}
           REPO="wxn0brP/fc-mobile"
           TAG="v${VERSION}"
           BODY="Release of Fusion Chat APK version ${VERSION}"
@@ -59,10 +68,11 @@ jobs:
 
       - name: Upload APK to Release in Target Repository
         run: |
-          VERSION=${{ env.VERSION }}
+          VERSION=${{ needs.build-android.outputs.version }}
           REPO="wxn0brP/fc-mobile"
           TAG="v${VERSION}"
           ASSET_NAME="fusion-chat-${VERSION}.apk"
+          APK_PATH=${{ needs.build-android.outputs.apk-path }}
           
           # Find the upload URL from the release response
           UPLOAD_URL=$(curl -s \
@@ -75,5 +85,5 @@ jobs:
           curl -X POST \
             -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
             -H "Content-Type: application/vnd.android.package-archive" \
-            --data-binary "@fc-app/fc-mobile/android/app/build/outputs/apk/release/app-release.apk" \
+            --data-binary "@${APK_PATH}" \
             "${UPLOAD_URL}?name=${ASSET_NAME}"
