@@ -87,10 +87,10 @@ const uiFunc = {
 
             document.querySelector("#prompt").appendChild(div);
             div.fadeIn();
-        })
+        });
     },
 
-    selectPrompt(text, options){
+    selectPrompt(text, options, optionsValues=[]){
         return new Promise((resolve) => {
             function end(){
                 resolve(select.value);
@@ -105,12 +105,12 @@ const uiFunc = {
             div.classList.add("prompt");
             div.innerHTML = "<p>" + text + "<p><br />";
             const select = document.createElement("select");
-            options.forEach(option => {
+            for(let i=0; i<options.length; i++){
                 const optionElement = document.createElement("option");
-                optionElement.value = option;
-                optionElement.innerHTML = option;
+                optionElement.value = optionsValues[i] || options[i];
+                optionElement.innerHTML = options[i];
                 select.appendChild(optionElement);
-            });
+            }
             select.querySelector("option").selected = true;
             
             div.appendChild(select);

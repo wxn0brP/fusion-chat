@@ -2,6 +2,7 @@ const voiceHTML = {
     div: document.querySelector("#voice_call"),
     mediaContainer: document.querySelector("#voice_call_media"),
     users: document.querySelector("#voice_call_users"),
+    muteMic: document.querySelector("#voice_call_mute_mic"),
 }
 
 const voiceConfig = {
@@ -16,37 +17,45 @@ const voiceDebug = {
         warn: true,
         error: true
     },
-    log(level, user, action, message){
+
+    log(level, action, message){
         if(!this.filters[level]) return;
 
         const time = new Date();
-        const logEntry = { time, level: level.toUpperCase(), user, action, message };
+        const logEntry = { time, level: level.toUpperCase(), user: vars.user._id, action, message };
         
         if(this.logBuffer.length >= this.maxLogSize){
             this.logBuffer.shift();
         }
         this.logBuffer.push(logEntry);
         
-        debugFunc.msg(`[${time.toLocaleTimeString()}] [${logEntry.level}] [User: ${logEntry.user}] [Action: ${logEntry.action}] ${logEntry.message}`);
+        debugFunc.msg(`[${time.toLocaleTimeString()}] [${logEntry.level}] [Action: ${logEntry.action}] ${logEntry.message}`);
     },
-    info(user, action, message){
-        this.log('info', user, action, message);
+
+    info(action, message){
+        this.log('info', action, message);
     },
-    warn(user, action, message){
-        this.log('warn', user, action, message);
+
+    warn(action, message){
+        this.log('warn', action, message);
     },
-    error(user, action, message){
-        this.log('error', user, action, message);
+
+    error(action, message){
+        this.log('error', action, message);
     },
+
     getLogs(){
         return this.logBuffer;
     },
+
     clearLogs(){
         this.logBuffer = [];
     },
+
     setFilter(level, state){
         this.filters[level] = state;
     },
+
     exportLogs(){
         const logData = JSON.stringify(this.logBuffer, null, 2);
         const blob = new Blob([logData], { type: 'application/json' });
@@ -63,7 +72,7 @@ const voiceDebug = {
 
 const voiceUtils = {
     initPeer(fr, to){
-        const id = voiceUtils.formatCallid(fr, to);
+        const id = voiceUtils.formatCallId(fr, to);
         voiceDebug.info(fr, 'initPeer', `Initializing peer connection; id: ${id}`);
         return new Peer(id, {
             secure: true,
@@ -72,25 +81,57 @@ const voiceUtils = {
         });
     },
 
-    async getStream(obj){
-        try{
+    async getStream(audio=true, video=false){
+        const stream = new MediaStream();
+
+        async function getUserMedia(options){
             if(navigator.mediaDevices?.getUserMedia){
-                return await navigator.mediaDevices.getUserMedia(obj);
+                return await navigator.mediaDevices.getUserMedia(options);
             }else if(navigator.webkitGetUserMedia){
-                return await navigator.webkitGetUserMedia(obj);
+                return await navigator.webkitGetUserMedia(options);
             }else if(navigator.mozGetUserMedia){
-                return await navigator.mozGetUserMedia(obj);
-            }else{
-                throw new Error("getUserMedia not supported");
+                return await navigator.mozGetUserMedia(options);
             }
+        }
+
+        async function selectDevice(devices, prompt){
+            const labels = devices.map(device => device.label);
+            const deviceIds = devices.map(device => device.deviceId);
+            const selectedIndex = await uiFunc.selectPrompt(translateFunc.get(prompt), labels, deviceIds);
+            return deviceIds[selectedIndex];
+        }
+
+        try{
+            const permisons = await getUserMedia({ audio, video });
+            if(!permisons){
+                voiceDebug.error('getStream', 'No permissions to get stream');
+                uiFunc.uiMsg(translateFunc.get('Error getting stream'));
+                return stream;
+            }
+            setTimeout(() => {
+                permisons.getTracks().forEach(track => track.stop());
+            }, 100);
+
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const audioDevices = devices.filter(device => device.kind === 'audioinput');
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+            const audioOptions = audio ? { deviceId: await selectDevice(audioDevices, 'Select audio device') } : false;
+            const videoOptions = video ? { deviceId: await selectDevice(videoDevices, 'Select video device') } : false;
+
+            const mediaStream = await getUserMedia({ audio: audioOptions, video: videoOptions });
+            if(mediaStream)
+                stream.addTrack(mediaStream.getAudioTracks()[0]);
+
+            return stream;
         }catch(error){
-            voiceDebug.error('unknown', 'getStream', `Error getting stream: ${error.message}`);
-            return new MediaStream();
+            console.error(`Error getting stream: ${error.message}`);
+            return stream;
         }
     },
 
-    formatCallid(fr, to){
-        return voiceConfig.prefix + fr + "-2-" + to;
+    formatCallId(fromUserId, toUserId){
+        return `${voiceConfig.prefix}${fromUserId}-2-${toUserId}`;
     },
 
     postSetupPeer(peer, to){
@@ -99,11 +140,11 @@ const voiceUtils = {
             fr: vars.user._id
         }
         peer.on("open", () => {
-            voiceDebug.info(vars.user._id, 'postSetupPeer', `Peer connection opened; to: ${to}`);
+            voiceDebug.info('postSetupPeer', `Peer connection opened; to: ${to}`);
         });
 
         peer.on("close", () => {
-            voiceDebug.warn(vars.user._id, 'postSetupPeer', `Peer connection closed; to: ${to}`);
+            voiceDebug.warn('postSetupPeer', `Peer connection closed; to: ${to}`);
         });
     }
 }
@@ -111,14 +152,15 @@ const voiceUtils = {
 const voiceFunc = {
     local_stream: new MediaStream(),
     peers: [],
+    muteMic: false,
 
     async initCall(){
         try{
-            const stream = await voiceUtils.getStream({ audio: true, video: false });
+            const stream = await voiceUtils.getStream(true, false);
             voiceFunc.local_stream = stream;
             voiceHTML.div.fadeIn();
         }catch(error){
-            voiceDebug.error(vars.user._id, 'initCall', `Error joining voice channel: ${error.message}`);
+            voiceDebug.error('initCall', `Error joining voice channel: ${error.message}`);
         }
     },
 
@@ -126,7 +168,7 @@ const voiceFunc = {
         await voiceFunc.initCall();
         socket.emit("joinVoiceChannel", to);
         socket.emit("getVoiceChannelUsers", to, true);
-        voiceDebug.info(vars.user._id, 'initCall', `Joined voice channel: ${to}`);
+        voiceDebug.info('initCall', `Joined voice channel: ${to}`);
     },
 
     makeConnectionHandler(to){
@@ -135,16 +177,16 @@ const voiceFunc = {
         voiceUtils.postSetupPeer(peer, to);
 
         peer.on("call", (call) => {
-            voiceDebug.info(vars.user._id, 'makeConnectionHandler', `Incoming call; to: ${to}`);
+            voiceDebug.info('makeConnectionHandler', `Incoming call; to: ${to}`);
             call.answer(voiceFunc.local_stream);
 
             call.on("stream", (stream) => {
                 voiceFunc.addMediaHtml(stream, to);
-                voiceDebug.info(vars.user._id, 'makeConnectionHandler', `Stream received; to: ${to}`);
+                voiceDebug.info('makeConnectionHandler', `Stream received; to: ${to}`);
             });
 
             call.on("close", () => {
-                voiceDebug.warn(vars.user._id, 'makeConnectionHandler', `Call closed; to: ${to}`);
+                voiceDebug.warn('makeConnectionHandler', `Call closed; to: ${to}`);
             });
         });
 
@@ -157,16 +199,16 @@ const voiceFunc = {
         voiceUtils.postSetupPeer(peer, to);
         
         peer.on("open", () => {
-            const id = voiceUtils.formatCallid(vars.user._id, to);
+            const id = voiceUtils.formatCallId(to);
             const call = peer.call(id, voiceFunc.local_stream);
-            voiceDebug.info(vars.user._id, 'makeConnectionCaller', `Outgoing call to: ${id}`);
+            voiceDebug.info('makeConnectionCaller', `Outgoing call to: ${id}`);
             call.on("stream", (stream) => {
                 voiceFunc.addMediaHtml(stream, to);
-                voiceDebug.info(vars.user._id, 'makeConnectionCaller', `Stream received from call; to: ${to}`);
+                voiceDebug.info('makeConnectionCaller', `Stream received from call; to: ${to}`);
             });
 
             call.on("close", () => {
-                voiceDebug.warn(vars.user._id, 'makeConnectionCaller', `Call closed; to: ${to}`);
+                voiceDebug.warn('makeConnectionCaller', `Call closed; to: ${to}`);
             });
         })
 
@@ -182,7 +224,7 @@ const voiceFunc = {
         audio.style.display = "none";
 
         voiceHTML.mediaContainer.appendChild(audio);
-        voiceDebug.info(vars.user._id, 'addMediaHtml', `Added media HTML for call: ${id}`);
+        voiceDebug.info('addMediaHtml', `Added media HTML for call: ${id}`);
 
         return audio;
     },
@@ -201,7 +243,7 @@ const voiceFunc = {
             track.stop();
         });
         voiceFunc.local_stream = new MediaStream();
-        voiceDebug.info(vars.user._id, 'endCall', "Call ended and cleaned up.");
+        voiceDebug.info('endCall', "Call ended and cleaned up.");
 
         socket.emit("callLogs", voiceDebug.getLogs());
 
@@ -219,11 +261,22 @@ const voiceFunc = {
         if(!isConfirm) return;
 
         socket.emit("callToUser", id);
+    },
+
+    toggleMute(){
+        const tracks = voiceFunc.local_stream.getAudioTracks();
+        voiceFunc.muteMic = !voiceFunc.muteMic;
+        tracks.forEach((track) => {
+            track.enabled = !voiceFunc.muteMic;
+        });
+
+        voiceDebug.info('toggleMute', `Mic ${voiceFunc.muteMic ? "muted" : "unmuted"}`);
+        voiceHTML.muteMic.innerHTML = translateFunc.get(voiceFunc.muteMic ? "Unmute" : "Mute");
     }
 }
 
 socket.on("joinVoiceChannel", (to) => {
-    voiceDebug.info(vars.user._id, 'socket', `Handling joinVoiceChannel for ${to}`);
+    voiceDebug.info('socket', `Handling joinVoiceChannel for ${to}`);
     voiceFunc.makeConnectionHandler(to);
 });
 
@@ -232,7 +285,7 @@ socket.on("getVoiceChannelUsers", (users, make) => {
         users.forEach((to) => {
             if(to == vars.user._id) return;
     
-            voiceDebug.info(vars.user._id, 'socket', `Handling getVoiceChannelUsers for ${to}`);
+            voiceDebug.info('socket', `Handling getVoiceChannelUsers for ${to}`);
             voiceFunc.makeConnectionCaller(to);
         });
     }
@@ -251,7 +304,7 @@ socket.on("callToUser", (id) => {
 
     if(!isConfirm) return;
 
-    voiceDebug.info(vars.user._id, 'socket', `Handling callToUser for ${id}`);
+    voiceDebug.info('socket', `Handling callToUser for ${id}`);
     voiceFunc.joinToVoiceChannel(id + "=" + vars.user._id);
 });
 
@@ -261,7 +314,7 @@ socket.on("callToUserAnswer", (id, answer) => {
         return;
     }
 
-    voiceDebug.info(vars.user._id, 'socket', `Handling callToUserAnswer for ${id}`);
+    voiceDebug.info('socket', `Handling callToUserAnswer for ${id}`);
     setTimeout(() => {
         voiceFunc.joinToVoiceChannel(vars.user._id + "=" + id);
     }, 1000);
