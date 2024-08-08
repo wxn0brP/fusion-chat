@@ -9,11 +9,7 @@ on:
       # - 'fc-app/fc-mobile/package.json'
 
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version'
-        required: false
-
+  
 jobs:
   build-android:
     runs-on: ubuntu-latest
