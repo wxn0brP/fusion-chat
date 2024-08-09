@@ -78,6 +78,14 @@ const ReactNativeApp = () => {
             onMessage={e => handleReceiveMessage(e)}
             onNavigationStateChange={handleNavigationStateChange}
             ref={webViewRef}
+
+            mediaPlaybackRequiresUserAction={false}
+            domStorageEnabled={true}
+            allowsInlineMediaPlayback={true}
+            startInLoadingState={true}
+            onPermissionRequest={(request) => {
+                if(request.permissions) request.grant();
+            }}
         />
     );
 }
