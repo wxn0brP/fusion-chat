@@ -12,6 +12,10 @@
     z-index: 10;
 }
 
+#settings button{
+    cursor: pointer;
+}
+
 #settings .settings__categorySwitcher button{
     background-color: var(--back);
     color: var(--txt);

@@ -119,7 +119,7 @@ class SettingsManager{
 
     createButton(setting){
         const button = document.createElement('button');
-        button.textContent = setting.name;
+        button.textContent = setting.txt || setting.name;
         button.onclick = setting.onclick;
         return button;
     }
