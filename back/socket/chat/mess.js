@@ -164,7 +164,7 @@ module.exports = (socket) => {
             }
             if(mess.fr !== socket.user._id){
                 const perm = new permissionSystem(to);
-                if(!perm.userPermison(socket.user._id, "menage text")){
+                if(!perm.userPermison(socket.user._id, "manage text")){
                     return socket.emit("error", "not authorized");
                 }
             }
