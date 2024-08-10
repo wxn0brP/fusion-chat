@@ -54,7 +54,7 @@ module.exports = {
                     p: {
                         anyOf: [
                             { type: "string", enum: ["all"] },
-                            { type: "array", items: { type: "string", enum: ["text", "voice", "menage text", "menage server"] } }
+                            { type: "array", items: { type: "string", enum: ["text", "voice", "manage text", "manage server"] } }
                         ]
                     },
                     color: { type: "string" }

@@ -12,6 +12,7 @@ class SettingsServerManager{
     init(){
         this.container.innerHTML = '';
 
+        this.renderCategorySwitcher();
         this.metaDiv = this.initCategoryElement();
         this.categoryDiv = this.initCategoryElement();
         this.editChannelDiv = this.initCategoryElement();
@@ -21,10 +22,9 @@ class SettingsServerManager{
 
         this.renderMata();
         this.renderChannels();
-        this.editChannelDiv.style.display = 'none';
         this.renderRoles();
-        this.editRoleDiv.style.display = 'none';
         this.renderUserRoleManager();
+        this.changeDisplay({ meta: true });
 
         const saveButton = document.createElement('button');
         saveButton.textContent = 'Save';
@@ -43,14 +43,61 @@ class SettingsServerManager{
     }
 
 
+    /* GUI navigation */
+    changeDisplay(options){
+        const displayOptions = {
+            meta: false,
+            category: false,
+            editChannel: false,
+            role: false,
+            editRole: false,
+            userRoleManager: false,
+            ...options
+        };
+
+        for(const category in displayOptions){
+            const div = this[`${category}Div`];
+            div.style.display = displayOptions[category] ? 'block' : 'none';
+        }
+    }
+
+    renderCategorySwitcher(){
+        const _this = this;
+        const categoryButtons =
+        [
+            { text: translateFunc.get("Basic Settings"), name: 'meta' },
+            { text: translateFunc.get("Categories & Channels"), name: 'category' },
+            { text: translateFunc.get("Roles"), name: 'role' },
+            { text: translateFunc.get("User Role Manager"), name: 'userRoleManager' },
+        ]
+        .map(category => {
+            const button = document.createElement('button');
+            button.textContent = category.text;
+            button.onclick = () => {
+                _this.changeDisplay({ [category.name]: true });
+            };
+            return button;
+        });
+
+        const categorySwitcherContainer = document.createElement('div');
+        categorySwitcherContainer.className = 'settings__categorySwitcher';
+        categoryButtons.forEach(button => {
+            categorySwitcherContainer.appendChild(button);
+        });
+
+        this.container.appendChild(categorySwitcherContainer);
+        this.addSeparator(this.container, 20);
+    }
+
+
     /* render gui elements */
 
     renderMata(){
         const metaDiv = this.metaDiv;
-        metaDiv.innerHTML = `<h1>Meta</h1>`;
+        metaDiv.innerHTML = `<h1>${translateFunc.get("Basic Settings")}</h1>`;
 
         const meta = this.settings.meta;
-        const nameInput = this.initInputText(metaDiv, 'Name', meta.name);
+        const nameInput = this.initInputText(metaDiv, translateFunc.get("Server name"), meta.name);
 
         this.saveMetaSettings = () => {
             this.settings.meta.name = nameInput.value;
@@ -59,12 +106,12 @@ class SettingsServerManager{
 
     renderChannels(){
         const categoriesContainer = this.categoryDiv;
-        categoriesContainer.innerHTML = '<h1>Categories</h1>';
+        categoriesContainer.innerHTML = `<h1>${translateFunc.get("Categories & Channels")}</h1>`;
 
         const sortedCategories = this.settings.categories.sort((a, b) => a.i - b.i);
         const channels = this.settings.channels;
 
-        this.initButton(categoriesContainer, "Add category", async () => {
+        this.initButton(categoriesContainer, translateFunc.get("Add category"), async () => {
             const name = await uiFunc.prompt("Name");
 
             this.settings.categories.push({
@@ -78,9 +125,9 @@ class SettingsServerManager{
         sortedCategories.forEach(category => {
             this.addSeparator(categoriesContainer, 15);
             const categoryDiv = document.createElement('div');
-            categoryDiv.innerHTML = `<span style="font-size: 1.5rem; margin-right: 0.5rem">- ${category.name}</span>`;
+            categoryDiv.innerHTML = `<span style="font-size: 1.5rem" class="settings__nameSpan">- ${category.name}</span>`;
 
-            this.initButton(categoryDiv, "Move up", () => {
+            this.initButton(categoryDiv, translateFunc.get("Move up"), () => {
                 if(category.i === 0) return;
 
                 const i = category.i;
@@ -89,7 +136,7 @@ class SettingsServerManager{
                 this.renderChannels();
             });
 
-            this.initButton(categoryDiv, "Move down", () => {
+            this.initButton(categoryDiv, translateFunc.get("Move down"), () => {
                 if(category.i === sortedCategories.length - 1) return;
 
                 const i = category.i;
@@ -98,15 +145,19 @@ class SettingsServerManager{
                 this.renderChannels();
             });
 
-            this.initButton(categoryDiv, "Edit", () => {
+            this.initButton(categoryDiv, translateFunc.get("Edit"), () => {
                 categoriesContainer.querySelectorAll('div').forEach(div => div.style.border = "");
                 categoryDiv.style.border = "3px dotted var(--accent)";
                 this.renderEditCategory(category);
             });
 
-            this.initButton(categoryDiv, "Add channel", async () => {
-                const name = await uiFunc.prompt("Enter name");
-                const type = await uiFunc.selectPrompt("Enter type", ["text", "voice"]);
+            this.initButton(categoryDiv, translateFunc.get("Add channel"), async () => {
+                const name = await uiFunc.prompt(translateFunc.get("Enter name"));
+                const type = await uiFunc.selectPrompt(
+                    translateFunc.get("Enter type"),
+                    [ translateFunc.get("Text"), translateFunc.get("Voice")],
+                    ["text", "voice"]
+                );
 
                 const newChannel = {
                     name: name || "New Channel",
@@ -125,9 +176,9 @@ class SettingsServerManager{
             categoryChannels.forEach(channel => {
                 const channelElement = document.createElement('div');
                 channelElement.innerHTML =
-                    `<span style="font-size: 1.2rem; margin-right: 0.5rem;">${"&nbsp;".repeat(3)}+ ${channel.name} (${channel.type})</span>`;
+                    `<span style="font-size: 1.2rem" class="settings__nameSpan">${"&nbsp;".repeat(3)}+ ${channel.name} (${channel.type})</span>`;
 
-                this.initButton(channelElement, "Move up", () => {
+                this.initButton(channelElement, translateFunc.get("Move up"), () => {
                     if(channel.i === 0) return;
 
                     const i = channel.i;
@@ -148,7 +199,7 @@ class SettingsServerManager{
                     this.renderChannels();
                 });
 
-                this.initButton(channelElement, "Move down", () => {
+                this.initButton(channelElement, translateFunc.get("Move down"), () => {
                     if(channel.i >= categoryChannels.length - 1) return;
 
                     const i = channel.i;
@@ -169,7 +220,7 @@ class SettingsServerManager{
                     this.renderChannels();
                 });
 
-                this.initButton(channelElement, "Edit", () => {
+                this.initButton(channelElement, translateFunc.get("Edit"), () => {
                     categoriesContainer.querySelectorAll('div').forEach(div => div.style.border = "");
                     channelElement.style.border = "3px dotted var(--accent)";
                     this.renderEditChannel(channel); 
@@ -185,14 +236,14 @@ class SettingsServerManager{
 
     renderEditChannel(channel){
         const containerElement = this.editChannelDiv;
-        containerElement.innerHTML = '<h1>Edit channel</h1>';
+        containerElement.innerHTML = `<h1>${translateFunc.get("Edit channel")}</h1>`;
 
-        const nameInp = this.initInputText(containerElement, 'Name', channel.name);
+        const nameInp = this.initInputText(containerElement, translateFunc.get("Name"), channel.name);
         const _this = this;
 
         const allPerm = [
-            "text",
-            "visable",
+            { name: translateFunc.get("Write messages"), id: "text" },
+            { name: translateFunc.get("Show channel"), id: "visable" },
         ];
 
         function renderRole(role){
@@ -202,10 +253,10 @@ class SettingsServerManager{
             details.appendChild(summary);
 
             allPerm.forEach(perm => {
-                const checkbox = _this.initCheckbox(details, perm, false);
-                checkbox.checked = channel.rp.includes(role.rid + "/" + perm);
+                const checkbox = _this.initCheckbox(details, perm.name, false);
+                checkbox.checked = channel.rp.includes(role.rid + "/" + perm.id);
                 checkbox.setAttribute('data-role', role.rid);
-                checkbox.setAttribute('data-perm', perm);
+                checkbox.setAttribute('data-perm', perm.id);
             });
             containerElement.appendChild(details);
             _this.addSeparator(details, 5);
@@ -214,7 +265,7 @@ class SettingsServerManager{
         this.settings.roles.forEach(renderRole);
 
         this.addSeparator(containerElement, 15);
-        this.initButton(containerElement, "Save", () => {
+        this.initButton(containerElement, translateFunc.get("Save"), () => {
             channel.name = nameInp.value;
             channel.rp = [];
 
@@ -228,11 +279,11 @@ class SettingsServerManager{
             this.renderChannels();
             containerElement.fadeOut();
         });
-        this.initButton(containerElement, "Cancel", () => {
+        this.initButton(containerElement, translateFunc.get("Cancel"), () => {
             this.renderChannels();
             containerElement.fadeOut();
         });
-        this.initButton(containerElement, "Delete", () => {
+        this.initButton(containerElement, translateFunc.get("Delete"), () => {
             const index = this.settings.channels.findIndex(ch => ch === channel);
             if(index !== -1){
                 this.settings.channels.splice(index, 1);
@@ -246,21 +297,21 @@ class SettingsServerManager{
 
     renderEditCategory(category){
         const containerElement = this.editChannelDiv;
-        containerElement.innerHTML = '<h1>Edit category</h1>';
+        containerElement.innerHTML = `<h1>${translateFunc.get("Edit category")}</h1>`;
 
-        const nameInput = this.initInputText(containerElement, 'Name', category.name);
+        const nameInput = this.initInputText(containerElement, translateFunc.get("Name"), category.name);
 
         this.addSeparator(containerElement, 15);
-        this.initButton(containerElement, "Save", () => {
+        this.initButton(containerElement, translateFunc.get("Save"), () => {
             this.settings.categories.find(cat => cat === category).name = nameInput.value;
             this.renderChannels();
             containerElement.fadeOut();
         });
-        this.initButton(containerElement, "Cancel", () => {
+        this.initButton(containerElement, translateFunc.get("Cancel"), () => {
             this.renderChannels();
             containerElement.fadeOut();
         });
-        this.initButton(containerElement, "Delete", () => {
+        this.initButton(containerElement, translateFunc.get("Delete"), () => {
             const index = this.settings.categories.findIndex(cat => cat.cid === category.cid);
             if(index !== -1){
                 this.settings.categories.splice(index, 1);
@@ -274,7 +325,7 @@ class SettingsServerManager{
 
     renderRoles(){
         const container = this.roleDiv;
-        container.innerHTML = '<h1>Roles</h1>';
+        container.innerHTML = `<h1>${translateFunc.get("Roles")}</h1>`;
 
         /* 
             role structure:
@@ -289,8 +340,8 @@ class SettingsServerManager{
         this.settings.roles = this.sortRoles(this.settings.roles);
         const roles = this.settings.roles;
 
-        this.initButton(container, "Add role", async () => {
-            const name = await uiFunc.prompt("Enter name");
+        this.initButton(container, translateFunc.get("Add role"), async () => {
+            const name = await uiFunc.prompt(translateFunc.get("Enter name"));
             const newRole = {
                 name: name || "New Role",
                 rid: roles.length,
@@ -305,9 +356,9 @@ class SettingsServerManager{
         roles.forEach((role, index) => {
             this.addSeparator(container, 10);
             const roleDiv = document.createElement('div');
-            roleDiv.innerHTML = `<span style="font-size: 1.2rem; margin-right: 0.5rem;">- ${role.name}</span>`;
+            roleDiv.innerHTML = `<span style="font-size: 1.2rem" class="settings__nameSpan">- ${role.name}</span>`;
 
-            this.initButton(roleDiv, "Move up", () => {
+            this.initButton(roleDiv, translateFunc.get("Move up"), () => {
                 if(index === 0) return;
 
                 const nadPar = roles[index - 1].parent;
@@ -322,7 +373,7 @@ class SettingsServerManager{
                 this.renderRoles();
             });
 
-            this.initButton(roleDiv, "Move down", () => {
+            this.initButton(roleDiv, translateFunc.get("Move down"), () => {
                 if(index >= roles.length - 1) return;
 
                 const rolPar = roles[index]    .parent;
@@ -337,7 +388,7 @@ class SettingsServerManager{
                 this.renderRoles();
             });
 
-            this.initButton(roleDiv, "Edit", () => {
+            this.initButton(roleDiv, translateFunc.get("Edit"), () => {
                 container.querySelectorAll('div').forEach(div => div.style.border = "");
                 roleDiv.style.border = '3px dotted var(--accent)';
                 this.renderRoleEdit(role);
@@ -349,23 +400,23 @@ class SettingsServerManager{
 
     renderRoleEdit(role){
         const containerElement = this.editRoleDiv;
-        containerElement.innerHTML = '<h1>Edit role</h1>';
+        containerElement.innerHTML = `<h1>${translateFunc.get("Edit role")}</h1>`;
 
-        const nameInput = this.initInputText(containerElement, 'Name', role.name);
+        const nameInput = this.initInputText(containerElement, translateFunc.get("Name"), role.name);
         const checkboxs = new Map();
 
         if(role.p != "all"){
             this.addSeparator(containerElement, 5);
 
             const allPerms = [
-                "text",
-                "voice",
-                "manage text",
-                "manage server",
+                { name: translateFunc.get("Write messages"), id: "text" },
+                { name: translateFunc.get("Join to voice channels"), id: "voice" },
+                { name: translateFunc.get("Manage messages"), id: "manage text" },
+                { name: translateFunc.get("Manage server settings"), id: "manage server" },
             ];
             allPerms.forEach(perm => {
-                const checkbox = this.initCheckbox(containerElement, perm, role.p.includes(perm));
-                checkboxs.set(perm, checkbox);
+                const checkbox = this.initCheckbox(containerElement, perm.name, role.p.includes(perm.id));
+                checkboxs.set(perm.id, checkbox);
             });
         }
 
@@ -376,7 +427,7 @@ class SettingsServerManager{
         containerElement.appendChild(colorInput);
 
         this.addSeparator(containerElement, 15);
-        this.initButton(containerElement, "Save", () => {
+        this.initButton(containerElement, translateFunc.get("Save"), () => {
             role.name = nameInput.value;
             role.color = colorInput.value;
 
@@ -391,13 +442,13 @@ class SettingsServerManager{
             this.renderRoles();
             containerElement.fadeOut();
         });
-        this.initButton(containerElement, "Cancel", () => {
+        this.initButton(containerElement, translateFunc.get("Cancel"), () => {
             this.renderRoles();
             containerElement.fadeOut();
         });
 
         if(role.p != "all"){
-            this.initButton(containerElement, "Delete", () => {
+            this.initButton(containerElement, translateFunc.get("Delete"), () => {
                 const index = this.settings.roles.findIndex(r => r.rid === role.rid);
                 if(index !== -1){
                     if(index < this.settings.roles.length - 1){
@@ -413,7 +464,7 @@ class SettingsServerManager{
     }
 
     renderUserRoleManager(){
-        this.userRoleManagerDiv.innerHTML = '<h1>User roles</h1>';
+        this.userRoleManagerDiv.innerHTML = `<h1>${translateFunc.get("User Roles Manager")}</h1>`;
         const users = this.settings.users;
         const _this = this;
         function renderUser(user){
@@ -433,8 +484,8 @@ class SettingsServerManager{
                 checkboxs.push({id: role.rid, checkbox});
                 div.appendChild(roleDiv);
             });
-
-            _this.initButton(div, "Update", () => {
+            _this.addSeparator(div, 10);
+            _this.initButton(div, translateFunc.get("Update"), () => {
                 const newRoles = [];
                 checkboxs.forEach(c => {
                     const { id, checkbox } = c;
@@ -443,8 +494,9 @@ class SettingsServerManager{
                 _this.settings.users.find(u => u === user).roles = newRoles;
                 _this.renderUserRoleManager();
             });
-
+            
             details.appendChild(div);
+            _this.addSeparator(details, 10);
             return details;
         }
         users.forEach(user => {
@@ -504,12 +556,12 @@ class SettingsServerManager{
 
     initCheckbox(container, label, defaultValue){
         const checkboxContainer = document.createElement('div');
-        checkboxContainer.innerHTML = `<label>${label}</label>`;
         const inputElement = document.createElement('input');
         inputElement.type = 'checkbox';
         inputElement.checked = defaultValue;
         checkboxContainer.appendChild(inputElement);
         container.appendChild(checkboxContainer);
+        checkboxContainer.innerHTML += `<label>${label}</label>`;
         return inputElement;
     }
 
