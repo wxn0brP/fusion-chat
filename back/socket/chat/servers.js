@@ -125,7 +125,7 @@ module.exports = (socket) => {
 
             await global.db.groupSettings.updateOne(id, { _id: "set" }, data.meta);
 
-            global.sendToChatUsers(id, "refreshData", id, "*", ["setUpServer", "syncUserRoles"], id);
+            global.sendToChatUsers(id, "refreshData", { server: id, evt: ["setUpServer", "syncUserRoles"] }, id);
         }catch(e){
             socket.logError(e);
         }
