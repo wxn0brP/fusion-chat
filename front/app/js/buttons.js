@@ -3,9 +3,6 @@ const buttonFunc = {
         const to = await uiFunc.prompt("Name of the 2 people");
         if(!to) return;
         socket.emit("createPriv", to);
-        setTimeout(() => {
-            socket.emit("getPrivs");
-        }, 1500);
     },
 
     async createGroup(){

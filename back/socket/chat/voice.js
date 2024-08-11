@@ -19,7 +19,7 @@ module.exports = (socket) => {
 
             rooms.get(to).forEach(s => {
                 s.emit("joinVoiceChannel", socket.user._id);
-                s.emit("refreshData", "*", "*", "getVoiceChannelUsers", to, false);
+                s.emit("refreshData", "getVoiceChannelUsers", to, false);
             });
             rooms.get(to).push(socket);
         }catch(e){
@@ -34,7 +34,7 @@ module.exports = (socket) => {
                 rooms.get(to).splice(rooms.get(to).indexOf(socket), 1);
                 
                 users.forEach(s => {
-                    s.emit("refreshData", "*", "*", "getVoiceChannelUsers", to, false);
+                    s.emit("refreshData", "getVoiceChannelUsers", to, false);
                     s.emit("leaveVoiceChannel", socket.user._id);
                 })
             });
