@@ -15,13 +15,9 @@ const coreFunc = {
             navs__main.style.display = "block";
             navs__groups.style.display = "none";
             navs__main__call.style.display = "none";
-
-            messagesDiv.innerHTML = `
-                <div style="text-align: center; font-size: 2rem;">
-                    Hello 
-                    <span style="color: var(--accent); font-weight: bold;">${vars.user.fr}</span>!
-                </div>
-            `.trim();
+            mainViewDiv.style.display = "";
+            messagesDiv.style.display = "none";
+            mainView.show();
 
             return;
         }
@@ -33,6 +29,8 @@ const coreFunc = {
         }, 300);
 
         barDiv.style.display = "block";
+        messagesDiv.style.display = "";
+        mainViewDiv.style.display = "none";
         vars.chat.to = id;
         vars.chat.actMess = 0;
 

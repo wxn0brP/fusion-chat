@@ -5,12 +5,12 @@ class Graph{
         this.db = new DataBase(folder);
     }
 
-    async addNode(collection, a, b){
+    async add(collection, a, b){
         [a, b] = [a, b].sort();
         return await this.db.add(collection, { a, b }, false);
     }
 
-    async rmNode(collection, a, b){
+    async remove(collection, a, b){
         [a, b] = [a, b].sort();
         return await this.db.removeOne(collection, { a, b });
     }

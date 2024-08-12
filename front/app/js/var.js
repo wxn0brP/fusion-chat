@@ -21,5 +21,10 @@ const vars = {
         users: [],
         roles: [],
         text: [],
+    },
+    mainView: {
+        friends: [],
+        requests: [],
+        page: "online"
     }
 }

@@ -46,7 +46,7 @@ function hasFieldsAdvanced(obj, fields){
 function hasFields(obj, fields){
     const keys = Object.keys(fields);
     return keys.every(key => {
-        if(key in obj){
+        if(obj[key]){
             if(typeof fields[key] === 'object' && fields[key] !== null){
                 return hasFields(obj[key], fields[key]);
             }

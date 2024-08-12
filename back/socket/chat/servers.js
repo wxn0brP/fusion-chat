@@ -14,6 +14,8 @@ module.exports = (socket) => {
             if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const serverMeta = await global.db.groupSettings.findOne(id, { _id: "set" });
+            if(!serverMeta) return socket.emit("error", "server does not exist");
+            
             const name = serverMeta.name;
             const permission = new permissionSystem(id);
             const roles = await permission.getUserRoles(socket.user._id);
