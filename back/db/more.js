@@ -3,38 +3,77 @@
  * @module db/objectUtils
  */
 
-module.exports = {
-    /**
-     * Checks if an object has specified fields with matching values.
-     * @function
-     * @param {Object} obj - The object to check.
-     * @param {Object} fields - An object containing field-value pairs to check for.
-     * @returns {boolean} `true` if the object has all specified fields with matching values, `false` otherwise.
-     */
-    hasFields(obj, fields){
-        const keys = Object.keys(fields);
-        for(let i = 0; i < keys.length; i++){
-            const key = keys[i];
-            if(!(key in obj) || obj[key] !== fields[key]){
-                return false;
-            }
-        }
-        return true;
-    },
+/**
+ * Checks if an object meets the criteria specified in the fields with operators.
+ * @function
+ * @param {Object} obj - The object to check.
+ * @param {Object} fields - Criteria with operators.
+ * @returns {boolean} - Whether the object meets the criteria.
+ * @throws {Error} - If fields is not an object.
+ */
+function hasFieldsAdvanced(obj, fields){
+    if(typeof fields !== 'object' || fields === null){
+        throw new Error("Fields must be an object");
+    }
+    
+    if('$and' in fields){
+        return fields['$and'].every(subFields => hasFieldsAdvanced(obj, subFields));
+    }
 
-    /**
-     * Updates an object with new values.
-     * @function
-     * @param {Object} obj - The object to update.
-     * @param {Object} newVal - An object containing new values to update in the target object.
-     * @returns {Object} The updated object.
-     */
-    updateObject(obj, newVal){
-        for(let key in newVal){
-            if(newVal.hasOwnProperty(key)){
-                obj[key] = newVal[key];
+    if('$or' in fields){
+        return fields['$or'].some(subFields => hasFieldsAdvanced(obj, subFields));
+    }
+
+    if('$set' in fields){
+        const setFields = fields['$set'];
+        return hasFields(obj, setFields);
+    }
+
+    if('$not' in fields){
+        return !hasFieldsAdvanced(obj, fields['$not']);
+    }
+
+    return hasFields(obj, fields);
+}
+
+/**
+ * Checks if an object matches the standard field comparison.
+ * @function
+ * @param {Object} obj - The object to check.
+ * @param {Object} fields - Criteria to compare.
+ * @returns {boolean} - Whether the object matches the criteria.
+ */
+function hasFields(obj, fields){
+    const keys = Object.keys(fields);
+    return keys.every(key => {
+        if(key in obj){
+            if(typeof fields[key] === 'object' && fields[key] !== null){
+                return hasFields(obj[key], fields[key]);
             }
+            return obj[key] === fields[key];
         }
-        return obj;
-    },
+        return false;
+    });
+}
+
+/**
+ * Updates an object with new values.
+ * @function
+ * @param {Object} obj - The object to update.
+ * @param {Object} newVal - An object containing new values to update in the target object.
+ * @returns {Object} The updated object.
+ */
+function updateObject(obj, newVal){
+    for(let key in newVal){
+        if(newVal.hasOwnProperty(key)){
+            obj[key] = newVal[key];
+        }
+    }
+    return obj;
+}
+
+module.exports = {
+    hasFieldsAdvanced,
+    hasFields,
+    updateObject
 }

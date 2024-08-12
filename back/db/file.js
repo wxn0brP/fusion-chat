@@ -46,8 +46,8 @@ async function findProcesLine(arg, line){
 
     if(typeof arg === 'function'){
         if(arg(ob)) res = true;
-    }else if(typeof arg === "object"){
-        if(more.hasFields(ob, arg)) res = true;
+    }else if(typeof arg === "object" && !Array.isArray(arg)){
+        if(more.hasFieldsAdvanced(ob, arg)) res = true;
     }
 
     return res ? ob : null;
@@ -86,7 +86,7 @@ async function updateWorker(file, search, updater, one=false){
         if(typeof search === "function"){
             ob = search(data) || false;
         }else if(typeof search === "object" && !Array.isArray(search)){
-            ob = more.hasFields(data, search);
+            ob = more.hasFieldsAdvanced(data, search);
         }
 
         if(ob){
@@ -159,8 +159,8 @@ async function removeWorker(file, search, one=false){
                 removed = true;
                 continue;
             }
-        }else{
-            if(more.hasFields(data, search)){
+        }else if(typeof search === "object" && !Array.isArray(search)){
+            if(more.hasFieldsAdvanced(data, search)){
                 removed = true;
                 continue;
             }
