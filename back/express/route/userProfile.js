@@ -16,7 +16,8 @@ const upload = multer({
         if(ALLOWED_FILE_TYPES.includes(file.mimetype)){
             cb(null, true);
         }else{
-            cb(new Error('Invalid file type. Only PNG, JPEG, GIF, and WEBP are allowed.'));
+            const formats = ALLOWED_FILE_TYPES.map(type => type.split("/")[1].toUpperCase()).join(", ");
+            cb(new Error(`Invalid file type. Only ${formats} are allowed.`));
         }
     }
 }).single('file');
@@ -36,7 +37,7 @@ app.post('/profileUpload', global.authenticateMiddleware, (req, res) => {
 
         try{
             const image = await Image.load(req.file.buffer);
-            const processedImage = await cropAndResize(image, 128, 128);
+            const processedImage = cropAndResizeProfile(image);
             await processedImage.save(filePath, { format: 'png', compressionLevel: 0 });
 
             res.json({ err: false, msg: 'Profile picture uploaded successfully.', path: filePath });
@@ -49,7 +50,7 @@ app.post('/profileUpload', global.authenticateMiddleware, (req, res) => {
 app.get("/profileImg", (req, res) => {
     function def(){
         res.set("X-Content-Default", "true");
-        res.send(fs.readFileSync("front/static/favicon.png"));
+        res.send(fs.readFileSync("front/static/defaultProfile.png"));
     }
 
     const id = req.query.id;
@@ -71,16 +72,25 @@ app.get("/isProfileImg", (req, res) => {
     res.json(fs.existsSync(file));
 });
 
-async function cropAndResize(image, targetWidth, targetHeight) {
-    const { width: originalWidth, height: originalHeight } = image;
+function cropAndResizeProfile(image){
+    function getTargetSize(){
+        const minDimension = Math.min(image.width, image.height);
+        const powersOfTwo = [512, 256, 128];
+        const targetSize = powersOfTwo.find(size => minDimension >= size);
+        return targetSize || 128;
+    }
 
-    const scale = Math.max(targetWidth / originalWidth, targetHeight / originalHeight);
-    const newWidth = originalWidth * scale;
-    const newHeight = originalHeight * scale;
+    const minSize = Math.min(image.width, image.height);
+    const cropRegion = {
+        x: (image.width - minSize) / 2,
+        y: (image.height - minSize) / 2,
+        width: minSize,
+        height: minSize
+    }
 
-    const x = (newWidth - targetWidth) / 2;
-    const y = (newHeight - targetHeight) / 2;
-
-    const scaledImage = image.resize(newWidth, newHeight);
-    return scaledImage.crop(x, y, targetWidth, targetHeight);
+    const croppedImage = image.crop(cropRegion);
+    const targetSize = getTargetSize(image);
+    const resizedImage = croppedImage.resize({ width: targetSize, height: targetSize });
+    
+    return resizedImage;
 }
