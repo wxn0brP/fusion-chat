@@ -4,7 +4,7 @@ module.exports = (socket) => {
     socket.ontimeout("requestFriend", 1_000, async (nameOrId) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(nameOrId, 0, 30) || !valid.id(nameOrId)) return socket.emit("error", "valid data");
+            if(!valid.str(nameOrId, 0, 30) && !valid.id(nameOrId)) return socket.emit("error", "valid data");
 
             const userExists = await global.db.data.findOne("user", {
                 $or: [
