@@ -145,16 +145,10 @@ const messFunc = {
         emocjiDiv.fadeIn();
         function evt(e){
             cb(e.detail);
-        }
-
-        function end(){
-            document.removeEventListener("click", end);
             emocjiDiv.removeEventListener("emocji", evt);
             emocjiDiv.fadeOut();
-            cb("");
         }
         setTimeout(() => {
-            document.addEventListener("click", end);
             emocjiDiv.addEventListener("emocji", evt);
         }, 100);
     },
@@ -162,6 +156,9 @@ const messFunc = {
     emocji(){
         messFunc.emocjiPopup((emoticon) => {
             messFunc.handleEmocji(emoticon);
+            setTimeout(() => {
+                messInput.selectionStart = messInput.value.length;
+            }, 100);
         });
     },
 
