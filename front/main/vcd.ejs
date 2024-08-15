@@ -32,7 +32,7 @@
         <div v-for="log in filteredAndSortedLogs" :key="log.time" class="log-entry">
             <span>{{ formatDate(log.time) }} {{ log.relativeTime }}</span>
             <span>{{ log.level }}</span>
-            <span>User: {{ getUserName(log.user) }}</span>
+            <span>User: {{ getUserName(log.user) + ` (${log.user})`}}</span>
             <span>Action: {{ log.action }}</span>
             <span>{{ log.message }}</span>
         </div>
@@ -40,16 +40,16 @@
 </div>
 
 <style>
-    :root {
+    :root{
         --accent: #ff9900;
     }
 
-    body {
+    body{
         margin: 0;
         padding: 20px;
     }
 
-    #app {
+    #app{
         max-width: 800px;
         margin: auto;
         padding: 20px;
@@ -58,8 +58,7 @@
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     }
 
-    input[type="file"],
-    button {
+    input[type="file"], button{
         display: inline-block;
         margin: 10px 0;
         padding: 10px 20px;
@@ -70,19 +69,19 @@
         cursor: pointer;
     }
 
-    input[type="file"] {
+    input[type="file"]{
         background-color: #555;
     }
 
-    button:hover {
+    button:hover{
         background-color: #e68a00;
     }
 
-    label {
+    label{
         margin-right: 10px;
     }
 
-    select {
+    select{
         padding: 5px;
         margin: 10px 0;
         background-color: #555;
@@ -91,7 +90,7 @@
         border-radius: 5px;
     }
 
-    .log-entry {
+    .log-entry{
         padding: 10px;
         margin: 10px 0;
         border-bottom: 1px solid #666;
@@ -99,12 +98,12 @@
         border-radius: 5px;
     }
 
-    .log-entry span {
+    .log-entry span{
         display: inline-block;
         margin-right: 5px;
     }
 
-    .log-entry span:first-child {
+    .log-entry span:first-child{
         font-weight: bold;
         color: red;
     }
