@@ -8,6 +8,8 @@
 
 #main__view__nav{
     margin-bottom: 1rem;
+    white-space: nowrap;
+    overflow-x: auto;
 }
 
 #main__view__nav button{
@@ -51,4 +53,10 @@
 
 .main__view__friend .request__btn:hover{
     background-color: var(--accent);
+}
+
+@media screen and (max-width: 800px){
+    #main__view__nav{
+        width: calc(100% - 2.5rem);
+    }
 }
