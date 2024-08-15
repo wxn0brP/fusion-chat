@@ -3,6 +3,7 @@ const voiceHTML = {
     mediaContainer: document.querySelector("#voice_call_media"),
     users: document.querySelector("#voice_call_users"),
     muteMic: document.querySelector("#voice_call_mute_mic"),
+    voiceShow: document.querySelector("#groups__voice_show"),
 }
 
 const voiceConfig = {
@@ -159,6 +160,7 @@ const voiceFunc = {
             const stream = await voiceUtils.getStream(true, false);
             voiceFunc.local_stream = stream;
             voiceHTML.div.fadeIn();
+            voiceHTML.voiceShow.style.display = "";
         }catch(error){
             voiceDebug.error('initCall', `Error joining voice channel: ${error.message}`);
         }
@@ -238,6 +240,7 @@ const voiceFunc = {
         voiceFunc.peers = [];
         voiceHTML.div.fadeOut();
         voiceHTML.mediaContainer.innerHTML = "";
+        voiceHTML.voiceShow.style.display = "none";
 
         voiceFunc.local_stream.getTracks().forEach((track) => {
             track.stop();
