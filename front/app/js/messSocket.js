@@ -27,6 +27,11 @@ socket.on("mess", (data) => {
             renderFunc.privs();
             return;
         }
+    }else{
+        if(vars.chat.to !== data.toM || vars.chat.chnl !== data.chnl){
+            renderFunc.privs();
+            return;
+        }
     }
 
     messFunc.addMess(data);
