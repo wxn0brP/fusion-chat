@@ -14,6 +14,8 @@ module.exports = (socket) => {
             if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const serverMeta = await global.db.groupSettings.findOne(id, { _id: "set" });
+            if(!serverMeta) return socket.emit("error", "server does not exist");
+            
             const name = serverMeta.name;
             const permission = new permissionSystem(id);
             const roles = await permission.getUserRoles(socket.user._id);
@@ -125,7 +127,7 @@ module.exports = (socket) => {
 
             await global.db.groupSettings.updateOne(id, { _id: "set" }, data.meta);
 
-            global.sendToChatUsers(id, "refreshData", id, "*", ["setUpServer", "syncUserRoles"], id);
+            global.sendToChatUsers(id, "refreshData", { server: id, evt: ["setUpServer", "syncUserRoles"] }, id);
         }catch(e){
             socket.logError(e);
         }

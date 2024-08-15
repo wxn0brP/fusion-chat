@@ -69,15 +69,24 @@ socket.on("userProfile", (data) => {
     renderFunc.userProfile(data);
 });
 
-socket.on("refreshData", (server, chnl, evt, ...moreData) => {
-    if(server != vars.chat.to && server !== "*") return;
-    if(chnl != vars.chat.chnl && chnl !== "*") return;
+socket.on("refreshData", (settings, ...moreData) => {
+    let events = [];
 
-    if(typeof evt == "string"){
-        evt = [evt];
-    }
+    if(Array.isArray(settings)){
+        events = settings;
+    }else
+    if(typeof settings == "string"){
+        events = [settings];
+    }else
+    if(typeof settings == "object"){
+        const { server, chnl, evt } = settings;
+        events = typeof evt == "string" ? [evt] : Array.isArray(evt) ? evt : [];
 
-    evt.forEach(e => {
-        socket.emit(e, ...moreData);
+        if(server && server != vars.chat.to && server !== "*") return;
+        if(chnl && chnl != vars.chat.chnl && chnl !== "*") return;
+    }else return;
+
+    events.forEach(evt => {
+        socket.emit(evt, ...moreData);
     });
-})
+});

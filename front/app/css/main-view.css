@@ -1,0 +1,54 @@
+#main__view{
+    width: 100%;
+    max-width: 100%;
+    overflow-y: scroll;
+    padding: 10px;
+    text-align: left;
+}
+
+#main__view__nav{
+    margin-bottom: 1rem;
+}
+
+#main__view__nav button{
+    background-color: transparent;
+    border: 2px solid var(--accent);
+    color: var(--txt);
+    padding: 7px;
+    border-radius: 7px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.main__view__friend{
+    background-color: color-mix(in srgb, var(--panel) 50%, transparent);
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 3px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+}
+
+.friend__avatar{
+    width: 48px;
+    height: 48px;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+.main__view__friend .request__btn{
+    background-color: transparent;
+    border: 2px solid var(--accent);
+    color: var(--txt);
+    padding: 7px;
+    border-radius: 7px;
+    cursor: pointer;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+
+.main__view__friend .request__btn:hover{
+    background-color: var(--accent);
+}

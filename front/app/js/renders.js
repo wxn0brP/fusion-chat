@@ -85,6 +85,17 @@ const renderFunc = {
             <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
         `.trim();
 
+        const isFriend = vars.mainView.friends.find(f => f._id == data._id);
+        if(isFriend){
+            userProfileDiv.innerHTML += `
+                <button class="profile__btn" onclick="mainView.removeFriend('${data._id}')">Remove friend</button>
+            `.trim();
+        }else{
+            userProfileDiv.innerHTML += `
+                <button class="profile__btn" onclick="mainView.addFriend('${data._id}')">Add friend</button>
+            `.trim();
+        }
+
         renderUtils.initPopup(userProfileDiv);
     },
 
