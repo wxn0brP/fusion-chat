@@ -28,6 +28,8 @@
     top: 32px;
     width: 105px;
     text-align: left;
+    overflow: auto;
+    text-wrap: nowrap;
 }
 
 #navs__user__setting{
