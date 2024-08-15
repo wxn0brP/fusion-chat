@@ -27,7 +27,7 @@ socket.on("connect_error", (data) => {
     if(!localStorage.getItem("token")) window.location = "/login?err=true";
 
     debugFunc.msg(data);
-    if(data.toString() == "Error: Authentication error"){
+    if(data.toString().includes("Error: Authentication error")){
         window.location = "/login?err=true";
     }
     uiFunc.uiMsg(data.toString(), 10);
