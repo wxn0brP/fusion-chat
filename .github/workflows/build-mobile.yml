@@ -36,7 +36,7 @@ jobs:
     - name: Update Android build.gradle with version
       run: |
         sed -i "s/versionCode .*/versionCode ${{ env.VERSION }}/" fc-app/fc-mobile/android/app/build.gradle
-        sed -i "s/versionName .*/versionName \"${{ env.VERSION }}\"/" fc-app/fc-mobile/android/app/build.gradle
+        sed -i "s/versionName \".*\"/versionName \"${{ env.VERSION }}\"/" fc-app/fc-mobile/android/app/build.gradle
 
     - name: Build Android Release
       run: |
