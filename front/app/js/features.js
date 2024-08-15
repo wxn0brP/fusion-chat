@@ -26,34 +26,22 @@ setupSwipe(
 );
 
 (function initEmocji(){
-    const emoticonMenu = document.querySelector("#emocjiDiv_container");
+    const pickerOptions = {
+        onEmojiSelect: emit,
+        theme: 'dark',
+        onClickOutside: () => emit(),
+        locale: navigator.language.substring(0, 2),
+    };
 
-    const emotkiUnicode = [
-        [128512, 128591],
-        // [127744, 127884],
-        // [128640, 128704],
-        // [127462, 127487],
-        // [9728, 9983],
-        // [9984, 10175]
-    ];
+    const picker = new EmojiMart.Picker(pickerOptions)
+    emocjiDiv.appendChild(picker);
 
     function emit(emoticon){
         const event = new CustomEvent('emocji', {
-            detail: emoticon,
+            detail: emoticon?.native || "",
         });
         emocjiDiv.dispatchEvent(event);
     }
-
-    emotkiUnicode.forEach(range => {
-        for(let i = range[0]; i <= range[1]; i++){
-            const emoticon = String.fromCodePoint(i);
-            const div = document.createElement('div');
-            div.textContent = emoticon;
-            div.className = 'emocji';
-            div.onclick = () => emit(emoticon);
-            emoticonMenu.appendChild(div);
-        }
-    });
 })();
 
 messInput.addEventListener("paste", function(e){

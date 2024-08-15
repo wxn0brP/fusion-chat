@@ -23,16 +23,35 @@ const contextMenu = {
             });
             return;
         }
-        //if mobile
+    
         let time;
-        div.addEventListener("dblclick", call);
-        div.addEventListener("mousedown", () => time = new Date());
-        div.addEventListener("touchstart", () => time = new Date());
-        div.addEventListener("touchend", end);
-        div.addEventListener("mouseup", end);
-        function end(e){
+        let holdTimeout;
+    
+        div.addEventListener("mousedown", startHold);
+        div.addEventListener("touchstart", startHold);
+    
+        div.addEventListener("mouseup", cancelHold);
+        div.addEventListener("touchend", cancelHold);
+    
+        function startHold(e){
+            time = new Date();
+            if(e.type === "touchstart"){
+                e.clientX = e.touches[0].clientX;
+                e.clientY = e.touches[0].clientY;
+            }
+            holdTimeout = setTimeout(() => {
+                call(e);
+            }, 700);
+        }
+    
+        function cancelHold(e){
+            clearTimeout(holdTimeout);
             time = new Date() - time;
-            if(time > 1000) setTimeout(() => call(e), 100);
+            if(time < 1000){
+                return;
+            }
+            e.preventDefault();
+            return false;
         }
     }
 }

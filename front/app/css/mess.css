@@ -137,30 +137,7 @@ main{
     position: absolute;
     bottom: 30px;
     right: 30px;
-    width: 500px;
-    height: 300px;
     display: none;
-    overflow: auto;
-    padding: 5px;
-    border-radius: 5px;
-    background-color: var(--menu);
-}
-
-#emocjiDiv_container{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-}
-
-.emocji{
-    cursor: pointer;
-    font-size: 2rem;
-    margin: 1px;
-    width: 2.8rem;
-    aspect-ratio: 1/1;
-    display: inline-block;
-    font-family: 'emocji';
 }
 
 #barc__emocji, #barc__sendFile{
@@ -203,10 +180,5 @@ main{
 
     #messages{
         padding-top: 20px;
-    }
-
-    #emocjiDiv{
-        width: 90vw;
-        right: 5vw;
     }
 }
