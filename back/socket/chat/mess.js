@@ -256,9 +256,15 @@ module.exports = (socket) => {
     socket.ontimeout("reactToMess", 100, async (server, msgId, react) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(server) || !valid.id(msgId) || !valid.str(react, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(server.replace("$", "")) || !valid.id(msgId) || !valid.str(react, 0, 30)) return socket.emit("error", "valid data");
         
-            const msg = await global.db.mess.findOne(server, { _id: msgId });
+            let toM = server;
+            if(server.startsWith("$")){
+                const p1 = socket.user._id;
+                const p2 = server.replace("$", "");
+                toM = chatMgmt.combinateId(p1, p2);
+            }
+            const msg = await global.db.mess.findOne(toM, { _id: msgId });
             if(!msg) return socket.emit("error", "msg does not exist");
 
             const reacts = msg.reacts || {};
@@ -271,9 +277,14 @@ module.exports = (socket) => {
                 reacts[react].push(socket.user._id);
             }
 
-            await global.db.mess.updateOne(server, { _id: msgId }, { reacts });
+            await global.db.mess.updateOne(toM, { _id: msgId }, { reacts });
 
-            global.sendToChatUsers(server, "reactToMess", socket.user._id, server, msgId, react);
+            if(server.startsWith("$")){
+                global.sendToSocket(socket.user._id, "reactToMess", socket.user._id, server, msgId, react);
+                global.sendToSocket(server.replace("$", ""), "reactToMess", socket.user._id, "$"+socket.user._id, msgId, react);
+            }else{
+                global.sendToChatUsers(server, "reactToMess", socket.user._id, server, msgId, react);
+            }
         }catch(e){
             socket.logError(e);
         }

@@ -94,7 +94,7 @@ socket.on("editMess", (id, msg, time) => {
 });
 
 socket.on("reactToMess", (uid, server, messId, react) => {
-    if(vars.chat.to.replace("$","") != server) return;
+    if(vars.chat.to != server) return;
     
     const mess = document.querySelector("#mess__"+messId);
     if(!mess) return;
