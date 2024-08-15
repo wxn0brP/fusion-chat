@@ -1,5 +1,6 @@
 function setupSwipe(element, onSwipeLeft=()=>{}, onSwipeRight=()=>{}, onSwipeUp=()=>{}, onSwipeDown=()=>{}){
     let startX, startY, endX, endY;
+    const swipeThreshold = 100;
 
     element.addEventListener('touchstart', (e) => {
         startX = e.touches[0].clientX;
@@ -33,14 +34,14 @@ function setupSwipe(element, onSwipeLeft=()=>{}, onSwipeRight=()=>{}, onSwipeUp=
         let diffY = startY - endY;
 
         if(Math.abs(diffX) > Math.abs(diffY)){
-            if(Math.abs(diffX) < 75) return;
+            if(Math.abs(diffX) < swipeThreshold) return;
             if(diffX > 0){
                 if(onSwipeLeft) onSwipeLeft();
             }else{
                 if(onSwipeRight) onSwipeRight();
             }
         }else{
-            if(Math.abs(diffY) < 75) return;
+            if(Math.abs(diffY) < swipeThreshold) return;
             if(diffY > 0){
                 if(onSwipeUp) onSwipeUp();
             }else{
