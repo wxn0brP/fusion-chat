@@ -7,20 +7,21 @@ new Vue({
         sortAscending: true,
         filterLevel: ''
     },
+
     computed: {
-        filteredAndSortedLogs() {
+        filteredAndSortedLogs(){
             let filteredLogs = this.logs;
 
-            if (this.filterLevel) {
+            if(this.filterLevel){
                 filteredLogs = filteredLogs.filter(log => log.level === this.filterLevel);
             }
 
             filteredLogs.sort((a, b) => {
-                if (this.sortKey === 'relativeTime') {
+                if(this.sortKey === 'relativeTime'){
                     const aTime = parseFloat(a.relativeTime);
                     const bTime = parseFloat(b.relativeTime);
                     return this.sortAscending ? aTime - bTime : bTime - aTime;
-                } else {
+                }else{
                     const aValue = a[this.sortKey];
                     const bValue = b[this.sortKey];
                     if (aValue < bValue) return this.sortAscending ? -1 : 1;
@@ -32,30 +33,32 @@ new Vue({
             return filteredLogs;
         }
     },
+    
     methods: {
-        async handleFileUpload(event) {
+        async handleFileUpload(event){
             const files = event.target.files;
             const promises = [];
 
-            for (let i = 0; i < files.length; i++) {
+            for(let i = 0; i < files.length; i++){
                 promises.push(this.readFile(files[i]));
             }
 
             const results = await Promise.all(promises);
             const mergedLogs = [].concat(...results);
+            await this.loadUserNames(mergedLogs);
             this.logs = mergedLogs.sort((a, b) => new Date(a.time) - new Date(b.time));
             this.addRelativeTimes();
-            this.loadUserNames();
         },
-        readFile(file) {
+
+        readFile(file){
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    try {
+                    try{
                         const data = JSON.parse(e.target.result);
                         data.forEach(log => log.time = new Date(log.time));
                         resolve(data);
-                    } catch (error) {
+                    }catch(error){
                         reject(error);
                     }
                 };
@@ -63,16 +66,19 @@ new Vue({
                 reader.readAsText(file);
             });
         },
-        getUserName(userId) {
+
+        getUserName(userId){
             return this.users[userId] || userId;
         },
-        async loadUserNames() {
-            const userIds = [...new Set(this.logs.map(log => log.user))];
-            for (const id of userIds) {
+
+        async loadUserNames(logs){
+            const userIds = [...new Set(logs.map(log => log.user))];
+            for(const id of userIds){
                 this.users[id] = await apis.www.changeUserID(id);
             }
         },
-        addRelativeTimes() {
+
+        addRelativeTimes(){
             if (this.logs.length === 0) return;
             const startTime = new Date(this.logs[0].time);
             this.logs.forEach(log => {
@@ -81,11 +87,11 @@ new Vue({
                 log.relativeTime = relativeTime + 's';
             });
         },
-        formatDate(date) {
+
+        formatDate(date){
             return date.toLocaleTimeString();
         }
     },
-    mounted() {
-        
-    }
+
+    mounted(){}
 });
