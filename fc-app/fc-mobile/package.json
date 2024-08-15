@@ -1,6 +1,6 @@
 {
   "name": "fusion-chat",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": false,
   "scripts": {
     "android": "react-native run-android",
