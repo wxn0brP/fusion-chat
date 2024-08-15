@@ -1,10 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,300&display=swap");
 @import url("scrool.css");
-@font-face{
-    font-family: 'emocji';
-    size-adjust: 130%;
-    src: url('/emocji.woff2') format('woff2');
-}
 
 :root{
     --txt: #c9d6de;
@@ -23,7 +18,7 @@
     padding: 0;
     box-sizing: border-box;
     user-select: text;
-    font-family: 'Ubuntu', 'emocji', sans-serif;
+    font-family: 'Ubuntu', sans-serif;
     font-weight: 400;
 }
 
