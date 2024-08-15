@@ -33,9 +33,17 @@ jobs:
         VERSION=$(node -p "require('./fc-app/fc-mobile/package.json').version")
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+    - name: Generate versionCode from versionName
+      id: generate_version_code
+      run: |
+        VERSION_NAME="${{ env.VERSION }}"
+        IFS='.' read -r major minor patch <<< "$VERSION_NAME"
+        VERSION_CODE=$((major * 10000 + minor * 100 + patch))
+        echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+
     - name: Update Android build.gradle with version
       run: |
-        sed -i "s/versionCode .*/versionCode ${{ env.VERSION }}/" fc-app/fc-mobile/android/app/build.gradle
+        sed -i "s/versionCode .*/versionCode ${{ env.VERSION_CODE }}/" fc-app/fc-mobile/android/app/build.gradle
         sed -i "s/versionName .*/versionName \"${{ env.VERSION }}\"/" fc-app/fc-mobile/android/app/build.gradle
 
     - name: Build Android Release
