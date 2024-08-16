@@ -10,11 +10,9 @@ apis.api.receiveMessage = (data) => {
         break;
         case "close":
             socket.disconnect();
-            uiFunc.uiMsg("Disconnected from server!");
         break;
         case "unclose":
             socket.connect();
-            uiFunc.uiMsg("Connected to server!");
         break;
     }
 }
