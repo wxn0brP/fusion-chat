@@ -201,7 +201,7 @@ const voiceFunc = {
         voiceUtils.postSetupPeer(peer, to);
         
         peer.on("open", () => {
-            const id = voiceUtils.formatCallId(to);
+            const id = voiceUtils.formatCallId(vars.user._id, to);
             const call = peer.call(id, voiceFunc.local_stream);
             voiceDebug.info('makeConnectionCaller', `Outgoing call to: ${id}`);
             call.on("stream", (stream) => {
