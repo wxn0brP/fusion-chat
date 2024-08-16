@@ -29,6 +29,7 @@ module.exports = (socket) => {
 
             await global.db.data.add("friendRequests", { from: socket.user._id, to: id });
             global.sendToSocket(id, "requestFriend", socket.user._id);
+            await global.fireBaseMessage.send(id, "Friend request", socket.user.name + " wants to be your friend");
         }catch(e){
             socket.logError(e);
         }
@@ -48,6 +49,11 @@ module.exports = (socket) => {
             if(accept) await global.db.dataGraph.add("friends", id, socket.user._id);
 
             global.sendToSocket(id, "requestFriendResponse", socket.user._id, accept);
+            await global.fireBaseMessage.send(
+                id,
+                "Friend request",
+                socket.user.name + (accept ? " accepted your friend request" : " rejected your friend request")
+            );
         }catch(e){
             socket.logError(e);
         }
