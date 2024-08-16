@@ -6,8 +6,7 @@ const uiFunc = {
         div.textContent = message;
         if(backgroundColor) div.style.backgroundColor = backgroundColor;
 
-        const defaultPosition = `-${div.offsetHeight + 50}px`;
-        div.style.top = defaultPosition;
+        div.style.top = `-${div.offsetHeight + 20}px`;
         if(className) div.classList.add(className);
 
         const padding = 10;
@@ -20,19 +19,29 @@ const uiFunc = {
             return top;
         }
 
+        let ended = false;
+
+        async function end(){
+            ended = true;
+            div.style.top = `-${div.offsetHeight + 20}px`;
+    
+            await delay(700);
+            for(const child of errMessesDiv.children){
+                const currentTop = parseInt(child.style.top.replace("px", ""));
+                child.style.top = `${currentTop - padding - div.offsetHeight}px`;
+            }
+            div.remove();
+        }
+
+        div.addEventListener("click", end);
+
         errMessesDiv.appendChild(div);
         await delay(100);
         div.style.top = `${10 + topPosition}px`;
 
         await delay(displayTime - 700);
-        div.style.top = defaultPosition;
-
-        await delay(700);
-        for(const child of errMessesDiv.children){
-            const currentTop = parseInt(child.style.top.replace("px", ""));
-            child.style.top = `${currentTop - padding - div.offsetHeight}px`;
-        }
-        div.remove();
+        if(ended) return;
+        await end();
     },
     
     uiMsg(data, extraTime=0){
