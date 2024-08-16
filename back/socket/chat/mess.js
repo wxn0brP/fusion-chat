@@ -81,13 +81,13 @@ module.exports = (socket) => {
                 data.toM = to;
                 let chat = await global.db.usersPerms.find(to, r => r.uid);
                 const server = (await global.db.groupSettings.findOne(to, { _id: "set"}));
-                const title = "(S) " + server.name;
+                const fromMsg = "(S) " + server.name;
 
                 chat.forEach(u => {
                     u = u.uid;
                     if(u == socket.user._id) return;
                     sendToSocket(u, "mess", data);
-                    global.fireBaseMessage.newMsgInfo(title, u, data);
+                    global.fireBaseMessage.send(u, "New message from " + fromMsg, data.msg);
                 })
             }else{
                 let toSend = req.to.replace("$","");
@@ -98,7 +98,7 @@ module.exports = (socket) => {
                 sendToSocket(toSend, "mess", data);
 
                 const user = await global.db.data.findOne("user", { _id: socket.user._id });
-                global.fireBaseMessage.newMsgInfo(user.name, toSend, data);
+                global.fireBaseMessage.send(toSend, "New message from " + user.name, data.msg);
             }
         }catch(e){
             socket.logError(e);

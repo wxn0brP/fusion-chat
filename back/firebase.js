@@ -11,16 +11,13 @@ try{
 global.firebaseAdmin = admin;
 
 global.fireBaseMessage = {
-    async newMsgInfo(from, to_id, data){
-        const socket = global.getSocket(to_id);
+    async send(to, title, body){
+        const socket = global.getSocket(to);
         if(socket.length > 0) return;
     
-        let tokens = await global.db.data.find("fireBaseUser", { _id: to_id });
+        let tokens = await global.db.data.find("fireBaseUser", { _id: to });
         if(tokens.length == 0) return;
         tokens = tokens.map(t => t.token);
-        
-        let title = "New message from "+from;
-        let body = data.msg;
         
         try{
             tokens.forEach(async token => {
@@ -32,5 +29,5 @@ global.fireBaseMessage = {
                 }catch{}
             })
         }catch{}
-    }
+    },
 }
