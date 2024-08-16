@@ -21,6 +21,7 @@ async function selectDatabase(){
             name: 'selectedDb',
             message: 'Select a database:',
             choices: dbNames,
+            loop: false
         },
     ]);
 
@@ -60,7 +61,8 @@ async function mainMenuWindow(){
                 "---",
                 
                 'Select db',
-                'Select table',
+                'Select list table',
+                'Select text table',
                 'Display tables',
                 "---",
                 
@@ -92,9 +94,24 @@ async function mainMenuWindow(){
         console.log(chalk.green('Database selected.'));
     }
 
-    if(operation === 'Select table'){
+    if(operation === 'Select text table'){
         const { table } = await inquirer.prompt([
             { name: 'table', message: 'Table:' },
+        ]);
+        selected.table = table;
+        console.log(chalk.green('Table selected.'));
+    }
+
+    if(operation === 'Select list table'){
+        if(!selected.db) return;
+        const { table } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'table',
+                message: 'Table:',
+                choices: await selected.db.getDBs(),
+                loop: false
+            },
         ]);
         selected.table = table;
         console.log(chalk.green('Table selected.'));
@@ -121,13 +138,13 @@ async function mainMenuWindow(){
     if(operation === 'Find data'){
         const search = await promptForKeyValuePairs();
         const results = await db.find(table, search);
-        console.log(chalk.green('Found data:'), results);
+        console.log("\n", chalk.green('Found data:'), results, "\n");
     }
 
     if(operation === 'Find one data'){
         const search = await promptForKeyValuePairs();
         const result = await db.findOne(table, search);
-        console.log(chalk.green('Found data:'), result);
+        console.log("\n", chalk.green('Found data:'), result, "\n");
     }
 
     if(operation === 'Update data'){
@@ -161,8 +178,10 @@ async function mainMenuWindow(){
     if(operation === 'Update or Add data'){
         const search = await promptForKeyValuePairs();
         console.log(chalk.yellow('Now enter the new values (for update or add):'));
-        const data = await promptForKeyValuePairs();
-        await db.updateOneOrAdd(table, search, data, data);
+        const updateData = await promptForKeyValuePairs();
+        console.log(chalk.yellow('Now enter the new values (for add only):'));
+        const addData = await promptForKeyValuePairs();
+        await db.updateOneOrAdd(table, search, updateData, addData);
         console.log(chalk.green('Data updated or added.'));
     }
 }
