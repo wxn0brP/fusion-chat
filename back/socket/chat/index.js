@@ -78,15 +78,14 @@ io.of("/").on("connection", (socket) => {
                             user: socket.user._id,
                             evt,
                             ban: true,
-                        })
+                        });
                     }
-                    return;
-                }else{
-                    if(lastTime.i == 0){
-                        socket.emit("error", "Spam protection activated. Please wait a moment and try again.");
-                    }
-                    return;
+                }else if(lastTime.i == 2){
+                    socket.emit("error", "Spam protection activated. Please wait a moment and try again.");
+                }else if(lastTime.i == 0 || lastTime.i == 1){
+                    setTimeout(() => cb(...data), 100);
                 }
+                return;
             }
 
             socket.timeOutMap.set(evt, { t: currentTime, i: 0 });
