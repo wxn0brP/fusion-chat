@@ -103,8 +103,6 @@ const renderFunc = {
         navs__groups__name.innerHTML = name;
         const settingsBtn = document.createElement("span");
         settingsBtn.innerHTML = "⚙️";
-        settingsBtn.style.cursor = "pointer";
-        settingsBtn.style.fontSize = "1.1rem";
         settingsBtn.addEventListener("click", () => {
             socket.emit("getSeverSettings", sid);
         })
@@ -112,8 +110,6 @@ const renderFunc = {
 
         const usersDisplayBtn = document.createElement("span");
         usersDisplayBtn.innerHTML = "👥";
-        usersDisplayBtn.style.cursor = "pointer";
-        usersDisplayBtn.style.fontSize = "1.1rem";
         usersDisplayBtn.addEventListener("click", () => {
             renderFunc.usersInChat(vars.servers.users.map(u => u.uid));
         })

@@ -79,6 +79,10 @@ const voiceUtils = {
             secure: true,
             port: 443,
             restartIce: true,
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+            ]
         });
     },
 
