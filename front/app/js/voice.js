@@ -83,6 +83,9 @@ const voiceUtils = {
     },
 
     async getStream(audio=true, video=false){
+        if(apis.app.apiType == "rn"){
+            return await processMediaRN.getStream();
+        }
         const stream = new MediaStream();
 
         async function getUserMedia(options){
@@ -242,10 +245,16 @@ const voiceFunc = {
         voiceHTML.mediaContainer.innerHTML = "";
         voiceHTML.voiceShow.style.display = "none";
 
-        voiceFunc.local_stream.getTracks().forEach((track) => {
-            track.stop();
-        });
-        voiceFunc.local_stream = new MediaStream();
+        if(apis.app.apiType == "rn"){
+            apis.api.send({
+                type: "stopAudio",
+            });
+        }else{
+            voiceFunc.local_stream.getTracks().forEach((track) => {
+                track.stop();
+            });
+            voiceFunc.local_stream = new MediaStream();
+        }
         voiceDebug.info('endCall', "Call ended and cleaned up.");
 
         socket.emit("callLogs", voiceDebug.getLogs());
@@ -267,11 +276,17 @@ const voiceFunc = {
     },
 
     toggleMute(){
-        const tracks = voiceFunc.local_stream.getAudioTracks();
         voiceFunc.muteMic = !voiceFunc.muteMic;
-        tracks.forEach((track) => {
-            track.enabled = !voiceFunc.muteMic;
-        });
+        if(apis.app.apiType == "rn"){
+            apis.api.send({
+                type: voiceFunc.muteMic ? "stopAudio" : "startAudio",
+            })
+        }else{
+            const tracks = voiceFunc.local_stream.getAudioTracks();
+            tracks.forEach((track) => {
+                track.enabled = !voiceFunc.muteMic;
+            });
+        }
 
         voiceDebug.info('toggleMute', `Mic ${voiceFunc.muteMic ? "muted" : "unmuted"}`);
         voiceHTML.muteMic.innerHTML = translateFunc.get(voiceFunc.muteMic ? "Unmute" : "Mute");

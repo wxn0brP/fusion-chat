@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { WebView } from 'react-native-webview';
 import notificationModule from './notificationModule';
@@ -6,6 +6,8 @@ import updateFunc from "./update";
 import config from "./config";
 import firebase from "./firebase";
 import permission from "./permission";
+
+import AudioRecorder from './AudioRecorder';
 
 const lo = console.log;
 
@@ -24,6 +26,12 @@ const ReactNativeApp = () => {
             break;
             case "debug":
                 console.log(data.msg);
+            break;
+            case "startAudio":
+                startRecording();
+            break;
+            case "stopAudio":
+                AudioRecorder.stop();
             break;
             default:
                 console.log("unknown message", data);
@@ -71,6 +79,19 @@ const ReactNativeApp = () => {
         initApp();
     }, []);
 
+    useEffect(() => {
+        return () => {
+            AudioRecorder.stop();
+        };
+    }, []);
+
+    const startRecording = async () => {
+        await permission.requestMicrophonePermission();
+        AudioRecorder.start((data) => {
+            if(!webViewRef.current) return;
+            webViewRef.current.injectJavaScript(`apis.api.receiveAudio('${data}')`)
+        });
+    }
 
     return (
         <WebView
