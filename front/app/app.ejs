@@ -21,50 +21,6 @@
             </div>
         </div>
         <div id="assets" style="display: none;"></div>
-
-        <% const scripts = [
-            "init",
-            
-            "var",
-            "utils",
-            "debug",
-            "ws",
-            "apis",
-            "coreFunc",
-            "uiFunc",
-            
-            "contextMenuLib",
-            "settingsLib",
-            "settingsServerLib",
-            "swipeLib",
-            
-            "translate",
-            "format",
-            "mess",
-            "messStyle",
-            "messSocket",
-            "mainView",
-            "contextMenu",
-            "buttons",
-            "settings",
-            "renders",
-            "voice",
-            "file",
-            
-            "warning",
-            "start",
-            "features",
-        ] %>
-        
-        <div id="scripts" style="display: none;">
-            <script src="/core.js"></script>
-            <script src="/libs/json5.min.js"></script>
-            <script src="/libs/socket.io.min.js"></script>
-            <script src="/libs/peerjs.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
-            <% scripts.forEach(script => { %>
-                <script src="js/<%= script %>.js"></script>
-            <% }) %>
-        </div>
+        <%- include('html/script') %> 
     </body>
 </html>
