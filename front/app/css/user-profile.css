@@ -35,7 +35,7 @@
 #navs__user__setting{
     position: absolute;
     left: 194px;
-    top: 14px;
-    font-size: 20px;    
+    top: 19px;
+    font-size: 1.6rem;    
     cursor: pointer;
 }
