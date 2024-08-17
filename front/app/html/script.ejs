@@ -1,0 +1,50 @@
+<% const libs = [
+    "json5",
+    "socket.io",
+    "peerjs",
+    "emoji-mart",
+] %>
+
+<% const scripts = [
+    "init",
+    
+    "var",
+    "utils",
+    "debug",
+    "ws",
+    "apis",
+    "coreFunc",
+    "uiFunc",
+    
+    "contextMenuLib",
+    "settingsLib",
+    "settingsServerLib",
+    "swipeLib",
+    
+    "translate",
+    "format",
+    "mess",
+    "messStyle",
+    "messSocket",
+    "mainView",
+    "contextMenu",
+    "buttons",
+    "settings",
+    "renders",
+    "voice",
+    "file",
+    
+    "warning",
+    "start",
+    "features",
+] %>
+
+<div id="scripts" style="display: none;">
+    <script src="/core.js"></script>
+    <% libs.forEach(script => { %>
+        <script src="/libs/<%= script %>.min.js"></script>
+    <% }) %>
+    <% scripts.forEach(script => { %>
+        <script src="js/<%= script %>.js"></script>
+    <% }) %>
+</div>
