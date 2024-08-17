@@ -40,7 +40,7 @@ async function createWindow(){
             sendToFront({ type: "debug", msg: "ready back" });
         }, 5_000);
 
-        globalShortcut.register("F12", () => {
+        registerShortcut("F12", () => {
             mainWin.webContents.toggleDevTools();
         });
     }
@@ -67,18 +67,6 @@ app.on('activate', () => {
         createWindow();
     }
 });
-
-// if(!dev){
-//     app.on('browser-window-focus', function () {
-//         globalShortcut.register("CommandOrControl+R", () => {});
-//         globalShortcut.register("F5", () => {});
-//     });
-
-//     app.on('browser-window-blur', function () {
-//         globalShortcut.unregister('CommandOrControl+R');
-//         globalShortcut.unregister('F5');
-//     });
-// }
 
 function createNotif(title, body, callback=()=>{}){
     const notif = new Notification({
@@ -123,4 +111,9 @@ function changeState(){
         mainWin.show();
         mainWin.focus();
     }
+}
+
+function registerShortcut(key, callback){
+    app.on('browser-window-focus', () => globalShortcut.register(key, callback));
+    app.on('browser-window-blur', () => globalShortcut.unregister(key));
 }
