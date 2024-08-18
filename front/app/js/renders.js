@@ -14,6 +14,7 @@ const renderFunc = {
         renderUtils.sortPrivs(vars.privs).forEach((id) => {
             const privDiv = document.createElement("button");
             privDiv.classList.add("priv_chat");
+            privDiv.classList.add("btn");
             privDiv.id = "priv_chat_"+id;
 
             const structDiv = document.createElement("div");

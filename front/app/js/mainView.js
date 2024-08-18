@@ -1,5 +1,6 @@
 const mainViewDiv = document.querySelector("#main__view");
 const mainViewDivs = {
+    nav: document.querySelector("#main__view__nav"),
     friends: mainViewDiv.querySelector("#main__view__friends"),
     requests: mainViewDiv.querySelector("#main__view__requests"),
     requestCount: mainViewDiv.querySelector("#main__view__requests__count"),
@@ -155,6 +156,14 @@ const mainView = {
 
         socket.emit("removeFriend", friend);
         socket.emit("getFriends");
+    },
+
+    showNav(){
+        if(mainViewDivs.nav.clientHeight == 0){
+            mainViewDivs.nav.fadeIn();
+        }else{
+            mainViewDivs.nav.fadeOut();
+        }
     }
 }
 

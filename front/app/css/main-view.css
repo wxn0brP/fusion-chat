@@ -13,24 +13,28 @@
 }
 
 #main__view__nav button{
-    background-color: transparent;
-    border: 2px solid var(--accent);
-    color: var(--txt);
-    padding: 7px;
-    border-radius: 7px;
-    cursor: pointer;
+    --pad_radius: 5px;
     margin-right: 5px;
+    transition: background-color 0.5s;
+}
+
+#main__view__nav button:hover{
+    --bg: color-mix(in srgb, var(--accent) 50%, transparent);
 }
 
 .main__view__friend{
-    background-color: color-mix(in srgb, var(--panel) 50%, transparent);
-    border-radius: 1rem;
+    border-radius: 1.3rem;
     padding: 1rem;
     margin-bottom: 3px;
     cursor: pointer;
+    transition: background-color 0.5s;
 
     display: flex;
     align-items: center;
+}
+
+.main__view__friend:hover{
+    background-color: var(--messHover);
 }
 
 .friend__avatar{
@@ -38,6 +42,18 @@
     height: 48px;
     border-radius: 5px;
     margin-right: 5px;
+}
+
+.friend__status{
+    color: lightgreen;
+}
+
+.friend__status::before{
+    content: "(";
+}
+
+.friend__status::after{
+    content: ")";
 }
 
 .main__view__friend .request__btn{
@@ -56,7 +72,8 @@
 }
 
 @media screen and (max-width: 800px){
-    #main__view__nav{
-        width: calc(100% - 2.5rem);
+    #main__view__nav button{
+        display: block;
+        margin-top: 5px;
     }
 }
