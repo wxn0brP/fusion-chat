@@ -3,12 +3,15 @@
     <div id="editClose" class="context-menu" onclick="messFunc.editMessClose()" translate>Edit message</div>
     <div id="messages" style="display: none;"></div>
     <div id="main__view">
-        <div id="main__view__nav">
-            <button onclick="mainView.changeView('all')" translate main_view="all">All</button>
-            <button onclick="mainView.changeView('online')" translate main_view="online">Online</button>
-            <button onclick="mainView.changeView('offline')" translate main_view="offline">Offline</button>
-            <button onclick="mainView.addFriend()" translate>Add friend</button>
-            <button onclick="mainView.changeView('requests')" main_view="requests">
+        <div class="only_mobile">
+            <button onclick="mainView.showNav()" translate class="btn">Show</button>
+        </div>
+        <div id="main__view__nav" class="only_desktop">
+            <button onclick="mainView.changeView('all')" translate main_view="all" class="btn">All</button>
+            <button onclick="mainView.changeView('online')" translate main_view="online" class="btn">Online</button>
+            <button onclick="mainView.changeView('offline')" translate main_view="offline" class="btn">Offline</button>
+            <button onclick="mainView.addFriend()" translate class="btn">Add friend</button>
+            <button onclick="mainView.changeView('requests')" main_view="requests" class="btn">
                 <span translate>Friend requests</span>
                 <span id="main__view__requests__count"></span>
             </button>

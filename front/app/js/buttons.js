@@ -1,3 +1,5 @@
+const makeGroupDiv = document.querySelector("#makeGroup");
+
 const buttonFunc = {
     async addPriv(){
         const to = await uiFunc.prompt("Name of the 2 people");
@@ -31,5 +33,5 @@ const buttonFunc = {
 
     userSettings(){
         settingsFunc.showUserSettings();
-    }
+    },
 }

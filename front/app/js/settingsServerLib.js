@@ -72,6 +72,7 @@ class SettingsServerManager{
         ]
         .map(category => {
             const button = document.createElement('button');
+            button.className = "btn";
             button.textContent = category.text;
             button.onclick = () => {
                 _this.changeDisplay({ [category.name]: true });

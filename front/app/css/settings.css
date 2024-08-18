@@ -17,13 +17,13 @@
 }
 
 #settings .settings__categorySwitcher button{
-    background-color: var(--back);
-    color: var(--txt);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    padding: 5px;
+    --border: 1px;
     margin: 5px;
-    cursor: pointer;
+    transition: background-color 0.5s;
+}
+
+#settings .settings__categorySwitcher button:hover{
+    --bg: var(--accent);
 }
 
 #settings .settings__exitButton{
