@@ -67,19 +67,17 @@ nav{
 }
 
 #navs button{
+    --pad_radius: 7px;
+    --borderColor: transparent;
+    --bg: var(--panel);
+
     width: 90%;
-    background-color: var(--panel);
-    border: 2px solid var(--panel);
-    color: var(--txt);
-    padding: 7px;
-    border-radius: 7px;
-    cursor: pointer;
     transition: border-color 0.5s;
     margin-block: 3px;
 }
 
 #navs button:hover{
-    border-color: var(--accent);
+    --borderColor: var(--accent);
 }
 
 #navs__main, #navs__groups{
@@ -150,6 +148,11 @@ nav{
 
 #navs .channel_textActive{
     color: var(--accent);
+}
+
+#groups__create{
+    font-size: 2.5rem;
+    color: green;
 }
 
 @media screen and (max-width: 800px){

@@ -76,7 +76,12 @@
     width: 600px;
     height: 500px;
 
-    text-align: left;    
+    text-align: left;
+}
+
+#userProfile #userProfileInfo{
+    display: flex;
+    gap: 1rem;
 }
 
 #userProfile img{
@@ -161,6 +166,20 @@
 
 #linkClick span{
     color: red;
+}
+
+#makeGroup{
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    background-color: var(--back);
+    color: var(--txt);
+    border: 2px solid var(--accent);
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 300px;
 }
 
 @media screen and (max-width: 800px){

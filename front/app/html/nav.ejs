@@ -5,16 +5,14 @@
         </div>
         <hr>
         <div id="groups__content"></div>
-        <div style="width: 1px; height: 10rem;"></div>
         <hr>
-        <div class="group" onclick="buttonFunc.createGroup()" translate>Create Group</div>
-        <div class="group" onclick="buttonFunc.joinGroup()" translate>Join Channel</div>
+        <div class="group" onclick="makeGroupDiv.fadeIn()" id="groups__create">+</div>
         <div class="group" onclick="voiceHTML.div.fadeIn()" translate id="groups__voice_show" style="display: none;">Voice Show</div>
     </div>
     <div id="navs">
         <div id="navs__main">
-            <button onclick="buttonFunc.addPriv()" translate>Add Private Channel</button>
-            <button onclick="voiceFunc.startCall()" translate id="navs__main__call">Call</button>
+            <button onclick="buttonFunc.addPriv()" translate class="btn">Add Private Channel</button>
+            <button onclick="voiceFunc.startCall()" translate id="navs__main__call" class="btn">Call</button>
             <hr>
             <br />
             <div id="navs__priv"></div>

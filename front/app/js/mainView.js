@@ -1,5 +1,6 @@
 const mainViewDiv = document.querySelector("#main__view");
 const mainViewDivs = {
+    nav: document.querySelector("#main__view__nav"),
     friends: mainViewDiv.querySelector("#main__view__friends"),
     requests: mainViewDiv.querySelector("#main__view__requests"),
     requestCount: mainViewDiv.querySelector("#main__view__requests__count"),
@@ -32,12 +33,17 @@ const mainView = {
             friendDiv.innerHTML = `
                 <img class="friend__avatar" src="/profileImg?id=${friend._id}" />
                 <div>
-                    <div class="friend__name">${apis.www.changeUserID(friend._id)}</div>
+                    <span class="friend__name">${apis.www.changeUserID(friend._id)}</span>
+                    <br />
                     <span class="friend__status">${friend.status}</span>
                     ${friend.text ? `<span class="friend__status_text">${friend.text}</span>` : ""}
                 </div>
             `.trim();
 
+            friendDiv.querySelector(".friend__name").addEventListener("click", (e) => {
+                e.stopPropagation();
+                socket.emit("userProfile", friend._id);
+            });
             friendDiv.addEventListener("click", () => {
                 coreFunc.changeChat("$" + friend._id);
             });
@@ -155,6 +161,23 @@ const mainView = {
 
         socket.emit("removeFriend", friend);
         socket.emit("getFriends");
+    },
+
+    removeFriendRequest(friend){
+        if(!friend) return;
+
+        const conf = confirm(translateFunc.get("Do you really want to remove $ from your friend requests list?", apis.www.changeUserID(friend)));
+        if(!conf) return;
+
+        socket.emit("removeFriendRequest", friend);
+    },
+
+    showNav(){
+        if(mainViewDivs.nav.clientHeight == 0){
+            mainViewDivs.nav.fadeIn();
+        }else{
+            mainViewDivs.nav.fadeOut();
+        }
     }
 }
 

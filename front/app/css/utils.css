@@ -4,3 +4,29 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+.btn{
+    --pad_radius: 5px;
+    --border: 2px;
+    --bg: transparent;
+    --borderColor: var(--accent);
+
+    cursor: pointer;
+    border-radius: var(--pad_radius);
+    padding: var(--pad_radius);
+    border: var(--border) solid var(--borderColor);
+    color: var(--txt);
+    background-color: var(--bg);
+}
+
+@media screen and (max-width: 800px){
+    .only_desktop{
+        display: none;  
+    }
+}
+
+@media screen and (min-width: 800px){
+    .only_mobile{
+        display: none;
+    }
+}
