@@ -23,6 +23,14 @@ class Graph{
         if(b) buffor.push(...b);
         return buffor;
     }
+
+    async findOne(collection, d, e){
+        const a = await this.db.findOne(collection, { a: d, b: e });
+        if(a) return a;
+        const b = await this.db.findOne(collection, { a: e, b: d });
+        if(b) return b;
+        return null;
+    }
 }
 
 module.exports = Graph;

@@ -76,7 +76,12 @@
     width: 600px;
     height: 500px;
 
-    text-align: left;    
+    text-align: left;
+}
+
+#userProfile #userProfileInfo{
+    display: flex;
+    gap: 1rem;
 }
 
 #userProfile img{
