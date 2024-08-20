@@ -15,7 +15,7 @@ const contextMenu = {
     },
 
     menuClickEvent(div, call){
-        if(!utils.ss()){
+        if(!utils.isMobile()){
             div.addEventListener("contextmenu", (e) => {
                 e.preventDefault();
                 call(e);
