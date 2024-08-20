@@ -7,6 +7,13 @@ const navs__groups__name = document.querySelector("#navs__groups__name");
 const navs__groups__channels = document.querySelector("#navs__groups__channels");
 const usersInChatDiv = document.querySelector("#usersInChat");
 
+const friendStatusEnum = {
+    NOT_FRIEND: 0,
+    IS_FRIEND: 1,
+    REQUEST_SENT: 2,
+    REQUEST_RECEIVED: 3,
+};
+
 const renderFunc = {
     privs(){
         navs__priv.innerHTML = "";
@@ -81,21 +88,43 @@ const renderFunc = {
         if(!data) return;
 
         userProfileDiv.innerHTML = `
-            <img src="/profileImg?id=${data._id}" alt="User logo">
-            <h1>${data.name}</h1>
-            <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
+            <div id="userProfileInfo">
+                <img src="/profileImg?id=${data._id}" alt="User logo">
+                <div>
+                    <h1>${data.name}</h1>
+                    <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
+                    <div id="userProfileBtns"></div>
+                </div>
+            </div>
         `.trim();
 
-        const isFriend = vars.mainView.friends.find(f => f._id == data._id);
-        if(isFriend){
-            userProfileDiv.innerHTML += `
-                <button class="profile__btn" onclick="mainView.removeFriend('${data._id}')">Remove friend</button>
-            `.trim();
-        }else{
-            userProfileDiv.innerHTML += `
-                <button class="profile__btn" onclick="mainView.addFriend('${data._id}')">Add friend</button>
-            `.trim();
+        const frinedBtn = document.createElement("button");
+        frinedBtn.classList.add("btn");
+        frinedBtn.style.marginTop = "10px";
+        let frinedBtnText;
+        switch(data.friendStatus){
+            case friendStatusEnum.NOT_FRIEND:
+                frinedBtnText = "Add friend";
+                frinedBtn.onclick = () => mainView.addFriend(data._id);
+            break;
+            case friendStatusEnum.IS_FRIEND:
+                frinedBtnText = "Remove friend";
+                frinedBtn.onclick = () => mainView.removeFriend(data._id);
+            break;
+            case friendStatusEnum.REQUEST_SENT:
+                frinedBtnText = "Friend request sent (click to cancel)";
+                frinedBtn.onclick = () => mainView.removeFriendRequest(data._id);
+            break;
+            case friendStatusEnum.REQUEST_RECEIVED:
+                frinedBtnText = "Request received (click to view)";
+                frinedBtn.onclick = () => {
+                    coreFunc.changeChat("main");
+                    mainView.changeView("requests");
+                }
+            break;
         }
+        frinedBtn.innerHTML = translateFunc.get(frinedBtnText);
+        userProfileDiv.querySelector("#userProfileBtns").appendChild(frinedBtn);
 
         renderUtils.initPopup(userProfileDiv);
     },

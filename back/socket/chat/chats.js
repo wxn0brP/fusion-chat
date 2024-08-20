@@ -91,35 +91,4 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
-
-    socket.ontimeout("userProfile", 1000, async (id) => {
-        try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
-
-            const userN = await global.db.data.findOne("user", { _id: id });
-            if(!userN) return socket.emit("error", "user not found");
-
-            let userStatus = await global.db.userDatas.findOne(socket.user._id, { _id: "status" });
-            const userOnline = global.getSocket(id).length > 0;
-            if(!userStatus) userStatus = {};
-
-            let userStatusType = "";
-            let userStatusText = "";
-            if(userOnline) userStatusType = userStatus.status || "online";
-            if(userOnline && userStatus.text) userStatusText = userStatus.text;
-            if(!userOnline && !userStatusType) userStatusType = "offline";
-
-            const userData = {
-                name: userN.name,
-                status: userStatusType,
-                statusText: userStatusText,
-                _id: id,
-            }
-
-            socket.emit("userProfile", userData);
-        }catch(e){
-            socket.logError(e);
-        }
-    })
 }

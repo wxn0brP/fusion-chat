@@ -44,6 +44,10 @@
     margin-right: 5px;
 }
 
+.friend__name:hover{
+    text-decoration: underline;
+}
+
 .friend__status{
     color: lightgreen;
 }

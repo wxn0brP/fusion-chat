@@ -1,5 +1,12 @@
 const valid = require("../../logic/validData");
 
+const friendStatusEnum = {
+    NOT_FRIEND: 0,
+    IS_FRIEND: 1,
+    REQUEST_SENT: 2,
+    REQUEST_RECEIVED: 3,
+};
+
 module.exports = (socket) => {
     socket.ontimeout("requestFriend", 1_000, async (nameOrId) => {
         try{
@@ -49,11 +56,25 @@ module.exports = (socket) => {
             if(accept) await global.db.dataGraph.add("friends", id, socket.user._id);
 
             global.sendToSocket(id, "requestFriendResponse", socket.user._id, accept);
-            await global.fireBaseMessage.send(
+            if(accept) global.sendToSocket(socket.user._id, "refreshData", "getFriends");
+            global.fireBaseMessage.send(
                 id,
                 "Friend request",
                 socket.user.name + (accept ? " accepted your friend request" : " rejected your friend request")
             );
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("removeFriendRequest", 1_000, async (id) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
+
+            await global.db.data.removeOne("friendRequests", { from: socket.user._id, to: id });
+
+            global.sendToSocket(id, "refreshData", "getFriendRequests");
         }catch(e){
             socket.logError(e);
         }
@@ -68,6 +89,9 @@ module.exports = (socket) => {
             if(friendExists.length == 0) return socket.emit("error", "friend does not exist");
 
             await global.db.dataGraph.remove("friends", socket.user._id, id);
+
+            global.sendToSocket(id, "refreshData", "getFriends");
+            global.sendToSocket(socket.user._id, "refreshData", "getFriends");
         }catch(e){
             socket.logError(e);
         }
@@ -113,6 +137,56 @@ module.exports = (socket) => {
             const friendRequests = friendRequestsData.map(f => f.from);
 
             socket.emit("getFriendRequests", friendRequests);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("userProfile", 1000, async (id) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
+
+            const userN = await global.db.data.findOne("user", { _id: id });
+            if(!userN) return socket.emit("error", "user not found");
+
+            let userStatus = await global.db.userDatas.findOne(socket.user._id, { _id: "status" });
+            const userOnline = global.getSocket(id).length > 0;
+            if(!userStatus) userStatus = {};
+
+            let userStatusType = "";
+            let userStatusText = "";
+            if(userOnline) userStatusType = userStatus.status || "online";
+            if(userOnline && userStatus.text) userStatusText = userStatus.text;
+            if(!userOnline && !userStatusType) userStatusType = "offline";
+
+            let friendStatus = friendStatusEnum.NOT_FRIEND;
+            const isFriend = await global.db.dataGraph.findOne("friends", socket.user._id, id);
+            if(isFriend){
+                friendStatus = friendStatusEnum.IS_FRIEND;
+            }else{
+                const isFriendRequest = await global.db.data.findOne("friendRequests", {
+                    $or: [
+                        { from: socket.user._id, to: id },
+                        { from: id, to: socket.user._id },
+                    ]
+                });
+                if(isFriendRequest){
+                    friendStatus = isFriendRequest.from == socket.user._id
+                        ? friendStatusEnum.REQUEST_SENT
+                        : friendStatusEnum.REQUEST_RECEIVED;
+                }
+            }
+
+            const userData = {
+                name: userN.name,
+                status: userStatusType,
+                statusText: userStatusText,
+                _id: id,
+                friendStatus
+            }
+
+            socket.emit("userProfile", userData);
         }catch(e){
             socket.logError(e);
         }
