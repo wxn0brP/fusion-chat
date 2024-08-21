@@ -149,6 +149,16 @@ class DataBase{
         const res = await this.updateOne(name, search, arg);
         if(!res) await this.add(name, Object.assign(search, arg, add_arg));
     }
+
+    /**
+     * Removes a database collection from the file system.
+     *
+     * @param {string} name - The name of the collection to remove.
+     * @return {void}
+     */
+    removeDb(name){
+         this.dbAction.removeDb(name);
+    }
 }
 
 module.exports = DataBase;

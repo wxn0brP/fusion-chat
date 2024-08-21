@@ -19,7 +19,7 @@ class SettingsServerManager{
         this.editChannelDiv = this.initCategoryElement();
         this.roleDiv = this.initCategoryElement();
         this.editRoleDiv = this.initCategoryElement();
-        this.userRoleManagerDiv = this.initCategoryElement();
+        this.usersManagerDiv = this.initCategoryElement();
 
         this.renderMeta();
         this.renderChannels();
@@ -52,7 +52,7 @@ class SettingsServerManager{
             editChannel: false,
             role: false,
             editRole: false,
-            userRoleManager: false,
+            usersManager: false,
             ...options
         };
 
@@ -69,7 +69,7 @@ class SettingsServerManager{
             { text: translateFunc.get("Basic Settings"), name: 'meta' },
             { text: translateFunc.get("Categories & Channels"), name: 'category' },
             { text: translateFunc.get("Roles"), name: 'role' },
-            { text: translateFunc.get("User Role Manager"), name: 'userRoleManager' },
+            { text: translateFunc.get("Users Manager"), name: 'usersManager' },
         ]
         .map(category => {
             const button = document.createElement('button');
@@ -121,6 +121,26 @@ class SettingsServerManager{
         });
 
         metaDiv.appendChild(serverImgFile);
+
+        this.addSeparator(metaDiv, 10);
+        
+        this.initButton(metaDiv, translateFunc.get("Delete server"), async () => {
+            const result = confirm(translateFunc.get("Are you sure you want to delete this server? ($)", meta.name));
+            if(!result) return;
+            const result2 = confirm(translateFunc.get("Are you sure you want to delete all data of this server? ($)", meta.name));
+            if(!result2) return;
+            const result3 = confirm(translateFunc.get("Are you sure you want to delete all messages of this server? ($)", meta.name));
+            if(!result3) return;
+
+            const name = await uiFunc.prompt("Confirm server name");
+            if(name !== meta.name) return uiFunc.uiMsg(translateFunc.get("Wrong server name"));
+
+            this.exitWithoutSaving();
+            coreFunc.changeChat("main");
+            setTimeout(() => {
+                socket.emit("deleteServer", this.serverId, name);
+            }, 1000);
+        });
 
         this.saveMetaSettings = () => {
             this.settings.meta.name = nameInput.value;
@@ -493,9 +513,10 @@ class SettingsServerManager{
     }
 
     renderUserRoleManager(){
-        this.userRoleManagerDiv.innerHTML = `<h1>${translateFunc.get("User Roles Manager")}</h1>`;
+        this.usersManagerDiv.innerHTML = `<h1>${translateFunc.get("Users Manager")}</h1>`;
         const users = this.settings.users;
         const _this = this;
+
         function renderUser(user){
             const details = document.createElement('details');
             const summary = document.createElement('summary');
@@ -508,11 +529,10 @@ class SettingsServerManager{
             const checkboxs = [];
             
             roles.forEach(role => {
-                const roleDiv = document.createElement('div');
-                const checkbox = _this.initCheckbox(roleDiv, role.name, userRoles.includes(role.rid));
-                checkboxs.push({id: role.rid, checkbox});
-                div.appendChild(roleDiv);
+                const checkbox = _this.initCheckbox(div, role.name, userRoles.includes(role.rid));
+                checkboxs.push({ id: role.rid, checkbox });
             });
+
             _this.addSeparator(div, 10);
             _this.initButton(div, translateFunc.get("Update"), () => {
                 const newRoles = [];
@@ -523,14 +543,62 @@ class SettingsServerManager{
                 _this.settings.users.find(u => u === user).roles = newRoles;
                 _this.renderUserRoleManager();
             });
+
+            if(user.uid != vars.user._id){
+                _this.addSeparator(div, 10);
+                _this.initButton(div, translateFunc.get("Kick user"), () => {
+                    const result = confirm(translateFunc.get("Are you sure you want to kick this user$($)", "? ", apis.www.changeUserID(user.uid)));
+                    if(!result) return;
+
+                    _this.settings.users = _this.settings.users.filter(u => u.uid !== user.uid);
+                    socket.emit("kickUser", _this.serverId, user.uid);
+                    _this.renderUserRoleManager();
+                });
+
+                _this.initButton(div, translateFunc.get("Ban user"), () => {
+                    const result = confirm(translateFunc.get("Are you sure you want to kick and ban this user$($)", "? ", apis.www.changeUserID(user.uid)));
+                    if(!result) return;
+
+                    _this.settings.users = _this.settings.users.filter(u => u.uid !== user.uid);
+                    socket.emit("kickUser", _this.serverId, user.uid, true);
+                    _this.renderUserRoleManager();
+                });
+            }
             
             details.appendChild(div);
             _this.addSeparator(details, 10);
             return details;
         }
+
         users.forEach(user => {
-            this.userRoleManagerDiv.appendChild(renderUser(user));
+            this.usersManagerDiv.appendChild(renderUser(user));
+            this.addSeparator(this.usersManagerDiv, 10);
         });
+
+        if(this.settings.banUsers.length > 0){
+            const banUsersDetails = document.createElement('details');
+    
+            const banUsersSummary = document.createElement('summary');
+            banUsersSummary.innerHTML = translateFunc.get("Ban users");
+            banUsersDetails.appendChild(banUsersSummary);
+    
+            this.settings.banUsers.forEach(uid => {
+                const userName = document.createElement('span');
+                userName.innerHTML = apis.www.changeUserID(uid);
+                banUsersDetails.appendChild(userName);
+    
+                this.initButton(banUsersDetails, translateFunc.get("unban user"), () => {
+                    const result = confirm(translateFunc.get("Are you sure you want to un ban this user? ($)", apis.www.changeUserID(uid)));
+                    if(!result) return;
+    
+                    _this.settings.banUsers = _this.settings.banUsers.filter(u => u !== uid);
+                    socket.emit("unBanUser", _this.serverId, uid);
+                    _this.renderUserRoleManager();
+                });
+            });
+    
+            this.usersManagerDiv.appendChild(banUsersDetails);
+        }
     }
 
     /* logic */
@@ -585,12 +653,17 @@ class SettingsServerManager{
 
     initCheckbox(container, label, defaultValue){
         const checkboxContainer = document.createElement('div');
+
         const inputElement = document.createElement('input');
         inputElement.type = 'checkbox';
-        inputElement.checked = defaultValue;
+        inputElement.checked = defaultValue || false;
         checkboxContainer.appendChild(inputElement);
+        
+        const labelElement = document.createElement('label');
+        labelElement.innerHTML = label;
+        checkboxContainer.appendChild(labelElement);
+
         container.appendChild(checkboxContainer);
-        checkboxContainer.innerHTML += `<label>${label}</label>`;
         return inputElement;
     }
 

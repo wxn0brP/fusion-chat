@@ -78,6 +78,12 @@ module.exports = {
                 required: ["uid", "roles"],
                 additionalProperties: false
             }
+        },
+        banUsers: {
+            type: "array",
+            items: {
+                type: "string"
+            }
         }
     },
     required: ["meta", "categories", "channels", "roles", "users"],

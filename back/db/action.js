@@ -169,6 +169,16 @@ class dbActionC{
         this.checkFile(name);
         return await fileM.removeOne(this.folder, name, arg);
     }
+
+    /**
+     * Removes a database collection from the file system.
+     *
+     * @param {string} name - The name of the collection to remove.
+     * @return {void}
+     */
+    removeDb(name){
+        fs.rmSync(this.folder + "/" + name, { recursive: true, force: true });
+    }
 }
 
 /**

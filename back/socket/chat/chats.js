@@ -56,6 +56,7 @@ module.exports = (socket) => {
             if(!valid.id(id)) return socket.emit("error", "valid data");
 
             await chatMgmt.exitChat(id, socket.user._id);
+            global.sendToSocket(socket.user._id, "refreshData", "getGroups");
         }catch(e){
             socket.logError(e);
         }
@@ -93,8 +94,12 @@ module.exports = (socket) => {
 
             const exists = await global.db.userDatas.findOne(socket.user._id, { group: id });
             if(exists) return socket.emit("error", "already in group");
+
+            const isBaned = await global.db.usersPerms.findOne(id, { ban: socket.user._id });
+            if(isBaned) return socket.emit("error", "user is baned");
             
             await chatMgmt.addUserToChat(id, socket.user._id);
+            global.sendToSocket(socket.user._id, "refreshData", "getGroups");
         }catch(e){
             socket.logError(e);
         }
