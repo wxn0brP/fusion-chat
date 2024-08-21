@@ -50,6 +50,7 @@ async function createChat(name, ownerId){
     await global.db.groupSettings.add(chatId, {
         name,
         owner: ownerId,
+        img: false,
         _id: "set"
     });
     

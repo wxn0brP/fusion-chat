@@ -66,7 +66,11 @@ const renderFunc = {
             const groupDiv = document.createElement("div");
             groupDiv.classList.add("group");
             groupDiv.id = "group_chat_"+id;
-            groupDiv.innerHTML = apis.www.changeChat(id);
+            if(group.img){
+                groupDiv.innerHTML = `<img src="/userFiles/servers/${id}.png?time=${Date.now()}" alt="${apis.www.changeChat(id)}">`;
+            }else{
+                groupDiv.innerHTML = apis.www.changeChat(id);
+            }
             groups__content.appendChild(groupDiv);
 
             groupDiv.addEventListener("click", () => {
