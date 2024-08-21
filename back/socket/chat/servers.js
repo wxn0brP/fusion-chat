@@ -73,7 +73,7 @@ module.exports = (socket) => {
             if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const perm = new permissionSystem(id);
-            const userPerm = await perm.userPermison(socket.user._id, "admin");
+            const userPerm = await perm.userPermison(socket.user._id, "manage server");
             if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
 
             const meta = await global.db.groupSettings.findOne(id, { _id: "set" });
@@ -81,6 +81,7 @@ module.exports = (socket) => {
             const channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
             const roles = await perm.getRoles();
             const users = await global.db.usersPerms.find(id, (r) => !!r.uid);
+            const banUsers = await global.db.usersPerms.find(id, (r) => !!r.ban);
 
             const data = {
                 meta,
@@ -88,6 +89,7 @@ module.exports = (socket) => {
                 channels,
                 roles,
                 users: users.map(u => { return { uid: u.uid, roles: u.roles }}),
+                banUsers: banUsers.map(u => u.ban),
             };
 
             socket.emit("getSeverSettings", data, id);
@@ -102,10 +104,13 @@ module.exports = (socket) => {
             if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const perm = new permissionSystem(id);
-            const userPerm = await perm.userPermison(socket.user._id, "admin");
+            const userPerm = await perm.userPermison(socket.user._id, "manage server");
             if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
 
-            if(!validShema.setServerSettings(data)) return socket.emit("error", "valid data");
+            if(!validShema.setServerSettings(data)){
+                lo(validShema.setServerSettings.errors);
+                return socket.emit("error", "valid data");
+            }
 
             const o_categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
             const o_channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
@@ -154,6 +159,72 @@ module.exports = (socket) => {
             });
 
             socket.emit("syncUserRoles", usersData, rolesData);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("deleteServer", 10_000, async (id, name) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.str(name, 0, 30)) return socket.emit("error", "valid data");
+
+            const serverMeta = await global.db.groupSettings.findOne(id, { _id: "set" });
+            if(serverMeta.name != name) return socket.emit("error", "valid data");
+
+            const perm = new permissionSystem(id);
+            const userPerm = await perm.userPermison(socket.user._id, "manage server");
+            if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
+
+            const users = (await global.db.usersPerms.find(id, {})).map(u => u.uid);
+            for(const user of users) await global.db.userDatas.removeOne(user, { group: id });
+
+            global.db.groupSettings.removeDb(id);
+            global.db.usersPerms.removeDb(id);
+            global.db.mess.removeDb(id);
+
+            for(const user of users) global.sendToSocket(user, "refreshData", "getGroups");
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("kickUser", 1000, async (serverId, uid, ban=false) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(serverId)) return socket.emit("error", "valid data");
+            if(!valid.id(uid)) return socket.emit("error", "valid data");
+            if(!valid.bool(ban)) return socket.emit("error", "valid data");
+
+            const perm = new permissionSystem(serverId);
+            const userPerm = await perm.userPermison(socket.user._id, "manage server");
+            if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
+
+            await global.db.userDatas.removeOne(uid, { group: serverId });
+            await global.db.usersPerms.removeOne(serverId, { uid });
+            
+            if(ban){
+                await global.db.usersPerms.add(serverId, { ban: uid }, false);
+            }
+
+            global.sendToSocket(uid, "refreshData", "getGroups");
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("unBanUser", 1000, async (serverId, uid) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(serverId)) return socket.emit("error", "valid data");
+            if(!valid.id(uid)) return socket.emit("error", "valid data");
+
+            const perm = new permissionSystem(serverId);
+            const userPerm = await perm.userPermison(socket.user._id, "manage server");
+            if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
+
+            await global.db.usersPerms.removeOne(serverId, { ban: uid });
         }catch(e){
             socket.logError(e);
         }

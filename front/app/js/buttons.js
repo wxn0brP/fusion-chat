@@ -26,9 +26,6 @@ const buttonFunc = {
             .replace("/serverInvite?id=", "");
 
         socket.emit("joinGroup", id);
-        setTimeout(() => {
-            socket.emit("getGroups");
-        }, 1500);
     },
 
     userSettings(){

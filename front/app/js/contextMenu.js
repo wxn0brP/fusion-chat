@@ -94,21 +94,19 @@ const contextFunc = {
         switch(type){
             case "copy_id":
                 navigator.clipboard.writeText(id);
-                uiFunc.uiMsg("Copied server ID!");
+                uiFunc.uiMsg(translateFunc.get("Copied server ID") + "!");
             break;
             case "copy_invite":
                 // socket.emit("getInviteLink", id);
                 const link = location.protocol + "//" + location.host + "/serverInvite?id=" + id;
                 navigator.clipboard.writeText(link);
-                uiFunc.uiMsg("Copied invite link!");
+                uiFunc.uiMsg(translateFunc.get("Copied invite link") + "!");
             break;
             case "exit":
-                const conf = confirm("Are you sure you want to exit server?");
+                const conf = confirm(translateFunc.get("Are you sure you want to exit server$($)", "? ", apis.www.changeChat(id)));
                 if(conf){
                     socket.emit("exitGroup", id);
-                    setTimeout(() => {
-                        socket.emit("getGroups");
-                    }, 1500);
+                    coreFunc.changeChat("main");
                 }
             break;
         }
