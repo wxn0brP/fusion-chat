@@ -57,12 +57,14 @@ nav{
 
 .group img{
     height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
     margin-left: -5px;
 }
 
-.group:not(:first-child) img{
-    object-fit: cover;
-    border-radius: 50%;
+#groups__main__img{
+    object-fit: fill;
 }
 
 #navs{
