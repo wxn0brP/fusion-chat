@@ -5,7 +5,15 @@ module.exports = (socket) => {
     socket.ontimeout("getGroups", 100, async () => {
         try{
             const groups = await global.db.userDatas.find(socket.user._id, r => !!r.group);
-            socket.emit("getGroups", groups || []);
+            if(groups.length == 0) return socket.emit("getGroups", []);
+
+            for(let i = 0; i < groups.length; i++){
+                const group = groups[i];
+                const serverSet = await global.db.groupSettings.findOne(group.group, { _id: 'set' });
+                group.img = serverSet.img || false;
+            }
+
+            socket.emit("getGroups", groups);
         }catch(e){
             socket.logError(e);
         } 

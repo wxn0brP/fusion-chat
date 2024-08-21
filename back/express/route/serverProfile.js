@@ -1,12 +1,12 @@
 const multer = require('multer');
 const { Image } = require("image-js");
 const path = require('path');
-const fs = require('fs');
 const cropAndResizeProfile = require('../../logic/cropAndResizeProfile');
+const permissionSystem = require("../../logic/permission-system");
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 const ALLOWED_FILE_TYPES = ['image/png', 'image/jpeg', "image/jpg", 'image/gif', 'image/webp'];
-const UPLOAD_DIR = 'userFiles/profiles';
+const UPLOAD_DIR = 'userFiles/servers';
 
 const storage = multer.memoryStorage();
 
@@ -23,7 +23,16 @@ const upload = multer({
     }
 }).single('file');
 
-app.post('/profileUpload', global.authenticateMiddleware, (req, res) => {
+app.post('/serverProfileUpload', global.authenticateMiddleware, async (req, res) => {
+    const serverId = req.headers.serverid;
+    if(!serverId) return res.status(400).json({ err: true, msg: 'No server id provided.' });
+
+    const permission = new permissionSystem(serverId);
+    const userId = req.user;
+
+    const userPerm = await permission.userPermison(userId, "admin");
+    if(!userPerm) return res.status(403).json({ err: true, msg: 'You do not have permission to do that.' });
+
     upload(req, res, async (err) => {
         if(err){
             return res.status(400).json({ err: true, msg: err.message });
@@ -33,42 +42,19 @@ app.post('/profileUpload', global.authenticateMiddleware, (req, res) => {
             return res.status(400).json({ err: true, msg: 'No file uploaded.' });
         }
 
-        const userId = req.user;
-        const filePath = path.join(UPLOAD_DIR, `${userId}.png`);
+        const filePath = path.join(UPLOAD_DIR, `${serverId}.png`);
 
         try{
             const image = await Image.load(req.file.buffer);
             const processedImage = cropAndResizeProfile(image);
             await processedImage.save(filePath, { format: 'png', compressionLevel: 0 });
 
+            await global.db.groupSettings.updateOne(serverId, { _id: 'set'}, { img: true });
+
             res.json({ err: false, msg: 'Profile picture uploaded successfully.', path: filePath });
+            global.sendToChatUsers(serverId, "refreshData", "getGroups");
         }catch(error){
             res.status(500).json({ err: true, msg: 'An error occurred while processing the image.' });
         }
     });
-});
-
-app.get("/profileImg", (req, res) => {
-    function def(){
-        res.set("X-Content-Default", "true");
-        res.send(fs.readFileSync("front/static/defaultProfile.png"));
-    }
-
-    const id = req.query.id;
-    if(!id) return def();
-
-    const file = "userFiles/profiles/"+id+".png";
-
-    if(fs.existsSync(file)){
-        res.set("X-Content-Default", "false");
-        res.send(fs.readFileSync(file));
-    }else def();
-});
-
-app.get("/isProfileImg", (req, res) => {
-    const id = req.query.id;
-    if(!id) return res.json(false);
-
-    const file = "userFiles/profiles/"+id+".png";
-    res.json(fs.existsSync(file));
 });

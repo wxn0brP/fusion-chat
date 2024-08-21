@@ -75,6 +75,13 @@
     margin-right: 0.5rem;
 }
 
+#settings #settings__serverImg{
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 @media screen and (max-width: 800px){
     #settings .settings__category{
         max-width: 90vw;

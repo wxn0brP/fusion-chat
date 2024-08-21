@@ -45,6 +45,13 @@ nav{
     position: relative;
 }
 
+.group:not(:first-child) img{
+    width: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+}
+
 .group_chatActive::after{
     content: "";
     position: absolute;

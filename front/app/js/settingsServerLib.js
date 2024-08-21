@@ -1,9 +1,10 @@
 class SettingsServerManager{
-    constructor(settings, container, saveCallback, exitCallback){
+    constructor(settings, serverId, container, saveCallback, exitCallback){
         this.settings = settings;
         this.saveCallback = saveCallback;
         this.exitCallback = exitCallback;
         this.container = container;
+        this.serverId = serverId;
         this.init();
     }
 
@@ -20,7 +21,7 @@ class SettingsServerManager{
         this.editRoleDiv = this.initCategoryElement();
         this.userRoleManagerDiv = this.initCategoryElement();
 
-        this.renderMata();
+        this.renderMeta();
         this.renderChannels();
         this.renderRoles();
         this.renderUserRoleManager();
@@ -93,15 +94,42 @@ class SettingsServerManager{
 
     /* render gui elements */
 
-    renderMata(){
+    renderMeta(){
         const metaDiv = this.metaDiv;
         metaDiv.innerHTML = `<h1>${translateFunc.get("Basic Settings")}</h1>`;
 
         const meta = this.settings.meta;
+        meta.tmpData = {};
+
         const nameInput = this.initInputText(metaDiv, translateFunc.get("Server name"), meta.name);
+
+        this.addSeparator(metaDiv, 10);
+
+        const serverImg = document.createElement('img');
+        serverImg.id = 'settings__serverImg';
+        if(meta.img) serverImg.src = "/userFiles/servers/" + this.serverId + ".png";
+        else serverImg.style.display = 'none';
+        metaDiv.appendChild(serverImg);
+
+        const serverImgFile = document.createElement('input');
+        serverImgFile.type = 'file';
+        serverImgFile.accept = ['image/png', 'image/jpeg', "image/jpg", 'image/gif', 'image/webp'].join(', ');
+        serverImgFile.addEventListener("change", e => {
+            meta.tmpData.img = e.target.files[0];
+            serverImg.src = URL.createObjectURL(e.target.files[0]);
+            serverImg.style.display = "";
+        });
+
+        metaDiv.appendChild(serverImgFile);
 
         this.saveMetaSettings = () => {
             this.settings.meta.name = nameInput.value;
+
+            if(meta.tmpData.img){
+                fileFunc.server(meta.tmpData.img, this.serverId);
+            }
+
+            delete meta.tmpData;
         }
     }
 

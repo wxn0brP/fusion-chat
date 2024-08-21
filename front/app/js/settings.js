@@ -27,6 +27,7 @@ const settingsFunc = {
     showServerSettings(dataI, id){
         new SettingsServerManager(
             dataI,
+            id,
             settingDiv,
             (data) => {
                 socket.emit("setSeverSettings", id, data);
