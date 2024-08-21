@@ -1,5 +1,5 @@
 const fileFunc = {
-    read(options) {
+    read(options){
         const { file, callback, maxSize, maxName, endpoint } = options;
         if(!file || !callback || !maxSize || !maxName || !endpoint){
             return;
@@ -43,6 +43,7 @@ const fileFunc = {
             xhr.setRequestHeader("Authorization", token);
             const formData = new FormData();
             formData.append("file", file);
+            if(options.addionalFields) options.addionalFields(xhr, formData);
             xhr.send(formData);
         };
 
@@ -58,6 +59,23 @@ const fileFunc = {
             maxSize: 1024*1024,
             maxName: 60,
             endpoint: "/profileUpload"
+        }
+
+        fileFunc.read(opt);
+    },
+
+    server(file, id){
+        const opt = {
+            file,
+            callback: () => {
+                lo("File uploaded successfully");
+            },
+            maxSize: 1024*1024,
+            maxName: 60,
+            endpoint: "/serverProfileUpload",
+            addionalFields: (xhr, formData) => {
+                xhr.setRequestHeader("serverid", id);
+            }
         }
 
         fileFunc.read(opt);

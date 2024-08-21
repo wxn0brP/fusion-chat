@@ -7,6 +7,7 @@ module.exports = {
                 name: { type: "string" },
                 owner: { type: "string" },
                 _id: { type: "string" },
+                img: { type: "boolean" }
             },
             required: ["name", "owner", "_id"],
             additionalProperties: false
