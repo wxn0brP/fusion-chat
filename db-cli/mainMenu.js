@@ -8,6 +8,15 @@ const selected = {
     table: null
 }
 
+global.databases = {};
+
+function loadDatabases(){
+    const dbNames = Object.keys(dbConfig);
+    for(const dbName of dbNames){
+        databases[dbName] = new DataBase(dbConfig[dbName]);
+    }
+}
+
 async function selectDatabase(){
     const dbNames = Object.keys(dbConfig);
     if(dbNames.length === 0){
@@ -89,7 +98,7 @@ async function mainMenuWindow(){
 
     if(operation === 'Select db'){
         const dbName = await selectDatabase();
-        selected.db = new DataBase(dbConfig[dbName]);
+        selected.db = global.databases[dbName];
         selected.dbName = dbName;
         console.log(chalk.green('Database selected.'));
     }
@@ -188,6 +197,7 @@ async function mainMenuWindow(){
 
 async function mainMenu(){
     let exit = false;
+    loadDatabases();
 
     while(!exit){
         exit = await mainMenuWindow() || false;
