@@ -61,7 +61,7 @@ program
     });
 
 program
-    .command("autoAdd <folder>")
+    .command("auto-add <folder>")
     .description("Automatically add all databases from <folder>")
     .action((folder) => {
         const dbs = fs.readdirSync(folder, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
@@ -75,7 +75,7 @@ program
 
 program
     .command("use")
-    .description("Work with a selected database")
+    .description("Work with a selected database (interactive mode)")
     .action(async () => {
         const dbNames = Object.keys(dbConfig);
         if(dbNames.length === 0){
@@ -84,6 +84,35 @@ program
         }
 
         await mainMenu();
+    });
+
+program
+    .command("noi <operations...>")
+    .description("Disable interactive mode. Load operations from <operations...>")
+    .action((operations) => {
+        const dbNames = Object.keys(dbConfig);
+        if(dbNames.length === 0){
+            process.exit(2);
+        }
+
+        require("./no-interaction")(operations);
+    });
+
+program
+    .command("noif <file>")
+    .description("Disable interactive mode. Load operations from <file>")
+    .action((file) => {
+        if(!fs.existsSync(file)){
+            process.exit(3);
+        }
+
+        const dbNames = Object.keys(dbConfig);
+        if(dbNames.length === 0){
+            process.exit(2);
+        }
+
+        const operations = fs.readFileSync(file, "utf8").split("\n").filter(line => !!line);
+        require("./no-interaction")(operations);
     });
 
 program.parse(process.argv);
