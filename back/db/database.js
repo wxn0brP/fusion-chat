@@ -143,11 +143,12 @@ class DataBase{
      * @param {Object} search - The search criteria for the update.
      * @param {Object} arg - The search criteria for the update.
      * @param {Object} add_arg - The arguments to be added to the new entry.
-     * @return {Promise} A Promise that resolves when the update is complete.
+     * @return {Promise<boolean>} A Promise that resolves to `true` if the entry was updated, or `false` if it was added.
      */
     async updateOneOrAdd(name, search, arg, add_arg={}){
         const res = await this.updateOne(name, search, arg);
         if(!res) await this.add(name, Object.assign(search, arg, add_arg));
+        return res;
     }
 
     /**
