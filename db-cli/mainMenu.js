@@ -1,6 +1,7 @@
 const inquirer = require('inquirer').default;
 const DataBase = require('./database');
 const chalk = require('chalk');
+const ext = require('./ext');
 
 const selected = {
     db: null,
@@ -67,19 +68,19 @@ async function mainMenuWindow(){
                 'Find data',
                 'Update one data',
                 'Add data',
-                "---",
+                new inquirer.Separator(),
                 
                 'Select db',
                 'Select list table',
                 'Select text table',
                 'Display tables',
-                "---",
+                new inquirer.Separator(),
                 
                 'Update data',
                 'Remove data',
                 'Remove one data',
                 'Update or Add data',
-                "---",
+                new inquirer.Separator(),
 
                 'Exit'
             ],
@@ -90,10 +91,6 @@ async function mainMenuWindow(){
     if(operation === 'Exit'){
         console.log(chalk.blue('Exiting...'));
         return true;
-    }
-
-    if(operation === "---"){
-        return;
     }
 
     if(operation === 'Select db'){
@@ -113,12 +110,15 @@ async function mainMenuWindow(){
 
     if(operation === 'Select list table'){
         if(!selected.db) return;
+        const choicesRaw = await selected.db.getDBs();
+        const choices = await ext.process("list_table", selected.dbName, null, choicesRaw);
+
         const { table } = await inquirer.prompt([
             {
                 type: 'list',
                 name: 'table',
                 message: 'Table:',
-                choices: await selected.db.getDBs(),
+                choices: choices,
                 loop: false
             },
         ]);
@@ -129,7 +129,8 @@ async function mainMenuWindow(){
     if(operation === 'Display tables'){
         if(!selected.db) return;
         const tables = await selected.db.getDBs();
-        console.log(chalk.green('Tables:'), tables);
+        const extTables = await ext.process('display_table', selected.dbName, null, tables);
+        console.log("\n", chalk.green('Tables:'), extTables, "\n");
     }
 
     if(!selected.db || !selected.table){
@@ -140,27 +141,35 @@ async function mainMenuWindow(){
 
     if(operation === 'Add data'){
         const data = await promptForKeyValuePairs();
-        await db.add(table, data);
-        console.log(chalk.green('Data added:'), data);
+        const extData = await ext.process('add', selected.dbName, selected.table, data);
+
+        await db.add(table, extData);
+        console.log(chalk.green('Data added:'), extData);
     }
 
     if(operation === 'Find data'){
         const search = await promptForKeyValuePairs();
         const results = await db.find(table, search);
-        console.log("\n", chalk.green('Found data:'), results, "\n");
-    }
+        const extResults = await ext.process('find', selected.dbName, selected.table, results);
 
+        console.log("\n", chalk.green('Found data:'), extResults, "\n");
+    }
+    
     if(operation === 'Find one data'){
         const search = await promptForKeyValuePairs();
         const result = await db.findOne(table, search);
-        console.log("\n", chalk.green('Found data:'), result, "\n");
+        const extResult = await ext.process('findOne', selected.dbName, selected.table, result);
+
+        console.log("\n", chalk.green('Found data:'), extResult, "\n");
     }
 
     if(operation === 'Update data'){
         const search = await promptForKeyValuePairs();
         console.log(chalk.yellow('Now enter the new values:'));
         const data = await promptForKeyValuePairs();
-        await db.update(table, search, data);
+        const extData = await ext.process('update', selected.dbName, selected.table, { search, data });
+
+        await db.update(table, extData.search, extData.data);
         console.log(chalk.green('Data updated.'));
     }
 
@@ -168,29 +177,40 @@ async function mainMenuWindow(){
         const search = await promptForKeyValuePairs();
         console.log(chalk.yellow('Now enter the new values:'));
         const data = await promptForKeyValuePairs();
-        await db.updateOne(table, search, data);
+        const extData = await ext.process('updateOne', selected.dbName, selected.table, { search, data });
+
+        await db.updateOne(table, extData.search, extData.data);
         console.log(chalk.green('Data updated.'));
     }
 
     if(operation === 'Remove data'){
         const search = await promptForKeyValuePairs();
-        await db.remove(table, search);
+        const extSearch = await ext.process('remove', selected.dbName, selected.table, search);
+
+        await db.remove(table, extSearch);
         console.log(chalk.green('Data removed.'));
     }
 
     if(operation === 'Remove one data'){
         const search = await promptForKeyValuePairs();
-        await db.removeOne(table, search);
+        const extSearch = await ext.process('removeOne', selected.dbName, selected.table, search);
+
+        await db.removeOne(table, extSearch);
         console.log(chalk.green('Data removed.'));
     }
 
     if(operation === 'Update or Add data'){
         const search = await promptForKeyValuePairs();
+
         console.log(chalk.yellow('Now enter the new values (for update or add):'));
         const updateData = await promptForKeyValuePairs();
+
         console.log(chalk.yellow('Now enter the new values (for add only):'));
         const addData = await promptForKeyValuePairs();
-        await db.updateOneOrAdd(table, search, updateData, addData);
+
+        const extUpdateData = await ext.process('updateOrAdd', selected.dbName, selected.table, { search, updateData, addData });
+
+        await db.updateOrAdd(table, extUpdateData.search, extUpdateData.updateData, extUpdateData.addData);
         console.log(chalk.green('Data updated or added.'));
     }
 }
@@ -198,6 +218,7 @@ async function mainMenuWindow(){
 async function mainMenu(){
     let exit = false;
     loadDatabases();
+    ext.load();
 
     while(!exit){
         exit = await mainMenuWindow() || false;

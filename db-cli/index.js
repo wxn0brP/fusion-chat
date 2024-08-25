@@ -8,6 +8,11 @@ const configPath = path.join(__dirname, '.dbs.json');
 if(!fs.existsSync(configPath)){
     fs.writeFileSync(configPath, '{}', 'utf8');
 }
+const extPath = path.join(__dirname, 'ext');
+if(!fs.existsSync(extPath)){
+    fs.mkdirSync(extPath);
+}
+
 global.dbConfig = require(configPath);
 global.lo = console.log;
 
