@@ -256,49 +256,49 @@ module.exports = {
      * Asynchronously updates entries in a file based on search criteria and an updater function or object.
      * @function
      * @param {string} folder - The folder containing the file.
-     * @param {string} name - The name of the file to update.
+     * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @param {function|Object} obj - The updater function or object.
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were updated, or `false` otherwise.
      */
-    async update(folder, name, arg, obj){
-        return await update(folder, name, arg, obj, false);
+    async update(folder, collection, arg, obj){
+        return await update(folder, collection, arg, obj, false);
     },
 
     /**
      * Asynchronously updates one entry in a file based on search criteria and an updater function or object.
      * @function
      * @param {string} folder - The folder containing the file.
-     * @param {string} name - The name of the file to update.
+     * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @param {function|Object} obj - The updater function or object.
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was updated, or `false` otherwise.
      */
-    async updateOne(folder, name, arg, obj){
-        return await update(folder, name, arg, obj, true);
+    async updateOne(folder, collection, arg, obj){
+        return await update(folder, collection, arg, obj, true);
     },
 
     /**
      * Asynchronously removes entries from a file based on search criteria.
      * @function
      * @param {string} folder - The folder containing the file.
-     * @param {string} name - The name of the file to remove entries from.
+     * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were removed, or `false` otherwise.
      */
-    async remove(folder, name, arg){
-        return await remove(folder, name, arg, false);
+    async remove(folder, collection, arg){
+        return await remove(folder, collection, arg, false);
     },
 
     /**
      * Asynchronously removes one entry from a file based on search criteria.
      * @function
      * @param {string} folder - The folder containing the file.
-     * @param {string} name - The name of the file to remove an entry from.
+     * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was removed, or `false` otherwise.
      */
-    async removeOne(folder, name, arg){
-        return await remove(folder, name, arg, true);
+    async removeOne(folder, collection, arg){
+        return await remove(folder, collection, arg, true);
     },
 }

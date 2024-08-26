@@ -43,13 +43,13 @@ class DataBase{
      *
      * @async
      * @function
-     * @param {string} name - The name of the database.
+     * @param {string} collection - The name of the collection.
      * @param {Object} data - The data to add.
      * @param {boolean} id_gen - Whether to generate an ID for the entry. Default is true.
-     * @returns {Promise} A Promise that resolves when the data is added.
+     * @returns {Promise<Object>} A Promise that resolves with the added data.
      */
-    async add(name, data, id_gen=true){
-        return await this.executor.addOp(this.dbAction.add.bind(this.dbAction), name, data, id_gen);
+    async add(collection, data, id_gen=true){
+        return await this.executor.addOp(this.dbAction.add.bind(this.dbAction), collection, data, id_gen);
     }
 
     /**
@@ -57,15 +57,15 @@ class DataBase{
      *
      * @async
      * @function
-     * @param {string} name - The name of the database.
-     * @param {Object} search - The query.
+     * @param {string} collection - Name of the database collection.
+     * @param {function|Object} search - The query. It can be an object or a function.
      * @param {Object} options - The options for the search.
      * @param {number} options.max - The maximum number of entries to return. Default is -1, meaning no limit.
      * @param {boolean} options.reverse - Whether to reverse the order of returned entries. Default is false.
-     * @returns {Promise} A Promise that resolves with the matching data.
+     * @returns {Promise<Array<Object>>} A Promise that resolves with the matching data.
      */
-    async find(name, search, options={}){
-        return await this.executor.addOp(this.dbAction.find.bind(this.dbAction), name, search, options);
+    async find(collection, search, options={}){
+        return await this.executor.addOp(this.dbAction.find.bind(this.dbAction), collection, search, options);
     }
 
     /**
@@ -73,12 +73,12 @@ class DataBase{
      *
      * @async
      * @function
-     * @param {string} name - The name of the database.
-     * @param {Object} search - The query.
-     * @returns {Promise} A Promise that resolves with the first matching data entry.
+     * @param {string} collection - Name of the database collection.
+     * @param {function|Object} search - The query. It can be an object or a function.
+     * @returns {Promise<Object|null>} A Promise that resolves with the first matching data entry.
      */
-    async findOne(name, search){
-        return await this.executor.addOp(this.dbAction.findOne.bind(this.dbAction), name, search);
+    async findOne(collection, search){
+        return await this.executor.addOp(this.dbAction.findOne.bind(this.dbAction), collection, search);
     }
 
     /**
@@ -86,13 +86,13 @@ class DataBase{
      *
      * @async
      * @function
-     * @param {string} name - The name of the database.
-     * @param {Object} search - The query.
-     * @param {Object} arg - Update arguments.
-     * @returns {Promise} A Promise that resolves when the data is updated.
+     * @param {string} collection - Name of the database collection.
+     * @param {function|Object} search - The query. It can be an object or a function.
+     * @param {function|Object} arg - Update arguments.
+     * @returns {Promise<boolean>} A Promise that resolves when the data is updated.
      */
-    async update(name, search, arg){
-        return await this.executor.addOp(this.dbAction.update.bind(this.dbAction), name, search, arg);
+    async update(collection, search, arg){
+        return await this.executor.addOp(this.dbAction.update.bind(this.dbAction), collection, search, arg);
     }
 
     /**
@@ -100,13 +100,13 @@ class DataBase{
      *
      * @async
      * @function
-     * @param {string} name - The name of the database.
-     * @param {Object} search - The query.
-     * @param {Object} arg - The query.
-     * @returns {Promise} A Promise that resolves when the data entry is updated.
+     * @param {string} collection - Name of the database collection.
+     * @param {function|Object} search - The query. It can be an object or a function.
+     * @param {function|Object} arg - The query.
+     * @returns {Promise<boolean>} A Promise that resolves when the data entry is updated.
      */
-    async updateOne(name, search, arg){
-        return await this.executor.addOp(this.dbAction.updateOne.bind(this.dbAction), name, search, arg);
+    async updateOne(collection, search, arg){
+        return await this.executor.addOp(this.dbAction.updateOne.bind(this.dbAction), collection, search, arg);
     }
 
     /**
@@ -114,12 +114,12 @@ class DataBase{
      *
      * @async
      * @function
-     * @param {string} name - The name of the database.
-     * @param {Object} search - The query.
-     * @returns {Promise} A Promise that resolves when the data is removed.
+     * @param {string} collection - Name of the database collection.
+     * @param {function|Object} search - The query. It can be an object or a function.
+     * @returns {Promise<boolean>} A Promise that resolves when the data is removed.
      */
-    async remove(name, search){
-        return await this.executor.addOp(this.dbAction.remove.bind(this.dbAction), name, search);
+    async remove(collection, search){
+        return await this.executor.addOp(this.dbAction.remove.bind(this.dbAction), collection, search);
     }
 
     /**
@@ -127,38 +127,37 @@ class DataBase{
      *
      * @async
      * @function
-     * @param {string} name - The name of the database.
-     * @param {Object} search - The query.
-     * @returns {Promise} A Promise that resolves when the data entry is removed.
+     * @param {string} collection - Name of the database collection.
+     * @param {function|Object} search - The query. It can be an object or a function.
+     * @returns {Promise<boolean>} A Promise that resolves when the data entry is removed.
      */
-    async removeOne(name, search){
-        return await this.executor.addOp(this.dbAction.removeOne.bind(this.dbAction), name, search);
+    async removeOne(collection, search){
+        return await this.executor.addOp(this.dbAction.removeOne.bind(this.dbAction), collection, search);
     }
 
-    
     /**
      * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
      *
-     * @param {string} name - The name of the database.
-     * @param {Object} search - The search criteria for the update.
-     * @param {Object} arg - The search criteria for the update.
-     * @param {Object} add_arg - The arguments to be added to the new entry.
+     * @param {string} collection - Name of the database collection.
+     * @param {function|Object} search - The query. It can be an object or a function.
+     * @param {function|Object} arg - The search criteria for the update.
+     * @param {function|Object} add_arg - The arguments to be added to the new entry.
      * @return {Promise<boolean>} A Promise that resolves to `true` if the entry was updated, or `false` if it was added.
      */
-    async updateOneOrAdd(name, search, arg, add_arg={}){
-        const res = await this.updateOne(name, search, arg);
-        if(!res) await this.add(name, Object.assign(search, arg, add_arg));
+    async updateOneOrAdd(collection, search, arg, add_arg={}){
+        const res = await this.updateOne(collection, search, arg);
+        if(!res) await this.add(collection, Object.assign(search, arg, add_arg));
         return res;
     }
 
     /**
      * Removes a database collection from the file system.
      *
-     * @param {string} name - The name of the collection to remove.
+     * @param {string} collection - The name of the collection to remove.
      * @return {void}
      */
-    removeDb(name){
-         this.dbAction.removeDb(name);
+    removeDb(collection){
+         this.dbAction.removeDb(collection);
     }
 }
 
