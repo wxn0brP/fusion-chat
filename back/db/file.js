@@ -119,11 +119,13 @@ async function updateWorker(file, search, updater, one=false){
 async function update(folder, name, arg, obj, one){
     let files = fs.readdirSync(folder + "/" + name).filter(file => !/\.tmp$/.test(file));
     files.reverse();
+    let update = false;
     for(const file of files){
         const updated = await updateWorker(folder + "/" + name + "/" + file, arg, obj, one);
         if(one && updated) return true;
+        update = update || updated;
     }
-    return false;
+    return update;
 }
 
 /**
@@ -184,11 +186,13 @@ async function removeWorker(file, search, one=false){
 async function remove(folder, name, arg, one){
     let files = fs.readdirSync(folder + "/" + name).filter(file => !/\.tmp$/.test(file));
     files.reverse();
+    let remove = false;
     for(const file of files){
         const removed = await removeWorker(folder + "/" + name + "/" + file, arg, one);
-        if(removed) break;
+        if(one && removed) break;
+        remove = remove || removed;
     }
-    return true;
+    return remove;
 }
 
 module.exports = {
