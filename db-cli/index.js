@@ -4,13 +4,14 @@ const fs = require("fs");
 const path = require("path");
 const mainMenu = require("./main");
 
-const configPath = path.join(__dirname, ".dbs.json");
+const cfgDir = path.join(__dirname, "cfg");
+if(!fs.existsSync(cfgDir)){
+    fs.mkdirSync(cfgDir);
+}
+
+const configPath = path.join(__dirname, "cfg/dbs.json");
 if(!fs.existsSync(configPath)){
     fs.writeFileSync(configPath, "{}", "utf8");
-}
-const extPath = path.join(__dirname, "ext");
-if(!fs.existsSync(extPath)){
-    fs.mkdirSync(extPath);
 }
 
 global.dbConfig = require(configPath);
@@ -19,7 +20,7 @@ global.lo = console.log;
 const program = new Command();
 
 function saveConfig(){
-    fs.writeFileSync(configPath, JSON.stringify(dbConfig, null, 4), "utf8");
+    fs.writeFileSync(configPath, JSON.stringify(dbConfig, null, 2), "utf8");
 }
 
 program
@@ -82,6 +83,7 @@ program
             console.log(chalk.red("No databases configured. Please add a database first."));
             return;
         }
+        global.runMode = "interactive";
 
         await mainMenu();
     });
@@ -94,6 +96,7 @@ program
         if(dbNames.length === 0){
             process.exit(2);
         }
+        global.runMode = "no interactive";
 
         require("./no-interaction")(operations);
     });
@@ -110,6 +113,8 @@ program
         if(dbNames.length === 0){
             process.exit(2);
         }
+
+        global.runMode = "no interactive";
 
         const operations = fs.readFileSync(file, "utf8").split("\n").filter(line => !!line);
         require("./no-interaction")(operations);
