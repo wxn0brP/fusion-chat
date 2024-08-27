@@ -38,11 +38,12 @@ class dbActionC{
     }
 
     /**
-     * Check and create the specified directory if it doesn't exist.
-     * @param {string} dir - The directory to check and create if necessary.
+     * Check and create the specified collection if it doesn't exist.
+     * @function
+     * @param {string} collection - The collection to check.
      */
-    checkFile(dir){
-        const path = this.folder + "/" + dir;
+    checkCollection(collection){
+        const path = this.folder + "/" + collection;
         if(!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
     }
 
@@ -55,7 +56,7 @@ class dbActionC{
      * @returns {Promise<Object>} A Promise that resolves to the added data.
      */
     async add(collection, arg, id_gen=true){
-        this.checkFile(collection);
+        this.checkCollection(collection);
         const file = this.folder + "/" + collection + "/" + getLastFile(this.folder + "/" + collection);
 
         if(id_gen) arg._id = arg._id || gen();
@@ -78,7 +79,7 @@ class dbActionC{
         options.reverse = options.reverse || false;
         options.max = options.max || -1;
 
-        this.checkFile(collection);
+        this.checkCollection(collection);
         let files = fs.readdirSync(this.folder + "/" + collection).filter(file => !/\.tmp$/.test(file));
         if(options.reverse) files.reverse();
         let datas = [];
@@ -114,7 +115,7 @@ class dbActionC{
      * @returns {Promise<Object|null>} A Promise that resolves to the first matching entry or null if not found.
      */
     async findOne(collection, arg){
-        this.checkFile(collection);
+        this.checkCollection(collection);
         let files = fs.readdirSync(this.folder + "/" + collection).filter(file => !/\.tmp$/.test(file));
         files.reverse();
 
@@ -136,7 +137,7 @@ class dbActionC{
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were updated, or `false` otherwise.
      */
     async update(collection, arg, obj){
-        this.checkFile(collection);
+        this.checkCollection(collection);
         return await fileM.update(this.folder, collection, arg, obj);
     }
 
@@ -149,7 +150,7 @@ class dbActionC{
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was updated, or `false` otherwise.
      */
     async updateOne(collection, arg, obj){
-        this.checkFile(collection);
+        this.checkCollection(collection);
         return await fileM.updateOne(this.folder, collection, arg, obj);
     }
 
@@ -161,7 +162,7 @@ class dbActionC{
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were removed, or `false` otherwise.
      */
     async remove(collection, arg){
-        this.checkFile(collection);
+        this.checkCollection(collection);
         return await fileM.remove(this.folder, collection, arg);
     }
 
@@ -173,7 +174,7 @@ class dbActionC{
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was removed, or `false` otherwise.
      */
     async removeOne(collection, arg){
-        this.checkFile(collection);
+        this.checkCollection(collection);
         return await fileM.removeOne(this.folder, collection, arg);
     }
 

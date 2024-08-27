@@ -29,13 +29,13 @@ class DataBase{
     }
 
     /**
-     * Check if a file exists within the database folder.
+     * Check and create the specified collection if it doesn't exist.
      *
      * @function
-     * @param {string} dir - The file or directory path to check.
+     * @param {string} collection - The collection to check.
      */
-    checkFile(dir){
-        this.dbAction.checkFile(dir);
+    checkCollection(collection){
+        this.dbAction.checkCollection(collection);
     }
 
     /**
