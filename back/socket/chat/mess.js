@@ -37,7 +37,7 @@ module.exports = (socket) => {
                 let p1 = socket.user._id;
                 let p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
-                await global.db.mess.checkFile(to);
+                await global.db.mess.checkCollection(to);
             }else{
                 if(!chatMgmt.chatExsists(to)) return socket.emit("error", "chat is not exists - getMess");
             }
