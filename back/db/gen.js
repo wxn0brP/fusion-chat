@@ -1,8 +1,3 @@
-/**
- * Generate Id
- * @module db/genId
- */
-
 const usedIdsMap = new Map();
 
 /**

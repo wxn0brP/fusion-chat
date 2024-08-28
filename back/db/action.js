@@ -1,8 +1,3 @@
-/**
- * Db data operations
- * @module db/actions
- */
-
 const fs = require("fs");
 const gen = require("./gen");
 const format = require("./format");
@@ -13,6 +8,7 @@ const maxFileSize = 2 * 1024 * 1024; //2 MB
 
 /**
  * A class representing database actions on files.
+ * @class
  */
 class dbActionC{
     /**
@@ -60,7 +56,7 @@ class dbActionC{
         const file = this.folder + "/" + collection + "/" + getLastFile(this.folder + "/" + collection);
 
         if(id_gen) arg._id = arg._id || gen();
-        const data = await format.stringify(arg);
+        const data = format.stringify(arg);
         fs.appendFileSync(file, data+"\n");
         return arg;
     }
@@ -151,7 +147,7 @@ class dbActionC{
      */
     async updateOne(collection, arg, obj){
         this.checkCollection(collection);
-        return await fileM.updateOne(this.folder, collection, arg, obj);
+        return await fileM.update(this.folder, collection, arg, obj, true);
     }
 
     /**
@@ -175,7 +171,7 @@ class dbActionC{
      */
     async removeOne(collection, arg){
         this.checkCollection(collection);
-        return await fileM.removeOne(this.folder, collection, arg);
+        return await fileM.remove(this.folder, collection, arg, true);
     }
 
     /**

@@ -1,9 +1,4 @@
 /**
- * Module for performing operations on objects.
- * @module db/objectUtils
- */
-
-/**
  * Checks if an object meets the criteria specified in the fields with operators.
  * @function
  * @param {Object} obj - The object to check.
