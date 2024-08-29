@@ -81,6 +81,8 @@ module.exports = {
      */
     id(id){
         if(typeof id !== "string") return false;
+        if(id.startsWith("$")) id = id.replace("$", "");
+        
         const parts = id.split("-");
         if(parts.length != 3) return false;
 
