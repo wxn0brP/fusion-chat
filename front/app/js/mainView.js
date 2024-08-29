@@ -12,8 +12,8 @@ const mainViewDivs = {
 
 const mainView = {
     show(){
-        socket.emit("getFriends");
-        socket.emit("getFriendRequests");
+        socket.emit("friend.getAll");
+        socket.emit("friend.getRequests");
     },
 
     renderFriends(){
@@ -42,7 +42,7 @@ const mainView = {
 
             friendDiv.querySelector(".friend__name").addEventListener("click", (e) => {
                 e.stopPropagation();
-                socket.emit("userProfile", friend._id);
+                socket.emit("user.profile", friend._id);
             });
             friendDiv.addEventListener("click", () => {
                 coreFunc.changeChat("$" + friend._id);
@@ -122,7 +122,7 @@ const mainView = {
             `;
 
             function showUser(){
-                socket.emit("userProfile", request);
+                socket.emit("user.profile", request);
             }
             requestDiv.querySelector(".friend__name").addEventListener("click", showUser);
             requestDiv.querySelector(".friend__avatar").addEventListener("click", showUser);
@@ -136,19 +136,19 @@ const mainView = {
         const div = mainViewDiv.querySelector(`.main__view__friend[user_id="${user_id}"]`);
         if(!div) return;
 
-        socket.emit("requestFriendResponse", user_id, accept);
+        socket.emit("friend.response", user_id, accept);
         div.remove();
         vars.mainView.requests = vars.mainView.requests.filter(e => e != user_id);
         mainViewDivs.requestCount.innerHTML = `(${vars.mainView.requests.length})`;
 
-        if(accept) socket.emit("getFriends");
+        if(accept) socket.emit("friend.getAll");
     },
 
     async addFriend(friend){
         if(!friend) friend = await uiFunc.prompt(translateFunc.get("Enter friend Name"));
         
         if(!friend) return;
-        socket.emit("requestFriend", friend);
+        socket.emit("friend.request", friend);
     },
 
     removeFriend(friend){
@@ -159,8 +159,8 @@ const mainView = {
         const conf2 = confirm(translateFunc.get("Are you sure?", apis.www.changeUserID(friend)));
         if(!conf2) return;
 
-        socket.emit("removeFriend", friend);
-        socket.emit("getFriends");
+        socket.emit("friend.remove", friend);
+        socket.emit("friend.getAll");
     },
 
     removeFriendRequest(friend){
@@ -169,7 +169,7 @@ const mainView = {
         const conf = confirm(translateFunc.get("Do you really want to remove $ from your friend requests list?", apis.www.changeUserID(friend)));
         if(!conf) return;
 
-        socket.emit("removeFriendRequest", friend);
+        socket.emit("friend.requestRemove", friend);
     },
 
     showNav(){
@@ -183,22 +183,22 @@ const mainView = {
 
 mainView.changeView("online");
 
-socket.on("getFriends", (friends) => {
+socket.on("friend.getAll", (friends) => {
     vars.mainView.friends = friends;
     mainView.renderFriends();
 });
 
-socket.on("getFriendRequests", (requests) => {
+socket.on("friend.getRequests", (requests) => {
     vars.mainView.requests = requests;
     mainView.renderRequests();
 });
 
-socket.on("requestFriend", (from) => {
+socket.on("friend.request", (from) => {
     uiFunc.uiMsg(translateFunc.get("Friend request from $", apis.www.changeUserID(from)));
-    socket.emit("getFriendRequests");
+    socket.emit("friend.getRequests");
 });
 
-socket.on("requestFriendResponse", (from, accept) => {
+socket.on("friend.response", (from, accept) => {
     if(!accept){
         uiFunc.uiMsg(translateFunc.get("Declined friend request from $", apis.www.changeUserID(from)));
         return;
@@ -206,5 +206,5 @@ socket.on("requestFriendResponse", (from, accept) => {
     uiFunc.uiMsg(translateFunc.get("Accepted friend request from $", apis.www.changeUserID(from)));
 
     if(vars.chat.to != "main") return;
-    socket.emit("getFriends");
+    socket.emit("friend.getAll");
 });

@@ -13,7 +13,7 @@ const settingsFunc = {
                     vars.user.statusText = settings["Status text"];
                 }
                 if(settings["Status"] != undefined || settings["Status text"] != undefined){
-                    socket.emit("updateStatus", vars.user.status, vars.user.statusText);
+                    socket.emit("status.update", vars.user.status, vars.user.statusText);
                     renderFunc.localUserProfile();
                 }
                 if(settings["Language"] != undefined){
@@ -30,7 +30,7 @@ const settingsFunc = {
             id,
             settingDiv,
             (data) => {
-                socket.emit("setSeverSettings", id, data);
+                socket.emit("server.settings.set", id, data);
             },
             () => {}
         );
@@ -120,4 +120,4 @@ const settingsDataUser = () => [
     }
 ]
 
-socket.on("getSeverSettings", (...data) => settingsFunc.showServerSettings(...data));
+socket.on("server.settings.get", (...data) => settingsFunc.showServerSettings(...data));

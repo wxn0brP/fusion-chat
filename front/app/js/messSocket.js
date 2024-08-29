@@ -39,7 +39,7 @@ socket.on("mess", (data) => {
     setTimeout(() => {
         if(vars.temp.makeIsRead != data._id) return;
         vars.temp.makeIsRead = null;
-        socket.emit("markAsRead", vars.chat.to, vars.chat.chnl, data._id);
+        socket.emit("message.markAsRead", vars.chat.to, vars.chat.chnl, data._id);
     }, 1000);
     
     vars.lastMess[tom][vars.chat.chnl].read = data._id;
@@ -48,7 +48,7 @@ socket.on("mess", (data) => {
     messStyle.colorRole();
 });
 
-socket.on("getMess", (data) => {
+socket.on("message.fetch", (data) => {
     try{
         data.forEach((mess) => {
             try{
@@ -79,12 +79,12 @@ socket.on("getMess", (data) => {
     messStyle.colorRole();
 });
 
-socket.on("deleteMess", (id) => {
+socket.on("message.delete", (id) => {
     document.querySelector("#mess__"+id)?.remove();
     messStyle.hideFromMessageInfo();
 });
 
-socket.on("editMess", (id, msg, time) => {
+socket.on("message.edit", (id, msg, time) => {
     const messageDiv = document.querySelector("#mess__"+id+" .mess_content");
     if(!messageDiv) return;
     messageDiv.setAttribute("_plain", msg);
@@ -98,7 +98,7 @@ socket.on("editMess", (id, msg, time) => {
     messStyle.hideFromMessageInfo();
 });
 
-socket.on("reactToMess", (uid, server, messId, react) => {
+socket.on("message.react", (uid, server, messId, react) => {
     if(vars.chat.to != server) return;
     
     const mess = document.querySelector("#mess__"+messId);
@@ -112,7 +112,7 @@ socket.on("reactToMess", (uid, server, messId, react) => {
         span.innerHTML = react + " 1";
         span.title = apis.www.changeUserID(uid);
         span.addEventListener("click", () => {
-            socket.emit("reactToMess", server, messId, react);
+            socket.emit("message.react", server, messId, react);
         });
         mess.querySelector(".mess_reacts").appendChild(span);
         messStyle.styleMessReacts(mess.querySelector(".mess_reacts"));

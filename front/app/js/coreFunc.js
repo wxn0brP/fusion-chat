@@ -51,8 +51,8 @@ const coreFunc = {
             navs__main.style.display = "none";
             navs__groups.style.display = "block";
             vars.chat.chnl = null;
-            socket.emit("setUpServer", id);
-            socket.emit("syncUserRoles", id);
+            socket.emit("server.setup", id);
+            socket.emit("server.roles.sync", id);
         }
 
         if(div) div.classList.add((id.startsWith("$") ? "priv" : "group") + "_chatActive");
@@ -100,8 +100,8 @@ const coreFunc = {
         vars.chat.actMess += vars.messCount;
         if(vars.chat.to == "main") return;
 
-        socket.emit("getMess", vars.chat.to, vars.chat.chnl, tmp, vars.chat.actMess);
-        socket.emit("markAsRead", vars.chat.to, vars.chat.chnl, "last");
+        socket.emit("message.fetch", vars.chat.to, vars.chat.chnl, tmp, vars.chat.actMess);
+        socket.emit("message.markAsRead", vars.chat.to, vars.chat.chnl, "last");
     },
 
     socrollToBottom(){

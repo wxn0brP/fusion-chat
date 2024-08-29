@@ -5,7 +5,7 @@ if(!fs.existsSync("data/calls")) fs.mkdirSync("data/calls");
 const rooms = new Map();
 
 module.exports = (socket) => {
-    socket.ontimeout("joinVoiceChannel", 100, async (to) => {
+    socket.ontimeout("voice.join", 100, async (to) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(to, 0, 30)) return socket.emit("error", "valid data");
@@ -18,8 +18,8 @@ module.exports = (socket) => {
             if(rooms.get(to).filter(s => s.user._id == socket.user._id).length > 0) return socket.emit("error", "already in room");
 
             rooms.get(to).forEach(s => {
-                s.emit("joinVoiceChannel", socket.user._id);
-                s.emit("refreshData", "getVoiceChannelUsers", to, false);
+                s.emit("voice.join", socket.user._id);
+                s.emit("refreshData", "voice.getUsers", to, false);
             });
             rooms.get(to).push(socket);
         }catch(e){
@@ -34,14 +34,14 @@ module.exports = (socket) => {
                 rooms.get(to).splice(rooms.get(to).indexOf(socket), 1);
                 
                 users.forEach(s => {
-                    s.emit("refreshData", "getVoiceChannelUsers", to, false);
-                    s.emit("leaveVoiceChannel", socket.user._id);
+                    s.emit("refreshData", "voice.getUsers", to, false);
+                    s.emit("voice.leave", socket.user._id);
                 })
             });
         });
     }
 
-    socket.ontimeout("leaveVoiceChannel", 100, async () => {
+    socket.ontimeout("voice.leave", 100, async () => {
         try{
             leaveVoiceChannel();
         }catch(e){
@@ -57,47 +57,47 @@ module.exports = (socket) => {
         }
     })
 
-    socket.ontimeout("getVoiceChannelUsers", 100, async (to, make) => {
+    socket.ontimeout("voice.getUsers", 100, async (to, make) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(to, 0, 30)) return socket.emit("error", "valid data");
 
-            if(!rooms.has(to)) return socket.emit("getVoiceChannelUsers", []);
+            if(!rooms.has(to)) return socket.emit("voice.getUsers", []);
             const data = rooms.get(to).map(s => s.user._id);
 
-            socket.emit("getVoiceChannelUsers", data, make);
+            socket.emit("voice.getUsers", data, make);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("callToUser", 100, async (id) => {
+    socket.ontimeout("call.initiate", 100, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
 
             const sockets = global.getSocket(id);
-            if(sockets.length == 0) return socket.emit("callToUserAnswer", id, false);
+            if(sockets.length == 0) return socket.emit("call.answer", id, false);
 
-            global.sendToSocket(id, "callToUser", socket.user._id);
+            global.sendToSocket(id, "call.initiate", socket.user._id);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("callToUserAnswer", 100, async (id, answer) => {
+    socket.ontimeout("call.answer", 100, async (id, answer) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
             if(!valid.bool(answer)) return socket.emit("error", "valid data");
 
-            global.sendToSocket(id, "callToUserAnswer", socket.user._id, answer);
+            global.sendToSocket(id, "call.answer", socket.user._id, answer);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("callLogs", 100, async (logs) => {
+    socket.ontimeout("call.logs", 100, async (logs) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.arrayContainsOnlyType(logs, "object")) return socket.emit("error", "valid data");

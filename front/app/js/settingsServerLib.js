@@ -138,7 +138,7 @@ class SettingsServerManager{
             this.exitWithoutSaving();
             coreFunc.changeChat("main");
             setTimeout(() => {
-                socket.emit("deleteServer", this.serverId, name);
+                socket.emit("server.delete", this.serverId, name);
             }, 1000);
         });
 
@@ -551,7 +551,7 @@ class SettingsServerManager{
                     if(!result) return;
 
                     _this.settings.users = _this.settings.users.filter(u => u.uid !== user.uid);
-                    socket.emit("kickUser", _this.serverId, user.uid);
+                    socket.emit("server.user.kick", _this.serverId, user.uid);
                     _this.renderUserRoleManager();
                 });
 
@@ -560,7 +560,7 @@ class SettingsServerManager{
                     if(!result) return;
 
                     _this.settings.users = _this.settings.users.filter(u => u.uid !== user.uid);
-                    socket.emit("kickUser", _this.serverId, user.uid, true);
+                    socket.emit("server.user.kick", _this.serverId, user.uid, true);
                     _this.renderUserRoleManager();
                 });
             }
@@ -592,7 +592,7 @@ class SettingsServerManager{
                     if(!result) return;
     
                     _this.settings.banUsers = _this.settings.banUsers.filter(u => u !== uid);
-                    socket.emit("unBanUser", _this.serverId, uid);
+                    socket.emit("server.user.unban", _this.serverId, uid);
                     _this.renderUserRoleManager();
                 });
             });

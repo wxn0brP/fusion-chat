@@ -105,7 +105,7 @@ module.exports = (socket) => {
         }
     });
 
-    socket.ontimeout("editMess", 1000, async (toM, _id, msg) => {
+    socket.ontimeout("message.edit", 1000, async (toM, _id, msg) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(toM, 0, 30) || !valid.str(_id, 0, 30) || !valid.str(msg, 0, 500)){
@@ -132,17 +132,17 @@ module.exports = (socket) => {
             await global.db.mess.updateOne(to, { _id }, { msg, lastEdit: time });
 
             if(friendChat){
-                sendToSocket(socket.user._id,       "editMess", _id, msg, time);
-                sendToSocket(toM.replace("$", ""),  "editMess", _id, msg, time);
+                sendToSocket(socket.user._id,       "message.edit", _id, msg, time);
+                sendToSocket(toM.replace("$", ""),  "message.edit", _id, msg, time);
             }else{
-                sendToChatUsers(toM, "editMess", _id, msg, time);
+                sendToChatUsers(toM, "message.edit", _id, msg, time);
             }
         }catch(e){
             socket.logError(e);
         }
     });
     
-    socket.ontimeout("deleteMess", 1000, async (toM, _id) => {
+    socket.ontimeout("message.delete", 1000, async (toM, _id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             
@@ -171,17 +171,17 @@ module.exports = (socket) => {
 
             await global.db.mess.removeOne(to, { _id });
             if(friendChat){
-                sendToSocket(socket.user._id,       "deleteMess", _id);
-                sendToSocket(toM.replace("$", ""),  "deleteMess", _id);
+                sendToSocket(socket.user._id,       "message.delete", _id);
+                sendToSocket(toM.replace("$", ""),  "message.delete", _id);
             }else{
-                sendToChatUsers(toM, "deleteMess", _id);
+                sendToChatUsers(toM, "message.delete", _id);
             }
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("getMess", 300, async (to, chnl, start, end) => {
+    socket.ontimeout("message.fetch", 300, async (to, chnl, start, end) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
 
@@ -209,13 +209,13 @@ module.exports = (socket) => {
             const responeAll = await global.db.mess.find(to, { chnl }, { reverse: true, max: end+start });
             const respone = responeAll.slice(start, end);
 
-            socket.emit("getMess", respone);
+            socket.emit("message.fetch", respone);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("markAsRead", 100, async (to, chnl, mess_id) => {
+    socket.ontimeout("message.markAsRead", 100, async (to, chnl, mess_id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(to, 0, 30) || !valid.str(chnl, 0, 30) || !valid.str(mess_id, 0, 30)) return socket.emit("error", "valid data");
@@ -240,7 +240,7 @@ module.exports = (socket) => {
                 if(lastIdMess.length == 0) return;
 
                 mess_id = lastIdMess[0]._id;
-                socket.emit("markAsRead", to, chnl, mess_id);
+                socket.emit("message.markAsRead", to, chnl, mess_id);
             }
 
             await global.db.userDatas.updateOne(socket.user._id, search, (data) => {
@@ -253,7 +253,7 @@ module.exports = (socket) => {
         }
     });
 
-    socket.ontimeout("reactToMess", 100, async (server, msgId, react) => {
+    socket.ontimeout("message.react", 100, async (server, msgId, react) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(server.replace("$", "")) || !valid.id(msgId) || !valid.str(react, 0, 30)) return socket.emit("error", "valid data");
@@ -280,10 +280,10 @@ module.exports = (socket) => {
             await global.db.mess.updateOne(toM, { _id: msgId }, { reacts });
 
             if(server.startsWith("$")){
-                global.sendToSocket(socket.user._id, "reactToMess", socket.user._id, server, msgId, react);
-                global.sendToSocket(server.replace("$", ""), "reactToMess", socket.user._id, "$"+socket.user._id, msgId, react);
+                global.sendToSocket(socket.user._id, "message.react", socket.user._id, server, msgId, react);
+                global.sendToSocket(server.replace("$", ""), "message.react", socket.user._id, "$"+socket.user._id, msgId, react);
             }else{
-                global.sendToChatUsers(server, "reactToMess", socket.user._id, server, msgId, react);
+                global.sendToChatUsers(server, "message.react", socket.user._id, server, msgId, react);
             }
         }catch(e){
             socket.logError(e);
