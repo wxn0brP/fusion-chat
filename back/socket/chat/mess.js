@@ -224,7 +224,7 @@ module.exports = (socket) => {
     socket.ontimeout("message.markAsRead", 100, async (to, chnl, mess_id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(to) || !valid.id(chnl) || !valid.id(mess_id)) return socket.emit("error", "valid data");
+            if(!valid.id(to) || !valid.id(chnl) || (!valid.id(mess_id) && mess_id != "last")) return socket.emit("error", "valid data");
 
             // const chat = await global.db.mess.findOne(to, { chnl });
             // if(!chat) return socket.emit("error", "chat does not exist");
