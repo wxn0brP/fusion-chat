@@ -61,6 +61,7 @@ const renderFunc = {
 
     groups(data){ 
         groups__content.innerHTML = "";
+        vars.groups = data;
         data.forEach((group) => {
             const id = group.group;
             const groupDiv = document.createElement("div");

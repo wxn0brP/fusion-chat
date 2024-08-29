@@ -17,6 +17,7 @@ const vars = {
     },
     lastMess: {},
     privs: [],
+    groups: [],
     servers: {
         users: [],
         roles: [],

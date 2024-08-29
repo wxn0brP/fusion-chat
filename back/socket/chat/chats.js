@@ -104,4 +104,19 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
+
+    socket.ontimeout("group.mute", 1000, async (id, time) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.num(time, -1)) return socket.emit("error", "valid data");
+
+            const exists = await global.db.userDatas.findOne(socket.user._id, { group: id });
+            if(!exists) return socket.emit("error", "not in group");
+
+            await global.db.userDatas.updateOne(socket.user._id, { group: id }, { muted: time });
+        }catch(e){
+            socket.logError(e);
+        }
+    });
 }
