@@ -138,7 +138,7 @@ const renderFunc = {
         const settingsBtn = document.createElement("span");
         settingsBtn.innerHTML = "⚙️";
         settingsBtn.addEventListener("click", () => {
-            socket.emit("getSeverSettings", sid);
+            socket.emit("server.settings.get", sid);
         })
         navs__groups__name.appendChild(settingsBtn);
 
@@ -247,7 +247,7 @@ const renderFunc = {
             const userDiv = document.createElement("div");
 
             userDiv.addEventListener("click", () => {
-                socket.emit("userProfile", userID);
+                socket.emit("user.profile", userID);
             });
 
             const userImg = document.createElement("img");
@@ -333,9 +333,9 @@ const renderUtils = {
 }
 
 
-socket.on("getGroups", (data) => renderFunc.groups(data));
+socket.on("group.get", (data) => renderFunc.groups(data));
 
-socket.on("getPrivs", (data) => {
+socket.on("private.get", (data) => {
     data.forEach((priv) => {
         const id = priv.priv;
 
@@ -355,4 +355,4 @@ socket.on("getPrivs", (data) => {
     renderFunc.privs();
 });
 
-socket.on("setUpServer", (...data) => renderFunc.serverInit(...data));
+socket.on("server.setup", (...data) => renderFunc.serverInit(...data));

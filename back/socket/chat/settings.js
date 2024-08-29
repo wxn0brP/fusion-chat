@@ -1,5 +1,5 @@
 module.exports = (socket) => {
-    socket.ontimeout("updateStatus", 1000, async (status, text) => {
+    socket.ontimeout("status.update", 1000, async (status, text) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             
@@ -12,13 +12,13 @@ module.exports = (socket) => {
         }
     });
 
-    socket.ontimeout("getStatus", 100, async () => {
+    socket.ontimeout("status.get", 100, async () => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
 
             const status = await global.db.userDatas.findOne(socket.user._id, { _id: "status" });
-            if(!status) return socket.emit("getStatus", "online", "");
-            socket.emit("getStatus", status.status, status.text);
+            if(!status) return socket.emit("status.get", "online", "");
+            socket.emit("status.get", status.status, status.text);
         }catch(e){
             socket.logError(e);
         }

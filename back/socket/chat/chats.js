@@ -2,10 +2,10 @@ const chatMgmt = require("../../logic/chatMgmt");
 const valid = require("../../logic/validData");
 
 module.exports = (socket) => {
-    socket.ontimeout("getGroups", 100, async () => {
+    socket.ontimeout("group.get", 100, async () => {
         try{
             const groups = await global.db.userDatas.find(socket.user._id, r => !!r.group);
-            if(groups.length == 0) return socket.emit("getGroups", []);
+            if(groups.length == 0) return socket.emit("group.get", []);
 
             for(let i = 0; i < groups.length; i++){
                 const group = groups[i];
@@ -13,16 +13,16 @@ module.exports = (socket) => {
                 group.img = serverSet.img || false;
             }
 
-            socket.emit("getGroups", groups);
+            socket.emit("group.get", groups);
         }catch(e){
             socket.logError(e);
         } 
     });
 
-    socket.ontimeout("getPrivs", 100, async () => {
+    socket.ontimeout("private.get", 100, async () => {
         try{
             const privs = await global.db.userDatas.find(socket.user._id, r => !!r.priv);
-            if(privs.length == 0) return socket.emit("getPrivs", []);
+            if(privs.length == 0) return socket.emit("private.get", []);
 
             for(let i = 0; i < privs.length; i++){
                 const priv = privs[i];
@@ -33,13 +33,13 @@ module.exports = (socket) => {
                 privs.find(p => p.priv == priv.priv).lastMessId = lastMess[0]._id;
             }
 
-            socket.emit("getPrivs", privs);
+            socket.emit("private.get", privs);
         }catch(e){
             socket.logError(e);
         } 
     });
 
-    socket.ontimeout("createGroup", 1000, async (name) => {
+    socket.ontimeout("group.create", 1000, async (name) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(name, 0, 30)) return socket.emit("error", "valid data");
@@ -50,19 +50,19 @@ module.exports = (socket) => {
         } 
     });
 
-    socket.ontimeout("exitGroup", 1000, async (id) => {
+    socket.ontimeout("group.exit", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
 
             await chatMgmt.exitChat(id, socket.user._id);
-            global.sendToSocket(socket.user._id, "refreshData", "getGroups");
+            global.sendToSocket(socket.user._id, "refreshData", "group.get");
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("createPriv", 1000, async (name) => {
+    socket.ontimeout("private.create", 1000, async (name) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(name, 0, 30)) return socket.emit("error", "valid data");
@@ -80,14 +80,14 @@ module.exports = (socket) => {
 
             await chatMgmt.createPriv(toId, socket.user._id);
 
-            global.sendToSocket(socket.user._id, "refreshData", "getPrivs");
-            global.sendToSocket(toId, "refreshData", "getPrivs");
+            global.sendToSocket(socket.user._id, "refreshData", "private.get");
+            global.sendToSocket(toId, "refreshData", "private.get");
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("joinGroup", 1000, async (id) => {
+    socket.ontimeout("group.join", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
@@ -99,7 +99,7 @@ module.exports = (socket) => {
             if(isBaned) return socket.emit("error", "user is baned");
             
             await chatMgmt.addUserToChat(id, socket.user._id);
-            global.sendToSocket(socket.user._id, "refreshData", "getGroups");
+            global.sendToSocket(socket.user._id, "refreshData", "group.get");
         }catch(e){
             socket.logError(e);
         }

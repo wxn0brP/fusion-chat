@@ -8,7 +8,7 @@ const validShema = {
 }
 
 module.exports = (socket) => {
-    socket.ontimeout("setUpServer", 100, async (id) => {
+    socket.ontimeout("server.setup", 100, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
@@ -61,13 +61,13 @@ module.exports = (socket) => {
                 });
             }
 
-            socket.emit("setUpServer", id, name, buildChannels);
+            socket.emit("server.setup", id, name, buildChannels);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("getSeverSettings", 5_000, async (id) => {
+    socket.ontimeout("server.settings.get", 5_000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
@@ -92,13 +92,13 @@ module.exports = (socket) => {
                 banUsers: banUsers.map(u => u.ban),
             };
 
-            socket.emit("getSeverSettings", data, id);
+            socket.emit("server.settings.get", data, id);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("setSeverSettings", 5_000, async (id, data) => {
+    socket.ontimeout("server.settings.set", 5_000, async (id, data) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
@@ -132,13 +132,13 @@ module.exports = (socket) => {
 
             await global.db.groupSettings.updateOne(id, { _id: "set" }, data.meta);
 
-            global.sendToChatUsers(id, "refreshData", { server: id, evt: ["setUpServer", "syncUserRoles"] }, id);
+            global.sendToChatUsers(id, "refreshData", { server: id, evt: ["server.setup", "server.roles.sync"] }, id);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("syncUserRoles", 1000, async (id) => {
+    socket.ontimeout("server.roles.sync", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
@@ -158,13 +158,13 @@ module.exports = (socket) => {
                 }
             });
 
-            socket.emit("syncUserRoles", usersData, rolesData);
+            socket.emit("server.roles.sync", usersData, rolesData);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("deleteServer", 10_000, async (id, name) => {
+    socket.ontimeout("server.delete", 10_000, async (id, name) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
@@ -184,13 +184,13 @@ module.exports = (socket) => {
             global.db.usersPerms.removeDb(id);
             global.db.mess.removeDb(id);
 
-            for(const user of users) global.sendToSocket(user, "refreshData", "getGroups");
+            for(const user of users) global.sendToSocket(user, "refreshData", "group.get");
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("kickUser", 1000, async (serverId, uid, ban=false) => {
+    socket.ontimeout("server.user.kick", 1000, async (serverId, uid, ban=false) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(serverId)) return socket.emit("error", "valid data");
@@ -208,13 +208,13 @@ module.exports = (socket) => {
                 await global.db.usersPerms.add(serverId, { ban: uid }, false);
             }
 
-            global.sendToSocket(uid, "refreshData", "getGroups");
+            global.sendToSocket(uid, "refreshData", "group.get");
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("unBanUser", 1000, async (serverId, uid) => {
+    socket.ontimeout("server.user.unban", 1000, async (serverId, uid) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(serverId)) return socket.emit("error", "valid data");

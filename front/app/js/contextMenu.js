@@ -70,7 +70,7 @@ const contextFunc = {
             break;
             case "delete":
                 if(!confirm("Are you sure you want to delete this message?")) return;
-                socket.emit("deleteMess", vars.chat.to, id);
+                socket.emit("message.delete", vars.chat.to, id);
             break;
             case "reply":
                 vars.temp.replyId = id;
@@ -83,7 +83,7 @@ const contextFunc = {
             case "add_reaction":
                 messFunc.emocjiPopup((e) => {
                     if(!e) return;
-                    socket.emit("reactToMess", vars.chat.to, id, e);
+                    socket.emit("message.react", vars.chat.to, id, e);
                 });
             break;
         }
@@ -105,7 +105,7 @@ const contextFunc = {
             case "exit":
                 const conf = confirm(translateFunc.get("Are you sure you want to exit server$($)", "? ", apis.www.changeChat(id)));
                 if(conf){
-                    socket.emit("exitGroup", id);
+                    socket.emit("group.exit", id);
                     coreFunc.changeChat("main");
                 }
             break;

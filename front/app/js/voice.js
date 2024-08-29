@@ -171,8 +171,8 @@ const voiceFunc = {
 
     async joinToVoiceChannel(to){
         await voiceFunc.initCall();
-        socket.emit("joinVoiceChannel", to);
-        socket.emit("getVoiceChannelUsers", to, true);
+        socket.emit("voice.join", to);
+        socket.emit("voice.getUsers", to, true);
         voiceDebug.info('initCall', `Joined voice channel: ${to}`);
     },
 
@@ -238,7 +238,7 @@ const voiceFunc = {
         voiceFunc.peers.forEach((peer) => {
             peer.destroy();
         });
-        socket.emit("leaveVoiceChannel");
+        socket.emit("voice.leave");
 
         voiceFunc.peers = [];
         voiceHTML.div.fadeOut();
@@ -257,7 +257,7 @@ const voiceFunc = {
         }
         voiceDebug.info('endCall', "Call ended and cleaned up.");
 
-        socket.emit("callLogs", voiceDebug.getLogs());
+        socket.emit("call.logs", voiceDebug.getLogs());
 
         if(!debugFunc.isDebug){
             const isConfirm = confirm(translateFunc.get("Would you like to export the journal") + "?");
@@ -272,7 +272,7 @@ const voiceFunc = {
         const isConfirm = confirm(translateFunc.get("Are you sure you want to call $", apis.www.changeUserID(id)) + "?");
         if(!isConfirm) return;
 
-        socket.emit("callToUser", id);
+        socket.emit("call.initiate", id);
     },
 
     toggleMute(){
@@ -293,12 +293,12 @@ const voiceFunc = {
     }
 }
 
-socket.on("joinVoiceChannel", (to) => {
+socket.on("voice.join", (to) => {
     voiceDebug.info('socket', `Handling joinVoiceChannel for ${to}`);
     voiceFunc.makeConnectionHandler(to);
 });
 
-socket.on("getVoiceChannelUsers", (users, make) => {
+socket.on("voice.getUsers", (users, make) => {
     if(make){
         users.forEach((to) => {
             if(to == vars.user._id) return;
@@ -316,9 +316,9 @@ socket.on("getVoiceChannelUsers", (users, make) => {
     });
 });
 
-socket.on("callToUser", (id) => {
+socket.on("call.initiate", (id) => {
     const isConfirm = confirm(translateFunc.get("$ is calling you. Accept", apis.www.changeUserID(id)) + "?");
-    socket.emit("callToUserAnswer", id, isConfirm);
+    socket.emit("call.answer", id, isConfirm);
 
     if(!isConfirm) return;
 
@@ -326,7 +326,7 @@ socket.on("callToUser", (id) => {
     voiceFunc.joinToVoiceChannel(id + "=" + vars.user._id);
 });
 
-socket.on("callToUserAnswer", (id, answer) => {
+socket.on("call.answer", (id, answer) => {
     if(!answer){
         alert(translateFunc.get("Call rejected"));
         return;
@@ -338,6 +338,6 @@ socket.on("callToUserAnswer", (id, answer) => {
     }, 1000);
 });
 
-socket.on("leaveVoiceChannel", (id) => {
+socket.on("voice.leave", (id) => {
     uiFunc.uiMsg(translateFunc.get("$ left the voice channel", apis.www.changeUserID(id)));
 });

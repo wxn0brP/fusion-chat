@@ -13,9 +13,9 @@ const socket = io("/", {
 
 socket.on("connect", () => {
     debugFunc.msg("connected to socket");
-    socket.emit("getGroups");
-    socket.emit("getStatus");
-    socket.emit("getPrivs");
+    socket.emit("group.get");
+    socket.emit("status.get");
+    socket.emit("private.get");
 });
 
 socket.on("error", (text, ...data) => {
@@ -33,13 +33,13 @@ socket.on("connect_error", (data) => {
     uiFunc.uiMsg(data.toString(), 10);
 });
 
-socket.on("getStatus", (status, text) => {
+socket.on("status.get", (status, text) => {
     vars.user.status = status;
     vars.user.statusText = text;
     renderFunc.localUserProfile();
 });
 
-socket.on("markAsRead", (toR, chnl, id) => {
+socket.on("message.markAsRead", (toR, chnl, id) => {
     try{
         const to = toR.replace("$", "");
         const friendChat = toR.startsWith("$");
@@ -60,12 +60,12 @@ socket.on("markAsRead", (toR, chnl, id) => {
     }catch{}
 });
 
-socket.on("syncUserRoles", (users, roles) => {
+socket.on("server.roles.sync", (users, roles) => {
     vars.servers.users = users;
     vars.servers.roles = roles;
 });
 
-socket.on("userProfile", (data) => {
+socket.on("user.profile", (data) => {
     renderFunc.userProfile(data);
 });
 
