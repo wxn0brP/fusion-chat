@@ -52,7 +52,7 @@ app.post('/serverProfileUpload', global.authenticateMiddleware, async (req, res)
             await global.db.groupSettings.updateOne(serverId, { _id: 'set'}, { img: true });
 
             res.json({ err: false, msg: 'Profile picture uploaded successfully.', path: filePath });
-            global.sendToChatUsers(serverId, "refreshData", "getGroups");
+            global.sendToChatUsers(serverId, "refreshData", "group.get");
         }catch(error){
             res.status(500).json({ err: true, msg: 'An error occurred while processing the image.' });
         }

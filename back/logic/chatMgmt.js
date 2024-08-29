@@ -86,7 +86,7 @@ async function createChat(name, ownerId){
         rp: []
     }, false);
 
-    await global.db.mess.checkFile(chatId);
+    await global.db.mess.checkCollection(chatId);
 
     await addUserToChat(chatId, ownerId, [adminId]);
 
@@ -141,7 +141,7 @@ async function createPriv(toId, fromId){
         priv: toId
     }, false);
 
-    await global.db.mess.checkFile(combinateId(toId, fromId));
+    await global.db.mess.checkCollection(combinateId(toId, fromId));
 }
 
 module.exports = {

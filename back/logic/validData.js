@@ -1,4 +1,3 @@
-const SchemaC = require("../db/shema");
 const Ajv = require("ajv");
 const ajv = new Ajv();
 
@@ -66,20 +65,6 @@ module.exports = {
      * Validate an object against a provided schema or check if it's a plain object.
      *
      * @function
-     * @param {Object} data - The object to validate.
-     * @param {Object} [schema] - A schema to validate the object against (optional).
-     * @returns {boolean} True if the object is valid against the schema (if provided) or a plain object, false otherwise.
-     */
-    obj(data, schema){
-        if(!schema) return typeof data == "object" && !Array.isArray(data);
-        const validator = new SchemaC(schema);
-        return validator.validate(data, false);
-    },
-
-    /**
-     * Validate an object against a provided schema or check if it's a plain object.
-     *
-     * @function
      * @param {Object} schema - A schema to validate the object against.
      * @returns {Object} An Ajv schema object.
      */
@@ -96,6 +81,8 @@ module.exports = {
      */
     id(id){
         if(typeof id !== "string") return false;
+        if(id.startsWith("$")) id = id.replace("$", "");
+        
         const parts = id.split("-");
         if(parts.length != 3) return false;
 

@@ -4,15 +4,15 @@ const buttonFunc = {
     async addPriv(){
         const to = await uiFunc.prompt("Name of the 2 people");
         if(!to) return;
-        socket.emit("createPriv", to);
+        socket.emit("private.create", to);
     },
 
     async createGroup(){
         const name = await uiFunc.prompt("Name of the group");
         if(!name) return;
-        socket.emit("createGroup", name);
+        socket.emit("group.create", name);
         setTimeout(() => {
-            socket.emit("getGroups");
+            socket.emit("group.get");
         }, 1500);
     },
 
@@ -25,10 +25,7 @@ const buttonFunc = {
             .replace(location.host, "")
             .replace("/serverInvite?id=", "");
 
-        socket.emit("joinGroup", id);
-        setTimeout(() => {
-            socket.emit("getGroups");
-        }, 1500);
+        socket.emit("group.join", id);
     },
 
     userSettings(){

@@ -70,7 +70,7 @@ const contextFunc = {
             break;
             case "delete":
                 if(!confirm("Are you sure you want to delete this message?")) return;
-                socket.emit("deleteMess", vars.chat.to, id);
+                socket.emit("message.delete", vars.chat.to, id);
             break;
             case "reply":
                 vars.temp.replyId = id;
@@ -83,7 +83,7 @@ const contextFunc = {
             case "add_reaction":
                 messFunc.emocjiPopup((e) => {
                     if(!e) return;
-                    socket.emit("reactToMess", vars.chat.to, id, e);
+                    socket.emit("message.react", vars.chat.to, id, e);
                 });
             break;
         }
@@ -94,22 +94,100 @@ const contextFunc = {
         switch(type){
             case "copy_id":
                 navigator.clipboard.writeText(id);
-                uiFunc.uiMsg("Copied server ID!");
+                uiFunc.uiMsg(translateFunc.get("Copied server ID") + "!");
             break;
             case "copy_invite":
                 // socket.emit("getInviteLink", id);
                 const link = location.protocol + "//" + location.host + "/serverInvite?id=" + id;
                 navigator.clipboard.writeText(link);
-                uiFunc.uiMsg("Copied invite link!");
+                uiFunc.uiMsg(translateFunc.get("Copied invite link") + "!");
             break;
             case "exit":
-                const conf = confirm("Are you sure you want to exit server?");
+                const conf = confirm(translateFunc.get("Are you sure you want to exit server$($)", "? ", apis.www.changeChat(id)));
                 if(conf){
-                    socket.emit("exitGroup", id);
-                    setTimeout(() => {
-                        socket.emit("getGroups");
-                    }, 1500);
+                    socket.emit("group.exit", id);
+                    coreFunc.changeChat("main");
                 }
+            break;
+            case "mute":
+                const group = vars.groups.find(g => g.group == id);
+                if(!group) return;
+
+                let muted = false;
+                if(group.muted != undefined){
+                    if(group.muted == -1){
+                        muted = false;
+                    }else if(group.muted == 0){
+                        muted = true;
+                    }else if(group.muted > new Date().getTime()){
+                        muted = true;
+                        endTime = new Date(group.muted).toLocaleString();
+                    }else{
+                        muted = false;
+                    }
+                }
+
+                const muteStatus = muted ? translateFunc.get("muted") : translateFunc.get("unmuted");
+                let endTimeText = '';
+
+                if(muted){
+                    if(group.muted === 0){
+                        endTimeText = translateFunc.get("Mute is permanent");
+                    }else if(group.muted > new Date().getTime()){
+                        const endTime = new Date(group.muted).toLocaleString();
+                        endTimeText = translateFunc.get("Mute ends at $", endTime);
+                    }
+                }
+
+                const text = `
+                    ${translateFunc.get("Mute server ($)", apis.www.changeChat(id))}
+                    <br />
+                    ${translateFunc.get("Status")}: ${muteStatus}
+                    ${endTimeText ? "<br />" + endTimeText : ''}
+                `;
+
+                uiFunc.selectPrompt(
+                    text,
+                    [
+                        translateFunc.get("15 minutes"),
+                        translateFunc.get("1 hour"),
+                        translateFunc.get("1 day"),
+                        translateFunc.get("Permanently"),
+                        translateFunc.get("Unmute"),
+                        translateFunc.get("Cancel")
+                    ],
+                    ["15m", "1h", "1d", "forever", "unmute", "cancel"]
+                ).then(value => {
+                    if (!value) return;
+
+                    const now = new Date();
+                    let targetTime = -1;
+                    switch (value) {
+                        case "15m":
+                            now.setMinutes(now.getMinutes() + 15);
+                            targetTime = now.getTime();
+                        break;
+                        case "1h":
+                            now.setHours(now.getHours() + 1);
+                            targetTime = now.getTime();
+                        break;
+                        case "1d":
+                            now.setDate(now.getDate() + 1);
+                            targetTime = now.getTime();
+                        break;
+                        case "forever":
+                            targetTime = 0;
+                        break;
+                        case "unmute":
+                            targetTime = -1;
+                        break;
+                        case "cancel":
+                            return;
+                    }
+
+                    socket.emit("group.mute", id, targetTime);
+                    group.muted = targetTime;
+                });
             break;
         }
     }

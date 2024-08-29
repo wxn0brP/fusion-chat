@@ -1,14 +1,15 @@
 <div id="mesage_context_menu" class="context-menu">
     <div class="context-menu__item" onclick="contextFunc.message('copy')" translate>Copy Text</div>
     <div class="context-menu__item" onclick="contextFunc.message('edit')" translate>Edit</div>
-    <div class="context-menu__item" onclick="contextFunc.message('delete')" translate>Delete</div>
+    <div class="context-menu__item" onclick="contextFunc.message('delete')" translate style="color: red">Delete</div>
     <div class="context-menu__item" onclick="contextFunc.message('reply')" translate>Reply</div>
     <div class="context-menu__item" onclick="contextFunc.message('copy_id')" translate>Copy ID</div>
     <div class="context-menu__item" onclick="contextFunc.message('add_reaction')" translate>Add Reaction</div>
 </div>
 
 <div id="server_context_menu" class="context-menu">
+    <div class="context-menu__item" onclick="contextFunc.server('mute')" translate>Mute</div>
     <div class="context-menu__item" onclick="contextFunc.server('copy_id')" translate>Copy ID</div>
     <div class="context-menu__item" onclick="contextFunc.server('copy_invite')" translate>Copy Invite</div>
-    <div class="context-menu__item" onclick="contextFunc.server('exit')" translate>Exit From Server</div>
+    <div class="context-menu__item" onclick="contextFunc.server('exit')" translate style="color: red">Exit From Server</div>
 </div>

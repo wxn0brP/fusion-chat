@@ -25,9 +25,10 @@ const messFunc = {
                 msg: mess,
                 res: vars.temp.replyId,
             }
+            messCmd.send(data);
             socket.emit("mess", data);
         }else{
-            socket.emit("editMess", vars.chat.to, vars.temp.editId, mess);
+            socket.emit("message.edit", vars.chat.to, vars.temp.editId, mess);
             messFunc.editMessClose();
         }
         messInput.value = "";
@@ -61,7 +62,7 @@ const messFunc = {
         const fromDivSpan = document.createElement("div");
         fromDivSpan.innerHTML = apis.www.changeUserID(data.fr);
         fromDivSpan.addEventListener("click", () => {
-            socket.emit("userProfile", data.fr);
+            socket.emit("user.profile", data.fr);
         });
         fromDiv.appendChild(fromDivSpan);
         messDiv.appendChild(fromDiv);
@@ -86,7 +87,7 @@ const messFunc = {
                 span.setAttribute("_key", key);
                 span.setAttribute("_users", users.join(","));
                 span.addEventListener("click", () => {
-                    socket.emit("reactToMess", vars.chat.to, data._id, key);
+                    socket.emit("message.react", vars.chat.to, data._id, key);
                 });
                 reactsDiv.appendChild(span);
             }

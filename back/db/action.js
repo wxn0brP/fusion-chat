@@ -1,8 +1,3 @@
-/**
- * Db data operations
- * @module db/actions
- */
-
 const fs = require("fs");
 const gen = require("./gen");
 const format = require("./format");
@@ -13,6 +8,7 @@ const maxFileSize = 2 * 1024 * 1024; //2 MB
 
 /**
  * A class representing database actions on files.
+ * @class
  */
 class dbActionC{
     /**
@@ -38,53 +34,56 @@ class dbActionC{
     }
 
     /**
-     * Check and create the specified directory if it doesn't exist.
-     * @param {string} dir - The directory to check and create if necessary.
+     * Check and create the specified collection if it doesn't exist.
+     * @function
+     * @param {string} collection - The collection to check.
      */
-    checkFile(dir){
-        const path = this.folder + "/" + dir;
+    checkCollection(collection){
+        const path = this.folder + "/" + collection;
         if(!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
     }
 
     /**
      * Add a new entry to the specified database.
-     * @param {string} name - The name of the database.
+     * @async
+     * @param {string} collection - The name of the collection.
      * @param {Object} arg - The data to be added to the database.
      * @param {boolean} id_gen - Whether to generate an ID for the entry. Default is true.
      * @returns {Promise<Object>} A Promise that resolves to the added data.
      */
-    async add(name, arg, id_gen=true){
-        this.checkFile(name);
-        const file = this.folder + "/" + name + "/" + getLastFile(this.folder + "/" + name);
+    async add(collection, arg, id_gen=true){
+        this.checkCollection(collection);
+        const file = this.folder + "/" + collection + "/" + getLastFile(this.folder + "/" + collection);
 
         if(id_gen) arg._id = arg._id || gen();
-        const data = await format.stringify(arg);
+        const data = format.stringify(arg);
         fs.appendFileSync(file, data+"\n");
         return arg;
     }
 
     /**
      * Find entries in the specified database based on search criteria.
-     * @param {string} name - The name of the database.
+     * @async
+     * @param {string} collection - The name of the collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @param {Object} options - The options for the search.
      * @param {number} options.max - The maximum number of entries to return. Default is -1, meaning no limit.
      * @param {boolean} options.reverse - Whether to reverse the order of returned entries. Default is false.
      * @returns {Promise<Object[]>} A Promise that resolves to an array of matching entries.
      */
-    async find(name, arg, options={}){
+    async find(collection, arg, options={}){
         options.reverse = options.reverse || false;
         options.max = options.max || -1;
 
-        this.checkFile(name);
-        let files = fs.readdirSync(this.folder + "/" + name).filter(file => !/\.tmp$/.test(file));
+        this.checkCollection(collection);
+        let files = fs.readdirSync(this.folder + "/" + collection).filter(file => !/\.tmp$/.test(file));
         if(options.reverse) files.reverse();
         let datas = [];
 
         let totalEntries = 0;
 
         for(let f of files){
-            let data = await fileM.find(this.folder + "/" + name + "/" + f, arg, options);
+            let data = await fileM.find(this.folder + "/" + collection + "/" + f, arg, options);
             if(options.reverse) data.reverse();
 
             if(options.max !== -1){
@@ -106,17 +105,18 @@ class dbActionC{
 
     /**
      * Find the first matching entry in the specified database based on search criteria.
-     * @param {string} name - The name of the database.
+     * @async
+     * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @returns {Promise<Object|null>} A Promise that resolves to the first matching entry or null if not found.
      */
-    async findOne(name, arg){
-        this.checkFile(name);
-        let files = fs.readdirSync(this.folder + "/" + name).filter(file => !/\.tmp$/.test(file));
+    async findOne(collection, arg){
+        this.checkCollection(collection);
+        let files = fs.readdirSync(this.folder + "/" + collection).filter(file => !/\.tmp$/.test(file));
         files.reverse();
 
         for(let f of files){
-            let data = await fileM.findOne(this.folder + "/" + name + "/" + f, arg);
+            let data = await fileM.findOne(this.folder + "/" + collection + "/" + f, arg);
             if(data){
                 return data;
             }
@@ -126,48 +126,62 @@ class dbActionC{
 
     /**
      * Update entries in the specified database based on search criteria and an updater function or object.
-     * @param {string} name - The name of the database.
+     * @async
+     * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @param {function|Object} obj - The updater function or object.
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were updated, or `false` otherwise.
      */
-    async update(name, arg, obj){
-        this.checkFile(name);
-        return await fileM.update(this.folder, name, arg, obj);
+    async update(collection, arg, obj){
+        this.checkCollection(collection);
+        return await fileM.update(this.folder, collection, arg, obj);
     }
 
     /**
      * Update the first matching entry in the specified database based on search criteria and an updater function or object.
-     * @param {string} name - The name of the database.
+     * @async
+     * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @param {function|Object} obj - The updater function or object.
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was updated, or `false` otherwise.
      */
-    async updateOne(name, arg, obj){
-        this.checkFile(name);
-        return await fileM.updateOne(this.folder, name, arg, obj);
+    async updateOne(collection, arg, obj){
+        this.checkCollection(collection);
+        return await fileM.update(this.folder, collection, arg, obj, true);
     }
 
     /**
      * Remove entries from the specified database based on search criteria.
-     * @param {string} name - The name of the database.
+     * @async
+     * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were removed, or `false` otherwise.
      */
-    async remove(name, arg){
-        this.checkFile(name);
-        return await fileM.remove(this.folder, name, arg);
+    async remove(collection, arg){
+        this.checkCollection(collection);
+        return await fileM.remove(this.folder, collection, arg);
     }
 
     /**
      * Remove the first matching entry from the specified database based on search criteria.
-     * @param {string} name - The name of the database.
+     * @async
+     * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was removed, or `false` otherwise.
      */
-    async removeOne(name, arg){
-        this.checkFile(name);
-        return await fileM.removeOne(this.folder, name, arg);
+    async removeOne(collection, arg){
+        this.checkCollection(collection);
+        return await fileM.remove(this.folder, collection, arg, true);
+    }
+
+    /**
+     * Removes a database collection from the file system.
+     *
+     * @param {string} collection - The name of the collection to remove.
+     * @return {void}
+     */
+    removeDb(collection){
+        fs.rmSync(this.folder + "/" + collection, { recursive: true, force: true });
     }
 }
 
