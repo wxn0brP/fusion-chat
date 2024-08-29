@@ -120,4 +120,4 @@ const settingsDataUser = () => [
     }
 ]
 
-socket.on("server.settings.get", (...data) => settingsFunc.showServerSettings(...data));
+socket.on("server.settings.get", settingsFunc.showServerSettings);

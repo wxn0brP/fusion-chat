@@ -65,10 +65,6 @@ socket.on("server.roles.sync", (users, roles) => {
     vars.servers.roles = roles;
 });
 
-socket.on("user.profile", (data) => {
-    renderFunc.userProfile(data);
-});
-
 socket.on("refreshData", (settings, ...moreData) => {
     let events = [];
 

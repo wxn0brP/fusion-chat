@@ -332,9 +332,6 @@ const renderUtils = {
     },
 }
 
-
-socket.on("group.get", (data) => renderFunc.groups(data));
-
 socket.on("private.get", (data) => {
     data.forEach((priv) => {
         const id = priv.priv;
@@ -355,4 +352,6 @@ socket.on("private.get", (data) => {
     renderFunc.privs();
 });
 
-socket.on("server.setup", (...data) => renderFunc.serverInit(...data));
+socket.on("group.get", renderFunc.groups);
+socket.on("server.setup", renderFunc.serverInit);
+socket.on("user.profile", renderFunc.userProfile);
