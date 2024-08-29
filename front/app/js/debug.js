@@ -5,13 +5,6 @@ const debugFunc = {
         setTimeout(() => {
             if(apis.app.apiType == "rn") this.isDebug = true;
         }, 1000);
-
-        if(!this.isDebug) return;
-        setTimeout(() => {
-            const script = document.createElement("script");
-            script.src = "js/test.js";
-            document.querySelector("#assets").appendChild(script);
-        }, 5000);
     },
 
     msg(...data){
