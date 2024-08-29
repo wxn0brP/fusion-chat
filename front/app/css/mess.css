@@ -26,6 +26,8 @@ main{
     width: calc(100% - 20px);
     height: 50px;
     border-radius: 10px;
+
+    position: relative;
 }
 
 #mess-input{
@@ -172,6 +174,23 @@ main{
     }
 }
 
+#barc__commads{
+    position: absolute;
+    bottom: 60px;
+    left: 10px;
+    width: 90%;
+    background-color: var(--menu);
+    color: var(--txt);
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 2;
+
+    text-align: left;
+}
+
+#barc__commads ul li{
+    margin-left: 1rem;
+}
 
 @media screen and (max-width: 800px){
     main{

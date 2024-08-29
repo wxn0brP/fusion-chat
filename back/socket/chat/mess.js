@@ -65,7 +65,7 @@ module.exports = (socket) => {
             else data.to = "$"+socket.user._id;
             
             data._id = _id._id;
-            if(req.silent) data.silent = silent;
+            if(req.silent) data.silent = req.silent || false;
             sendToSocket(socket.user._id, "mess", {
                 fr: socket.user._id,
                 msg: data.msg,
