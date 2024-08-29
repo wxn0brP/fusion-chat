@@ -24,7 +24,7 @@ module.exports = (socket) => {
             if(!to || !msg || !chnl) return socket.emit("error", "to & msg & chnl is required");
     
             if(
-                !valid.str(to, 0, 30) || !valid.str(chnl, 0, 30) || !valid.str(msg, 0, 2000) || !msg
+                !valid.id(to) || !valid.id(chnl) || !valid.str(msg, 0, 2000) || !msg
             ){
                 return socket.emit("error", "invalid data");
             }
@@ -116,7 +116,7 @@ module.exports = (socket) => {
     socket.ontimeout("message.edit", 1000, async (toM, _id, msg) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(toM, 0, 30) || !valid.str(_id, 0, 30) || !valid.str(msg, 0, 500)){
+            if(!valid.id(toM) || !valid.id(_id) || !valid.str(msg, 0, 500)){
                 return socket.emit("error", "valid data");
             }
 
@@ -154,9 +154,7 @@ module.exports = (socket) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             
-            if(!valid.str(toM, 0, 30) || !valid.str(_id, 0, 30)){
-                return socket.emit("error", "valid data");
-            }
+            if(!valid.id(toM) || !valid.id(_id)) return socket.emit("error", "valid data");
 
             const friendChat = toM.startsWith("$");
             let to = toM;
@@ -194,8 +192,8 @@ module.exports = (socket) => {
             if(!socket.user) return socket.emit("error", "not auth");
 
             if(
-                !valid.str(to, 0, 30) ||
-                !valid.str(chnl, 0, 30) ||
+                !valid.id(to) ||
+                !valid.id(chnl) ||
                 !valid.num(start, 0) ||
                 !valid.num(end, 0)
             ){
@@ -226,7 +224,7 @@ module.exports = (socket) => {
     socket.ontimeout("message.markAsRead", 100, async (to, chnl, mess_id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(to, 0, 30) || !valid.str(chnl, 0, 30) || !valid.str(mess_id, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(to) || !valid.id(chnl) || !valid.id(mess_id)) return socket.emit("error", "valid data");
 
             // const chat = await global.db.mess.findOne(to, { chnl });
             // if(!chat) return socket.emit("error", "chat does not exist");
