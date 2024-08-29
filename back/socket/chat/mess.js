@@ -83,9 +83,17 @@ module.exports = (socket) => {
                 const server = (await global.db.groupSettings.findOne(to, { _id: "set"}));
                 const fromMsg = "(S) " + server.name;
 
-                chat.forEach(u => {
+                chat.forEach(async u => {
                     u = u.uid;
                     if(u == socket.user._id) return;
+
+                    const group = await global.db.userDatas.findOne(u, { group: data.to });
+                    if(group.muted && group.muted != -1){
+                        const muted = group.muted;
+                        if(muted == 0) return;
+                        if(muted > new Date().getTime()) return;
+                    }
+
                     sendToSocket(u, "mess", data);
                     global.fireBaseMessage.send(u, "New message from " + fromMsg, data.msg);
                 })
