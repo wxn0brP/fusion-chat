@@ -95,7 +95,7 @@ module.exports = (socket) => {
                     }
 
                     sendToSocket(u, "mess", data);
-                    global.fireBaseMessage.send(u, "New message from " + fromMsg, data.msg);
+                    if(!data.silent) global.fireBaseMessage.send(u, "New message from " + fromMsg, data.msg);
                 })
             }else{
                 let toSend = req.to.replace("$","");
@@ -106,7 +106,7 @@ module.exports = (socket) => {
                 sendToSocket(toSend, "mess", data);
 
                 const user = await global.db.data.findOne("user", { _id: socket.user._id });
-                global.fireBaseMessage.send(toSend, "New message from " + user.name, data.msg);
+                if(!data.silent) global.fireBaseMessage.send(toSend, "New message from " + user.name, data.msg);
             }
         }catch(e){
             socket.logError(e);
