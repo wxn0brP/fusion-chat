@@ -11,7 +11,7 @@ module.exports = (socket) => {
     socket.ontimeout("server.setup", 100, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error.valid", "server.setup", "id");
 
             const serverMeta = await global.db.groupSettings.findOne(id, { _id: "set" });
             if(!serverMeta) return socket.emit("error", "server does not exist");
@@ -70,7 +70,7 @@ module.exports = (socket) => {
     socket.ontimeout("server.settings.get", 5_000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error.valid", "server.settings.get", "id");
 
             const perm = new permissionSystem(id);
             const userPerm = await perm.userPermison(socket.user._id, "manage server");
@@ -102,7 +102,7 @@ module.exports = (socket) => {
     socket.ontimeout("server.settings.set", 5_000, async (id, data) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error.valid", "server.settings.set", "id");
 
             const perm = new permissionSystem(id);
             const userPerm = await perm.userPermison(socket.user._id, "manage server");
@@ -110,7 +110,7 @@ module.exports = (socket) => {
 
             if(!validShema.setServerSettings(data)){
                 lo(validShema.setServerSettings.errors);
-                return socket.emit("error", "valid data");
+                return socket.emit("error.valid", "server.settings.set", "data", validShema.setServerSettings.errors);
             }
 
             const o_categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
@@ -142,7 +142,7 @@ module.exports = (socket) => {
     socket.ontimeout("server.roles.sync", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error.valid", "server.roles.sync", "id");
         
             const perm = new permissionSystem(id);
             const roles = await perm.getRoles();
@@ -168,11 +168,11 @@ module.exports = (socket) => {
     socket.ontimeout("server.delete", 10_000, async (id, name) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
-            if(!valid.str(name, 0, 30)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error.valid", "server.delete", "id");
+            if(!valid.str(name, 0, 30)) return socket.emit("error.valid", "server.delete", "name");
 
             const serverMeta = await global.db.groupSettings.findOne(id, { _id: "set" });
-            if(serverMeta.name != name) return socket.emit("error", "valid data");
+            if(serverMeta.name != name) return socket.emit("error.valid", "server.delete", "name");
 
             const perm = new permissionSystem(id);
             const userPerm = await perm.userPermison(socket.user._id, "manage server");
@@ -194,9 +194,9 @@ module.exports = (socket) => {
     socket.ontimeout("server.user.kick", 1000, async (serverId, uid, ban=false) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(serverId)) return socket.emit("error", "valid data");
-            if(!valid.id(uid)) return socket.emit("error", "valid data");
-            if(!valid.bool(ban)) return socket.emit("error", "valid data");
+            if(!valid.id(serverId)) return socket.emit("error.valid", "server.user.kick", "serverId");
+            if(!valid.id(uid)) return socket.emit("error.valid", "server.user.kick", "uid");
+            if(!valid.bool(ban)) return socket.emit("error.valid", "server.user.kick", "ban");
 
             const perm = new permissionSystem(serverId);
             const userPerm = await perm.userPermison(socket.user._id, "manage server");
@@ -218,8 +218,8 @@ module.exports = (socket) => {
     socket.ontimeout("server.user.unban", 1000, async (serverId, uid) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(serverId)) return socket.emit("error", "valid data");
-            if(!valid.id(uid)) return socket.emit("error", "valid data");
+            if(!valid.id(serverId)) return socket.emit("error.valid", "server.user.unban", "serverId");
+            if(!valid.id(uid)) return socket.emit("error.valid", "server.user.unban", "uid");
 
             const perm = new permissionSystem(serverId);
             const userPerm = await perm.userPermison(socket.user._id, "manage server");

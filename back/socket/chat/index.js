@@ -22,7 +22,8 @@ io.of("/").use(async (socket, next) => {
     if(tmpBan.has(user._id)){
         const remainingTime = tmpBan.get(user._id) - Date.now();
         if(remainingTime > 0){
-            return next(new Error(`You are temporarily banned. Please try again after ${Math.ceil(remainingTime / 1000 / 60)} minutes.`));
+            const time = Math.ceil(remainingTime / 1000 / 60);
+            return next(new Error(`Ban: You are temporarily banned. Please try again after ${time} minutes.`));
         }else{
             tmpBan.delete(user._id);
         }
@@ -60,7 +61,7 @@ io.of("/").on("connection", (socket) => {
                     });
                     if(lastTime.i == 5){
                         const t = Math.ceil(timeout/1000*penalty+1);
-                        socket.emit("error", `Detected spam. Please wait $ seconds and try again. Your behavior has been logged.`, t);
+                        socket.emit("error.spam", "last warning", t);
                         global.db.logs.add("spam", {
                             user: socket.user._id,
                             evt,
@@ -71,7 +72,7 @@ io.of("/").on("connection", (socket) => {
                         tmpBan.set(socket.user._id, banTime);
                         const sockets = getSocket(socket.user._id);
                         sockets.forEach(socket => {
-                            socket.emit("error", "Spam detected from your account. You have been temporarily banned due to spam activity.");
+                            socket.emit("error.spam", "ban");
                             socket.disconnect();
                         });
                         global.db.logs.add("spam", {
@@ -81,7 +82,7 @@ io.of("/").on("connection", (socket) => {
                         });
                     }
                 }else if(lastTime.i == 2){
-                    socket.emit("error", "Spam protection activated. Please wait a moment and try again.");
+                    socket.emit("error.spam", "warn");
                 }else if(lastTime.i == 0 || lastTime.i == 1){
                     setTimeout(() => cb(...data), 100);
                 }

@@ -20,14 +20,17 @@ module.exports = (socket) => {
     async (req) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
+            if(typeof req !== "object") return socket.emit("error.valid", "mess", "req");
             let { to, msg, chnl } = req;
-            if(!to || !msg || !chnl) return socket.emit("error", "to & msg & chnl is required");
     
-            if(
-                !valid.id(to) || !valid.idOrSpecyficStr(chnl, ["main"]) || !valid.str(msg, 0, 2000) || !msg
-            ){
-                return socket.emit("error", "valid data");
-            }
+            if(!valid.id(to))                           return socket.emit("error.valid", "mess", "to");
+            if(!valid.idOrSpecyficStr(chnl, ["main"]))  return socket.emit("error.valid", "mess", "chnl");
+            if(!valid.str(msg, 0, 2000))                return socket.emit("error.valid", "mess", "msg");
+
+            //optional
+            if(req.enc && !valid.str(req.enc, 0, 30))   return socket.emit("error.valid", "mess", "enc");
+            if(req.res && !valid.id(req.res))           return socket.emit("error.valid", "mess", "res");
+            if(req.silent && !valid.bool(req.silent))   return socket.emit("error.valid", "mess", "silent");
             
             let privChat = to.startsWith("$");
             if(privChat){
@@ -119,9 +122,9 @@ module.exports = (socket) => {
     socket.ontimeout("message.edit", 1000, async (toM, _id, msg) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(toM) || !valid.id(_id) || !valid.str(msg, 0, 500)){
-                return socket.emit("error", "valid data");
-            }
+            if(!valid.id(toM)) return socket.emit("error.valid", "message.edit", "toM");
+            if(!valid.id(_id)) return socket.emit("error.valid", "message.edit", "_id");
+            if(!valid.str(msg, 0, 500)) return socket.emit("error.valid", "message.edit", "msg");
 
             const friendChat = toM.startsWith("$");
             let to = toM;
@@ -157,7 +160,8 @@ module.exports = (socket) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             
-            if(!valid.id(toM) || !valid.id(_id)) return socket.emit("error", "valid data");
+            if(!valid.id(toM)) return socket.emit("error.valid", "message.delete", "toM");
+            if(!valid.id(_id)) return socket.emit("error.valid", "message.delete", "_id");
 
             const friendChat = toM.startsWith("$");
             let to = toM;
@@ -194,14 +198,10 @@ module.exports = (socket) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
 
-            if(
-                !valid.id(to) ||
-                !valid.idOrSpecyficStr(chnl, ["main"]) ||
-                !valid.num(start, 0) ||
-                !valid.num(end, 0)
-            ){
-                return socket.emit("error", "valid data");
-            }
+            if(!valid.id(to))                           return socket.emit("error.valid", "message.fetch", "to");
+            if(!valid.idOrSpecyficStr(chnl, ["main"]))  return socket.emit("error.valid", "message.fetch", "chnl");
+            if(!valid.num(start, 0))                    return socket.emit("error.valid", "message.fetch", "start");
+            if(!valid.num(end, 0))                      return socket.emit("error.valid", "message.fetch", "end");
 
             let friendChat = to.startsWith("$");
             if(friendChat){
@@ -227,14 +227,10 @@ module.exports = (socket) => {
     socket.ontimeout("message.markAsRead", 100, async (to, chnl, mess_id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(
-                !valid.id(to) ||
-                !valid.idOrSpecyficStr(chnl, ["main"]) ||
-                !valid.idOrSpecyficStr(mess_id, ["last"])
-            ) return socket.emit("error", "valid data");
 
-            // const chat = await global.db.mess.findOne(to, { chnl });
-            // if(!chat) return socket.emit("error", "chat does not exist");
+            if(!valid.id(to)) return socket.emit("error.valid", "message.markAsRead", "to");
+            if(!valid.idOrSpecyficStr(chnl, ["main"]))      return socket.emit("error.valid", "message.markAsRead", "chnl");
+            if(!valid.idOrSpecyficStr(mess_id, ["last"]))   return socket.emit("error.valid", "message.markAsRead", "mess_id");
 
             const firendChat = to.startsWith("$");
             
@@ -269,7 +265,10 @@ module.exports = (socket) => {
     socket.ontimeout("message.react", 100, async (server, msgId, react) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(server.replace("$", "")) || !valid.id(msgId) || !valid.str(react, 0, 30)) return socket.emit("error", "valid data");
+            
+            if(!valid.id(server.replace("$", ""))) return socket.emit("error.valid", "message.react", "server");
+            if(!valid.id(msgId)) return socket.emit("error.valid", "message.react", "msgId");
+            if(!valid.str(react, 0, 30)) return socket.emit("error.valid", "message.react", "react");
         
             let toM = server;
             if(server.startsWith("$")){
