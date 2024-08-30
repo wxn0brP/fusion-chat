@@ -9,7 +9,7 @@ SettingsServerManager.prototype.renderChannels = function(){
         const name = await uiFunc.prompt("Name");
 
         this.settings.categories.push({
-            cid: this.settings.categories.length,
+            cid: window.genId(),
             name: name || "New Category",
             i: this.settings.categories.length
         });
@@ -58,7 +58,8 @@ SettingsServerManager.prototype.renderChannels = function(){
                 type: type || "text",
                 category: category.cid,
                 i: channels.filter(channel => channel.category === category.cid).length,
-                rp: []
+                rp: [],
+                chid: window.genId(),
             };
             this.settings.channels.push(newChannel);
             this.renderChannels(); 
