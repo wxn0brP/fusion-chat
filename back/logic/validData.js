@@ -1,7 +1,7 @@
 const Ajv = require("ajv");
 const ajv = new Ajv();
 
-module.exports = {
+const valid = {
     /**
      * Check if a value is a string within a specified length range.
      *
@@ -118,18 +118,28 @@ module.exports = {
     }
 }
 
+module.exports = valid;
+
 ajv.addKeyword({
     keyword: "channelRP",
-    type: 'string',
-    compile: function(schema, parentSchema){
-        return function(data) {
+    type: "string",
+    compile: function(){
+        return function(data){
             const parts = data.split('/');
             if(parts.length !== 2) return false;
             
             const [id, perm] = parts;
             const validPerms = ["text", "visable"];
 
-            return module.exports.id(id) && validPerms.includes(perm);
+            return valid.id(id) && validPerms.includes(perm);
         };
+    },
+});
+
+ajv.addKeyword({
+    keyword: "validId",
+    type: "string",
+    compile: function(){
+        return valid.id;
     },
 });

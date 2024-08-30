@@ -6,10 +6,9 @@ module.exports = {
             properties: {
                 name: { type: "string" },
                 owner: { type: "string" },
-                _id: { type: "string" },
                 img: { type: "boolean" }
             },
-            required: ["name", "owner", "_id"],
+            required: ["name", "owner"],
             additionalProperties: false
         },
         categories: {
@@ -17,7 +16,7 @@ module.exports = {
             items: {
                 type: "object",
                 properties: {
-                    cid: { type: "string" },
+                    cid: { type: "string", validId: true },
                     name: { type: "string" },
                     i: { type: "number" }
                 },
@@ -30,7 +29,7 @@ module.exports = {
             items: {
                 type: "object",
                 properties: {
-                    chid: { type: "string" },
+                    chid: { type: "string", validId: true },
                     name: { type: "string" },
                     type: { type: "string", enum: ["text", "voice"] },
                     category: { type: "string" },
@@ -49,7 +48,7 @@ module.exports = {
             items: {
                 type: "object",
                 properties: {
-                    rid: { type: "string" },
+                    rid: { type: "string", validId: true },
                     name: { type: "string" },
                     parent: { type: "string" },
                     p: {
@@ -69,7 +68,7 @@ module.exports = {
             items: {
                 type: "object",
                 properties: {
-                    uid: { type: "string" },
+                    uid: { type: "string", validId: true },
                     roles: {
                         type: "array",
                         items: { type: "string" }
