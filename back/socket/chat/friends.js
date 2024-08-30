@@ -11,7 +11,7 @@ module.exports = (socket) => {
     socket.ontimeout("friend.request", 1_000, async (nameOrId) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(nameOrId, 0, 30) && !valid.id(nameOrId)) return socket.emit("error", "valid data");
+            if(!valid.str(nameOrId, 0, 30) && !valid.id(nameOrId)) return socket.emit("error.valid", "friend.request", "nameOrId");
 
             const userExists = await global.db.data.findOne("user", {
                 $or: [
@@ -45,8 +45,8 @@ module.exports = (socket) => {
     socket.ontimeout("friend.response", 1_000, async (id, accept) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
-            if(!valid.bool(accept)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error.valid", "friend.response", "id");
+            if(!valid.bool(accept)) return socket.emit("error.valid", "friend.response", "accept");
             
             await global.db.data.removeOne("friendRequests", { from: id, to: socket.user._id });
 
@@ -70,7 +70,7 @@ module.exports = (socket) => {
     socket.ontimeout("friend.requestRemove", 1_000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error.valid", "friend.requestRemove", "id");
 
             await global.db.data.removeOne("friendRequests", { from: socket.user._id, to: id });
 
@@ -83,7 +83,7 @@ module.exports = (socket) => {
     socket.ontimeout("friend.remove", 1_000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error.valid", "friend.remove", "id");
 
             const friendExists = await global.db.dataGraph.find("friends", socket.user._id, id);
             if(friendExists.length == 0) return socket.emit("error", "friend does not exist");
@@ -145,7 +145,7 @@ module.exports = (socket) => {
     socket.ontimeout("user.profile", 1000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
+            if(!valid.id(id)) return socket.emit("error.valid", "user.profile", "id");
 
             const userN = await global.db.data.findOne("user", { _id: id });
             if(!userN) return socket.emit("error", "user not found");
