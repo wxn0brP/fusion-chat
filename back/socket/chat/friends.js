@@ -178,12 +178,15 @@ module.exports = (socket) => {
                 }
             }
 
+            const userIsBlocked = await global.db.userDatas.findOne(socket.user._id, { priv: id })
+
             const userData = {
                 name: userN.name,
                 status: userStatusType,
                 statusText: userStatusText,
                 _id: id,
-                friendStatus
+                friendStatus,
+                isBlocked: userIsBlocked ? userIsBlocked.blocked : false
             }
 
             socket.emit("user.profile", userData);
