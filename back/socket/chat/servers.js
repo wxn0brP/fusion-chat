@@ -77,6 +77,7 @@ module.exports = (socket) => {
             if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
 
             const meta = await global.db.groupSettings.findOne(id, { _id: "set" });
+            delete meta._id;
             const categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
             const channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
             const roles = await perm.getRoles();
