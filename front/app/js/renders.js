@@ -91,6 +91,7 @@ const renderFunc = {
 
     userProfile(data){
         if(!data) return;
+        const targetIsMe = data._id == vars.user._id;
 
         userProfileDiv.innerHTML = `
             <div id="userProfileInfo">
@@ -98,38 +99,49 @@ const renderFunc = {
                 <div>
                     <h1>${data.name}</h1>
                     <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
-                    <div id="userProfileBtns"></div>
+                    <div id="userProfileBtns" style="margin-top: 10px;"></div>
                 </div>
             </div>
         `.trim();
 
-        const frinedBtn = document.createElement("button");
-        frinedBtn.classList.add("btn");
-        frinedBtn.style.marginTop = "10px";
-        let frinedBtnText;
-        switch(data.friendStatus){
-            case friendStatusEnum.NOT_FRIEND:
-                frinedBtnText = "Add friend";
-                frinedBtn.onclick = () => mainView.addFriend(data._id);
-            break;
-            case friendStatusEnum.IS_FRIEND:
-                frinedBtnText = "Remove friend";
-                frinedBtn.onclick = () => mainView.removeFriend(data._id);
-            break;
-            case friendStatusEnum.REQUEST_SENT:
-                frinedBtnText = "Friend request sent (click to cancel)";
-                frinedBtn.onclick = () => mainView.removeFriendRequest(data._id);
-            break;
-            case friendStatusEnum.REQUEST_RECEIVED:
-                frinedBtnText = "Request received (click to view)";
-                frinedBtn.onclick = () => {
-                    coreFunc.changeChat("main");
-                    mainView.changeView("requests");
-                }
-            break;
+        if(!targetIsMe){
+            const frinedBtn = document.createElement("button");
+            frinedBtn.classList.add("btn");
+            let frinedBtnText;
+            switch(data.friendStatus){
+                case friendStatusEnum.NOT_FRIEND:
+                    frinedBtnText = "Add friend";
+                    frinedBtn.onclick = () => mainView.addFriend(data._id);
+                break;
+                case friendStatusEnum.IS_FRIEND:
+                    frinedBtnText = "Remove friend";
+                    frinedBtn.onclick = () => mainView.removeFriend(data._id);
+                break;
+                case friendStatusEnum.REQUEST_SENT:
+                    frinedBtnText = "Friend request sent (click to cancel)";
+                    frinedBtn.onclick = () => mainView.removeFriendRequest(data._id);
+                break;
+                case friendStatusEnum.REQUEST_RECEIVED:
+                    frinedBtnText = "Request received (click to view)";
+                    frinedBtn.onclick = () => {
+                        coreFunc.changeChat("main");
+                        mainView.changeView("requests");
+                    }
+                break;
+            }
+            frinedBtn.innerHTML = translateFunc.get(frinedBtnText);
+            userProfileDiv.querySelector("#userProfileBtns").appendChild(frinedBtn);
+            
+            const blockBtn = document.createElement("button");
+            blockBtn.classList.add("btn");
+            blockBtn.style.marginLeft = "10px";
+            blockBtn.innerHTML = translateFunc.get(data.isBlocked ? "Unblock" : "Block");
+            blockBtn.onclick = () => {
+                data.isBlocked = !data.isBlocked;
+                socket.emit("private.block", data._id, data.isBlocked);
+            }
+            userProfileDiv.querySelector("#userProfileBtns").appendChild(blockBtn);
         }
-        frinedBtn.innerHTML = translateFunc.get(frinedBtnText);
-        userProfileDiv.querySelector("#userProfileBtns").appendChild(frinedBtn);
 
         renderUtils.initPopup(userProfileDiv);
     },

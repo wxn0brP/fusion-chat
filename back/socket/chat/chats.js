@@ -119,4 +119,15 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
+
+    socket.ontimeout("private.block", 1000, async (id, blocked) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(id) || !valid.bool(blocked)) return socket.emit("error", "valid data");
+
+            await global.db.userDatas.updateOneOrAdd(socket.user._id, { priv: id }, { blocked });
+        }catch(e){
+            socket.logError(e);
+        }
+    });
 }
