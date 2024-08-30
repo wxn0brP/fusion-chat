@@ -26,30 +26,35 @@ module.exports = (socket) => {
             if(
                 !valid.id(to) || !valid.id(chnl) || !valid.str(msg, 0, 2000) || !msg
             ){
-                return socket.emit("error", "invalid data");
+                return socket.emit("error", "valid data");
             }
             
-            let friendChat = to.startsWith("$");
-            if(friendChat){
-                const friendExists = await global.db.userDatas.findOne(socket.user._id, { priv: to.replace("$", "") });
-                if(!friendExists) return socket.emit("error", "friend not found - getMess");
+            let privChat = to.startsWith("$");
+            if(privChat){
+                const priv = await global.db.userDatas.findOne(socket.user._id, { priv: to.replace("$", "") });
+                if(!priv) return socket.emit("error", "priv not found");
+                if(priv.blocked) return socket.emit("error", "blocked");
+
+                const toPriv = await global.db.userDatas.findOne(to.replace("$", ""), { priv: socket.user._id });
+                if(!toPriv) return socket.emit("error", "priv not found");
+                if(toPriv.blocked) return socket.emit("error", "blocked");
 
                 let p1 = socket.user._id;
                 let p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
-                await global.db.mess.checkCollection(to);
+                global.db.mess.checkCollection(to);
             }else{
-                if(!chatMgmt.chatExsists(to)) return socket.emit("error", "chat is not exists - getMess");
+                if(!chatMgmt.chatExsists(to)) return socket.emit("error", "chat is not exists");
             }
 
-            if(!friendChat){
+            if(!privChat){
                 const perm = await getChnlPerm(socket.user._id, to, chnl); 
-                if(!perm.visable) return socket.emit("error", "channel is not exists - getMess");
-                if(!perm.text) return socket.emit("error", "not perm to write - getMess");
+                if(!perm.visable) return socket.emit("error", "channel is not exists");
+                if(!perm.text) return socket.emit("error", "not perm to write");
             }
     
             let message = msg.trim();
-            if(msg.length > 500) return socket.emit("error", "msg is too long - getMess");
+            if(msg.length > 500) return socket.emit("error", "msg is too long");
             
             let data = {
                 fr: socket.user._id,
@@ -61,7 +66,7 @@ module.exports = (socket) => {
     
             let _id = await global.db.mess.add(to, data);
     
-            if(!friendChat) data.to = to;
+            if(!privChat) data.to = to;
             else data.to = "$"+socket.user._id;
             
             data._id = _id._id;
@@ -77,7 +82,7 @@ module.exports = (socket) => {
                 res: data.res || undefined,
             });
     
-            if(!friendChat){
+            if(!privChat){
                 data.toM = to;
                 let chat = await global.db.usersPerms.find(to, r => r.uid);
                 const server = (await global.db.groupSettings.findOne(to, { _id: "set"}));
@@ -99,8 +104,6 @@ module.exports = (socket) => {
                 })
             }else{
                 let toSend = req.to.replace("$","");
-                // const blocked = (await global.db.userDatas.findOne(toSend, { priv: socket.user._id })).block == true;
-                // if(blocked) return;
 
                 data.toM = socket.user._id;
                 sendToSocket(toSend, "mess", data);
