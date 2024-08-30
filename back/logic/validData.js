@@ -94,6 +94,19 @@ module.exports = {
     },
 
     /**
+     * Check if a value is a valid id or is included in a list of specific strings.
+     *
+     * @function
+     * @param {string} data - The value to validate.
+     * @param {string[]} strs - List of specific strings that are allowed.
+     * @returns {boolean} True if the value is a valid id or is included in the list of specific strings, false otherwise.
+     */
+    idOrSpecyficStr(data, strs=[]){
+        if(this.id(data)) return true;
+        return strs.includes(data);
+    },
+
+    /**
      * Check if a value is a boolean.
      *
      * @function
