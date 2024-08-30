@@ -24,7 +24,7 @@ module.exports = (socket) => {
             if(!to || !msg || !chnl) return socket.emit("error", "to & msg & chnl is required");
     
             if(
-                !valid.id(to) || !valid.id(chnl) || !valid.str(msg, 0, 2000) || !msg
+                !valid.id(to) || !valid.idOrSpecyficStr(chnl, ["main"]) || !valid.str(msg, 0, 2000) || !msg
             ){
                 return socket.emit("error", "valid data");
             }
@@ -196,7 +196,7 @@ module.exports = (socket) => {
 
             if(
                 !valid.id(to) ||
-                !valid.id(chnl) ||
+                !valid.idOrSpecyficStr(chnl, ["main"]) ||
                 !valid.num(start, 0) ||
                 !valid.num(end, 0)
             ){
@@ -227,7 +227,11 @@ module.exports = (socket) => {
     socket.ontimeout("message.markAsRead", 100, async (to, chnl, mess_id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(to) || !valid.id(chnl) || (!valid.id(mess_id) && mess_id != "last")) return socket.emit("error", "valid data");
+            if(
+                !valid.id(to) ||
+                !valid.idOrSpecyficStr(chnl, ["main"]) ||
+                !valid.idOrSpecyficStr(mess_id, ["last"])
+            ) return socket.emit("error", "valid data");
 
             // const chat = await global.db.mess.findOne(to, { chnl });
             // if(!chat) return socket.emit("error", "chat does not exist");
