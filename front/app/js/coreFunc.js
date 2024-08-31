@@ -15,6 +15,7 @@ const coreFunc = {
             navs__main.style.display = "block";
             navs__groups.style.display = "none";
             navs__main__call.style.display = "none";
+            messages_nav.style.display = "none";
             mainViewDiv.style.display = "";
             messagesDiv.style.display = "none";
             mainView.show();
@@ -30,6 +31,7 @@ const coreFunc = {
 
         barDiv.style.display = "block";
         messagesDiv.style.display = "";
+        messages_nav.style.display = "";
         mainViewDiv.style.display = "none";
         vars.chat.to = id;
         vars.chat.actMess = 0;
@@ -46,10 +48,14 @@ const coreFunc = {
             messInput.placeholder = translateFunc.get("Write message here") + "...";
             messInput.disabled = false;
             navs__main__call.style.display = "";
+            messages_nav_priv.style.display = "";
+            messages_nav_server.style.display = "none";
         }else{
             document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeChat(id);
             navs__main.style.display = "none";
             navs__groups.style.display = "block";
+            messages_nav_priv.style.display = "none";
+            messages_nav_server.style.display = "";
             vars.chat.chnl = null;
             socket.emit("server.setup", id);
             socket.emit("server.roles.sync", id);

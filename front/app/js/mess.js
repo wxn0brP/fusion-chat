@@ -5,6 +5,9 @@ const editCloseDiv = document.querySelector("#editClose");
 const sendBtn = document.querySelector("#barc__sendBtn");
 const emocjiDiv = document.querySelector("#emocjiDiv");
 const linkClickDiv = document.querySelector("#linkClick");
+const messages_nav = document.querySelector("#messages_nav");
+const messages_nav_priv = document.querySelector("#messages_nav__priv");
+const messages_nav_server = document.querySelector("#messages_nav__server");
 
 const maxMessLen = 2000; 
 const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
@@ -199,6 +202,13 @@ const messFunc = {
 
             fileFunc.read(opt);
         }
+    },
+
+    async search(){
+        const text = await uiFunc.prompt(translateFunc.get("Search"));
+        if(!text) return;
+        
+        socket.emit("message.search", vars.chat.to, vars.chat.chnl, text);
     }
 }
 
