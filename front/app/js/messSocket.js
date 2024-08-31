@@ -89,7 +89,7 @@ socket.on("message.edit", (id, msg, time) => {
     if(!messageDiv) return;
     messageDiv.setAttribute("_plain", msg);
     format.formatMess(msg, messageDiv);
-    messageDiv.innerHTML += editMessText.replace("$$", coreFunc.formatDateFormUnux(parseInt(time, 36)));
+    messageDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnux(parseInt(time, 36)));
 
     const responeMessages = document.querySelectorAll(`[resMsgID=${id}] .res_msg`);
     responeMessages.forEach(mess => {

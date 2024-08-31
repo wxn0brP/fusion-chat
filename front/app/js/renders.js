@@ -50,7 +50,7 @@ const renderFunc = {
             const l = vars.lastMess[id]["main"];
             if(
                 l.read != null && l.mess != null &&
-                renderUtils.changeIdToTime(l.read) < renderUtils.changeIdToTime(l.mess)
+                utils.extractTimeFromId(l.read) < utils.extractTimeFromId(l.mess)
             ){
                 cl.add("unreadPriv");
             }else{
@@ -280,19 +280,13 @@ const renderFunc = {
 }
 
 const renderUtils = {
-    changeIdToTime(id){
-        if(!id) return null;
-        const timePart = id.split("-")[0];
-        return parseInt(timePart, 36);
-    },
-
     getLastFromChat(obj){
         let latestTime = null;
       
         for(let key in obj){
             if(!obj.hasOwnProperty(key)) continue;
             const id = obj[key];
-            const time = this.changeIdToTime(id);
+            const time = utils.extractTimeFromId(id);
     
             if(time !== null && (latestTime === null || time > latestTime)) latestTime = time;
         }
@@ -306,7 +300,7 @@ const renderUtils = {
             const la = vars.lastMess[a]["main"];
             const lb = vars.lastMess[b]["main"];
 
-            return this.changeIdToTime(lb.mess) - this.changeIdToTime(la.mess);
+            return utils.extractTimeFromId(lb.mess) - utils.extractTimeFromId(la.mess);
         });
 
         return sortedData;
