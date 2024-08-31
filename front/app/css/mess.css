@@ -90,16 +90,26 @@ main{
     background-color: var(--menu);
 }
 
-.mess_message .mess_from div{
+.mess_message .mess_meta div{
     margin-top: -37px;
     margin-bottom: 2px;
     margin-left: 35px;
     font-weight: bold;
+}
+
+.mess_message .mess_meta .mess_author_name{
     cursor: pointer;
 }
 
-.mess_message .mess_from div:hover{
+.mess_message .mess_meta .mess_author_name:hover{
     text-decoration: underline;
+}
+
+.mess_message .mess_time{
+    color: var(--txt);
+    font-size: 0.7rem;
+    font-weight: normal;
+    margin-left: 5px;
 }
 
 .mess_message img{

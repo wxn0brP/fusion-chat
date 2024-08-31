@@ -121,20 +121,7 @@ const coreFunc = {
         }, 300);
     },
 
-    formatDateFormUnux(unixTimestamp){
-        const date = new Date(unixTimestamp * 1000);
-
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-
-        const formattedDate = `${day}.${month}.${year} ${hours}:${(minutes < 10 ? '0' : '')}${minutes}`;
-        return formattedDate;
-    },
-
-    markSelectedChat(id){
+    markSelectedChat(){
         document.querySelectorAll(".priv_chat").forEach((ele) => {
             ele.classList.remove("priv_chatActive")
         });
