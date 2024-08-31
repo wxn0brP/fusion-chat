@@ -126,9 +126,9 @@ module.exports = (socket) => {
             if(!valid.id(_id)) return socket.emit("error.valid", "message.edit", "_id");
             if(!valid.str(msg, 0, 500)) return socket.emit("error.valid", "message.edit", "msg");
 
-            const friendChat = toM.startsWith("$");
+            const privChat = toM.startsWith("$");
             let to = toM;
-            if(friendChat){
+            if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
@@ -145,7 +145,7 @@ module.exports = (socket) => {
             const time = global.getTime();
             await global.db.mess.updateOne(to, { _id }, { msg, lastEdit: time });
 
-            if(friendChat){
+            if(privChat){
                 sendToSocket(socket.user._id,       "message.edit", _id, msg, time);
                 sendToSocket(toM.replace("$", ""),  "message.edit", _id, msg, time);
             }else{
@@ -163,9 +163,9 @@ module.exports = (socket) => {
             if(!valid.id(toM)) return socket.emit("error.valid", "message.delete", "toM");
             if(!valid.id(_id)) return socket.emit("error.valid", "message.delete", "_id");
 
-            const friendChat = toM.startsWith("$");
+            const privChat = toM.startsWith("$");
             let to = toM;
-            if(friendChat){
+            if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
@@ -183,7 +183,7 @@ module.exports = (socket) => {
             }
 
             await global.db.mess.removeOne(to, { _id });
-            if(friendChat){
+            if(privChat){
                 sendToSocket(socket.user._id,       "message.delete", _id);
                 sendToSocket(toM.replace("$", ""),  "message.delete", _id);
             }else{
@@ -203,14 +203,14 @@ module.exports = (socket) => {
             if(!valid.num(start, 0))                    return socket.emit("error.valid", "message.fetch", "start");
             if(!valid.num(end, 0))                      return socket.emit("error.valid", "message.fetch", "end");
 
-            let friendChat = to.startsWith("$");
-            if(friendChat){
+            let privChat = to.startsWith("$");
+            if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
             }
 
-            if(!friendChat){
+            if(!privChat){
                 const perm = await getChnlPerm(socket.user._id, to, chnl);
                 if(!perm.visable) return socket.emit("error", "channel is not exist");
             }
@@ -301,6 +301,31 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
+
+    socket.ontimeout("message.search", 1000, async (server, chnl, search) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(server)) return socket.emit("error.valid", "message.search", "server");
+            if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.search", "chnl");
+            if(!valid.str(search, 0, 100)) return socket.emit("error.valid", "message.search", "search");
+
+            const priv = server.startsWith("$");
+            if(priv){
+                const p1 = socket.user._id;
+                const p2 = server.replace("$", "");
+                server = chatMgmt.combinateId(p1, p2);
+            }
+
+            const results = await global.db.mess.find(server, (data) => {
+                if(data.chnl != chnl) return false;
+                return data.msg.includes(search);
+            });
+
+            socket.emit("message.search", results);
+        }catch(e){
+            socket.logError(e);
+        }
+    })
 }
 
 global.getChnlPerm = async function(user, server, chnl){
