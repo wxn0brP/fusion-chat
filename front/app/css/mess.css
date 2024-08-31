@@ -218,6 +218,20 @@ main{
 
 #barc__commads ul li{
     margin-left: 1rem;
+    margin-bottom: 5px;
+}
+
+#barc__commads ul li :where(input, select){
+    background-color: var(--menu);
+    color: var(--txt);
+    border: 2px solid var(--accent);
+    border-bottom: 1px solid var(--txt);
+    padding: 3px;
+    border-radius: 5px;
+}
+
+#barc__commads ul li :where(input, select):focus{
+    outline: none;
 }
 
 @media screen and (max-width: 800px){

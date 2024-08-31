@@ -25,7 +25,6 @@ const messCmds = {
 
                 args.splice(0, 1);
                 msg.msg = args.join(" ");
-                lo(msg)
             }
         }
     }
@@ -109,7 +108,6 @@ const messCmd = {
 
     send(data){
         if(!this.selectedCmd) return;
-        lo(this.selectedCmd)
 
         const args = data.msg.split(" ");
         args.splice(0, 1);
@@ -139,7 +137,7 @@ const messCmdArgs = {
         argDefs.forEach((arg, index) => {
             const value = inputs[index];
             if(value === undefined || value.trim() === ""){
-                validationResults.push(0);
+                validationResults.push(arg.optional ? 1 : 0);
             }else if(arg.type === "boolean"){
                 validationResults.push(value === "true" || value === "false" ? 1 : 2);
             }else if(arg.type === "number"){
@@ -168,32 +166,88 @@ const messCmdArgs = {
         });
     },
 
+    changeArgInMessInput(index, value){ 
+        const messVal = messInput.value.split(" ");
+        if(messVal.length <= index + 1){
+            for(let i=messVal.length; i<=index+1; i++) messVal.push(" ");
+        }
+        messVal[index + 1] = value;
+        messInput.value = messVal.join(" ");
+    },
+
     handleCommandInput(container, cmdName, commandObj){
         const categoryDiv = document.createElement("div");
         categoryDiv.innerHTML = "<h2>" + translateFunc.get("Command Input") + "</h2>";
 
         const ul = document.createElement("ul");
-        categoryDiv.appendChild(ul);
 
         const cmdArgs = commandObj.args;
+        const _this = this;
+        const commandValue = messInput.value.split(" ");
+
+        function validateArgs(){
+            const inputValue = messInput.value;
+            const validationResults = messCmdArgs.validateArgs(inputValue, cmdArgs);
+            messCmdArgs.updateArgColors(argsList, validationResults);
+            return validationResults;
+        }
 
         const argsList = document.createElement("ul");
-        cmdArgs.forEach(arg => {
+        cmdArgs.forEach((arg, index) => {
             const argItem = document.createElement("li");
             argItem.innerHTML = arg.name;
             let typeDesc = "";
+            let ele;
             switch(arg.type){
                 case "boolean":
                     typeDesc = "true/false";
+                    ele = document.createElement("select");
+                    ["true", "false"].forEach((opt) => {
+                        const option = document.createElement("option");
+                        option.value = opt;
+                        option.text = opt;
+                        ele.appendChild(option);
+                    });
+
+                    try{
+                        const val = commandValue[index + 1];
+                        if(val) ele.value = val ? "true" : "false";
+                    }catch{}
+
+                    ele.addEventListener("change", () => {
+                        _this.changeArgInMessInput(index, ele.value);
+                        validateArgs();
+                    });
                 break;
                 case "number":
                     typeDesc = "number";
+                    ele = document.createElement("input");
+                    ele.type = "number";
+                    try{
+                        const val = commandValue[index + 1];
+                        if(val) ele.value = parseInt(val);
+                    }catch{}
+                    ele.addEventListener("input", () => {
+                        _this.changeArgInMessInput(index, ele.value);
+                        validateArgs();
+                    });
                 break;
                 case "text":
                     typeDesc = "text";
+                    ele = document.createElement("input");
+                    ele.type = "text";
+                    try{
+                        const val = commandValue[index + 1];
+                        if(val) ele.value = val;
+                    }catch{}
+                    ele.addEventListener("input", () => {
+                        _this.changeArgInMessInput(index, ele.value.replaceAll(" ", "-"));
+                        validateArgs();
+                    });
                 break;
             }
-            argItem.innerHTML += ` (${typeDesc})`;
+            argItem.innerHTML += ` (${typeDesc}) &nbsp;`;
+            if(ele) argItem.appendChild(ele);
             argItem.style.color = "red";
             argsList.appendChild(argItem);
         });
@@ -201,6 +255,16 @@ const messCmdArgs = {
         ul.appendChild(argsList);
 
         function handleInput(){
+            const commandValue = messInput.value.split(" ");
+            cmdArgs.forEach((arg, index) => {
+                let val = commandValue[index + 1];
+                if(val == undefined) return;
+                if(arg.type === "boolean"){
+                    val = val === "true";
+                }
+                argsList.children[index].children[0].value = val;
+            });
+
             const inputValue = messInput.value;
 
             if(inputValue.length == 0 || !inputValue.startsWith("/"+cmdName)){
@@ -211,8 +275,7 @@ const messCmdArgs = {
                 return;
             }
 
-            const validationResults = messCmdArgs.validateArgs(inputValue, cmdArgs);
-            messCmdArgs.updateArgColors(argsList, validationResults);
+            const validationResults = validateArgs();
 
             const allValid = validationResults.every(result => result === 1);
 
@@ -232,6 +295,7 @@ const messCmdArgs = {
         handleInput();
         messCmd.handleInput = handleInput;
 
+        categoryDiv.appendChild(ul);
         container.innerHTML = "";
         container.appendChild(categoryDiv);
     }
