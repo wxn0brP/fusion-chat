@@ -94,7 +94,7 @@ module.exports = (socket) => {
                 data.toM = to;
                 let chat = await global.db.usersPerms.find(to, r => r.uid);
                 const server = (await global.db.groupSettings.findOne(to, { _id: "set"}));
-                const fromMsg = "(S) " + server.name;
+                const fromMsg = `${server.name} @${socket.user.name}`;
 
                 chat.forEach(async u => {
                     u = u.uid;
