@@ -1,31 +1,42 @@
 const barc__commads = document.querySelector("#barc__commads");
 barc__commads.style.display = "none";
 
-messInput.addEventListener("input", () => messCmd.check(messInput.value));
-
 const messCmds = {
     system: {
         silent: {
             args: [
-                {
-                    name: "silent",
-                    type: "boolean"
-                },
-                {
-                    name: "message",
-                    type: "text"
-                }
+                { name: "silent", type: "boolean" },
+                { name: "message", type: "text" }
             ],
             exe(msg, args){
-                if(args.length == 0) return;
+                if(args.length == 0) return 1;
+                if(args[0]) msg.silent = true;
+                msg.msg = args[1];
+            }
+        },
+        search: {
+            args: [
+                { name: "from", type: "text", optional: true },
+                { name: "mentions", type: "text", optional: true },
+                { name: "before", type: "date", optional: true },
+                { name: "during", type: "date", optional: true },
+                { name: "after", type: "date", optional: true },
+                { name: "pinned", type: "boolean", optional: true },
+                { name: "message", type: "text", optional: true }
+            ],
+            exe(msg, args){
+                if(args.length == 0) return 1;
+                const query = {};
+                query.from = args[0];
+                query.mentions = args[1];
+                query.before = args[2];
+                query.during = args[3];
+                query.after = args[4];
+                query.pinned = args[5];
+                query.message = args[6];
 
-                if(args[0] == "true"){
-                    msg.silent = true;
-                }
-
-                args.splice(0, 1);
-                msg.msg = args.join(" ");
-                lo(msg)
+                socket.emit("message.search", vars.chat.to, vars.chat.chnl, query);
+                return 1;
             }
         }
     }
@@ -33,10 +44,11 @@ const messCmds = {
 
 const messCmd = {
     selectedCmd: null,
-    handleInput: null,
+    temp: [],
 
-    check(msg){
+    check(){
         if(this.selectedCmd) return;
+        let msg = messInput.value;
 
         if(!msg.startsWith("/") && msg != "/"){
             barc__commads.style.display = "none";
@@ -70,10 +82,6 @@ const messCmd = {
             return;
         }
 
-        if(allCmds.length == 1 && this.selectedCmd){
-            return;
-        }
-
         this.selectedCmd = null;
         Object.keys(avelibleCmds).forEach(category => {
             const categoryDiv = document.createElement("div");
@@ -87,15 +95,15 @@ const messCmd = {
                 cmdLi.innerHTML = key;
                 cmdLi.style.cursor = "pointer";
                 cmdLi.addEventListener("click", () => {
-                    this.selectedCmd = avelibleCmds[category][key];
+                    messCmd.selectedCmd = avelibleCmds[category][key];
                     const args = msg.split(" ");
                     args[0] = "/" + key;
                     messInput.value = args.join(" ") + " ";
 
-                    messCmdArgs.handleCommandInput(
+                    messCmd.handleCommandInput(
                         barc__commads,
                         key,
-                        this.selectedCmd
+                        messCmd.selectedCmd
                     );
 
                     coreFunc.focusInp();
@@ -107,132 +115,175 @@ const messCmd = {
         });
     },
 
-    send(data){
-        if(!this.selectedCmd) return;
-        lo(this.selectedCmd)
-
-        const args = data.msg.split(" ");
-        args.splice(0, 1);
-
-        this.selectedCmd.exe(data, args);
-
+    close(){
         this.selectedCmd = null;
         barc__commads.style.display = "none";
-        if(this.handleInput){
-            messInput.removeEventListener("input", this.handleInput);
-            this.handleInput = null;
-        }
-    }
-}
-
-const messCmdArgs = {
-    validateArgs(input, argDefs){
-        const inputs = input.split(' ').slice(1);
-        const validationResults = [];
-
-        if(inputs.length < argDefs.length){
-            return argDefs.map((_, index) => 
-                inputs[index] === undefined || inputs[index].trim() === "" ? 0 : 2
-            );
-        }
-
-        argDefs.forEach((arg, index) => {
-            const value = inputs[index];
-            if(value === undefined || value.trim() === ""){
-                validationResults.push(0);
-            }else if(arg.type === "boolean"){
-                validationResults.push(value === "true" || value === "false" ? 1 : 2);
-            }else if(arg.type === "number"){
-                validationResults.push(!isNaN(value) ? 1 : 2);
-            }else if(arg.type === "text"){
-                validationResults.push(value.trim() !== "" ? 1 : 2);
-            }else{
-                validationResults.push(2);
-            }
-        });
-
-        return validationResults;
+        messInput.value = "";
+        messCmd.temp = [];
     },
 
-    updateArgColors(argsList, validationResults){
-        const argsArray = Array.from(argsList.children);
-        argsArray.forEach((li, index) => {
-            const result = validationResults[index];
-            if(result === 0){
-                li.style.color = "red";
-            }else if(result === 1){
-                li.style.color = "green";
-            }else if(result === 2) {
-                li.style.color = "yellow";
+    send(data){
+        if(!this.selectedCmd){
+            this.close();
+            return 0;
+        }
+        
+        const isValid = this.chceckArgs();
+        if(!isValid) return 2;
+
+        this.changeArgs();
+        const args = messCmd.temp;
+        const exitCode = this.selectedCmd.exe(data, args) || 0;
+        this.close();
+        
+        return exitCode;
+    },
+
+    chceckArgs(){
+        const argsVal = messCmd.temp;
+        const argsObj = this.selectedCmd.args;
+
+        for(let i=0; i<argsObj.length; i++){
+            const arg = argsObj[i];
+            const val = argsVal[i];
+
+            if(!val || val.trim() == ""){
+                if(arg.optional) continue;
+                return false;
             }
-        });
+
+            if(arg.type == "boolean" && val != "true" && val != "false") return false;
+            else if(arg.type == "number" && isNaN(val)) return false;
+            else if(arg.type == "text" && val.trim() == "") return false;
+            else if((arg.type == "date" || arg.type == "date-time") && isNaN(Date.parse(val))) return false;
+            else if(arg.type == "time"){
+                const [h, m] = val.split(":");
+                if(isNaN(h) || isNaN(m)) return false;
+            }
+            else if(arg.type == "list" && !arg.list.includes(val)) return false;
+        }
+        return true;
+    },
+
+    changeArgs(){
+        const argsVal = messCmd.temp;
+        const argsObj = this.selectedCmd.args;
+
+        for(let i=0; i<argsObj.length; i++){
+            const arg = argsObj[i];
+            const val = argsVal[i];
+
+            if(!val || val.trim() == ""){
+                if(arg.optional) continue;
+                return false;
+            }
+
+            if(arg.type == "boolean") argsVal[i] = val == "true";
+            else if(arg.type == "number") argsVal[i] = Number(val);
+        }
     },
 
     handleCommandInput(container, cmdName, commandObj){
+        commandObj.name = cmdName;
         const categoryDiv = document.createElement("div");
-        categoryDiv.innerHTML = "<h2>" + translateFunc.get("Command Input") + "</h2>";
+        categoryDiv.innerHTML = "<h2>" + translateFunc.get("Command Input") + " (" + cmdName + ")</h2>";
 
         const ul = document.createElement("ul");
-        categoryDiv.appendChild(ul);
 
         const cmdArgs = commandObj.args;
+        messCmd.temp = new Array(cmdArgs.length);
 
         const argsList = document.createElement("ul");
-        cmdArgs.forEach(arg => {
+        cmdArgs.forEach((arg, index) => {
             const argItem = document.createElement("li");
             argItem.innerHTML = arg.name;
             let typeDesc = "";
+            let ele;
             switch(arg.type){
                 case "boolean":
                     typeDesc = "true/false";
+                    ele = document.createElement("select");
+                    ["false", "true"].forEach((opt) => {
+                        const option = document.createElement("option");
+                        option.value = opt;
+                        option.text = opt;
+                        ele.appendChild(option);
+                    });
+                    ele.value = "false";
+                    messCmd.temp[index] = "false";
+
+                    ele.addEventListener("change", () => {
+                        messCmd.temp[index] = ele.value === "true" ? "true" : "false";
+                    });
                 break;
                 case "number":
                     typeDesc = "number";
+                    ele = document.createElement("input");
+                    ele.type = "number";
+                    ele.addEventListener("input", () => {
+                        messCmd.temp[index] = ele.value;
+                    });
                 break;
                 case "text":
                     typeDesc = "text";
+                    ele = document.createElement("input");
+                    ele.type = "text";
+                    ele.addEventListener("input", () => {
+                        messCmd.temp[index] = ele.value;
+                    });
+                break;
+                case "date":
+                    typeDesc = "date";
+                    ele = document.createElement("input");
+                    ele.type = "date";
+                    ele.addEventListener("input", () => {
+                        messCmd.temp[index] = ele.value;
+                    });
+                break;
+                case "time":
+                    typeDesc = "time";
+                    ele = document.createElement("input");
+                    ele.type = "time";
+                    ele.addEventListener("input", () => {
+                        messCmd.temp[index] = ele.value;
+                    });
+                break;
+                case "date-time":
+                    typeDesc = "date-time";
+                    ele = document.createElement("input");
+                    ele.type = "datetime-local";
+                    ele.addEventListener("input", () => {
+                        messCmd.temp[index] = ele.value;
+                    });
+                break;
+                case "list":
+                    typeDesc = "list";
+                    ele = document.createElement("select");
+                    arg.list.forEach((opt) => {
+                        const option = document.createElement("option");
+                        option.value = opt;
+                        option.text = opt;
+                        ele.appendChild(option);
+                    });
+                    ele.value = arg.list[0];
+                    messCmd.temp[index] = arg.list[0];
+
+                    ele.addEventListener("change", () => {
+                        messCmd.temp[index] = ele.value;
+                    });
                 break;
             }
-            argItem.innerHTML += ` (${typeDesc})`;
-            argItem.style.color = "red";
+            argItem.innerHTML += ` (${typeDesc}) &nbsp;`;
+            if(ele) argItem.appendChild(ele);
             argsList.appendChild(argItem);
         });
 
         ul.appendChild(argsList);
 
-        function handleInput(){
-            const inputValue = messInput.value;
-
-            if(inputValue.length == 0 || !inputValue.startsWith("/"+cmdName)){
-                barc__commads.style.display = "none";
-                messCmd.selectedCmd = null;
-                messCmd.handleInput = null;
-                messInput.removeEventListener("input", handleInput);
-                return;
-            }
-
-            const validationResults = messCmdArgs.validateArgs(inputValue, cmdArgs);
-            messCmdArgs.updateArgColors(argsList, validationResults);
-
-            const allValid = validationResults.every(result => result === 1);
-
-            if(allValid && inputValue.endsWith(" ")){
-                messCmd.selectedCmd.ok = true;
-                barc__commads.style.display = "none";
-            }
-
-            if(messCmd.selectedCmd.ok && !allValid){
-                barc__commads.style.display = "";
-                messCmd.selectedCmd.ok = false;
-            }
-        }
-
-        messCmd.selectedCmd.ok = false;
-        messInput.addEventListener("input", handleInput);
-        handleInput();
-        messCmd.handleInput = handleInput;
-
+        categoryDiv.appendChild(ul);
         container.innerHTML = "";
         container.appendChild(categoryDiv);
     }
 };
+
+messInput.addEventListener("input", messCmd.check);

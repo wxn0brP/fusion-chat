@@ -5,6 +5,9 @@ const editCloseDiv = document.querySelector("#editClose");
 const sendBtn = document.querySelector("#barc__sendBtn");
 const emocjiDiv = document.querySelector("#emocjiDiv");
 const linkClickDiv = document.querySelector("#linkClick");
+const messages_nav = document.querySelector("#messages_nav");
+const messages_nav_priv = document.querySelector("#messages_nav__priv");
+const messages_nav_server = document.querySelector("#messages_nav__server");
 
 const maxMessLen = 2000; 
 const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
@@ -25,8 +28,8 @@ const messFunc = {
                 msg: mess,
                 res: vars.temp.replyId,
             }
-            messCmd.send(data);
-            socket.emit("mess", data);
+            const exitCode = messCmd.send(data);
+            if(exitCode == 0) socket.emit("mess", data);
         }else{
             socket.emit("message.edit", vars.chat.to, vars.temp.editId, mess);
             messFunc.editMessClose();
@@ -42,7 +45,11 @@ const messFunc = {
 
         /*
             .mess_message #mess__$id
-                .mess_from attr: _author
+                .mess_meta attr: _author
+                    img
+                    .mess_meta_text
+                        span.mess_author_name
+                        span.mess_time
                 .mess_content attr: _plain
         */
 
@@ -52,19 +59,30 @@ const messFunc = {
         if(data.res) messDiv.setAttribute("resMsgID", data.res);
 
         const fromDiv = document.createElement("div");
-        fromDiv.classList.add("mess_from");
+        fromDiv.classList.add("mess_meta");
         fromDiv.setAttribute("_author", data.fr);
 
         const fromDivImg = document.createElement("img");
         fromDivImg.src = "/profileImg?id=" + data.fr;
         fromDiv.appendChild(fromDivImg);
 
-        const fromDivSpan = document.createElement("div");
-        fromDivSpan.innerHTML = apis.www.changeUserID(data.fr);
-        fromDivSpan.addEventListener("click", () => {
+        const fromDivText = document.createElement("div");
+        fromDivText.classList.add("mess_meta_text");
+
+        const fromDivTextName = document.createElement("span");
+        fromDivTextName.innerHTML = apis.www.changeUserID(data.fr);
+        fromDivTextName.classList.add("mess_author_name");
+        fromDivTextName.addEventListener("click", () => {
             socket.emit("user.profile", data.fr);
         });
-        fromDiv.appendChild(fromDivSpan);
+        fromDivText.appendChild(fromDivTextName);
+
+        const timeDiv = document.createElement("span");
+        timeDiv.classList.add("mess_time");
+        timeDiv.innerHTML = utils.formatDateFormUnux(utils.extractTimeFromId(data._id));
+        fromDivText.appendChild(timeDiv);
+
+        fromDiv.appendChild(fromDivText);
         messDiv.appendChild(fromDiv);
 
         const messContentDiv = document.createElement("div");
@@ -73,7 +91,7 @@ const messFunc = {
         messContentDiv.setAttribute("_plain", data.msg);
         messDiv.appendChild(messContentDiv);
         if(data.e){
-            messContentDiv.innerHTML += editMessText.replace("$$", coreFunc.formatDateFormUnux(parseInt(data.e, 36)));
+            messContentDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnux(parseInt(data.e, 36)));
         }
 
         if(data.reacts){
@@ -108,6 +126,10 @@ const messFunc = {
         }, 100);
 
         contextMenu.menuClickEvent(messDiv, (e) => {
+            const isMessPinned = vars.chat.pinned.findIndex((m) => m._id == data._id) != -1;
+            document.querySelector("#mesage_context_menu__unpin").style.display = isMessPinned ? "" : "none";
+            document.querySelector("#mesage_context_menu__pin").style.display = isMessPinned ? "none" : "";
+            
             contextMenu.message(e, data._id);
         });
     },
@@ -199,7 +221,32 @@ const messFunc = {
 
             fileFunc.read(opt);
         }
-    }
+    },
+
+    search(){
+        messInput.value = "/search ";
+        messCmd.selectedCmd = messCmds.system.search;
+
+        const evt = new Event("input");
+        messInput.dispatchEvent(evt);
+
+        messCmd.handleCommandInput(
+            barc__commads,
+            "search",
+            messCmd.selectedCmd
+        );
+    },
+
+    displayPinned(){
+        messagesDiv.innerHTML = "<h2>" + translateFunc.get("Pinned messages") + "</h2>";
+        if(vars.chat.pinned.length == 0){
+            messagesDiv.innerHTML += translateFunc.get("No pinned messages");
+            return;
+        }
+        vars.chat.pinned.forEach((m) => {
+            messFunc.addMess(m);
+        });
+    },
 }
 
 messFunc.replyClose();

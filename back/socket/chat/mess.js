@@ -1,6 +1,11 @@
 const chatMgmt = require("../../logic/chatMgmt");
 const valid = require("../../logic/validData");
 const permissionSystem = require("../../logic/permission-system");
+const { extractTimeFromId } = require("../../logic/utils");
+
+const validShema = {
+    messageSearch: valid.objAjv(require("./valid/messageSearch")),
+};
 
 module.exports = (socket) => {
     socket.ontimeout("mess", 200,
@@ -20,14 +25,17 @@ module.exports = (socket) => {
     async (req) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
+            if(typeof req !== "object") return socket.emit("error.valid", "mess", "req");
             let { to, msg, chnl } = req;
-            if(!to || !msg || !chnl) return socket.emit("error", "to & msg & chnl is required");
     
-            if(
-                !valid.id(to) || !valid.idOrSpecyficStr(chnl, ["main"]) || !valid.str(msg, 0, 2000) || !msg
-            ){
-                return socket.emit("error", "valid data");
-            }
+            if(!valid.id(to))                           return socket.emit("error.valid", "mess", "to");
+            if(!valid.idOrSpecyficStr(chnl, ["main"]))  return socket.emit("error.valid", "mess", "chnl");
+            if(!valid.str(msg, 0, 2000))                return socket.emit("error.valid", "mess", "msg");
+
+            //optional
+            if(req.enc && !valid.str(req.enc, 0, 30))   return socket.emit("error.valid", "mess", "enc");
+            if(req.res && !valid.id(req.res))           return socket.emit("error.valid", "mess", "res");
+            if(req.silent && !valid.bool(req.silent))   return socket.emit("error.valid", "mess", "silent");
             
             let privChat = to.startsWith("$");
             if(privChat){
@@ -86,7 +94,7 @@ module.exports = (socket) => {
                 data.toM = to;
                 let chat = await global.db.usersPerms.find(to, r => r.uid);
                 const server = (await global.db.groupSettings.findOne(to, { _id: "set"}));
-                const fromMsg = "(S) " + server.name;
+                const fromMsg = `${server.name} @${socket.user.name}`;
 
                 chat.forEach(async u => {
                     u = u.uid;
@@ -119,13 +127,13 @@ module.exports = (socket) => {
     socket.ontimeout("message.edit", 1000, async (toM, _id, msg) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(toM) || !valid.id(_id) || !valid.str(msg, 0, 500)){
-                return socket.emit("error", "valid data");
-            }
+            if(!valid.id(toM)) return socket.emit("error.valid", "message.edit", "toM");
+            if(!valid.id(_id)) return socket.emit("error.valid", "message.edit", "_id");
+            if(!valid.str(msg, 0, 500)) return socket.emit("error.valid", "message.edit", "msg");
 
-            const friendChat = toM.startsWith("$");
+            const privChat = toM.startsWith("$");
             let to = toM;
-            if(friendChat){
+            if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
@@ -142,7 +150,7 @@ module.exports = (socket) => {
             const time = global.getTime();
             await global.db.mess.updateOne(to, { _id }, { msg, lastEdit: time });
 
-            if(friendChat){
+            if(privChat){
                 sendToSocket(socket.user._id,       "message.edit", _id, msg, time);
                 sendToSocket(toM.replace("$", ""),  "message.edit", _id, msg, time);
             }else{
@@ -157,11 +165,12 @@ module.exports = (socket) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             
-            if(!valid.id(toM) || !valid.id(_id)) return socket.emit("error", "valid data");
+            if(!valid.id(toM)) return socket.emit("error.valid", "message.delete", "toM");
+            if(!valid.id(_id)) return socket.emit("error.valid", "message.delete", "_id");
 
-            const friendChat = toM.startsWith("$");
+            const privChat = toM.startsWith("$");
             let to = toM;
-            if(friendChat){
+            if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
@@ -179,7 +188,7 @@ module.exports = (socket) => {
             }
 
             await global.db.mess.removeOne(to, { _id });
-            if(friendChat){
+            if(privChat){
                 sendToSocket(socket.user._id,       "message.delete", _id);
                 sendToSocket(toM.replace("$", ""),  "message.delete", _id);
             }else{
@@ -194,23 +203,19 @@ module.exports = (socket) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
 
-            if(
-                !valid.id(to) ||
-                !valid.idOrSpecyficStr(chnl, ["main"]) ||
-                !valid.num(start, 0) ||
-                !valid.num(end, 0)
-            ){
-                return socket.emit("error", "valid data");
-            }
+            if(!valid.id(to))                           return socket.emit("error.valid", "message.fetch", "to");
+            if(!valid.idOrSpecyficStr(chnl, ["main"]))  return socket.emit("error.valid", "message.fetch", "chnl");
+            if(!valid.num(start, 0))                    return socket.emit("error.valid", "message.fetch", "start");
+            if(!valid.num(end, 0))                      return socket.emit("error.valid", "message.fetch", "end");
 
-            let friendChat = to.startsWith("$");
-            if(friendChat){
+            let privChat = to.startsWith("$");
+            if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
                 to = chatMgmt.combinateId(p1, p2);
             }
 
-            if(!friendChat){
+            if(!privChat){
                 const perm = await getChnlPerm(socket.user._id, to, chnl);
                 if(!perm.visable) return socket.emit("error", "channel is not exist");
             }
@@ -227,14 +232,10 @@ module.exports = (socket) => {
     socket.ontimeout("message.markAsRead", 100, async (to, chnl, mess_id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(
-                !valid.id(to) ||
-                !valid.idOrSpecyficStr(chnl, ["main"]) ||
-                !valid.idOrSpecyficStr(mess_id, ["last"])
-            ) return socket.emit("error", "valid data");
 
-            // const chat = await global.db.mess.findOne(to, { chnl });
-            // if(!chat) return socket.emit("error", "chat does not exist");
+            if(!valid.id(to)) return socket.emit("error.valid", "message.markAsRead", "to");
+            if(!valid.idOrSpecyficStr(chnl, ["main"]))      return socket.emit("error.valid", "message.markAsRead", "chnl");
+            if(!valid.idOrSpecyficStr(mess_id, ["last"]))   return socket.emit("error.valid", "message.markAsRead", "mess_id");
 
             const firendChat = to.startsWith("$");
             
@@ -269,7 +270,10 @@ module.exports = (socket) => {
     socket.ontimeout("message.react", 100, async (server, msgId, react) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(server.replace("$", "")) || !valid.id(msgId) || !valid.str(react, 0, 30)) return socket.emit("error", "valid data");
+            
+            if(!valid.id(server.replace("$", ""))) return socket.emit("error.valid", "message.react", "server");
+            if(!valid.id(msgId)) return socket.emit("error.valid", "message.react", "msgId");
+            if(!valid.str(react, 0, 30)) return socket.emit("error.valid", "message.react", "react");
         
             let toM = server;
             if(server.startsWith("$")){
@@ -302,6 +306,90 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
+
+    socket.ontimeout("message.search", 1000, async (server, chnl, query) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(server)) return socket.emit("error.valid", "message.search", "server");
+            if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.search", "chnl");
+            if(!validShema.messageSearch(query))
+                return socket.emit("error.valid", "message.search", "search", validShema.messageSearch.errors);
+
+            const priv = server.startsWith("$");
+            if(priv){
+                const p1 = socket.user._id;
+                const p2 = server.replace("$", "");
+                server = chatMgmt.combinateId(p1, p2);
+            }
+
+            const results = await global.db.mess.find(server, (data) => {
+                if(data.chnl != chnl) return false;
+                return filterMessages(query, data);
+            });
+
+            socket.emit("message.search", results);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("message.pin", 1000, async (server, chnl, msgId, pin) => {
+       try{
+           if(!socket.user) return socket.emit("error", "not auth");
+           if(!valid.id(server)) return socket.emit("error.valid", "message.pin", "server");
+           if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.pin", "chnl");
+           if(!valid.id(msgId)) return socket.emit("error.valid", "message.pin", "msgId");
+           if(!valid.bool(pin)) return socket.emit("error.valid", "message.pin", "pin");
+           
+           const priv = server.startsWith("$");
+           let chat = server;
+           if(priv){
+               const p1 = socket.user._id;
+               const p2 = server.replace("$", "");
+               chat = chatMgmt.combinateId(p1, p2);
+           }
+
+           await global.db.mess.updateOne(chat, { _id: msgId }, { pinned: pin });
+           const refreshData = {
+               evt: "message.fetch.pinned",
+               server,
+               chnl,
+           }
+
+           if(priv){
+               global.sendToSocket(socket.user._id, "refreshData", refreshData, server, chnl);
+               global.sendToSocket(server.replace("$", ""), "refreshData", refreshData, "$"+socket.user._id, chnl);
+           }else{
+               global.sendToChatUsers(server, "refreshData", refreshData, server, chnl);
+           }
+       }catch(e){
+           socket.logError(e);
+       }
+    });
+
+    socket.ontimeout("message.fetch.pinned", 1000, async (server, chnl) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(server)) return socket.emit("error.valid", "message.get.pinned", "server");
+            if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.get.pinned", "chnl");
+            
+            const priv = server.startsWith("$");
+            if(priv){
+                const p1 = socket.user._id;
+                const p2 = server.replace("$", "");
+                server = chatMgmt.combinateId(p1, p2);
+            }
+
+            const results = await global.db.mess.find(server, (data) => {
+                if(data.chnl != chnl) return false;
+                return data.pinned === true;
+            });
+
+            socket.emit("message.fetch.pinned", results);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
 }
 
 global.getChnlPerm = async function(user, server, chnl){
@@ -330,4 +418,23 @@ global.getChnlPerm = async function(user, server, chnl){
         visable,
         text
     };
+}
+
+function filterMessages(query, mess){
+    const time = extractTimeFromId(mess._id) * 1000;
+
+    if(query.from && mess.fr !== query.from) return false;
+    if(query.mentions && !mess.msg.includes(`@${query.mentions}`)) return false;
+
+    if(query.before && time >= new Date(query.before).getTime()) return false;
+    if(query.during){
+        const startOfDay = new Date(query.during).setHours(0, 0, 0, 0);
+        const endOfDay = new Date(query.during).setHours(23, 59, 59, 999);
+        if(time < startOfDay || time > endOfDay) return false;
+    }
+    if(query.after && time <= new Date(query.after).getTime()) return false;
+    if(query.pinned !== undefined && query.pinned !== (mess.pinned === true)) return false;
+    if(query.message && !mess.msg.includes(query.message)) return false;
+
+    return true;
 }

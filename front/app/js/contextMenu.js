@@ -86,6 +86,12 @@ const contextFunc = {
                     socket.emit("message.react", vars.chat.to, id, e);
                 });
             break;
+            case "pin":
+                socket.emit("message.pin", vars.chat.to, vars.chat.chnl, id, true);
+            break;
+            case "unpin":
+                socket.emit("message.pin", vars.chat.to, vars.chat.chnl, id, false);
+            break;
         }
     },
 

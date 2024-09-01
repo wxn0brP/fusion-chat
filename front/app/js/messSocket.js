@@ -89,7 +89,7 @@ socket.on("message.edit", (id, msg, time) => {
     if(!messageDiv) return;
     messageDiv.setAttribute("_plain", msg);
     format.formatMess(msg, messageDiv);
-    messageDiv.innerHTML += editMessText.replace("$$", coreFunc.formatDateFormUnux(parseInt(time, 36)));
+    messageDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnux(parseInt(time, 36)));
 
     const responeMessages = document.querySelectorAll(`[resMsgID=${id}] .res_msg`);
     responeMessages.forEach(mess => {
@@ -128,4 +128,20 @@ socket.on("message.react", (uid, server, messId, react) => {
 
     reactSpan.setAttribute("_users", users.join(","));
     messStyle.styleMessReacts(mess.querySelector(".mess_reacts"));
+});
+
+socket.on("message.search", (data) => {
+    messagesDiv.innerHTML = "<h2>"+translateFunc.get("Search result")+":</h2>";
+    if(data.length == 0){
+        messagesDiv.innerHTML += "No result found";
+        return;
+    }
+
+    data.forEach((mess) => {
+        messFunc.addMess(mess, false);
+    });
+});
+
+socket.on("message.fetch.pinned", (data) => {
+    vars.chat.pinned = data;
 });

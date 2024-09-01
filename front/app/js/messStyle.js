@@ -17,22 +17,24 @@ const messStyle = {
     hideFromMessageInfo(){
         function getTimeFromMess(mess){
             const id = mess.id.replace("mess__", "");
-            return parseInt(id.split("-")[0], 36);
+            return utils.extractTimeFromId(id);
         }
 
-        const delayTime = 20 * 1000; // 20 seconds
+        const delayTime = 20; // seconds
         const messages = document.querySelectorAll(".mess_message");
         for(let i=1; i<messages.length; i++){
             const message = messages[i];
             const messageBefore = messages[i-1];
 
-            const messageFrom = message.querySelector(".mess_from");
-            const messageBeforeFrom = messageBefore.querySelector(".mess_from");
-            if(messageFrom.innerText != messageBeforeFrom.innerText) continue;
+            const messageFrom_author = message.querySelector(".mess_meta").getAttribute("_author");
+            const messageBeforeFrom_author = messageBefore.querySelector(".mess_meta").getAttribute("_author");
+            if(messageFrom_author != messageBeforeFrom_author) continue;
 
             const time = getTimeFromMess(message);
             const timeBefore = getTimeFromMess(messageBefore);
-            messageFrom.style.display = time - timeBefore < delayTime ? "none" : "block";
+
+            const messageFromText = message.querySelector(".mess_meta");
+            messageFromText.style.display = time - timeBefore < delayTime ? "none" : "";
         }
     },
 
@@ -43,7 +45,7 @@ const messStyle = {
         const userColor = new Map();
 
         messages.forEach(mess => {
-            const author = mess.querySelector(".mess_from").getAttribute("_author");
+            const author = mess.querySelector(".mess_meta").getAttribute("_author");
 
             if(userColor.has(author)){
                 messStyle.colorRoleMess(mess, userColor.get(author));
@@ -68,7 +70,7 @@ const messStyle = {
     },
 
     colorRoleMess(mess, color){
-        mess.querySelector(".mess_from > div").style.color = color;
+        mess.querySelector(".mess_author_name").style.color = color;
     },
 
     styleMessReacts(reactsDiv){

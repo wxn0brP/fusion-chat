@@ -15,6 +15,7 @@ const coreFunc = {
             navs__main.style.display = "block";
             navs__groups.style.display = "none";
             navs__main__call.style.display = "none";
+            messages_nav.style.display = "none";
             mainViewDiv.style.display = "";
             messagesDiv.style.display = "none";
             mainView.show();
@@ -30,6 +31,7 @@ const coreFunc = {
 
         barDiv.style.display = "block";
         messagesDiv.style.display = "";
+        messages_nav.style.display = "";
         mainViewDiv.style.display = "none";
         vars.chat.to = id;
         vars.chat.actMess = 0;
@@ -40,16 +42,21 @@ const coreFunc = {
             navs__groups.style.display = "none";
             vars.chat.chnl = "main";
             coreFunc.loadChat();
+            socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
             vars.servers.users = [];
             vars.servers.roles = [];
             vars.servers.text = [];
             messInput.placeholder = translateFunc.get("Write message here") + "...";
             messInput.disabled = false;
             navs__main__call.style.display = "";
+            messages_nav_priv.style.display = "";
+            messages_nav_server.style.display = "none";
         }else{
             document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeChat(id);
             navs__main.style.display = "none";
             navs__groups.style.display = "block";
+            messages_nav_priv.style.display = "none";
+            messages_nav_server.style.display = "";
             vars.chat.chnl = null;
             socket.emit("server.setup", id);
             socket.emit("server.roles.sync", id);
@@ -66,6 +73,7 @@ const coreFunc = {
         document.querySelector("#channel_"+id).classList.add("channel_textActive");
         
         coreFunc.loadChat();
+        socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
 
         const isText = vars.servers.text.includes(id);
         if(isText){
@@ -115,20 +123,7 @@ const coreFunc = {
         }, 300);
     },
 
-    formatDateFormUnux(unixTimestamp){
-        const date = new Date(unixTimestamp * 1000);
-
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-
-        const formattedDate = `${day}.${month}.${year} ${hours}:${(minutes < 10 ? '0' : '')}${minutes}`;
-        return formattedDate;
-    },
-
-    markSelectedChat(id){
+    markSelectedChat(){
         document.querySelectorAll(".priv_chat").forEach((ele) => {
             ele.classList.remove("priv_chatActive")
         });

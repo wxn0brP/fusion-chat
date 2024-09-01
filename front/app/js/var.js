@@ -6,7 +6,8 @@ const vars = {
     chat: {
         to: "main",
         chnl: "main",
-        actMess: 0
+        actMess: 0,
+        pinned: []
     },
     temp: {}, // temporary
     messCount: 40,
