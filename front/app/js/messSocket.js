@@ -141,3 +141,7 @@ socket.on("message.search", (data) => {
         messFunc.addMess(mess, false);
     });
 });
+
+socket.on("message.fetch.pinned", (data) => {
+    vars.chat.pinned = data;
+});

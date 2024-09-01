@@ -331,7 +331,65 @@ module.exports = (socket) => {
         }catch(e){
             socket.logError(e);
         }
-    })
+    });
+
+    socket.ontimeout("message.pin", 1000, async (server, chnl, msgId, pin) => {
+       try{
+           if(!socket.user) return socket.emit("error", "not auth");
+           if(!valid.id(server)) return socket.emit("error.valid", "message.pin", "server");
+           if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.pin", "chnl");
+           if(!valid.id(msgId)) return socket.emit("error.valid", "message.pin", "msgId");
+           if(!valid.bool(pin)) return socket.emit("error.valid", "message.pin", "pin");
+           
+           const priv = server.startsWith("$");
+           let chat = server;
+           if(priv){
+               const p1 = socket.user._id;
+               const p2 = server.replace("$", "");
+               chat = chatMgmt.combinateId(p1, p2);
+           }
+
+           await global.db.mess.updateOne(chat, { _id: msgId }, { pinned: pin });
+           const refreshData = {
+               evt: "message.fetch.pinned",
+               server,
+               chnl,
+           }
+
+           if(priv){
+               global.sendToSocket(socket.user._id, "refreshData", refreshData, server, chnl);
+               global.sendToSocket(server.replace("$", ""), "refreshData", refreshData, "$"+socket.user._id, chnl);
+           }else{
+               global.sendToChatUsers(server, "refreshData", refreshData, server, chnl);
+           }
+       }catch(e){
+           socket.logError(e);
+       }
+    });
+
+    socket.ontimeout("message.fetch.pinned", 1000, async (server, chnl) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(server)) return socket.emit("error.valid", "message.get.pinned", "server");
+            if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.get.pinned", "chnl");
+            
+            const priv = server.startsWith("$");
+            if(priv){
+                const p1 = socket.user._id;
+                const p2 = server.replace("$", "");
+                server = chatMgmt.combinateId(p1, p2);
+            }
+
+            const results = await global.db.mess.find(server, (data) => {
+                if(data.chnl != chnl) return false;
+                return data.pinned === true;
+            });
+
+            socket.emit("message.fetch.pinned", results);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
 }
 
 global.getChnlPerm = async function(user, server, chnl){
