@@ -82,10 +82,6 @@ const messCmd = {
             return;
         }
 
-        if(allCmds.length == 1 && this.selectedCmd){
-            return;
-        }
-
         this.selectedCmd = null;
         Object.keys(avelibleCmds).forEach(category => {
             const categoryDiv = document.createElement("div");
@@ -99,7 +95,7 @@ const messCmd = {
                 cmdLi.innerHTML = key;
                 cmdLi.style.cursor = "pointer";
                 cmdLi.addEventListener("click", () => {
-                    this.selectedCmd = avelibleCmds[category][key];
+                    messCmd.selectedCmd = avelibleCmds[category][key];
                     const args = msg.split(" ");
                     args[0] = "/" + key;
                     messInput.value = args.join(" ") + " ";
@@ -107,7 +103,7 @@ const messCmd = {
                     messCmd.handleCommandInput(
                         barc__commads,
                         key,
-                        this.selectedCmd
+                        messCmd.selectedCmd
                     );
 
                     coreFunc.focusInp();
@@ -123,6 +119,7 @@ const messCmd = {
         this.selectedCmd = null;
         barc__commads.style.display = "none";
         messInput.value = "";
+        messCmd.temp = [];
     },
 
     send(data){
@@ -137,7 +134,6 @@ const messCmd = {
         this.changeArgs();
         const args = messCmd.temp;
         const exitCode = this.selectedCmd.exe(data, args) || 0;
-        messCmd.temp = [];
         this.close();
         
         return exitCode;
