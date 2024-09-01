@@ -28,8 +28,8 @@ const messFunc = {
                 msg: mess,
                 res: vars.temp.replyId,
             }
-            messCmd.send(data);
-            socket.emit("mess", data);
+            const exitCode = messCmd.send(data);
+            if(exitCode == 0) socket.emit("mess", data);
         }else{
             socket.emit("message.edit", vars.chat.to, vars.temp.editId, mess);
             messFunc.editMessClose();
