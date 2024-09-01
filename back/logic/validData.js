@@ -1,5 +1,8 @@
 const Ajv = require("ajv");
+const ajvFormat = require("ajv-formats");
+
 const ajv = new Ajv();
+ajvFormat(ajv);
 
 const valid = {
     /**

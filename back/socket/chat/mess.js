@@ -1,6 +1,11 @@
 const chatMgmt = require("../../logic/chatMgmt");
 const valid = require("../../logic/validData");
 const permissionSystem = require("../../logic/permission-system");
+const { extractTimeFromId } = require("../../logic/utils");
+
+const validShema = {
+    messageSearch: valid.objAjv(require("./valid/messageSearch")),
+};
 
 module.exports = (socket) => {
     socket.ontimeout("mess", 200,
@@ -302,12 +307,13 @@ module.exports = (socket) => {
         }
     });
 
-    socket.ontimeout("message.search", 1000, async (server, chnl, search) => {
+    socket.ontimeout("message.search", 1000, async (server, chnl, query) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(server)) return socket.emit("error.valid", "message.search", "server");
             if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.search", "chnl");
-            if(!valid.str(search, 0, 100)) return socket.emit("error.valid", "message.search", "search");
+            if(!validShema.messageSearch(query))
+                return socket.emit("error.valid", "message.search", "search", validShema.messageSearch.errors);
 
             const priv = server.startsWith("$");
             if(priv){
@@ -318,7 +324,7 @@ module.exports = (socket) => {
 
             const results = await global.db.mess.find(server, (data) => {
                 if(data.chnl != chnl) return false;
-                return data.msg.includes(search);
+                return filterMessages(query, data);
             });
 
             socket.emit("message.search", results);
@@ -354,4 +360,23 @@ global.getChnlPerm = async function(user, server, chnl){
         visable,
         text
     };
+}
+
+function filterMessages(query, mess){
+    const time = extractTimeFromId(mess._id) * 1000;
+
+    if(query.from && mess.fr !== query.from) return false;
+    if(query.mentions && !mess.msg.includes(`@${query.mentions}`)) return false;
+
+    if(query.before && time >= new Date(query.before).getTime()) return false;
+    if(query.during){
+        const startOfDay = new Date(query.during).setHours(0, 0, 0, 0);
+        const endOfDay = new Date(query.during).setHours(23, 59, 59, 999);
+        if(time < startOfDay || time > endOfDay) return false;
+    }
+    if(query.after && time <= new Date(query.after).getTime()) return false;
+    if(query.pinned !== undefined && query.pinned !== (mess.pinned === true)) return false;
+    if(query.message && !mess.msg.includes(query.message)) return false;
+
+    return true;
 }
