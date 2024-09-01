@@ -1,25 +1,42 @@
 const barc__commads = document.querySelector("#barc__commads");
 barc__commads.style.display = "none";
 
-messInput.addEventListener("input", () => messCmd.check(messInput.value));
-
 const messCmds = {
     system: {
         silent: {
             args: [
-                {
-                    name: "silent",
-                    type: "boolean"
-                },
-                {
-                    name: "message",
-                    type: "text"
-                }
+                { name: "silent", type: "boolean" },
+                { name: "message", type: "text" }
             ],
             exe(msg, args){
-                if(args.length == 0) return;
+                if(args.length == 0) return 1;
                 if(args[0]) msg.silent = true;
                 msg.msg = args[1];
+            }
+        },
+        search: {
+            args: [
+                { name: "from", type: "text", optional: true },
+                { name: "mentions", type: "text", optional: true },
+                { name: "before", type: "date", optional: true },
+                { name: "during", type: "date", optional: true },
+                { name: "after", type: "date", optional: true },
+                { name: "pinned", type: "boolean", optional: true },
+                { name: "message", type: "text", optional: true }
+            ],
+            exe(msg, args){
+                if(args.length == 0) return 1;
+                const query = {};
+                query.from = args[0];
+                query.mentions = args[1];
+                query.before = args[2];
+                query.during = args[3];
+                query.after = args[4];
+                query.pinned = args[5];
+                query.message = args[6];
+
+                socket.emit("message.search", vars.chat.to, vars.chat.chnl, query);
+                return 1;
             }
         }
     }
@@ -29,8 +46,9 @@ const messCmd = {
     selectedCmd: null,
     temp: [],
 
-    check(msg){
+    check(){
         if(this.selectedCmd) return;
+        let msg = messInput.value;
 
         if(!msg.startsWith("/") && msg != "/"){
             barc__commads.style.display = "none";
@@ -133,7 +151,10 @@ const messCmd = {
             const arg = argsObj[i];
             const val = argsVal[i];
 
-            if(arg.optional && val.trim() == "") continue;
+            if(!val || val.trim() == ""){
+                if(arg.optional) continue;
+                return false;
+            }
 
             if(arg.type == "boolean" && val != "true" && val != "false") return false;
             else if(arg.type == "number" && isNaN(val)) return false;
@@ -155,18 +176,14 @@ const messCmd = {
         for(let i=0; i<argsObj.length; i++){
             const arg = argsObj[i];
             const val = argsVal[i];
-            if(val.trim() == "") continue;
+
+            if(!val || val.trim() == ""){
+                if(arg.optional) continue;
+                return false;
+            }
 
             if(arg.type == "boolean") argsVal[i] = val == "true";
             else if(arg.type == "number") argsVal[i] = Number(val);
-            else if(arg.type == "date" || arg.type == "date-time") argsVal[i] = new Date(val).getTime();
-            else if(arg.type == "time"){
-                const [h, m] = val.split(":");
-                const date = new Date();
-                date.setHours(h);
-                date.setMinutes(m);
-                argsVal[i] = date.getTime(); 
-            }
         }
     },
 
@@ -272,3 +289,5 @@ const messCmd = {
         container.appendChild(categoryDiv);
     }
 };
+
+messInput.addEventListener("input", messCmd.check);

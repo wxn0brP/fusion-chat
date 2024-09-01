@@ -219,12 +219,19 @@ const messFunc = {
         }
     },
 
-    async search(){
-        const text = await uiFunc.prompt(translateFunc.get("Search"));
-        if(!text) return;
+    search(){
+        messInput.value = "/search ";
+        messCmd.selectedCmd = messCmds.system.search;
 
-        socket.emit("message.search", vars.chat.to, vars.chat.chnl, text);
-    }
+        const evt = new Event("input");
+        messInput.dispatchEvent(evt);
+
+        messCmd.handleCommandInput(
+            barc__commads,
+            "search",
+            messCmd.selectedCmd
+        );
+    },
 }
 
 messFunc.replyClose();
