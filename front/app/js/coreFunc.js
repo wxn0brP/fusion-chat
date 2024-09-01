@@ -42,6 +42,7 @@ const coreFunc = {
             navs__groups.style.display = "none";
             vars.chat.chnl = "main";
             coreFunc.loadChat();
+            socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
             vars.servers.users = [];
             vars.servers.roles = [];
             vars.servers.text = [];
@@ -72,6 +73,7 @@ const coreFunc = {
         document.querySelector("#channel_"+id).classList.add("channel_textActive");
         
         coreFunc.loadChat();
+        socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
 
         const isText = vars.servers.text.includes(id);
         if(isText){

@@ -126,6 +126,10 @@ const messFunc = {
         }, 100);
 
         contextMenu.menuClickEvent(messDiv, (e) => {
+            const isMessPinned = vars.chat.pinned.findIndex((m) => m._id == data._id) != -1;
+            document.querySelector("#mesage_context_menu__unpin").style.display = isMessPinned ? "" : "none";
+            document.querySelector("#mesage_context_menu__pin").style.display = isMessPinned ? "none" : "";
+            
             contextMenu.message(e, data._id);
         });
     },
@@ -231,6 +235,17 @@ const messFunc = {
             "search",
             messCmd.selectedCmd
         );
+    },
+
+    displayPinned(){
+        messagesDiv.innerHTML = "<h2>" + translateFunc.get("Pinned messages") + "</h2>";
+        if(vars.chat.pinned.length == 0){
+            messagesDiv.innerHTML += translateFunc.get("No pinned messages");
+            return;
+        }
+        vars.chat.pinned.forEach((m) => {
+            messFunc.addMess(m);
+        });
     },
 }
 
