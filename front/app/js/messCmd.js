@@ -16,7 +16,7 @@ const messCmds = {
         },
         search: {
             args: [
-                { name: "from", type: "text", optional: true },
+                { name: "from", type: "user", optional: true },
                 { name: "mentions", type: "text", optional: true },
                 { name: "before", type: "date", optional: true },
                 { name: "during", type: "date", optional: true },
@@ -155,6 +155,7 @@ const messCmd = {
             if(arg.type == "boolean" && val != "true" && val != "false") return false;
             else if(arg.type == "number" && isNaN(val)) return false;
             else if(arg.type == "text" && val.trim() == "") return false;
+            else if(arg.type == "user" && val.trim() == "") return false;
             else if((arg.type == "date" || arg.type == "date-time") && isNaN(Date.parse(val))) return false;
             else if(arg.type == "time"){
                 const [h, m] = val.split(":");
@@ -180,6 +181,20 @@ const messCmd = {
 
             if(arg.type == "boolean") argsVal[i] = val == "true";
             else if(arg.type == "number") argsVal[i] = Number(val);
+            else if(arg.type == "user"){
+                if(val.split("-").length == 0) continue;
+                const idToName = vars.apisTemp.user;
+                const usersMap = new Map();
+                Object.keys(idToName).forEach(id => {
+                    usersMap.set(idToName[id], id);
+                });
+                if(!usersMap.has(val)){
+                    uiFunc.uiMsg(translateFunc.get("User not found. Skipping this argument..."));
+                    delete argsVal[i];
+                    continue;
+                }
+                argsVal[i] = usersMap.get(val);
+            }
         }
     },
 
@@ -232,6 +247,14 @@ const messCmd = {
                         messCmd.temp[index] = ele.value;
                     });
                 break;
+                case "user":
+                    typeDesc = "text";
+                    ele = document.createElement("input");
+                    ele.type = "text";
+                    ele.addEventListener("input", () => {
+                        messCmd.temp[index] = ele.value;
+                    });
+                break;
                 case "date":
                     typeDesc = "date";
                     ele = document.createElement("input");
@@ -273,7 +296,7 @@ const messCmd = {
                     });
                 break;
             }
-            argItem.innerHTML += ` (${typeDesc}) &nbsp;`;
+            argItem.innerHTML += ` (${typeDesc})${arg.optional ? " (optional)" : ""} &nbsp;`;
             if(ele) argItem.appendChild(ele);
             argsList.appendChild(argItem);
         });
