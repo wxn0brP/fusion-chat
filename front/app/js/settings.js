@@ -101,7 +101,7 @@ const settingsDataUser = () => [
 
             const imgSel = document.createElement('input');
             imgSel.type = 'file';
-            imgSel.accept = ['image/png', 'image/jpeg', "image/jpg", 'image/gif', 'image/webp'].join(', ');
+            imgSel.accept = vars.uploadImgTypes.join(', ');
             imgSel.addEventListener("change", e => {
                 div.tmpData.img = e.target.files[0];
                 imgPrev.src = URL.createObjectURL(e.target.files[0]);
