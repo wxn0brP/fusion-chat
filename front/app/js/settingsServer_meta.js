@@ -17,7 +17,7 @@ SettingsServerManager.prototype.renderMeta = function(){
 
     const serverImgFile = document.createElement('input');
     serverImgFile.type = 'file';
-    serverImgFile.accept = ['image/png', 'image/jpeg', "image/jpg", 'image/gif', 'image/webp'].join(', ');
+    serverImgFile.accept = vars.uploadImgTypes.join(', ');
     serverImgFile.addEventListener("change", e => {
         meta.tmpData.img = e.target.files[0];
         serverImg.src = URL.createObjectURL(e.target.files[0]);

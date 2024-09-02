@@ -28,5 +28,6 @@ const vars = {
         friends: [],
         requests: [],
         page: "online"
-    }
+    },
+    uploadImgTypes: ["image/png", "image/jpeg", "image/jpg", "image/gif"],
 }
