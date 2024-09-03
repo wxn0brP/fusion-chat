@@ -1,0 +1,120 @@
+const multer = require("multer");
+const fs = require("fs");
+const { Image } = require("image-js");
+const path = require("path");
+const potrace = require("potrace");
+
+const valid = require("../../logic/validData");
+const permissionSystem = require("../../logic/permission-system");
+
+const baseServerPath = "userFiles/servers";
+const formats = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        if(!formats.includes(file.mimetype)){
+            return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"), false);
+        }
+        cb(null, true);
+    }
+}).single("file");
+
+async function checkUserPermission(userId, server){
+    const perm = new permissionSystem(server);
+    const userPerm = await perm.userPermison(userId, "manage server");
+    return userPerm;
+}
+
+async function getServerEmoji(serverId){
+    const emoji = await global.db.groupSettings.find(serverId, (e) => !!e.unicode);
+    return emoji;
+}
+
+function generatePrivateUseArea(){
+    const start = 0xE000;
+    const end = 0xF8FF;
+    const unicodeRange = [];
+    for (let code=start; code<=end; code++){
+        unicodeRange.push(code);
+    }
+    return unicodeRange;
+}
+
+function uploadEmoji(basePath, unicode, req, res){
+    return new Promise((resolve, reject) => {
+        upload(req, res, async (err) => {
+            if(err){
+                reject(err);
+                return res.status(400).json({ err: true, msg: err.message });
+            }
+            try{
+                const buffer = req.file.buffer;
+                const pngPath = path.join(basePath, "temp.png");
+        
+                const pngFile = await Image.load(buffer);
+                await pngFile.save(pngPath, { format: "png", compressionLevel: 0 });
+        
+                const svgPath = path.join(basePath, unicode.toString(16) + ".svg");
+                await new Promise((resolve, reject) => {
+                    potrace.trace(pngPath, (err, svg) => {
+                        if(err) return reject(err);
+                        fs.writeFileSync(svgPath, svg);
+                        resolve();
+                    });
+                });
+
+                fs.unlinkSync(pngPath);
+                resolve(svgPath);
+            }catch(err){
+                reject(err);
+                res.json({ err: true, msg: "An error occurred" });
+            }
+        });
+    })
+}
+
+app.post("/uploadEmoji", global.authenticateMiddleware, async (req, res) => {
+    const userId = req.user;
+    const server = req.headers.server;
+    if(!server) return res.status(400).json({ err: true, msg: "No server id provided." });
+    if(!valid.id(server)) return res.status(400).json({ err: true, msg: "Invalid server id." });
+
+    try{
+        const userPerm = await checkUserPermission(userId, server);
+        if(!userPerm) return res.status(403).json({ err: true, msg: "You do not have permission to do that." });
+    }catch(err){
+        return res.status(500).json({ err: true, msg: "You do not have permission to do that." });
+    }
+
+    const serverEmoji = await getServerEmoji(server);
+    const serverEmojiUnicode = serverEmoji.map(emoji => emoji.unicode);
+
+    const emojiUnicodes = generatePrivateUseArea();
+    const availablesUnicodes = emojiUnicodes.filter(unicode => !serverEmojiUnicode.includes(unicode));
+
+    if(availablesUnicodes.length === 0){
+        return res.status(400).json({ err: true, msg: "Emoji limit reached." });
+    }
+
+    const unicode = availablesUnicodes[0];
+    const basePath = path.join(baseServerPath, server, "emojis");
+
+    if(!fs.existsSync(basePath)){
+        fs.mkdirSync(basePath, { recursive: true });
+    }
+
+    const svgPath = await uploadEmoji(basePath, unicode, req, res);
+    if(!svgPath) return res.status(400).json({ err: true, msg: "An error occurred" });
+
+    const newEmoji = {
+        unicode,
+        name: "new emoji",
+    };
+
+    await global.db.groupSettings.add(server, newEmoji, false);    
+
+    res.json({ err: false, msg: "Emoji uploaded successfully." });
+});

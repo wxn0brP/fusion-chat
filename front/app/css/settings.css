@@ -91,6 +91,22 @@
     object-fit: cover;
 }
 
+#settings .emoji__container{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+#settings .emoji__container:not(:first-of-type){
+    border-top: 1px solid var(--accent);
+}
+
+#settings .emoji__container:not(:last-of-type){
+    margin-bottom: 1rem;
+}
+
 @media screen and (max-width: 800px){
     #settings .settings__category{
         max-width: 90vw;
