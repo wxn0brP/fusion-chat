@@ -2,6 +2,8 @@ const valid = require("../../logic/validData");
 const permissionSystem = require("../../logic/permission-system");
 const genId = require("../../db/gen");
 const processDbChanges = require("../../logic/processDbChanges");
+const emojiMgmt = require("../../logic/emojiMgmt");
+const fs = require("fs");
 
 const validShema = {
     setServerSettings: valid.objAjv(require("./valid/setServerSettings")),
@@ -81,8 +83,9 @@ module.exports = (socket) => {
             const categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
             const channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
             const roles = await perm.getRoles();
-            const users = await global.db.usersPerms.find(id, (r) => !!r.uid);
-            const banUsers = await global.db.usersPerms.find(id, (r) => !!r.ban);
+            const users = await global.db.usersPerms.find(id, (u) => !!u.uid);
+            const banUsers = await global.db.usersPerms.find(id, (u) => !!u.ban);
+            const emojis = await global.db.groupSettings.find(id, (e) => !!e.unicode);
 
             const data = {
                 meta,
@@ -91,6 +94,7 @@ module.exports = (socket) => {
                 roles,
                 users: users.map(u => { return { uid: u.uid, roles: u.roles }}),
                 banUsers: banUsers.map(u => u.ban),
+                emojis,
             };
 
             socket.emit("server.settings.get", data, id);
@@ -113,10 +117,11 @@ module.exports = (socket) => {
                 return socket.emit("error.valid", "server.settings.set", "data", validShema.setServerSettings.errors);
             }
 
-            const o_categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
-            const o_channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
+            const o_categories = await global.db.groupSettings.find(id, (c) => !!c.cid);
+            const o_channels = await global.db.groupSettings.find(id, (c) => !!c.chid);
             const o_roles = await perm.getRoles();
-            const o_users = await global.db.usersPerms.find(id, (r) => !!r.uid);
+            const o_users = await global.db.usersPerms.find(id, (u) => !!u.uid);
+            const o_emojis = await global.db.groupSettings.find(id, (e) => !!e.unicode);
 
             const pcaci = processCategoriesAndChannelIds(data.categories, data.channels);
             const n_roles = processRolesIds(data.roles);
@@ -125,11 +130,15 @@ module.exports = (socket) => {
             const channelsChanges = processDbChanges(o_channels, pcaci.channels, ["name","i","rp"], "chid");
             const rolesChanges = processDbChanges(o_roles, n_roles, ["rid", "parent", "name", "color", "p"], "rid");
             const usersChanges = processDbChanges(o_users, data.users, ["uid", "roles"], "uid");
+            const emojisChanges = processDbChanges(o_emojis, data.emojis, ["name"], "unicode");
 
             await saveDbChanges(id, categoriesChanges, "cid");
             await saveDbChanges(id, channelsChanges, "chid");
             await saveDbChanges(id, rolesChanges, "rid");
             for(const item of usersChanges.itemsToUpdate) await global.db.usersPerms.update(id, (u) => u.uid == item.uid, item);
+            await saveDbChanges(id, emojisChanges, "unicode");
+
+            await processEmojis(id, emojisChanges);
 
             await global.db.groupSettings.updateOne(id, { _id: "set" }, data.meta);
 
@@ -230,6 +239,22 @@ module.exports = (socket) => {
             socket.logError(e);
         }
     });
+
+    socket.ontimeout("server.emojis.sync", 1000, async (serverId, cb=()=>{}) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(serverId)) return socket.emit("error.valid", "server.emojis.sync", "serverId");
+
+            const emojis = await global.db.groupSettings.find(serverId, (e) => !!e.unicode);
+            if(cb){
+                cb(emojis);
+            }else{
+                socket.emit("server.emojis.sync", emojis);
+            }
+        }catch(e){
+            socket.logError(e);
+        }
+    });
 }
 
 
@@ -276,4 +301,22 @@ function processRolesIds(roles){
     }
 
     return roles;
+}
+
+async function processEmojis(id, emojisChanges){
+    const isEmojisChanged =
+        emojisChanges.itemsToAdd.length > 0 || emojisChanges.itemsToRemove.length > 0 || emojisChanges.itemsToUpdate.length > 0;
+
+    if(isEmojisChanged){
+        const emojis = await global.db.groupSettings.find(id, (e) => !!e.unicode);
+        await emojiMgmt.createFont(emojis, id);
+    }
+
+    const basePath = "userFiles/servers/" + id + "/emoji/";
+    for(const rmEmoji of emojisChanges.itemsToRemove){
+        const path = basePath + rmEmoji.unicode.toString(16) + ".svg";
+        if(fs.existsSync(path)){
+            fs.unlinkSync(path);
+        }
+    }
 }
