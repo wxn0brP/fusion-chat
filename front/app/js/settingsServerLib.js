@@ -20,11 +20,13 @@ class SettingsServerManager{
         this.roleDiv = this.initCategoryElement();
         this.editRoleDiv = this.initCategoryElement();
         this.usersManagerDiv = this.initCategoryElement();
+        this.emojiDiv = this.initCategoryElement();
 
         this.renderMeta();
         this.renderChannels();
         this.renderRoles();
         this.renderUserRoleManager();
+        this.renderEmojis();
         this.changeDisplay({ meta: true });
 
         const saveButton = document.createElement('button');

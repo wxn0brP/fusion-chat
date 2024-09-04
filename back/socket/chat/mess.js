@@ -358,6 +358,7 @@ module.exports = (socket) => {
 
            if(priv){
                global.sendToSocket(socket.user._id, "refreshData", refreshData, server, chnl);
+               refreshData.server = "$"+socket.user._id;
                global.sendToSocket(server.replace("$", ""), "refreshData", refreshData, "$"+socket.user._id, chnl);
            }else{
                global.sendToChatUsers(server, "refreshData", refreshData, server, chnl);

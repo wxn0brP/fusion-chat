@@ -83,8 +83,20 @@ module.exports = {
             items: {
                 type: "string"
             }
-        }
+        },
+        emojis: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    name: { type: "string", minLength: 1, maxLength: 64 },
+                    unicode: { type: "number" }
+                },
+                required: ["name", "unicode"],
+                additionalProperties: false
+            }
+        },
     },
-    required: ["meta", "categories", "channels", "roles", "users"],
+    required: ["meta", "categories", "channels", "roles", "users", "emojis"],
     additionalProperties: false
 };

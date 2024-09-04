@@ -247,6 +247,26 @@ const messFunc = {
             messFunc.addMess(m);
         });
     },
+
+    addServerEmoji(){
+        const to = vars.chat.to;
+        if(!to) return;
+        if(to == "main" || to.startsWith("$")) return;
+
+        socket.emit("server.emojis.sync", to, async (emojis) => {
+            const labels = emojis.map(emoji => emoji.name);
+            const values = emojis.map(emoji => emoji.unicode);
+
+            const input = await uiFunc.selectPrompt(
+                translateFunc.get("Choose an emoji"),
+                labels,
+                values
+            );
+
+            if(!input) return;
+            messInput.value += "&#" + input + ";";
+        });
+    },
 }
 
 messFunc.replyClose();

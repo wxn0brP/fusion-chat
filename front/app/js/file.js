@@ -56,7 +56,7 @@ const fileFunc = {
             callback: () => {
                 lo("File uploaded successfully");
             },
-            maxSize: 1024*1024,
+            maxSize: 4*1024*1024,
             maxName: 60,
             endpoint: "/profileUpload"
         }
@@ -70,7 +70,7 @@ const fileFunc = {
             callback: () => {
                 lo("File uploaded successfully");
             },
-            maxSize: 1024*1024,
+            maxSize: 4*1024*1024,
             maxName: 60,
             endpoint: "/serverProfileUpload",
             addionalFields: (xhr, formData) => {
@@ -79,5 +79,26 @@ const fileFunc = {
         }
 
         fileFunc.read(opt);
-    }
+    },
+
+    emocji(file, serverId){
+        const opts = {
+            file: file,
+            callback: (xhr) => {
+                lo("File uploaded successfully");
+            },
+            maxSize: 4*1024*1024,
+            maxName: 100,
+            endpoint: "/uploadEmoji",
+            addionalFields: (xhr, formData) => {
+                xhr.setRequestHeader("server", serverId);
+            }
+        };
+
+        fileFunc.read(opts);
+    },
 };
+
+setTimeout(() => {
+    fileFunc.emocji();
+}, 3000)

@@ -6,6 +6,7 @@ SettingsServerManager.prototype.changeDisplay = function(options){
         role: false,
         editRole: false,
         usersManager: false,
+        emoji: false,
         ...options
     };
 
@@ -23,6 +24,7 @@ SettingsServerManager.prototype.renderCategorySwitcher = function(){
         { text: translateFunc.get("Categories & Channels"), name: 'category' },
         { text: translateFunc.get("Roles"), name: 'role' },
         { text: translateFunc.get("Users Manager"), name: 'usersManager' },
+        { text: translateFunc.get("Emoji Manager"), name: 'emoji' },
     ]
     .map(category => {
         const button = document.createElement('button');

@@ -150,7 +150,7 @@ module.exports = (socket) => {
             const userN = await global.db.data.findOne("user", { _id: id });
             if(!userN) return socket.emit("error", "user not found");
 
-            let userStatus = await global.db.userDatas.findOne(socket.user._id, { _id: "status" });
+            let userStatus = await global.db.userDatas.findOne(id, { _id: "status" });
             const userOnline = global.getSocket(id).length > 0;
             if(!userStatus) userStatus = {};
 
