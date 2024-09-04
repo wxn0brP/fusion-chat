@@ -26,8 +26,8 @@ class Graph{
     async add(collection, nodeA, nodeB){
         const sortedNodes = [nodeA, nodeB].sort();
         return await this.db.add(collection, {
-            nodeA: sortedNodes[0],
-            nodeB: sortedNodes[1]
+            a: sortedNodes[0],
+            b: sortedNodes[1]
         }, false);
     }
 
