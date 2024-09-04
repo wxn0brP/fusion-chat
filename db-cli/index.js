@@ -2,7 +2,6 @@ const { Command } = require("commander");
 const chalk = require("chalk");
 const fs = require("fs");
 const path = require("path");
-const mainMenu = require("./main");
 
 const cfgDir = path.join(__dirname, "cfg");
 if(!fs.existsSync(cfgDir)){
@@ -85,7 +84,7 @@ program
         }
         global.runMode = "interactive";
 
-        await mainMenu();
+        await require("./interactive")();
     });
 
 program
