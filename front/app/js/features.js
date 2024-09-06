@@ -25,25 +25,6 @@ setupSwipe(
     }
 );
 
-(function initEmocji(){
-    const pickerOptions = {
-        onEmojiSelect: emit,
-        theme: 'dark',
-        onClickOutside: () => emit(),
-        locale: navigator.language.substring(0, 2),
-    };
-
-    const picker = new EmojiMart.Picker(pickerOptions)
-    emocjiDiv.appendChild(picker);
-
-    function emit(emoticon){
-        const event = new CustomEvent('emocji', {
-            detail: emoticon?.native || "",
-        });
-        emocjiDiv.dispatchEvent(event);
-    }
-})();
-
 messInput.addEventListener("paste", function(e){
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
     

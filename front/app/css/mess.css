@@ -163,13 +163,6 @@ main{
     fill: var(--fil);
 }
 
-#emocjiDiv{
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
-    display: none;
-}
-
 #barc__emocji, #barc__sendFile{
     width: 2.5rem;
     border: none;
