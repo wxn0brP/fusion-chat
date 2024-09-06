@@ -2,7 +2,17 @@
 
 <div id="userProfile" style="display: none;"></div>
 
-<div id="emocjiDiv"></div>
+<div id="emojiDiv">
+    <div id="emojiDiv__struct">
+        <button onclick="emojiFunc.emojiClick()" id="emojiDiv__close" class="btn">X</button>
+        <div id="emoji__search">
+            <label for="emocji-input">🔎</label>
+            <input type="text" id="emocji-input" class="btn">
+        </div>
+        <div id="emoji__nav"></div>
+        <div id="emoji__container"></div>
+    </div>
+</div>
 
 <div id="errMesses"></div>
 

@@ -8,6 +8,8 @@ const coreFunc = {
         messagesDiv.innerHTML = "";
         coreFunc.markSelectedChat(id);
         emojiStyleDiv.innerHTML = "";
+        emojiFunc.customEmojisCat = [];
+        emojiFunc.customEmojis = {};
 
         if(id == "main"){
             vars.chat.to = "main";

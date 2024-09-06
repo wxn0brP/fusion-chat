@@ -182,6 +182,79 @@
     width: 300px;
 }
 
+#emojiDiv{
+    position: absolute;
+    right: 2rem;
+    bottom: 4rem;
+    z-index: 10;
+    background-color: var(--back);
+    color: var(--txt);
+    border: 2px solid var(--accent);
+    border-radius: 1rem;
+    padding: 5px;
+    width: 400px;
+    height: 400px;
+    max-width: 90vw;
+
+    display: none;
+}
+
+#emojiDiv__struct{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+    position: relative;
+}
+
+#emojiDiv__close{
+    cursor: pointer;
+    position: absolute;
+    color: red;
+}
+
+#emoji__search{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+#emoji__search label{
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#emoji__search input:where(:active, :focus){
+    outline: none;
+}
+
+#emoji__nav{
+    display: grid;
+    gap: 5px;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+#emoji__container{
+    flex-grow: 1;
+    overflow-y: scroll;
+}
+
+#emoji__container div > h1{
+    text-transform: uppercase;
+}
+
+.emoji__category{
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 5px;
+}
+
+.emoji__item{
+    cursor: pointer;
+    font-size: 2rem;
+}
+
 @media screen and (max-width: 800px){
     #errMesses div{
         width: 90vw;
@@ -194,5 +267,16 @@
 
     #usersInChat{
         width: 90vw;
+    }
+
+    #emojiDiv{
+        width: 90vw;
+        right: 5vw;
+        height: 70vh;
+    }
+
+    #emoji__nav{
+        grid-template-columns: repeat(2, 1fr);
+        gap: 7px;
     }
 }
