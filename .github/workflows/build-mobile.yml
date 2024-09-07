@@ -57,7 +57,7 @@ jobs:
         name: app-release.apk
         path: fc-app/fc-mobile/android/app/build/outputs/apk/release/
         
-  release:
+  release-android:
     needs: build-android
     runs-on: ubuntu-latest
     steps:
