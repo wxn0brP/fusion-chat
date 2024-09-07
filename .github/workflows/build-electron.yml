@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
   
 jobs:
-  copy-and-trigger-build:
+  build-electron:
     runs-on: ubuntu-latest
 
     steps:
