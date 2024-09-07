@@ -107,6 +107,7 @@ jobs:
         for apk in fc-app/fc-mobile/android/app/build/outputs/apk/release/*-release.apk; do
           ARCH=$(basename "$apk" | sed -E 's/app-(.*)-release.apk/\1/')
           ASSET_NAME="fusion_chat-${ARCH}-v${VERSION}.apk"
+          echo "Uploading $ASSET_NAME from $apk"
           curl -X POST \
             -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
             -H "Content-Type: application/vnd.android.package-archive" \
