@@ -64,22 +64,6 @@ const coreFunc = {
             vars.chat.chnl = null;
             socket.emit("server.setup", id);
             socket.emit("server.roles.sync", id);
-
-            const emojiStyle = document.createElement("style");
-            emojiStyle.innerHTML = `
-                @font-face{
-                    font-family: 'emoji';
-                    src: url("/userFiles/emoji/${id}.ttf") format("truetype");
-                    font-weight: normal;
-                    font-style: normal;
-                }
-                
-                *{
-                    font-family: 'emoji', 'Ubuntu', sans-serif;
-                }
-            `;
-
-            emojiStyleDiv.appendChild(emojiStyle);
         }
 
         if(div) div.classList.add((id.startsWith("$") ? "priv" : "group") + "_chatActive");

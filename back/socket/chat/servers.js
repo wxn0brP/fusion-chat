@@ -63,7 +63,9 @@ module.exports = (socket) => {
                 });
             }
 
-            socket.emit("server.setup", id, name, buildChannels);
+            const isOwnEmoji = fs.existsSync("userFiles/emoji/" + id + ".ttf");
+
+            socket.emit("server.setup", id, name, buildChannels, isOwnEmoji);
         }catch(e){
             socket.logError(e);
         }
