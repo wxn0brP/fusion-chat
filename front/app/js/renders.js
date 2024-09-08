@@ -146,7 +146,7 @@ const renderFunc = {
         renderUtils.initPopup(userProfileDiv);
     },
 
-    serverInit(sid, name, categories){
+    serverInit(sid, name, categories, isOwnEmoji){
         navs__groups__name.innerHTML = name;
         const settingsBtn = document.createElement("span");
         settingsBtn.innerHTML = "⚙️";
@@ -229,6 +229,23 @@ const renderFunc = {
         }
 
         coreFunc.changeChnl(vars.chat.chnl);
+
+        if(isOwnEmoji){
+            const emojiStyle = document.createElement("style");
+            emojiStyle.innerHTML = `
+                @font-face{
+                    font-family: 'emoji';
+                    src: url("/userFiles/emoji/${sid}.ttf") format("truetype");
+                    font-weight: normal;
+                    font-style: normal;
+                }
+                
+                *{
+                    font-family: 'emoji', 'Ubuntu', sans-serif;
+                }
+            `;
+            emojiStyleDiv.appendChild(emojiStyle);
+        }
     },
 
     usersInChat(data){
