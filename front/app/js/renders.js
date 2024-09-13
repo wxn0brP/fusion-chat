@@ -27,7 +27,7 @@ const renderFunc = {
             const structDiv = document.createElement("div");
 
             const profileImg = document.createElement("img");
-            profileImg.src = "/profileImg?id=" + id;
+            profileImg.src = "/api/profileImg?id=" + id;
             structDiv.appendChild(profileImg);
 
             structDiv.innerHTML += apis.www.changeUserID(id);
@@ -95,7 +95,7 @@ const renderFunc = {
 
         userProfileDiv.innerHTML = `
             <div id="userProfileInfo">
-                <img src="/profileImg?id=${data._id}" alt="User logo">
+                <img src="/api/profileImg?id=${data._id}" alt="User logo">
                 <div>
                     <h1>${data.name}</h1>
                     <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
@@ -281,7 +281,7 @@ const renderFunc = {
             });
 
             const userImg = document.createElement("img");
-            userImg.src = "/profileImg?id="+userID;
+            userImg.src = "/api/profileImg?id="+userID;
             userDiv.appendChild(userImg);
 
             const nameDiv = document.createElement("div");

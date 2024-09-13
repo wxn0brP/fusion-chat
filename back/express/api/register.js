@@ -1,7 +1,8 @@
+const router = require("express").Router();
 const crypto = require('crypto');
 const mailer = require("../../logic/mail");
 
-app.post("/register", async function(req, res){
+router.post("/register", async function(req, res){
     const { name, password, email } = req.body;
     if(!name || !password || !email) return res.json({ err: true, msg: "name, pass, and email are required" });
 
@@ -40,7 +41,7 @@ app.post("/register", async function(req, res){
     res.json({ err: false, msg: "Verification code sent" });
 });
 
-app.post("/register-code", async function(req, res){
+router.post("/register-code", async function(req, res){
     if(!req.session.tmp_user) return res.json({ err: true, msg: "No authentication data found" });
     const { verificationCode } = req.session.tmp_user;
 
@@ -68,3 +69,5 @@ function generateHash(password){
 function generateVerificationCode(){
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
+
+module.exports = router;

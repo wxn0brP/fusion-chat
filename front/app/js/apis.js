@@ -2,14 +2,14 @@ const apis = {
     www: {
         changeUserID(id){
             if(vars.apisTemp.user[id]) return vars.apisTemp.user[id];
-            const data = apis.www.getInServer("/userId?user="+id);
+            const data = apis.www.getInServer("/api/userId?user="+id);
             vars.apisTemp.user[id] = data;
             return data;
         },
 
         changeChat(id){
             if(vars.apisTemp.chat[id]) return vars.apisTemp.chat[id];
-            const data = apis.www.getInServer("/chatId?chat="+id);
+            const data = apis.www.getInServer("/api/chatId?chat="+id);
             vars.apisTemp.chat[id] = data;
             return data;
         },

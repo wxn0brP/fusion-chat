@@ -1,3 +1,4 @@
+const router = require("express").Router();
 const multer = require("multer");
 const fs = require("fs");
 const { Image } = require("image-js");
@@ -76,7 +77,7 @@ function uploadEmoji(basePath, unicode, req, res){
     })
 }
 
-app.post("/uploadEmoji", global.authenticateMiddleware, async (req, res) => {
+router.post("/uploadEmoji", global.authenticateMiddleware, async (req, res) => {
     const userId = req.user;
     const server = req.headers.server;
     if(!server) return res.status(400).json({ err: true, msg: "No server id provided." });
@@ -118,3 +119,5 @@ app.post("/uploadEmoji", global.authenticateMiddleware, async (req, res) => {
 
     res.json({ err: false, msg: "Emoji uploaded successfully." });
 });
+
+module.exports = router;

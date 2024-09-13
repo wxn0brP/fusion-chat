@@ -1,4 +1,6 @@
-app.post("/notif-reg", async (req, res) => {
+const router = require("express").Router();
+
+router.post("/notif-reg", async (req, res) => {
     const { token, id, user } = req.body;
     if(!token || !id || !user) return res.json({ err: true, msg: "token & id & user is required" });
 
@@ -14,3 +16,5 @@ app.post("/notif-reg", async (req, res) => {
     
     res.json({ err: false, msg: "ok" });
 });
+
+module.exports = router;

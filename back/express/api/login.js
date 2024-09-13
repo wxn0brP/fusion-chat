@@ -1,8 +1,9 @@
+const router = require("express").Router();
 const crypto = require('crypto');
 const { create: createJWT } = require("../../logic/auth");
 const mailer = require("../../logic/mail");
 
-app.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
     const { name, password } = req.body;
     if (!name || !password) return res.json({ err: true, msg: "Name and password are required" });
 
@@ -41,3 +42,5 @@ function generateHash(password){
 function randomDelay(min, max){
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+module.exports = router;
