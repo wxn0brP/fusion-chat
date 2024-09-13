@@ -52,15 +52,30 @@ async function renderLayout(res, layout, bodyPath, layoutData, bodyData){
 }
 
 frontRouter.get("/app", (req, res) => {
-    res.render("app/app");
+    try{
+        res.render("app/app");
+    }catch(err){
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 frontRouter.get("/", (req, res) => {
-    renderLayout(res, "layout/main", "main/index", {}, {})
+    try{
+        renderLayout(res, "layout/main", "main/index", {}, {});
+    }catch(err){
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 fs.readdirSync(global.dir+"../front/main").filter(file => file.includes(".ejs")).map(file => file.replace(".ejs", "")).forEach(site => {
     frontRouter.get("/"+site, (req, res) => {
-        renderLayout(res, "layout/main", "main/"+site, {}, {});
+        try{
+            renderLayout(res, "layout/main", "main/"+site, {}, {});
+        }catch(err){
+            console.error(err);
+            res.status(500).send("Internal Server Error");
+        }
     })
 });
