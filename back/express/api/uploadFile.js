@@ -1,3 +1,4 @@
+const router = require("express").Router();
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
@@ -41,7 +42,7 @@ const upload = multer({
     limits: { fileSize: config.maxFileSize }
 }).single("file");
 
-app.post("/uploadFile", global.authenticateMiddleware, limitUploads, (req, res) => {
+router.post("/uploadFile", global.authenticateMiddleware, limitUploads, (req, res) => {
     upload(req, res, (err) => {
         if(err){
             if(err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE"){
@@ -56,3 +57,5 @@ app.post("/uploadFile", global.authenticateMiddleware, limitUploads, (req, res) 
         res.json({ err: false, msg: "File uploaded successfully.", path: filePath });
     });
 });
+
+module.exports = router;

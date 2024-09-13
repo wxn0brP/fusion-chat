@@ -58,7 +58,7 @@ const fileFunc = {
             },
             maxSize: 4*1024*1024,
             maxName: 60,
-            endpoint: "/profileUpload"
+            endpoint: "/api/profileUpload"
         }
 
         fileFunc.read(opt);
@@ -72,7 +72,7 @@ const fileFunc = {
             },
             maxSize: 4*1024*1024,
             maxName: 60,
-            endpoint: "/serverProfileUpload",
+            endpoint: "/api/serverProfileUpload",
             addionalFields: (xhr, formData) => {
                 xhr.setRequestHeader("serverid", id);
             }
@@ -89,7 +89,7 @@ const fileFunc = {
             },
             maxSize: 4*1024*1024,
             maxName: 100,
-            endpoint: "/uploadEmoji",
+            endpoint: "/api/uploadEmoji",
             addionalFields: (xhr, formData) => {
                 xhr.setRequestHeader("server", serverId);
             }

@@ -95,7 +95,7 @@ const settingsDataUser = () => [
             const conteiner = div.querySelector('#_1');
 
             const imgPrev = document.createElement('img');
-            imgPrev.src = "/profileImg?id=" + vars.user._id + "&t=" + Date.now();
+            imgPrev.src = "/api/profileImg?id=" + vars.user._id + "&t=" + Date.now();
             imgPrev.style = "width: 128px; height: 128px; object-fit: cover;";
             conteiner.appendChild(imgPrev);
 

@@ -1,4 +1,6 @@
-app.get("/chatId", async (req, res) => {
+const router = require("express").Router();
+
+router.get("/chatId", async (req, res) => {
     const { chat } = req.query;
     if(!chat) return res.json({
         err: true, msg: "chatId is required"
@@ -15,3 +17,5 @@ app.get("/chatId", async (req, res) => {
         err: false, msg: chatName
     });
 });
+
+module.exports = router;

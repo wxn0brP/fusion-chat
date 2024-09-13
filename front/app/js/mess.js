@@ -62,7 +62,7 @@ const messFunc = {
         fromDiv.setAttribute("_author", data.fr);
 
         const fromDivImg = document.createElement("img");
-        fromDivImg.src = "/profileImg?id=" + data.fr;
+        fromDivImg.src = "/api/profileImg?id=" + data.fr;
         fromDiv.appendChild(fromDivImg);
 
         const fromDivText = document.createElement("div");

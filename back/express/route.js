@@ -1,9 +1,11 @@
 const fs = require("fs");
-const path = __dirname + "/route/";
 const express = require("express");
-const router = express.Router();
 const htmlMinifier = require("html-minifier");
-app.use("/", router);
+
+const frontRouter = express.Router();
+const apiRouter = express.Router();
+app.use("/", frontRouter);
+app.use("/api", apiRouter);
 
 function minifity(body){
     return htmlMinifier.minify(body, {
@@ -18,10 +20,13 @@ function minifity(body){
     });
 }
 
-fs.readdirSync(path).forEach(file => require(path+file));
+fs.readdirSync(__dirname+"/api").filter(file => file.includes(".js")).forEach(file => {
+    const router = require("./api/"+file);
+    apiRouter.use("/", router);
+});
 
 fs.readdirSync(global.dir+"../front/public").filter(file => file.includes(".html")).forEach(file => {
-    router.get("/"+file.replace(".html", ""), (req, res) => {
+    frontRouter.get("/"+file.replace(".html", ""), (req, res) => {
         let data = fs.readFileSync(global.dir+"../front/public/"+file, "utf-8");
         res.send(minifity(data));
     })
@@ -46,16 +51,16 @@ async function renderLayout(res, layout, bodyPath, layoutData, bodyData){
     });
 }
 
-router.get("/app", (req, res) => {
+frontRouter.get("/app", (req, res) => {
     res.render("app/app");
 });
 
-router.get("/", (req, res) => {
+frontRouter.get("/", (req, res) => {
     renderLayout(res, "layout/main", "main/index", {}, {})
 });
 
 fs.readdirSync(global.dir+"../front/main").filter(file => file.includes(".ejs")).map(file => file.replace(".ejs", "")).forEach(site => {
-    router.get("/"+site, (req, res) => {
+    frontRouter.get("/"+site, (req, res) => {
         renderLayout(res, "layout/main", "main/"+site, {}, {});
     })
 });

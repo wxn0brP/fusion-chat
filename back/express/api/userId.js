@@ -1,4 +1,6 @@
-app.get("/userId", async (req, res) => {
+const router = require("express").Router();
+
+router.get("/userId", async (req, res) => {
     const { user } = req.query;
     if(!user) return res.json({
         err: true, msg: "user is required"
@@ -12,3 +14,5 @@ app.get("/userId", async (req, res) => {
         err: false, msg: toId.name
     });
 });
+
+module.exports = router;
