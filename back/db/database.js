@@ -1,5 +1,6 @@
 const dbActionC = require("./action");
 const executorC = require("./executor");
+const CollectionManager = require("./CollectionManager");
 
 /**
  * Represents a database management class for performing CRUD operations.
@@ -16,6 +17,16 @@ class DataBase{
     constructor(folder, cacheThreshold=3, ttl=300_000){
         this.dbAction = new dbActionC(folder, cacheThreshold, ttl);
         this.executor = new executorC();
+    }
+
+    /**
+     * Create a new instance of a CollectionManager class.
+     * @function
+     * @param {string} collection - The name of the collection.
+     * @returns {CollectionManager} A new instance of CollectionManager.
+     */
+    c(collection){
+        return new CollectionManager(this, collection);
     }
 
     /**
