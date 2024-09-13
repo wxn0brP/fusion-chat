@@ -8,6 +8,7 @@ import firebase from "./firebase";
 import permission from "./permission";
 
 import AudioRecorder from './AudioRecorder';
+import Distribution from "./Distribution";
 
 const lo = console.log;
 
@@ -83,6 +84,19 @@ const ReactNativeApp = () => {
         return () => {
             AudioRecorder.stop();
         };
+    }, []);
+
+    useEffect(() => {
+        const logDist = async () => {
+            const distro = await Distribution.getInstallSource();
+            const distroName = Distribution.getInstallSourceName(distro);
+            setTimeout(() => {
+                if(!webViewRef.current) return;
+                // webViewRef.current.injectJavaScript(`apis.api.distribution('${distro}', '${distroName}')`)
+            }, 3000);
+        }
+
+        logDist();
     }, []);
 
     const startRecording = async () => {
