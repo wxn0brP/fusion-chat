@@ -59,3 +59,4 @@ function create(user){
 
 module.exports.auth = auth;
 module.exports.create = create;
+module.exports.decode = decode;
