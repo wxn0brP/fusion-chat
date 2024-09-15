@@ -96,7 +96,23 @@ module.exports = {
                 additionalProperties: false
             }
         },
+        webhooks: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    whid: { type: "string", validId: true },
+                    name: { type: "string" },
+                    chnl: { type: "string", validId: true },
+                    template: { type: "string", minLength: 1, maxLength: 500 },
+                    required: { type: "array", items: { type: "string" } },
+                    ajv: { type: "object", additionalProperties: true }
+                },
+                required: ["whid", "name", "chnl", "template", "required", "ajv"],
+                additionalProperties: false
+            }
+        }
     },
-    required: ["meta", "categories", "channels", "roles", "users", "emojis"],
+    required: ["meta", "categories", "channels", "roles", "users", "emojis", "webhooks"],
     additionalProperties: false
 };

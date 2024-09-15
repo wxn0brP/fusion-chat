@@ -1,6 +1,7 @@
 const { auth } = require("../../logic/auth");
 const mess = require("./mess");
 const servers = require("./servers");
+const serverSettings = require("./serversSettings");
 const voice = require("./voice");
 const settings = require("./settings");
 const chats = require("./chats");
@@ -96,6 +97,7 @@ io.of("/").on("connection", (socket) => {
 
     mess(socket);
     servers(socket);
+    serverSettings(socket);
     voice(socket);
     settings(socket);
     chats(socket);
