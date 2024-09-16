@@ -9,4 +9,5 @@ global.db = {
     logs: new db("data/logs"), //logs
     userDatas: new db("data/userDatas"), //user datas
     dataGraph: new graph("data/graph"), //all types data graph
+    groupData: new db("data/groupData"), //group data
 }

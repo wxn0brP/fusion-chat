@@ -16,10 +16,12 @@ const valid = require("./validData");
  * @param {object} user - The user object of the sender.
  * @param {string} user._id - The identifier of the sender.
  * @param {string} user.name - The name of the sender.
+ * @param {object} [options] - Optional options object.
+ * @param {boolean} [options.system] - Optional flag to send the message as a system message.
  * @return {Promise<object>} res - The result of the message sending operation.
  * @return {false|string[]} res.err - The error message or array of error messages if any.
  */
-async function sendMessage(req, user){
+async function sendMessage(req, user, options={}){
     if(!user) return { err: ["error", "not auth"] };
     if(typeof req !== "object") return { err: ["error.valid", "mess", "req"] };
     let { to, msg, chnl } = req;
@@ -33,7 +35,7 @@ async function sendMessage(req, user){
     if(req.res && !valid.id(req.res))           return { err: ["error.valid", "mess", "res"] };
     if(req.silent && !valid.bool(req.silent))   return { err: ["error.valid", "mess", "silent"] };
     
-    let privChat = to.startsWith("$");
+    const privChat = to.startsWith("$");
     if(privChat){
         const priv = await global.db.userDatas.findOne(user._id, { priv: to.replace("$", "") });
         if(!priv) return { err: ["error", "priv not found"] };
@@ -51,18 +53,15 @@ async function sendMessage(req, user){
         if(!chatMgmt.chatExsists(to)) return { err: ["error", "chat is not exists"] };
     }
 
-    if(!privChat){
+    if(!privChat && !options.system){
         const perm = await getChnlPerm(user._id, to, chnl); 
         if(!perm.visable) return { err: ["error", "channel is not exists"] };
         if(!perm.text) return { err: ["error", "not perm to write"] };
     }
 
-    let message = msg.trim();
-    if(msg.length > 500) return { err: ["error", "msg is too long"] };
-    
     let data = {
         fr: user._id,
-        msg: message,
+        msg: msg.trim(),
         chnl,
     }
     if(req.enc) data.enc = req.enc;
@@ -88,7 +87,7 @@ async function sendMessage(req, user){
 
     if(!privChat){
         data.toM = to;
-        let chat = await global.db.usersPerms.find(to, r => r.uid);
+        const chat = await global.db.usersPerms.find(to, r => r.uid);
         const server = (await global.db.groupSettings.findOne(to, { _id: "set"}));
         const fromMsg = `${server.name} @${user.name}`;
 
@@ -107,7 +106,7 @@ async function sendMessage(req, user){
             if(!data.silent) global.fireBaseMessage.send(u, "New message from " + fromMsg, data.msg);
         })
     }else{
-        let toSend = req.to.replace("$","");
+        const toSend = req.to.replace("$","");
 
         data.toM = user._id;
         sendToSocket(toSend, "mess", data);

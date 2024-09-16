@@ -1,5 +1,6 @@
 const genId = require("../../db/gen");
 const validCustom = require("./custom"); 
+const sendMessage = require("../sendMessage");
 
 async function addCustom(webhookInfo){
     const { chat, chnl, name, template } = webhookInfo;
@@ -34,7 +35,24 @@ async function handleCustom(query, body){
         silent: query.silent === "true" || false
     }
 
-    lo(message)
+    const res = await sendMessage(
+        message,
+        {
+            _id: query.id,
+            name: wh.name
+        },
+        {
+            system: true
+        }
+    );
+
+    if(res.err){
+        if(res.err[0] === "error.valid"){
+            return { code: 400, msg: "Invalid data" };
+        }else{
+            return { code: 400, msg: "Invalid data: "+res.err.slice(1).join(", ") };
+        }
+    }
 
     return { code: 200, msg: "Webhook processed and message sent" };
 }

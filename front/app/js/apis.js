@@ -1,15 +1,34 @@
 const apis = {
     www: {
         changeUserID(id){
-            if(vars.apisTemp.user[id]) return vars.apisTemp.user[id];
-            const data = apis.www.getInServer("/api/userId?user="+id);
-            vars.apisTemp.user[id] = data;
-            return data;
+            const chat = vars.chat.to;
+            const temp = vars.apisTemp.user;
+            if(chat.startsWith("$") || chat == "main"){
+                if(temp.main[id]) return temp.main[id];
+                const data = apis.www.getInServer("/api/userId?user="+id).name;
+                temp.main[id] = data;
+                return data;
+            }
+            if(!temp[chat]) temp[chat] = {};
+
+            const issetData = temp[chat][id];
+            if(issetData) return issetData;
+            if(issetData == 0) return temp.main[id];
+
+            const data = apis.www.getInServer("/api/userId?user="+id+"&chat="+chat);
+            if(data.isServer){
+                temp[chat][id] = data.name;
+            }else{
+                temp.main[id] = data.name;
+                temp[chat][id] = 0;
+            }
+            
+            return data.name;
         },
 
         changeChat(id){
             if(vars.apisTemp.chat[id]) return vars.apisTemp.chat[id];
-            const data = apis.www.getInServer("/api/chatId?chat="+id);
+            const data = apis.www.getInServer("/api/chatId?chat="+id).name;
             vars.apisTemp.chat[id] = data;
             return data;
         },
@@ -18,10 +37,11 @@ const apis = {
             const dataS = cw.get(url);
             const data = JSON.parse(dataS);
             if(data.err){
-                alert("Error getInServer: url: "+url+"  ::  "+dataS);
+                uiFunc.uiMsg(translateFunc.get("Error fetching data from the server") + ".");
+                debugFunc.msg(data);
                 return null;
             }
-            return data.msg;
+            return data;
         }
     },
     app: {
