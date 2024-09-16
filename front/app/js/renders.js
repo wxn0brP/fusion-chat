@@ -85,7 +85,7 @@ const renderFunc = {
     },
 
     localUserProfile(){
-        navs__user__name.innerHTML = vars.user.fr;
+        navs__user__name.innerHTML = apis.www.changeUserID(vars.user._id);
         navs__user__status.innerHTML = vars.user.statusText || vars.user.status || "Online";
     },
 

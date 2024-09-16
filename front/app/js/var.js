@@ -13,7 +13,9 @@ const vars = {
     messCount: 40,
     baseTitle: `Fusion Chat`,
     apisTemp: {
-        user: {},
+        user: {
+            main: {},
+        },
         chat: {},
     },
     lastMess: {},
