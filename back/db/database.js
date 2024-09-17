@@ -11,11 +11,17 @@ class DataBase{
      * Create a new database instance.
      * @constructor
      * @param {string} folder - The folder path where the database files are stored.
-     * @param {number} [cacheThreshold=3] - The cache threshold for database entries (default: 3).
-     * @param {number} [ttl=300000] - The time-to-live (TTL) for cached entries in milliseconds (default: 300,000 milliseconds or 5 minutes).
+     * @param {object} [options] - The options object.
+     * @param {number} [options.cacheThreshold=3] - The cache threshold for database entries (default: 3).
+     * @param {number} [options.cacheTTL=300000] - The time-to-live (TTL) for cached entries in milliseconds (default: 300,000 milliseconds or 5 minutes).
      */
-    constructor(folder, cacheThreshold=3, ttl=300_000){
-        this.dbAction = new dbActionC(folder, cacheThreshold, ttl);
+    constructor(folder, options={}){
+        options = {
+            cacheThreshold: 3,
+            cacheTTL: 300_000,
+            ...options
+        }
+        this.dbAction = new dbActionC(folder, options);
         this.executor = new executorC();
     }
 

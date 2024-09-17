@@ -2,7 +2,7 @@ const fs = require("fs");
 const gen = require("./gen");
 const format = require("./format");
 const fileM = require("./file");
-const CacheManager = require("./cacheManager");
+// const CacheManager = require("./cacheManager");
 
 const maxFileSize = 2 * 1024 * 1024; //2 MB
 
@@ -15,12 +15,11 @@ class dbActionC{
      * Creates a new instance of dbActionC.
      * @constructor
      * @param {string} folder - The folder where database files are stored.
-     * @param {number} cacheThreshold - The cache threshold for query results.
-     * @param {number} ttl - The time-to-live (TTL) for cached data.
+     * @param {object} options - The options object.
      */
-    constructor(folder, cacheThreshold, ttl){
+    constructor(folder, options){
         this.folder = folder;
-        this.cacheManager = new CacheManager(cacheThreshold, ttl);
+        // this.cacheManager = new CacheManager(options.cacheThreshold, options.cacheTTL);
         
         if(!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
     }
@@ -30,7 +29,14 @@ class dbActionC{
      * @returns {string[]} An array of database names.
      */
     getDBs(){
-        return fs.readdirSync(this.folder);
+        const collections = fs.readdirSync(this.folder, { recursive: true, withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .map(dirent => {
+                if(dirent.parentPath === this.folder) return dirent.name;
+                return dirent.parentPath.replace(this.folder + "/", "") + "/" + dirent.name
+            });
+
+        return collections;
     }
 
     /**
@@ -76,7 +82,7 @@ class dbActionC{
         options.max = options.max || -1;
 
         this.checkCollection(collection);
-        let files = fs.readdirSync(this.folder + "/" + collection).filter(file => !/\.tmp$/.test(file));
+        const files = getSortedFiles(this.folder + "/" + collection);
         if(options.reverse) files.reverse();
         let datas = [];
 
@@ -112,7 +118,7 @@ class dbActionC{
      */
     async findOne(collection, arg){
         this.checkCollection(collection);
-        let files = fs.readdirSync(this.folder + "/" + collection).filter(file => !/\.tmp$/.test(file));
+        const files = getSortedFiles(this.folder + "/" + collection);
         files.reverse();
 
         for(let f of files){
@@ -192,23 +198,35 @@ class dbActionC{
  */
 function getLastFile(path){
     if(!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
-    let files = fs.readdirSync(path).filter(file => !/\.tmp$/.test(file));
+    const files = getSortedFiles(path);
 
     if(files.length == 0){
         fs.writeFileSync(path+"/1.db", "");
         return "1.db";
     }
-    files = files.sort();
+
     const last = files[files.length-1];
-    const info = path + "/" + last;
-    if(fs.statSync(info).size > maxFileSize){
-        const temName = last.replace(".db", "");
-        const int = parseInt(temName) + 1;
-        fs.writeFileSync(path + "/" + int + ".db", "");
-        return int+".db";
-    }else{
-        return last;
-    }
+    const info = path + "/" + last + ".db";
+
+    if(fs.statSync(info).size < maxFileSize) return last + ".db";
+    
+    const num = last + 1;
+    fs.writeFileSync(path + "/" + num + ".db", "");
+    return num+".db";
+}
+
+/**
+ * Get all files in a directory sorted by name.
+ * @param {string} path - The path to the directory.
+ * @return {string[]} An array of file names sorted by name.
+ */
+function getSortedFiles(path){
+    let files = fs.readdirSync(path).filter(file => file.endsWith(".db"));
+    if(files.length == 0) return [];
+    files = files.map(file => parseInt(file.replace(".db", "")))
+    files = files.sort();
+    files = files.map(file => file+".db");
+    return files;
 }
 
 module.exports = dbActionC;
