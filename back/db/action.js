@@ -82,7 +82,7 @@ class dbActionC{
         options.max = options.max || -1;
 
         this.checkCollection(collection);
-        const files = getSortedFiles(this.folder + "/" + collection);
+        const files = getSortedFiles(this.folder + "/" + collection).map(f => f.f);
         if(options.reverse) files.reverse();
         let datas = [];
 
@@ -118,7 +118,7 @@ class dbActionC{
      */
     async findOne(collection, arg){
         this.checkCollection(collection);
-        const files = getSortedFiles(this.folder + "/" + collection);
+        const files = getSortedFiles(this.folder + "/" + collection).map(f => f.f);
         files.reverse();
 
         for(let f of files){
@@ -206,11 +206,11 @@ function getLastFile(path){
     }
 
     const last = files[files.length-1];
-    const info = path + "/" + last + ".db";
+    const info = path + "/" + last.f;
 
-    if(fs.statSync(info).size < maxFileSize) return last + ".db";
+    if(fs.statSync(info).size < maxFileSize) return last.f;
     
-    const num = last + 1;
+    const num = last.i + 1;
     fs.writeFileSync(path + "/" + num + ".db", "");
     return num+".db";
 }
@@ -225,7 +225,7 @@ function getSortedFiles(path){
     if(files.length == 0) return [];
     files = files.map(file => parseInt(file.replace(".db", "")))
     files = files.sort();
-    files = files.map(file => file+".db");
+    files = files.map(file => { return { i: file, f: file+".db" } });
     return files;
 }
 
