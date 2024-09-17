@@ -25,7 +25,7 @@ SettingsServerManager.prototype.renderWebhooks = function(){
         const webhook = {
             whid: id,
             name: "Webhook",
-            template: "Webhook",
+            template: "$content",
             chnl,
             ajv: {},
             required: []
