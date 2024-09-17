@@ -159,11 +159,18 @@ class DataBase{
      * @param {function|Object} search - The query. It can be an object or a function.
      * @param {function|Object} arg - The search criteria for the update.
      * @param {function|Object} add_arg - The arguments to be added to the new entry.
+     * @param {boolean} id_gen - Whether to generate an ID for the entry. Default is true.
      * @return {Promise<boolean>} A Promise that resolves to `true` if the entry was updated, or `false` if it was added.
      */
-    async updateOneOrAdd(collection, search, arg, add_arg={}){
+    async updateOneOrAdd(collection, search, arg, add_arg={}, id_gen=true){
         const res = await this.updateOne(collection, search, arg);
-        if(!res) await this.add(collection, Object.assign(search, arg, add_arg));
+        if(!res){
+            const assignData = [];
+            if(typeof search === "object" && !Array.isArray(search)) assignData.push(search);
+            if(typeof arg === "object" && !Array.isArray(arg)) assignData.push(arg);
+            if(typeof add_arg === "object" && !Array.isArray(add_arg)) assignData.push(add_arg);
+            await this.add(collection, Object.assign({}, ...assignData), id_gen);
+        }
         return res;
     }
 
