@@ -4,8 +4,8 @@ const valid = require("../../logic/validData");
 async function getUserName(id, user){
     if(!user) user = await global.db.data.findOne("user", { _id: id });
     if(!user) return;
-    const pseudo = await global.db.userDatas.findOne(id, (d) => !!d.pseudo);
-    return pseudo ? pseudo.pseudo : user.name;
+    const nick = await global.db.userDatas.findOne(id, (d) => !!d.nick);
+    return nick ? nick.nick : user.name;
 }
 
 async function getWebhookName(id, chat){
