@@ -101,10 +101,11 @@ class CollectionManager{
      * @param {function|Object} search - The query. It can be an object or a function.
      * @param {function|Object} arg - The search criteria for the update.
      * @param {function|Object} add_arg - The arguments to be added to the new entry.
+     * @param {boolean} id_gen - Whether to generate an ID for the entry. Default is true.
      * @return {Promise<boolean>} A Promise that resolves to `true` if the entry was updated, or `false` if it was added.
      */
-    async updateOneOrAdd(search, arg, add_arg={}){
-        return await this.db.updateOneOrAdd(this.collection, search, arg, add_arg);
+    async updateOneOrAdd(search, arg, add_arg={}, id_gen=true){
+        return await this.db.updateOneOrAdd(this.collection, search, arg, add_arg, id_gen);
     }
 }
 
