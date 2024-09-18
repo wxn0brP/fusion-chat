@@ -7,6 +7,7 @@ const settings = require("./settings");
 const chats = require("./chats");
 const evt = require("./evt");
 const friends = require("./friends");
+const other = require("./other");
 
 const tmpBan = new Map();
 
@@ -103,4 +104,5 @@ io.of("/").on("connection", (socket) => {
     chats(socket);
     friends(socket);
     evt(socket);
+    other(socket);
 });
