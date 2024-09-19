@@ -8,7 +8,7 @@ document.querySelector("form").addEventListener("submit", (e) => {
         return errDiv.innerHTML = "Code is required.";
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/register-code", false);
+    xhr.open("POST", "/api/register-code", false);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({ code: code }));
     const res = JSON.parse(xhr.responseText);

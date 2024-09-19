@@ -44,7 +44,7 @@ document.querySelector("form").addEventListener("submit", (e) => {
     const { login, password, email } = inputs;
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/register", false);
+    xhr.open("POST", "/api/register", false);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({ name: login, password, email }));
     const res = JSON.parse(xhr.responseText);

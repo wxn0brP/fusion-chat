@@ -59,7 +59,7 @@ document.querySelector("form").addEventListener("submit", (e) => {
     pass = pass.trim();
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/login", false);
+    xhr.open("POST", "/api/login", false);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({ name: login, password: pass }));
     let res = xhr.responseText;
