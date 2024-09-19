@@ -88,8 +88,6 @@ function qrcodeC(url){
         correctLevel : QRCode.CorrectLevel.H
     });
     qrcode.makeCode(url);
-    document.querySelector("#qrcode-qr canvas").classList = "s m_12 l_12 u_12"
-    document.querySelector("#qrcode-qr img").classList = "s m_12 l_12 u_12"
 }
 
 function createCode(){
