@@ -1,28 +1,80 @@
-const dbActionC = require("./action");
-const executorC = require("./executor");
-const CollectionManager = require("./CollectionManager");
+const fetch = require("node-fetch");
+const CollectionManager = require("../../CollectionManager");
 
 /**
  * Represents a database management class for performing CRUD operations.
+ * Uses a remote database.
  * @class
  */
-class DataBase{
+class DataBaseRemote{
     /**
      * Create a new database instance.
      * @constructor
-     * @param {string} folder - The folder path where the database files are stored.
+     * @param {object} remote - The remote database object.
+     * @param {string} remote.name - The name of the database.
+     * @param {string} remote.folder - The folder path where the database files are stored.
+     * @param {string} remote.auth - The authentication token.
+     * @param {string} remote.url - The URL of the remote database.
      * @param {object} [options] - The options object.
      * @param {number} [options.cacheThreshold=3] - The cache threshold for database entries (default: 3).
      * @param {number} [options.cacheTTL=300000] - The time-to-live (TTL) for cached entries in milliseconds (default: 300,000 milliseconds or 5 minutes).
      */
-    constructor(folder, options={}){
-        options = {
-            cacheThreshold: 3,
-            cacheTTL: 300_000,
-            ...options
-        }
-        this.dbAction = new dbActionC(folder, options);
-        this.executor = new executorC();
+    constructor(remote, options){
+        this.remote = remote;
+        this.options = options;
+    }
+
+    /**
+     * Initialize the database.
+     * @async
+     * @function
+     * @returns {Promise<boolean>} A Promise that resolves when the database is initialized.
+     */
+    async _init(){
+        const req = await fetch(this.remote.url + "/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": this.remote.auth
+            },
+            body: JSON.stringify({
+                name: this.remote.name,
+                path: this.remote.path,
+                type: "database",
+                options: this.options
+            })
+        });
+
+        const res = await req.json();
+        if(res.err) throw new Error(res.msg);
+        return true;
+    }
+
+    /**
+     * Make a request to the remote database.
+     * @async
+     * @function
+     * @param {string} type - The type of the request.
+     * @param {object} data - The data to send with the request.
+     * @returns {Promise<*>} A Promise that resolves with the result of the request.
+     * @throws {Error} If the request failed.
+     */
+    async _request(type, data){
+        data.db = this.remote.name;
+        const req = await fetch(this.remote.url + "/database/" + type, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": this.remote.auth
+            },
+            body: JSON.stringify(data)
+        });
+
+        const res = await req.json();
+        if(res.err) throw new Error(res.msg);
+        return res.result;
     }
 
     /**
@@ -41,8 +93,8 @@ class DataBase{
      * @function
      * @returns {string[]} An array of database names.
      */
-    getDBs(){
-        return this.dbAction.getDBs();
+    async getDBs(){
+        return await this._request("getDBs", {});
     }
 
     /**
@@ -52,7 +104,7 @@ class DataBase{
      * @param {string} collection - The collection to check.
      */
     checkCollection(collection){
-        this.dbAction.checkCollection(collection);
+        return this._request("checkCollection", { collection });
     }
 
     /**
@@ -66,7 +118,7 @@ class DataBase{
      * @returns {Promise<Object>} A Promise that resolves with the added data.
      */
     async add(collection, data, id_gen=true){
-        return await this.executor.addOp(this.dbAction.add.bind(this.dbAction), collection, data, id_gen);
+        return await this._request("add", { collection, data, id_gen });
     }
 
     /**
@@ -83,7 +135,8 @@ class DataBase{
      * @returns {Promise<Array<Object>>} A Promise that resolves with the matching data.
      */
     async find(collection, search, context={}, options={}){
-        return await this.executor.addOp(this.dbAction.find.bind(this.dbAction), collection, search, context, options);
+        if(typeof search === "function") search = search.toString();
+        return await this._request("find", { collection, search, options, context });
     }
 
     /**
@@ -97,7 +150,8 @@ class DataBase{
      * @returns {Promise<Object|null>} A Promise that resolves with the first matching data entry.
      */
     async findOne(collection, search, context={}){
-        return await this.executor.addOp(this.dbAction.findOne.bind(this.dbAction), collection, search, context);
+        if(typeof search === "function") search = search.toString();
+        return await this._request("findOne", { collection, search, context });
     }
 
     /**
@@ -112,7 +166,9 @@ class DataBase{
      * @returns {Promise<boolean>} A Promise that resolves when the data is updated.
      */
     async update(collection, search, arg, context={}){
-        return await this.executor.addOp(this.dbAction.update.bind(this.dbAction), collection, search, arg, context);
+        if(typeof search === "function") search = search.toString();
+        if(typeof arg === "function") arg = arg.toString();
+        return await this._request("update", { collection, search, arg, context });
     }
 
     /**
@@ -127,7 +183,9 @@ class DataBase{
      * @returns {Promise<boolean>} A Promise that resolves when the data entry is updated.
      */
     async updateOne(collection, search, arg, context={}){
-        return await this.executor.addOp(this.dbAction.updateOne.bind(this.dbAction), collection, search, arg, context);
+        if(typeof search === "function") search = search.toString();
+        if(typeof arg === "function") arg = arg.toString();
+        return await this._request("updateOne", { collection, search, arg, context });
     }
 
     /**
@@ -141,7 +199,8 @@ class DataBase{
      * @returns {Promise<boolean>} A Promise that resolves when the data is removed.
      */
     async remove(collection, search, context={}){
-        return await this.executor.addOp(this.dbAction.remove.bind(this.dbAction), collection, search, context);
+        if(typeof search === "function") search = search.toString();
+        return await this._request("remove", { collection, search, context });
     }
 
     /**
@@ -155,7 +214,8 @@ class DataBase{
      * @returns {Promise<boolean>} A Promise that resolves when the data entry is removed.
      */
     async removeOne(collection, search, context={}){
-        return await this.executor.addOp(this.dbAction.removeOne.bind(this.dbAction), collection, search, context);
+        if(typeof search === "function") search = search.toString();
+        return await this._request("removeOne", { collection, search, context });
     }
 
     /**
@@ -170,15 +230,10 @@ class DataBase{
      * @return {Promise<boolean>} A Promise that resolves to `true` if the entry was updated, or `false` if it was added.
      */
     async updateOneOrAdd(collection, search, arg, add_arg={}, context={}, id_gen=true){
-        const res = await this.updateOne(collection, search, arg, context);
-        if(!res){
-            const assignData = [];
-            if(typeof search === "object" && !Array.isArray(search)) assignData.push(search);
-            if(typeof arg === "object" && !Array.isArray(arg)) assignData.push(arg);
-            if(typeof add_arg === "object" && !Array.isArray(add_arg)) assignData.push(add_arg);
-            await this.add(collection, Object.assign({}, ...assignData), id_gen);
-        }
-        return res;
+        if(typeof search === "function") search = search.toString();
+        if(typeof arg === "function") arg = arg.toString();
+        if(typeof add_arg === "function") add_arg = add_arg.toString();
+        return await this._request("updateOneOrAdd", { collection, search, arg, add_arg, id_gen, context });
     }
 
     /**
@@ -187,9 +242,9 @@ class DataBase{
      * @param {string} collection - The name of the collection to remove.
      * @return {void}
      */
-    removeDb(collection){
-         this.dbAction.removeDb(collection);
+    removeDb(name){
+        return this._request("removeDb", { name });
     }
 }
 
-module.exports = DataBase;
+module.exports = DataBaseRemote;

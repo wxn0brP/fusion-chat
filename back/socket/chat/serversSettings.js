@@ -79,7 +79,8 @@ module.exports = (socket) => {
             await saveDbChanges(id, categoriesChanges, "cid");
             await saveDbChanges(id, channelsChanges, "chid");
             await saveDbChanges(id, rolesChanges, "rid");
-            for(const item of usersChanges.itemsToUpdate) await global.db.usersPerms.update(id, (u) => u.uid == item.uid, item);
+            for(const item of usersChanges.itemsToUpdate)
+                await global.db.usersPerms.update(id, (u, item) => u.uid == item.uid, item, item);
             await saveDbChanges(id, emojisChanges, "unicode");
 
             await processEmojis(id, emojisChanges);
@@ -99,8 +100,8 @@ async function saveDbChanges(doc, changes, idName="_id"){
     const db = global.db.groupSettings.c(doc);
 
     for(const item of itemsToAdd) await db.add(item, false);
-    for(const item of itemsToRemove) await db.remove((r) => r[idName] == item[idName]);
-    for(const item of itemsToUpdate) await db.update((r) => r[idName] == item[idName], item);
+    for(const item of itemsToRemove) await db.remove((r, item) => r[idName] == item[idName], item);
+    for(const item of itemsToUpdate) await db.update((r, item) => r[idName] == item[idName], item, item);
 }
 
 function processCategoriesAndChannelIds(categories, channels){

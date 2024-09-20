@@ -114,7 +114,7 @@ module.exports = (socket) => {
                 if(!perm.visable) return socket.emit("error", "channel is not exist");
             }
 
-            const responeAll = await global.db.mess.find(to, { chnl }, { reverse: true, max: end+start });
+            const responeAll = await global.db.mess.find(to, { chnl }, {}, { reverse: true, max: end+start });
             const respone = responeAll.slice(start, end);
 
             socket.emit("message.fetch", respone);
@@ -144,18 +144,18 @@ module.exports = (socket) => {
                     const p2 = to.replace("$", "");
                     toM = chatMgmt.combinateId(p1, p2);
                 }
-                const lastIdMess = await global.db.mess.find(toM, { chnl }, { reverse: true, max: 1 });
+                const lastIdMess = await global.db.mess.find(toM, { chnl }, {}, { reverse: true, max: 1 });
                 if(lastIdMess.length == 0) return;
 
                 mess_id = lastIdMess[0]._id;
                 socket.emit("message.markAsRead", to, chnl, mess_id);
             }
 
-            await global.db.userDatas.updateOne(socket.user._id, search, (data) => {
+            await global.db.userDatas.updateOne(socket.user._id, search, (data, context) => {
                 if(!data.last) data.last = {};
-                data.last[chnl] = mess_id;
+                data.last[context.chnl] = context.mess_id;
                 return data;
-            });
+            }, { chnl, mess_id });
         }catch(e){
             socket.logError(e);
         }
@@ -216,10 +216,10 @@ module.exports = (socket) => {
                 server = chatMgmt.combinateId(p1, p2);
             }
 
-            const results = await global.db.mess.find(server, (data) => {
+            const results = await global.db.mess.find(server, (data, context) => {
                 if(data.chnl != chnl) return false;
-                return filterMessages(query, data);
-            });
+                return filterMessages(context.query, data);
+            }, { query });
 
             socket.emit("message.search", results);
         }catch(e){
@@ -275,10 +275,10 @@ module.exports = (socket) => {
                 server = chatMgmt.combinateId(p1, p2);
             }
 
-            const results = await global.db.mess.find(server, (data) => {
-                if(data.chnl != chnl) return false;
+            const results = await global.db.mess.find(server, (data, context) => {
+                if(data.chnl != context.chnl) return false;
                 return data.pinned === true;
-            });
+            }, { chnl });
 
             socket.emit("message.fetch.pinned", results);
         }catch(e){
@@ -289,7 +289,7 @@ module.exports = (socket) => {
 
 global.getChnlPerm = async function(user, server, chnl){
     const permission = new permissionSystem(server);
-    const channel = await global.db.groupSettings.findOne(server, c => c.chid == chnl);
+    const channel = await global.db.groupSettings.findOne(server, (c, context) => c.chid == context.chnl, { chnl });
     if(!channel) return {
         visable: false,
         text: false

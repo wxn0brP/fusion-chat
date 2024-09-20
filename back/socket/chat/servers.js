@@ -111,6 +111,7 @@ module.exports = (socket) => {
             global.db.groupSettings.removeDb(id);
             global.db.usersPerms.removeDb(id);
             global.db.mess.removeDb(id);
+            global.db.groupData.removeDb(id);
 
             for(const user of users) global.sendToSocket(user, "refreshData", "group.get");
         }catch(e){

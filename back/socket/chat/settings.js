@@ -33,7 +33,7 @@ module.exports = (socket) => {
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(nickname, 0, 30)) return socket.emit("error.valid", "profile.set_nickname", "nickname");
 
-            await global.db.userDatas.updateOneOrAdd(socket.user._id, (d) => !!d.nick, { nick: nickname }, {}, false);
+            await global.db.userDatas.updateOneOrAdd(socket.user._id, (d) => !!d.nick, { nick: nickname }, {}, {}, false);
         }catch(e){
             socket.logError(e);
         }
