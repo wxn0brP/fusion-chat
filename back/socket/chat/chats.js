@@ -27,7 +27,7 @@ module.exports = (socket) => {
             for(let i = 0; i < privs.length; i++){
                 const priv = privs[i];
                 const id = chatMgmt.combinateId(socket.user._id, priv.priv);
-                const lastMess = await global.db.mess.find(id, {}, { reverse: true, max: 1 });
+                const lastMess = await global.db.mess.find(id, {}, {}, { reverse: true, max: 1 });
                 if(lastMess.length == 0) continue;
 
                 privs.find(p => p.priv == priv.priv).lastMessId = lastMess[0]._id;

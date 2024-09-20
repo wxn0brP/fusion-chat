@@ -72,12 +72,13 @@ class dbActionC{
      * @async
      * @param {string} collection - The name of the collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
+     * @param {Object} context - The context object (for functions).
      * @param {Object} options - The options for the search.
      * @param {number} options.max - The maximum number of entries to return. Default is -1, meaning no limit.
      * @param {boolean} options.reverse - Whether to reverse the order of returned entries. Default is false.
      * @returns {Promise<Object[]>} A Promise that resolves to an array of matching entries.
      */
-    async find(collection, arg, options={}){
+    async find(collection, arg, context={}, options={}){
         options.reverse = options.reverse || false;
         options.max = options.max || -1;
 
@@ -89,7 +90,7 @@ class dbActionC{
         let totalEntries = 0;
 
         for(let f of files){
-            let data = await fileM.find(this.folder + "/" + collection + "/" + f, arg, options);
+            let data = await fileM.find(this.folder + "/" + collection + "/" + f, arg, context, options);
             if(options.reverse) data.reverse();
 
             if(options.max !== -1){
@@ -114,15 +115,16 @@ class dbActionC{
      * @async
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<Object|null>} A Promise that resolves to the first matching entry or null if not found.
      */
-    async findOne(collection, arg){
+    async findOne(collection, arg, context={}){
         this.checkCollection(collection);
         const files = getSortedFiles(this.folder + "/" + collection).map(f => f.f);
         files.reverse();
 
         for(let f of files){
-            let data = await fileM.findOne(this.folder + "/" + collection + "/" + f, arg);
+            let data = await fileM.findOne(this.folder + "/" + collection + "/" + f, arg, context);
             if(data){
                 return data;
             }
@@ -136,11 +138,12 @@ class dbActionC{
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @param {function|Object} obj - The updater function or object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were updated, or `false` otherwise.
      */
-    async update(collection, arg, obj){
+    async update(collection, arg, obj, context={}){
         this.checkCollection(collection);
-        return await fileM.update(this.folder, collection, arg, obj);
+        return await fileM.update(this.folder, collection, arg, obj, context);
     }
 
     /**
@@ -149,11 +152,12 @@ class dbActionC{
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @param {function|Object} obj - The updater function or object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was updated, or `false` otherwise.
      */
-    async updateOne(collection, arg, obj){
+    async updateOne(collection, arg, obj, context={}){
         this.checkCollection(collection);
-        return await fileM.update(this.folder, collection, arg, obj, true);
+        return await fileM.update(this.folder, collection, arg, obj, context, true);
     }
 
     /**
@@ -161,11 +165,12 @@ class dbActionC{
      * @async
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were removed, or `false` otherwise.
      */
-    async remove(collection, arg){
+    async remove(collection, arg, context={}){
         this.checkCollection(collection);
-        return await fileM.remove(this.folder, collection, arg);
+        return await fileM.remove(this.folder, collection, arg, context);
     }
 
     /**
@@ -173,11 +178,12 @@ class dbActionC{
      * @async
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was removed, or `false` otherwise.
      */
-    async removeOne(collection, arg){
+    async removeOne(collection, arg, context={}){
         this.checkCollection(collection);
-        return await fileM.remove(this.folder, collection, arg, true);
+        return await fileM.remove(this.folder, collection, arg, context, true);
     }
 
     /**

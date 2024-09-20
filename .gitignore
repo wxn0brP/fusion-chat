@@ -5,6 +5,7 @@ config
 .vscode
 app-test
 userFiles
+serverDB
 
 # files
 .env

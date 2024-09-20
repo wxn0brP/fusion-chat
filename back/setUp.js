@@ -19,3 +19,4 @@ dir("userFiles/servers");
 file("banedIP.json", "[]");
 file("mailConfig.json", "{}");
 preFile("file.js", "file");
+preFile("database.js", "database");

@@ -9,10 +9,11 @@ const more = require("../more");
  * @param {string} file - The file path to update.
  * @param {function|Object} search - The search criteria. It can be a function or an object.
  * @param {function|Object} updater - The updater function or object.
+ * @param {Object} context - The context object (for functions).
  * @param {boolean} [one=false] - Indicates whether to update only one matching entry (default: false).
  * @returns {Promise<boolean>} A Promise that resolves to `true` if the file was updated, or `false` otherwise.
  */
-async function updateWorker(file, search, updater, one=false){
+async function updateWorker(file, search, updater, context={}, one=false){
     file = pathRepair(file);
     if(!fs.existsSync(file)){
         await fs.promises.writeFile(file, "");
@@ -34,7 +35,7 @@ async function updateWorker(file, search, updater, one=false){
         let ob = false;
 
         if(typeof search === "function"){
-            ob = search(data) || false;
+            ob = search(data, context) || false;
         }else if(typeof search === "object" && !Array.isArray(search)){
             ob = more.hasFieldsAdvanced(data, search);
         }
@@ -42,7 +43,7 @@ async function updateWorker(file, search, updater, one=false){
         if(ob){
             let updateObj;
             if(typeof updater === "function"){
-                updateObj = updater(data);
+                updateObj = updater(data, context);
             }else if(typeof updater === "object" && !Array.isArray(updater)){
                 updateObj = more.updateObject(data, updater);
             }
@@ -63,15 +64,16 @@ async function updateWorker(file, search, updater, one=false){
  * @param {string} name - The name of the file to update.
  * @param {function|Object} arg - The search criteria. It can be a function or an object.
  * @param {function|Object} obj - The updater function or object.
+ * @param {Object} context - The context object (for functions).
  * @param {boolean} one - Indicates whether to update only one matching entry (default: false).
  * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were updated, or `false` otherwise.
  */
-async function update(folder, name, arg, obj, one){
+async function update(folder, name, arg, obj, context={}, one){
     let files = fs.readdirSync(folder + "/" + name).filter(file => !/\.tmp$/.test(file));
     files.reverse();
     let update = false;
     for(const file of files){
-        const updated = await updateWorker(folder + "/" + name + "/" + file, arg, obj, one);
+        const updated = await updateWorker(folder + "/" + name + "/" + file, arg, obj, context, one);
         if(one && updated) return true;
         update = update || updated;
     }
