@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+import got from "got";
 import CollectionManager from "../../CollectionManager.js";
 
 /**
@@ -31,23 +31,20 @@ class DataBaseRemote{
      * @returns {Promise<boolean>} A Promise that resolves when the database is initialized.
      */
     async _init(){
-        const req = await fetch(this.remote.url + "/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Authorization": this.remote.auth
-            },
-            body: JSON.stringify({
+        const res = await got.post(this.remote.url + "/register", {
+            json: {
                 name: this.remote.name,
                 path: this.remote.path,
                 type: "database",
                 options: this.options
-            })
+            },
+            headers: {
+                "Authorization": this.remote.auth
+            },
+            responseType: "json"
         });
 
-        const res = await req.json();
-        if(res.err) throw new Error(res.msg);
+        if(res.body.err) throw new Error(res.body.msg);
         return true;
     }
 
@@ -62,19 +59,16 @@ class DataBaseRemote{
      */
     async _request(type, data){
         data.db = this.remote.name;
-        const req = await fetch(this.remote.url + "/database/" + type, {
-            method: "POST",
+        const res = await got.post(this.remote.url + "/database/" + type, {
+            json: data,
             headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
                 "Authorization": this.remote.auth
             },
-            body: JSON.stringify(data)
+            responseType: "json"
         });
 
-        const res = await req.json();
-        if(res.err) throw new Error(res.msg);
-        return res.result;
+        if(res.body.err) throw new Error(res.body.msg);
+        return res.body.result;
     }
 
     /**
