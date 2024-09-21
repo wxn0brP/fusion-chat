@@ -1,5 +1,6 @@
-const router = new require("express").Router();
-const parseParam = require("./function");
+import { Router } from "express";
+import parseParam from "./function.js";
+const router = Router();
 
 router.post("/getDBs", (req, res) => {
     try{
@@ -163,4 +164,4 @@ router.post("/removeDb", async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

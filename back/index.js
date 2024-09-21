@@ -1,46 +1,45 @@
-async function main(){
-    require("./setUp");
-    require("dotenv").config();
-    global.dir = __dirname + "/";
-    require("./global");
-    await (require("./dataBase"))();
-    require("./firebase");
+await import("./setUp.js");
+import dotenv from "dotenv";
+dotenv.config();
 
-    process.on("uncaughtException", (e) => {
-        try{
-            console.error("Uncaught Exception: ", e);
-            global.db.logs.add("uncaughtException", {
-                error: e.message,
-                stackTrace: e.stack
-            });
-        }catch(e){
-            console.error("Critical error: ", e);
-        }
-    });
-    process.on('unhandledRejection', (reason, promise) => {
-        try{
-            console.error("Unhandled Rejection: ", reason);
-            global.db.logs.add("unhandledRejection", {
-                reason: reason,
-                promise: promise
-            })
-        }catch(e){
-            console.error("Critical error: ", e);
-        }
-    });
+global.dir = "file://" + process.cwd() + "/";
+await import("./global.js");
+await import("./dataBase.js");
+await import("./firebase.js");
 
-    const app = require("./express");
-    const server = require("http").createServer(app);
-    global.server = server;
+process.on("uncaughtException", (e) => {
+    try{
+        console.error("Uncaught Exception: ", e);
+        global.db.logs.add("uncaughtException", {
+            error: e.message,
+            stackTrace: e.stack
+        });
+    }catch(e){
+        console.error("Critical error: ", e);
+    }
+});
+process.on('unhandledRejection', (reason, promise) => {
+    try{
+        console.error("Unhandled Rejection: ", reason);
+        global.db.logs.add("unhandledRejection", {
+            reason: reason,
+            promise: promise
+        })
+    }catch(e){
+        console.error("Critical error: ", e);
+    }
+});
 
-    require("./socket");
+const app = (await import("./express/index.js")).default;
+import http from "http";
+const server = http.createServer(app);
+global.server = server;
 
-    lo("__________________"+(new Date()+"").split(" ").slice(1,5).join(" "));
-    server.listen(process.env.PORT, function(){
-        if(process.env.status == "dev"){
-            lo("http://localhost:"+process.env.PORT+"/app")
-        }
-    });
-}
+await import("./socket/index.js");
 
-main();
+lo("__________________"+(new Date()+"").split(" ").slice(1,5).join(" "));
+server.listen(process.env.PORT, function(){
+    if(process.env.status == "dev"){
+        lo("http://localhost:"+process.env.PORT+"/app")
+    }
+});

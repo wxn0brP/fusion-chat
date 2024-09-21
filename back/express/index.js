@@ -1,14 +1,16 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const crypto = require('crypto');
-const { auth } = require('../logic/auth');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import crypto from 'crypto';
+import { auth } from '../logic/auth.js';
+import cors from 'cors';
+
 const app = express();
 global.app = app;
 app.set('view engine', 'ejs');
 app.set('views', 'front');
 
-app.use(require("cors")({
+app.use(cors({
     origin: "*"
 }));
 
@@ -68,7 +70,7 @@ global.authenticateMiddleware = async (req, res, next) => {
     }
 };
 
-require("./route");
+await import("./route.js");
 
 app.use((req, res) => {
     res.render("main/404", (err, body) => {
@@ -82,4 +84,4 @@ app.use((req, res) => {
     });
 });
 
-module.exports = app;
+export default app;

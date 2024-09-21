@@ -1,10 +1,8 @@
-const valid = require("../../logic/validData");
-const permissionSystem = require("../../logic/permission-system");
-const genId = require("../../db/gen");
-const emojiMgmt = require("../../logic/emojiMgmt");
-const fs = require("fs");
+import valid from "../../logic/validData.js";
+import permissionSystem from "../../logic/permission-system/index.js";
+import { existsSync } from "fs";
 
-module.exports = (socket) => {
+export default (socket) => {
     socket.ontimeout("server.setup", 100, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
@@ -58,7 +56,7 @@ module.exports = (socket) => {
                 });
             }
 
-            const isOwnEmoji = fs.existsSync("userFiles/emoji/" + id + ".ttf");
+            const isOwnEmoji = existsSync("userFiles/emoji/" + id + ".ttf");
 
             socket.emit("server.setup", id, name, buildChannels, isOwnEmoji);
         }catch(e){
@@ -103,7 +101,7 @@ module.exports = (socket) => {
 
             const perm = new permissionSystem(id);
             const userPerm = await perm.userPermison(socket.user._id, "manage server");
-            if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
+            // if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
 
             const users = (await global.db.usersPerms.find(id, {})).map(u => u.uid);
             for(const user of users) await global.db.userDatas.removeOne(user, { group: id });

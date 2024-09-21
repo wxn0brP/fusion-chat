@@ -7,7 +7,7 @@ const usedIdsMap = new Map();
  * @param {number} [fill=1] - The fill value for each part (default: 1).
  * @returns {string} The generated unique identifier.
  */
-function genId(parts, fill=1){
+export default function genId(parts, fill=1){
     parts = changeInputToPartsArray(parts, fill);
     const time = getTime();
     const id = getUniqueRandom(time, parts);
@@ -95,5 +95,3 @@ function changeInputToPartsArray(parts, fill=1){
     if(typeof parts == "number") return Array(parts).fill(fill);
     return [1, 1];
 }
-
-module.exports = genId;

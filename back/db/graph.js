@@ -1,4 +1,4 @@
-const DataBase = require("./database");
+import DataBase from "./database.js";
 
 /**
  * A class representing a graph database.
@@ -85,4 +85,4 @@ class Graph{
     }
 }
 
-module.exports = Graph;
+export default Graph;

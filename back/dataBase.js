@@ -1,9 +1,7 @@
-const config = require("../config/database");
-const local = {
-    db: require("./db"),
-    graph: require("./db/graph")
-}
-const remote = require("./db/remote/client");
+import config from "../config/database.js";
+import local_db from "./db/database.js";
+import local_graph from "./db/graph.js";
+import { DataBase as DataBaseRemote, Graph as GraphRemote } from "./db/remote/client/index.js";
 
 global.db = {};
 const databases = [
@@ -36,10 +34,10 @@ function getRemoteConfig(name, path){
 async function initDataBase(name){
     const cfg = config[name];
     if(cfg.type === "local"){
-        return new local.db(cfg.path);
+        return new local_db(cfg.path);
     }else if(cfg.type === "remote"){
         const remoteCfg = getRemoteConfig(name, cfg.path);
-        return await remote.DataBase(remoteCfg);
+        return await DataBaseRemote(remoteCfg);
     }else{
         throw new Error("Unknown database type " + cfg.name);
     }
@@ -48,29 +46,19 @@ async function initDataBase(name){
 async function initGraph(name){
     const cfg = config[name];
     if(cfg.type === "local"){
-        return new local.graph(cfg.path);
+        return new local_graph(cfg.path);
     }else if(cfg.type === "remote"){
         const remoteCfg = getRemoteConfig(name, cfg.path);
-        return await remote.Graph(remoteCfg);
+        return await GraphRemote(remoteCfg);
     }else{
         throw new Error("Unknown database type " + cfg.name);
     }
 }
 
-/**
- * Initializes the database.
- * If the database type is set to "local", it will create local databases.
- * If the database type is set to "remote", it will connect to a remote database.
- * @async
- * @function
- * @returns {Promise<void>} A Promise that resolves when the database is initialized.
- */
-module.exports = async () => {
-    for(const database of databases){
-        if(database.type === "database"){
-            global.db[database.name] = await initDataBase(database.name);
-        }else if(database.type === "graph"){
-            global.db[database.name] = await initGraph(database.name);
-        }
+for(const database of databases){
+    if(database.type === "database"){
+        global.db[database.name] = await initDataBase(database.name);
+    }else if(database.type === "graph"){
+        global.db[database.name] = await initGraph(database.name);
     }
 }

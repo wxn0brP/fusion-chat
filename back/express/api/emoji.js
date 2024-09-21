@@ -1,23 +1,24 @@
-const router = require("express").Router();
-const multer = require("multer");
-const fs = require("fs");
-const { Image } = require("image-js");
-const path = require("path");
-const potrace = require("potrace");
+import { Router } from "express";
+import multer, { memoryStorage, MulterError } from "multer";
+import { writeFileSync, unlinkSync, existsSync, mkdirSync } from "fs";
+import { Image } from "image-js";
+import { join } from "path";
+import { trace } from "potrace";
+import valid from "../../logic/validData.js";
+import permissionSystem from "../../logic/permission-system/index.js";
 
-const valid = require("../../logic/validData");
-const permissionSystem = require("../../logic/permission-system");
+const router = Router();
 
 const baseServerPath = "userFiles/servers";
 const formats = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
 
-const storage = multer.memoryStorage();
+const storage = memoryStorage();
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         if(!formats.includes(file.mimetype)){
-            return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"), false);
+            return cb(new MulterError("LIMIT_UNEXPECTED_FILE"), false);
         }
         cb(null, true);
     }
@@ -38,7 +39,7 @@ function generatePrivateUseArea(){
     const start = 0xE000;
     const end = 0xF8FF;
     const unicodeRange = [];
-    for (let code=start; code<=end; code++){
+    for(let code=start; code<=end; code++){
         unicodeRange.push(code);
     }
     return unicodeRange;
@@ -53,21 +54,21 @@ function uploadEmoji(basePath, unicode, req, res){
             }
             try{
                 const buffer = req.file.buffer;
-                const pngPath = path.join(basePath, "temp.png");
+                const pngPath = join(basePath, "temp.png");
         
                 const pngFile = await Image.load(buffer);
                 await pngFile.save(pngPath, { format: "png", compressionLevel: 0 });
         
-                const svgPath = path.join(basePath, unicode.toString(16) + ".svg");
+                const svgPath = join(basePath, unicode.toString(16) + ".svg");
                 await new Promise((resolve, reject) => {
-                    potrace.trace(pngPath, (err, svg) => {
+                    trace(pngPath, (err, svg) => {
                         if(err) return reject(err);
-                        fs.writeFileSync(svgPath, svg);
+                        writeFileSync(svgPath, svg);
                         resolve();
                     });
                 });
 
-                fs.unlinkSync(pngPath);
+                unlinkSync(pngPath);
                 resolve(svgPath);
             }catch(err){
                 reject(err);
@@ -101,10 +102,10 @@ router.post("/uploadEmoji", global.authenticateMiddleware, async (req, res) => {
     }
 
     const unicode = availablesUnicodes[0];
-    const basePath = path.join(baseServerPath, server, "emojis");
+    const basePath = join(baseServerPath, server, "emojis");
 
-    if(!fs.existsSync(basePath)){
-        fs.mkdirSync(basePath, { recursive: true });
+    if(!existsSync(basePath)){
+        mkdirSync(basePath, { recursive: true });
     }
 
     const svgPath = await uploadEmoji(basePath, unicode, req, res);
@@ -120,4 +121,4 @@ router.post("/uploadEmoji", global.authenticateMiddleware, async (req, res) => {
     res.json({ err: false, msg: "Emoji uploaded successfully." });
 });
 
-module.exports = router;
+export default router;

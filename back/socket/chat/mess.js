@@ -1,14 +1,13 @@
-const sendMessage = require("../../logic/sendMessage");
-const chatMgmt = require("../../logic/chatMgmt");
-const valid = require("../../logic/validData");
-const permissionSystem = require("../../logic/permission-system");
-const { extractTimeFromId } = require("../../logic/utils");
+import sendMessage from "../../logic/sendMessage.js";
+import { combinateId } from "../../logic/chatMgmt.js";
+import valid from "../../logic/validData.js";
+import permissionSystem from "../../logic/permission-system/index.js";
+import { extractTimeFromId } from "../../logic/utils.js";
+import messageSearchData from "./valid/messageSearch.js";
 
-const validShema = {
-    messageSearch: valid.objAjv(require("./valid/messageSearch")),
-};
+const messageSearchShema = valid.objAjv(messageSearchData);
 
-module.exports = (socket) => {
+export default (socket) => {
     socket.ontimeout("mess", 200, async (req) => {
         try{
             const result = await sendMessage(req, socket.user);
@@ -30,7 +29,7 @@ module.exports = (socket) => {
             if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
-                to = chatMgmt.combinateId(p1, p2);
+                to = combinateId(p1, p2);
             }
 
             const mess = await global.db.mess.findOne(to, { _id });
@@ -67,7 +66,7 @@ module.exports = (socket) => {
             if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
-                to = chatMgmt.combinateId(p1, p2);
+                to = combinateId(p1, p2);
             }
 
             const mess = await global.db.mess.findOne(to, { _id });
@@ -106,7 +105,7 @@ module.exports = (socket) => {
             if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
-                to = chatMgmt.combinateId(p1, p2);
+                to = combinateId(p1, p2);
             }
 
             if(!privChat){
@@ -142,7 +141,7 @@ module.exports = (socket) => {
                 if(firendChat){
                     const p1 = socket.user._id;
                     const p2 = to.replace("$", "");
-                    toM = chatMgmt.combinateId(p1, p2);
+                    toM = combinateId(p1, p2);
                 }
                 const lastIdMess = await global.db.mess.find(toM, { chnl }, {}, { reverse: true, max: 1 });
                 if(lastIdMess.length == 0) return;
@@ -173,7 +172,7 @@ module.exports = (socket) => {
             if(server.startsWith("$")){
                 const p1 = socket.user._id;
                 const p2 = server.replace("$", "");
-                toM = chatMgmt.combinateId(p1, p2);
+                toM = combinateId(p1, p2);
             }
             const msg = await global.db.mess.findOne(toM, { _id: msgId });
             if(!msg) return socket.emit("error", "msg does not exist");
@@ -206,14 +205,14 @@ module.exports = (socket) => {
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(server)) return socket.emit("error.valid", "message.search", "server");
             if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.search", "chnl");
-            if(!validShema.messageSearch(query))
-                return socket.emit("error.valid", "message.search", "search", validShema.messageSearch.errors);
+            if(!messageSearchShema(query))
+                return socket.emit("error.valid", "message.search", "search", messageSearchShema.errors);
 
             const priv = server.startsWith("$");
             if(priv){
                 const p1 = socket.user._id;
                 const p2 = server.replace("$", "");
-                server = chatMgmt.combinateId(p1, p2);
+                server = combinateId(p1, p2);
             }
 
             const results = await global.db.mess.find(server, (data, context) => {
@@ -231,7 +230,7 @@ module.exports = (socket) => {
        try{
            if(!socket.user) return socket.emit("error", "not auth");
            if(!valid.id(server)) return socket.emit("error.valid", "message.pin", "server");
-           if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.pin", "chnl");
+           if(!valid.idOrSpecyficvalid(chnl, ["main"])) return socket.emit("error.valid", "message.pin", "chnl");
            if(!valid.id(msgId)) return socket.emit("error.valid", "message.pin", "msgId");
            if(!valid.bool(pin)) return socket.emit("error.valid", "message.pin", "pin");
            
@@ -240,7 +239,7 @@ module.exports = (socket) => {
            if(priv){
                const p1 = socket.user._id;
                const p2 = server.replace("$", "");
-               chat = chatMgmt.combinateId(p1, p2);
+               chat = combinateId(p1, p2);
            }
 
            await global.db.mess.updateOne(chat, { _id: msgId }, { pinned: pin });
@@ -272,7 +271,7 @@ module.exports = (socket) => {
             if(priv){
                 const p1 = socket.user._id;
                 const p2 = server.replace("$", "");
-                server = chatMgmt.combinateId(p1, p2);
+                server = combinateId(p1, p2);
             }
 
             const results = await global.db.mess.find(server, (data, context) => {

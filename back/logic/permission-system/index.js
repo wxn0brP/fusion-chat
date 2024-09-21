@@ -1,6 +1,6 @@
-const genId = require("../../db/gen");
-const sortRolesByHierarchy = require("./sortRolesByHierarchy");
-const sortUserRolesByHierarchy = require("./sortUserRolesByHierarchy");
+import genId from "../../db/gen.js";
+import sortRolesByHierarchy from "./sortRolesByHierarchy.js";
+import sortUserRolesByHierarchy from "./sortUserRolesByHierarchy.js";
 
 /**
  * Represents a permission system for managing roles and permissions.
@@ -126,4 +126,4 @@ class permissionSystem{
     }
 }
 
-module.exports = permissionSystem;
+export default permissionSystem;

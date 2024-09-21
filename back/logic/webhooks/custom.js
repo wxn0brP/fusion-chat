@@ -1,4 +1,4 @@
-const valid = require("../validData");
+import valid from "../validData.js";
 
 function getNestedValue(obj, path){
     return path.split(".").reduce((acc, part) => {
@@ -7,7 +7,7 @@ function getNestedValue(obj, path){
     }, obj);
 }
 
-function processTemplate(template, data){
+export function processTemplate(template, data){
     return template.replace(/\$([a-zA-Z0-9_.\[\]*]+)/g, (match, path) => {
         if(path.includes("[*]")){
             const arrayPath = path.split("[*]")[0];
@@ -33,16 +33,11 @@ function ajvSchema(schema, data){
     return ajv(data);
 }
 
-function check(webhook, data){
+export function check(webhook, data){
     let isValid = true;
 
     if(webhook.ajv && !ajvSchema(webhook.ajv, data)) isValid = false;
     if(webhook.required.length > 0 && !checkRequiredFields(webhook.required, data)) isValid = false;
 
     return isValid;
-}
-
-module.exports = {
-    check,
-    processTemplate
 }

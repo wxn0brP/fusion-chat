@@ -1,4 +1,4 @@
-const vm = require("node:vm");
+import { createContext, runInContext } from "node:vm";
 
 const sandbox = {
     console: {
@@ -19,11 +19,11 @@ const sandbox = {
     Buffer: undefined,
 };
 
-const context = vm.createContext(sandbox);
+const context = createContext(sandbox);
 
 function changeStringToFunction(func){
     try{
-        const userFunction = vm.runInContext(`(${func})`, context);
+        const userFunction = runInContext(`(${func})`, context);
         return userFunction;
     }catch(e){
         throw new Error("Invalid function");
@@ -40,4 +40,4 @@ function parseParam(param){
     }
 }
 
-module.exports = parseParam;
+export default parseParam;

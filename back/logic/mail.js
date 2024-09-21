@@ -1,9 +1,10 @@
-const mailer = require('nodemailer');
-const cfg = require("../../config/mailConfig.json");
+import { createTransport } from 'nodemailer';
+import fs from 'fs';
+const config = JSON.parse(fs.readFileSync("config/mailConfig.json", "utf8"));
 
-module.exports = (type, to, ...params) => {
+export default (type, to, ...params) => {
     try{
-        const smtpTransport = mailer.createTransport(cfg);
+        const smtpTransport = createTransport(config);
 
         let html = "";
         let subject = "";
@@ -37,7 +38,7 @@ module.exports = (type, to, ...params) => {
         }
 
         const mailOptions = {
-            from: cfg.from,
+            from: config.from,
             to,
             subject,
             html: wrapHtmlContent(subject, html).trim()

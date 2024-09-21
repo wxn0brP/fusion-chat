@@ -1,4 +1,4 @@
-function sortUserRolesByHierarchy(rolesArray, userRoles){
+export default function sortUserRolesByHierarchy(rolesArray, userRoles){
     const sortedRoles = [];
     for(const role of rolesArray){
         const rid = role.rid;
@@ -6,5 +6,3 @@ function sortUserRolesByHierarchy(rolesArray, userRoles){
     }
     return sortedRoles;
 }
-
-module.exports = sortUserRolesByHierarchy

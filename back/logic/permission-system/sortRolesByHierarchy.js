@@ -4,7 +4,7 @@
  * @param {Array} rolesArray - An array of role objects with 'rid' and 'parent' properties.
  * @returns {Array|boolean} - An array of sorted roles or false if invalid relationships are detected.
  */
-function sortRoles(rolesArray){
+export default function sortRoles(rolesArray){
     const sortedRoles = [];
     const seenRoleIds = {};
     const seenParents = {};
@@ -29,5 +29,3 @@ function sortRoles(rolesArray){
 
     return sortedRoles;
 }
-
-module.exports = sortRoles;

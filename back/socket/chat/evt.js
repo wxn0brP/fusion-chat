@@ -1,10 +1,10 @@
-const fs = require("fs");
+import { rm } from "fs";
 
-module.exports = (socket) => {
+export default (socket) => {
     socket.on("disconnect", () => {
         const sockets = global.getSocket(socket.user._id);
         if(sockets.length == 0){
-            fs.rm(`userFiles/${socket.user._id}`, { recursive: true, force: true }, (err) => {
+            rm(`userFiles/${socket.user._id}`, { recursive: true, force: true }, (err) => {
                 if(err) console.log(err);
             });
         }

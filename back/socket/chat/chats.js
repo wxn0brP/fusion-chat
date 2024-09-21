@@ -1,7 +1,7 @@
-const chatMgmt = require("../../logic/chatMgmt");
-const valid = require("../../logic/validData");
+import { combinateId, createChat, exitChat, createPriv, addUserToChat } from "../../logic/chatMgmt.js";
+import valid from "../../logic/validData.js";
 
-module.exports = (socket) => {
+export default (socket) => {
     socket.ontimeout("group.get", 100, async () => {
         try{
             const groups = await global.db.userDatas.find(socket.user._id, r => !!r.group);
@@ -26,7 +26,7 @@ module.exports = (socket) => {
 
             for(let i = 0; i < privs.length; i++){
                 const priv = privs[i];
-                const id = chatMgmt.combinateId(socket.user._id, priv.priv);
+                const id = combinateId(socket.user._id, priv.priv);
                 const lastMess = await global.db.mess.find(id, {}, {}, { reverse: true, max: 1 });
                 if(lastMess.length == 0) continue;
 
@@ -44,7 +44,7 @@ module.exports = (socket) => {
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(name, 0, 30)) return socket.emit("error.valid", "group.create", "name");
 
-            await chatMgmt.createChat(name, socket.user._id);
+            createChat(name, socket.user._id);
         }catch(e){
             socket.logError(e);
         } 
@@ -55,7 +55,7 @@ module.exports = (socket) => {
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error.valid", "id");
 
-            await chatMgmt.exitChat(id, socket.user._id);
+            exitChat(id, socket.user._id);
             global.sendToSocket(socket.user._id, "refreshData", "group.get");
         }catch(e){
             socket.logError(e);
@@ -78,7 +78,7 @@ module.exports = (socket) => {
             });
             if(priv) return socket.emit("error", "already priv");
 
-            await chatMgmt.createPriv(toId, socket.user._id);
+            await createPriv(toId, socket.user._id);
 
             global.sendToSocket(socket.user._id, "refreshData", "private.get");
             global.sendToSocket(toId, "refreshData", "private.get");
@@ -98,7 +98,7 @@ module.exports = (socket) => {
             const isBaned = await global.db.usersPerms.findOne(id, { ban: socket.user._id });
             if(isBaned) return socket.emit("error", "user is baned");
             
-            await chatMgmt.addUserToChat(id, socket.user._id);
+            await addUserToChat(id, socket.user._id);
             global.sendToSocket(socket.user._id, "refreshData", "group.get");
         }catch(e){
             socket.logError(e);

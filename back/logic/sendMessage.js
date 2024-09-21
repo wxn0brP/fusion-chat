@@ -1,5 +1,5 @@
-const chatMgmt = require("./chatMgmt");
-const valid = require("./validData");
+import { chatExsists } from "./chatMgmt.js";
+import valid from "./validData.js";
 
 /**
  * @async
@@ -21,13 +21,13 @@ const valid = require("./validData");
  * @return {Promise<object>} res - The result of the message sending operation.
  * @return {false|string[]} res.err - The error message or array of error messages if any.
  */
-async function sendMessage(req, user, options={}){
+export default async function sendMessage(req, user, options={}){
     if(!user) return { err: ["error", "not auth"] };
     if(typeof req !== "object") return { err: ["error.valid", "mess", "req"] };
     let { to, msg, chnl } = req;
 
     if(!valid.id(to))                           return { err: ["error.valid", "mess", "to"] };
-    if(!valid.idOrSpecyficStr(chnl, ["main"]))  return { err: ["error.valid", "mess", "chnl"] };
+    if(!valid.idOrSpecyficvalid.str(chnl, ["main"]))  return { err: ["error.valid", "mess", "chnl"] };
     if(!valid.str(msg, 0, 2000))                return { err: ["error.valid", "mess", "msg"] };
 
     //optional
@@ -47,10 +47,10 @@ async function sendMessage(req, user, options={}){
 
         let p1 = user._id;
         let p2 = to.replace("$", "");
-        to = chatMgmt.combinateId(p1, p2);
+        to = combinatevalid.id(p1, p2);
         global.db.mess.checkCollection(to);
     }else{
-        if(!chatMgmt.chatExsists(to)) return { err: ["error", "chat is not exists"] };
+        if(!chatExsists(to)) return { err: ["error", "chat is not exists"] };
     }
 
     if(!privChat && !options.system){
@@ -117,5 +117,3 @@ async function sendMessage(req, user, options={}){
 
     return { err: false };
 }
-
-module.exports = sendMessage;

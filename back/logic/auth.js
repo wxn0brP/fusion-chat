@@ -1,4 +1,4 @@
-const jwt = require("jwt-simple");
+import jwt from "jwt-simple";
 
 /**
  * Asynchronously authenticates a token and returns the corresponding user.
@@ -6,7 +6,7 @@ const jwt = require("jwt-simple");
  * @param {string} token - The token to be authenticated
  * @return {Promise<object>} The authenticated user if successful, otherwise false
  */
-async function auth(token){
+export async function auth(token){
     const data = decode(token);
     if(!data) return false;
 
@@ -34,7 +34,7 @@ async function auth(token){
  * @param {string} token - The JWT token to decode
  * @return {object|boolean} The decoded payload or false if decoding fails
  */
-function decode(token){
+export function decode(token){
     try{
         return jwt.decode(token, process.env.JWT || "secret");
     }catch{
@@ -48,7 +48,7 @@ function decode(token){
  * @param {Object} user - the user object
  * @return {string} the JWT token
  */
-function create(user){
+export function create(user){
     const pay = {
         id: user._id,
         exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30), // (60s * 60m * 24h * 30d)
@@ -56,7 +56,3 @@ function create(user){
 
     return jwt.encode(pay, process.env.JWT || "secret");
 }
-
-module.exports.auth = auth;
-module.exports.create = create;
-module.exports.decode = decode;

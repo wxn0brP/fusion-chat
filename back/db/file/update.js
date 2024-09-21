@@ -1,7 +1,7 @@
-const fs = require("fs");
-const { pathRepair, createRL } = require("./utils");
-const format = require("../format");
-const more = require("../more");
+import { existsSync, promises, appendFileSync, readdirSync } from "fs";
+import { pathRepair, createRL } from "./utils.js";
+import { parse, stringify } from "../format.js";
+import { hasFieldsAdvanced, updateObject } from "../more.js";
 
 /**
  * Updates a file based on search criteria and an updater function or object.
@@ -15,29 +15,29 @@ const more = require("../more");
  */
 async function updateWorker(file, search, updater, context={}, one=false){
     file = pathRepair(file);
-    if(!fs.existsSync(file)){
-        await fs.promises.writeFile(file, "");
+    if(!existsSync(file)){
+        await promises.writeFile(file, "");
         return false;
     }
-    await fs.promises.copyFile(file, file+".tmp");
-    await fs.promises.writeFile(file, "");
+    await promises.copyFile(file, file+".tmp");
+    await promises.writeFile(file, "");
 
     const rl = createRL(file+".tmp");
   
     let updated = false;
     for await(let line of rl){
         if(one && updated){
-            fs.appendFileSync(file, line+"\n");
+            appendFileSync(file, line+"\n");
             continue;
         }
 
-        const data = format.parse(line);
+        const data = parse(line);
         let ob = false;
 
         if(typeof search === "function"){
             ob = search(data, context) || false;
         }else if(typeof search === "object" && !Array.isArray(search)){
-            ob = more.hasFieldsAdvanced(data, search);
+            ob = hasFieldsAdvanced(data, search);
         }
 
         if(ob){
@@ -45,15 +45,15 @@ async function updateWorker(file, search, updater, context={}, one=false){
             if(typeof updater === "function"){
                 updateObj = updater(data, context);
             }else if(typeof updater === "object" && !Array.isArray(updater)){
-                updateObj = more.updateObject(data, updater);
+                updateObj = updateObject(data, updater);
             }
-            line = await format.stringify(updateObj);
+            line = await stringify(updateObj);
             updated = true;
         }
         
-        fs.appendFileSync(file, line+"\n");
+        appendFileSync(file, line+"\n");
     }
-    await fs.promises.writeFile(file+".tmp", "");
+    await promises.writeFile(file+".tmp", "");
     return updated;
 }
 
@@ -69,7 +69,7 @@ async function updateWorker(file, search, updater, context={}, one=false){
  * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were updated, or `false` otherwise.
  */
 async function update(folder, name, arg, obj, context={}, one){
-    let files = fs.readdirSync(folder + "/" + name).filter(file => !/\.tmp$/.test(file));
+    let files = readdirSync(folder + "/" + name).filter(file => !/\.tmp$/.test(file));
     files.reverse();
     let update = false;
     for(const file of files){
@@ -80,4 +80,4 @@ async function update(folder, name, arg, obj, context={}, one){
     return update;
 }
 
-module.exports = update;
+export default update;

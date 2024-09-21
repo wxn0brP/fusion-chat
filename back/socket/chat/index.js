@@ -1,13 +1,13 @@
-const { auth } = require("../../logic/auth");
-const mess = require("./mess");
-const servers = require("./servers");
-const serverSettings = require("./serversSettings");
-const voice = require("./voice");
-const settings = require("./settings");
-const chats = require("./chats");
-const evt = require("./evt");
-const friends = require("./friends");
-const other = require("./other");
+import { auth } from "../../logic/auth.js";
+import mess from "./mess.js";
+import servers from "./servers.js";
+import serverSettings from "./serversSettings.js";
+import voice from "./voice.js";
+import settings from "./settings.js";
+import chats from "./chats.js";
+import evt from "./evt.js";
+import friends from "./friends.js";
+import other from "./other.js";
 
 const tmpBan = new Map();
 

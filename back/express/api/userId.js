@@ -1,5 +1,6 @@
-const router = require("express").Router();
-const valid = require("../../logic/validData");
+import { Router } from "express";
+import valid from "../../logic/validData.js";
+const router = Router();
 
 async function getUserName(id, user){
     if(!user) user = await global.db.data.findOne("user", { _id: id });
@@ -40,4 +41,4 @@ router.get("/userId", async (req, res) => {
     res.json({ err: false, name: serverName || userName, isServer: !!serverName });
 });
 
-module.exports = router;
+export default router;

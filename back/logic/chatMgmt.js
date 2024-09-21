@@ -1,5 +1,5 @@
-const fs = require('fs');
-const genId = require("../db/gen");
+import fs from "fs";
+import genId from "../db/gen.js";
 
 /**
  * A function to combine two user ids into a new chat id.
@@ -8,7 +8,7 @@ const genId = require("../db/gen");
  * @param {string} id_2 - The second user id
  * @return {string} The combined chat id
  */
-function combinateId(id_1, id_2) {
+export function combinateId(id_1, id_2) {
     const [id1, id2] = [id_1, id_2].sort();
 
     // Extract prefixes from user ids
@@ -32,7 +32,7 @@ function combinateId(id_1, id_2) {
  * @param {string} chatId - the ID of the chat to check
  * @return {boolean} true if the chat exists, false otherwise
  */
-function chatExsists(chatId){
+export function chatExsists(chatId){
     return fs.existsSync(global.dir+"../data/groupSettings/"+chatId);
 }
 
@@ -43,7 +43,7 @@ function chatExsists(chatId){
  * @param {string} ownerId - The ID of the chat owner
  * @return {string} The ID of the newly created chat
  */
-async function createChat(name, ownerId){
+export async function createChat(name, ownerId){
     const chatId = genId();
     const adminId = genId();
     
@@ -101,7 +101,7 @@ async function createChat(name, ownerId){
  * @param {string[]} roles - The roles to assign to the user
  * @return {Promise<void>} A Promise that resolves when the user is added to the chat
  */
-async function addUserToChat(chatId, userId, roles=[]){
+export async function addUserToChat(chatId, userId, roles=[]){
     await global.db.usersPerms.add(chatId, {
         uid: userId,
         roles,
@@ -119,7 +119,7 @@ async function addUserToChat(chatId, userId, roles=[]){
  * @param {string} userId - The ID of the user to be removed
  * @return {Promise<void>} A promise that resolves when the user is removed from the chat
  */
-async function exitChat(chatId, userId){
+export async function exitChat(chatId, userId){
     await global.db.usersPerms.removeOne(chatId, { uid: userId });
     await global.db.userDatas.removeOne(userId, { group: chatId });
 }
@@ -132,7 +132,7 @@ async function exitChat(chatId, userId){
  * @param {type} fromId - the ID of the user granting the privilege
  * @return {type} 
  */
-async function createPriv(toId, fromId){
+export async function createPriv(toId, fromId){
     await global.db.userDatas.add(toId, {
         priv: fromId//, block: true
     }, false);
@@ -143,12 +143,3 @@ async function createPriv(toId, fromId){
 
     await global.db.mess.checkCollection(combinateId(toId, fromId));
 }
-
-module.exports = {
-    combinateId,
-    chatExsists,
-    createChat,
-    addUserToChat,
-    exitChat,
-    createPriv,
-};
