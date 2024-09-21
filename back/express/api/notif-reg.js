@@ -1,4 +1,5 @@
-const router = require("express").Router();
+import { Router } from "express";
+const router = Router();
 
 router.post("/notif-reg", async (req, res) => {
     const { token, id, user } = req.body;
@@ -17,4 +18,4 @@ router.post("/notif-reg", async (req, res) => {
     res.json({ err: false, msg: "ok" });
 });
 
-module.exports = router;
+export default router;

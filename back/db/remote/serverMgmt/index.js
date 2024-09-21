@@ -5,8 +5,9 @@ if(args.length == 0){
     process.exit(1);
 }
 
-global.db = new (require("../../database"))("./serverDB");
-const { addAccess, removeAccess } = require("../server/auth");
+import DataBase from "../../database.js";
+import { addAccess, removeAccess } from "../server/auth.js";
+global.db = new DataBase("./serverDB");
 
 switch(args[0]){
     case "add":

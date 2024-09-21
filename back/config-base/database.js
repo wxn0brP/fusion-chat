@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     remoteDefault: {
         url: "",
         auth: "",

@@ -1,4 +1,5 @@
-const router = new require("express").Router();
+import { Router } from "express";
+const router = Router();
 
 router.post("/add", async (req, res) => {
     const { collection, a, b } = req.body;
@@ -52,4 +53,4 @@ router.post("/remove", async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

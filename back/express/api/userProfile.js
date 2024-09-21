@@ -1,15 +1,16 @@
-const router = require("express").Router();
-const multer = require("multer");
-const { Image } = require("image-js");
-const path = require("path");
-const fs = require("fs");
-const cropAndResizeProfile = require("../../logic/cropAndResizeProfile");
+import { Router } from "express";
+import multer, { memoryStorage } from "multer";
+import { Image } from "image-js";
+import { join } from "path";
+import { readFileSync, existsSync } from "fs";
+import cropAndResizeProfile from "../../logic/cropAndResizeProfile.js";
 
+const router = Router();
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
 const UPLOAD_DIR = "userFiles/profiles";
 
-const storage = multer.memoryStorage();
+const storage = memoryStorage();
 
 const upload = multer({
     storage: storage,
@@ -35,7 +36,7 @@ router.post("/profileUpload", global.authenticateMiddleware, (req, res) => {
         }
 
         const userId = req.user;
-        const filePath = path.join(UPLOAD_DIR, `${userId}.png`);
+        const filePath = join(UPLOAD_DIR, `${userId}.png`);
 
         try{
             const image = await Image.load(req.file.buffer);
@@ -52,7 +53,7 @@ router.post("/profileUpload", global.authenticateMiddleware, (req, res) => {
 router.get("/profileImg", (req, res) => {
     function def(){
         res.set("X-Content-Default", "true");
-        res.send(fs.readFileSync("front/static/defaultProfile.png"));
+        res.send(readFileSync("front/static/defaultProfile.png"));
     }
 
     const id = req.query.id;
@@ -60,9 +61,9 @@ router.get("/profileImg", (req, res) => {
 
     const file = "userFiles/profiles/"+id+".png";
 
-    if(fs.existsSync(file)){
+    if(existsSync(file)){
         res.set("X-Content-Default", "false");
-        res.send(fs.readFileSync(file));
+        res.send(readFileSync(file));
     }else def();
 });
 
@@ -71,7 +72,7 @@ router.get("/isProfileImg", (req, res) => {
     if(!id) return res.json(false);
 
     const file = "userFiles/profiles/"+id+".png";
-    res.json(fs.existsSync(file));
+    res.json(existsSync(file));
 });
 
-module.exports = router;
+export default router;

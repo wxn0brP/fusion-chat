@@ -1,10 +1,10 @@
-const valid = require("../../logic/validData");
-const fs = require("fs");
-if(!fs.existsSync("data/calls")) fs.mkdirSync("data/calls");
+import valid from "../../logic/validData.js";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
+if(!existsSync("data/calls")) mkdirSync("data/calls");
 
 const rooms = new Map();
 
-module.exports = (socket) => {
+export default (socket) => {
     socket.ontimeout("voice.join", 100, async (to) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
@@ -103,12 +103,12 @@ module.exports = (socket) => {
             if(!valid.arrayContainsOnlyType(logs, "object")) return socket.emit("error", "valid data");
 
             const uid = socket.user._id;
-            if(!fs.existsSync("data/calls/"+uid)) fs.mkdirSync("data/calls/"+uid);
+            if(!existsSync("data/calls/"+uid)) mkdirSync("data/calls/"+uid);
 
             const date = new Date().toISOString();
             const path = "data/calls/" + uid + "/" + date + ".json";
 
-            fs.writeFileSync(path, JSON.stringify(logs));
+            writeFileSync(path, JSON.stringify(logs));
         }catch(e){
             socket.logError(e);
         }

@@ -1,7 +1,7 @@
-const valid = require("../../logic/validData");
-const ogs = require("open-graph-scraper");
+import valid from "../../logic/validData.js";
+import ogs from "open-graph-scraper";
 
-module.exports = (socket) => {
+export default (socket) => {
     socket.ontimeout("get.ogs", 1_000, async (link, cb) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");

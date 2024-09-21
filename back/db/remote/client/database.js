@@ -1,5 +1,5 @@
-const fetch = require("node-fetch");
-const CollectionManager = require("../../CollectionManager");
+import fetch from "node-fetch";
+import CollectionManager from "../../CollectionManager.js";
 
 /**
  * Represents a database management class for performing CRUD operations.
@@ -247,4 +247,4 @@ class DataBaseRemote{
     }
 }
 
-module.exports = DataBaseRemote;
+export default DataBaseRemote;

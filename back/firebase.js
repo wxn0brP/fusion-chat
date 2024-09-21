@@ -1,8 +1,8 @@
-const admin = require("firebase-admin");
+import admin from "firebase-admin";
+import fs from "fs";
 
 try{
-    const serviceAccount = require("../config/firebase.json");
-    
+    const serviceAccount = JSON.parse(fs.readFileSync("config/firebase.json", "utf8"));
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
     });

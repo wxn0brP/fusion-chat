@@ -1,6 +1,7 @@
-const router = require("express").Router();
-const crypto = require('crypto');
-const mailer = require("../../logic/mail");
+import { Router } from 'express';
+import { createHash } from 'crypto';
+import mailer from "../../logic/mail.js";
+const router = Router();
 
 router.post("/register", async function(req, res){
     const { name, password, email } = req.body;
@@ -63,11 +64,11 @@ router.post("/register-code", async function(req, res){
 });
 
 function generateHash(password){
-    return crypto.createHash('sha256').update(password).digest("hex");
+    return createHash('sha256').update(password).digest("hex");
 }
 
 function generateVerificationCode(){
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-module.exports = router;
+export default router;

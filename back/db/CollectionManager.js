@@ -109,4 +109,4 @@ class CollectionManager{
     }
 }
 
-module.exports = CollectionManager;
+export default CollectionManager;

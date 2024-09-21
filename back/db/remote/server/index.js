@@ -1,5 +1,8 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+import express from "express";
+import bodyParser from "body-parser";
+import DataBase from "../../database.js";
+import Graph from "../../graph.js";
+import { authMiddleware } from "./auth.js";
 
 const port = process.env.PORT || 14785;
 global.app = express();
@@ -7,15 +10,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 global.dataCenter = {};
-const contructors = {
-    db: require("../../database"),
-    graph: require("../../graph")
-};
 
-global.db = new contructors.db("./serverDB");
+global.db = new DataBase("./serverDB");
 
-const { authMiddleware } = require("./auth");
-const mainRouter = new express.Router();
+const mainRouter = express.Router();
 mainRouter.use(authMiddleware);
 mainRouter.use(checkRequest);
 
@@ -46,10 +44,10 @@ app.post("/register", authMiddleware, async (req, res) => {
 
     switch(type){
         case "database":
-            dataCenter[name] = new contructors.db(path, options);
+            dataCenter[name] = new DataBase(path, options);
             break;
         case "graph":
-            dataCenter[name] = new contructors.graph(path, options);
+            dataCenter[name] = new Graph(path, options);
             break;
         default:
             return res.status(400).json({ err: true, msg: "Invalid type." });
@@ -58,8 +56,8 @@ app.post("/register", authMiddleware, async (req, res) => {
     return res.json({ err: false, dataCenter: name });
 });
 
-mainRouter.use("/database", require("./db"));
-mainRouter.use("/graph", require("./graph"));
+mainRouter.use("/database", (await import("./db.js")).default);
+mainRouter.use("/graph", (await import("./graph.js")).default);
 
 app.use(mainRouter);
 app.listen(port, () => console.log(`Server started on port ${port}`));

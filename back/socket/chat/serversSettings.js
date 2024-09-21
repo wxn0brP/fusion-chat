@@ -1,13 +1,11 @@
-const valid = require("../../logic/validData");
-const permissionSystem = require("../../logic/permission-system");
-const processDbChanges = require("../../logic/processDbChanges");
-const webhooks = require("../../logic/webhooks");
+import valid from "../../logic/validData.js";
+import permissionSystem from "../../logic/permission-system/index.js";
+import processDbChanges from "../../logic/processDbChanges.js";
+import { addCustom } from "../../logic/webhooks/index.js";
+import serServerSettingsData from "./valid/setServerSettings.js";
+const setServerSettingsShema = valid.objAjv(serServerSettingsData);
 
-const validShema = {
-    setServerSettings: valid.objAjv(require("./valid/setServerSettings")),
-}
-
-module.exports = (socket) => {
+export default (socket) => {
     socket.ontimeout("server.settings.get", 5_000, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
@@ -53,10 +51,10 @@ module.exports = (socket) => {
             const userPerm = await perm.userPermison(socket.user._id, "manage server");
             if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
 
-            if(!validShema.setServerSettings(data)){
-                lo(validShema.setServerSettings.errors);
+            if(!setServerSettingsShema(data)){
+                lo(setServerSettingsShema.errors);
                 lo(data)
-                return socket.emit("error.valid", "server.settings.set", "data", validShema.setServerSettings.errors);
+                return socket.emit("error.valid", "server.settings.set", "data", setServerSettingsShema.errors);
             }
 
             const o_categories = await global.db.groupSettings.find(id, (c) => !!c.cid);
@@ -177,6 +175,6 @@ async function proccesWebhooks(id, webhooksChanges){
             require: item.require || [],
             ajv: item.ajv || {},
         }
-        await webhooks.addCustom(webhookInfo);
+        await addCustom(webhookInfo);
     }
 }

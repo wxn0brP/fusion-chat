@@ -1,10 +1,11 @@
-const router = require("express").Router();
-const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
-const genId = require("../../db/gen");
+import { Router } from "express";
+import multer, { diskStorage, MulterError } from "multer";
+import { existsSync, readdirSync, mkdirSync } from "fs";
+import { join } from "path";
+import genId from "../../db/gen.js";
 
-const config = require("../../../config/file");
+const { maxUserFiles, maxFileSize } = (await import("../../../config/file.js")).default;
+const router = Router();
 const uploadDir = "userFiles/users";
 
 function separeFileName(name){
@@ -12,21 +13,21 @@ function separeFileName(name){
 }
 
 const limitUploads = (req, res, next) => {
-    const userDir = path.join(uploadDir, req.user);
-    if(fs.existsSync(userDir)){
-        const files = fs.readdirSync(userDir);
-        if(files.length >= config.maxUserFiles){
-            return res.status(400).json({ err: true, msg: "File upload limit exceeded. Maximum " + config.maxUserFiles + " files allowed." });
+    const userDir = join(uploadDir, req.user);
+    if(existsSync(userDir)){
+        const files = readdirSync(userDir);
+        if(files.length >= maxUserFiles){
+            return res.status(400).json({ err: true, msg: "File upload limit exceeded. Maximum " + maxUserFiles + " files allowed." });
         }
     }
     next();
 };
 
-const storage = multer.diskStorage({
+const storage = diskStorage({
     destination: (req, file, cb) => {
-        const userDir = path.join(uploadDir, req.user);
-        if(!fs.existsSync(userDir)){
-            fs.mkdirSync(userDir, { recursive: true });
+        const userDir = join(uploadDir, req.user);
+        if(!existsSync(userDir)){
+            mkdirSync(userDir, { recursive: true });
         }
         cb(null, userDir);
     },
@@ -39,23 +40,23 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: config.maxFileSize }
+    limits: { fileSize: maxFileSize }
 }).single("file");
 
 router.post("/uploadFile", global.authenticateMiddleware, limitUploads, (req, res) => {
     upload(req, res, (err) => {
         if(err){
-            if(err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE"){
-                return res.status(400).json({ err: true, msg: "File size exceeds " + config.maxFileSize/1024/1024 + "MB limit." });
+            if(err instanceof MulterError && err.code === "LIMIT_FILE_SIZE"){
+                return res.status(400).json({ err: true, msg: "File size exceeds " + maxFileSize/1024/1024 + "MB limit." });
             }
             return res.status(500).json({ err: true, msg: "An error occurred during the file upload." });
         }
 
         const file = req.file;
-        const filePath = "/" + path.join(file.destination, file.filename);
+        const filePath = "/" + join(file.destination, file.filename);
 
         res.json({ err: false, msg: "File uploaded successfully.", path: filePath });
     });
 });
 
-module.exports = router;
+export default router;

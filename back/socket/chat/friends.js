@@ -1,4 +1,4 @@
-const valid = require("../../logic/validData");
+import valid from "../../logic/validData.js";
 
 const friendStatusEnum = {
     NOT_FRIEND: 0,
@@ -7,7 +7,7 @@ const friendStatusEnum = {
     REQUEST_RECEIVED: 3,
 };
 
-module.exports = (socket) => {
+export default (socket) => {
     socket.ontimeout("friend.request", 1_000, async (nameOrId) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
@@ -45,8 +45,8 @@ module.exports = (socket) => {
     socket.ontimeout("friend.response", 1_000, async (id, accept) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error.valid", "friend.response", "id");
-            if(!valid.bool(accept)) return socket.emit("error.valid", "friend.response", "accept");
+            if(!__id(id)) return socket.emit("error.valid", "friend.response", "id");
+            if(!bool(accept)) return socket.emit("error.valid", "friend.response", "accept");
             
             await global.db.data.removeOne("friendRequests", { from: id, to: socket.user._id });
 

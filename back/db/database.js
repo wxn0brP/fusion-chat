@@ -1,6 +1,6 @@
-const dbActionC = require("./action");
-const executorC = require("./executor");
-const CollectionManager = require("./CollectionManager");
+import dbActionC from "./action.js";
+import executorC from "./executor.js";
+import CollectionManager from "./CollectionManager.js";
 
 /**
  * Represents a database management class for performing CRUD operations.
@@ -192,4 +192,4 @@ class DataBase{
     }
 }
 
-module.exports = DataBase;
+export default DataBase;

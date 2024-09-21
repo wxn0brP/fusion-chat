@@ -1,5 +1,5 @@
-const socket_io = require("socket.io");
-global.io = socket_io(global.server, {
+import { Server } from "socket.io";
+global.io = new Server(global.server, {
     cors: {
         origin: ["localhost:1478", "ifp.ct8.pl"],
     },
@@ -26,5 +26,5 @@ global.sendToChatUsers = async (to, channel, ...args) => {
     });
 }
 
-require("./chat");
-require("./qrCodeLogin");
+await import("./chat/index.js");
+await import("./qrCodeLogin.js");

@@ -1,8 +1,7 @@
-const fs = require("fs");
-const gen = require("./gen");
-const format = require("./format");
-const fileM = require("./file");
-// const CacheManager = require("./cacheManager");
+import { existsSync, mkdirSync, readdirSync, appendFileSync, rmSync, writeFileSync, statSync } from "fs";
+import gen from "./gen.js";
+import { stringify } from "./format.js";
+import { find as _find, findOne as _findOne, update as _update, remove as _remove } from "./file/index.js";
 
 const maxFileSize = 2 * 1024 * 1024; //2 MB
 
@@ -21,7 +20,7 @@ class dbActionC{
         this.folder = folder;
         // this.cacheManager = new CacheManager(options.cacheThreshold, options.cacheTTL);
         
-        if(!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+        if(!existsSync(folder)) mkdirSync(folder, { recursive: true });
     }
 
     /**
@@ -29,7 +28,7 @@ class dbActionC{
      * @returns {string[]} An array of database names.
      */
     getDBs(){
-        const collections = fs.readdirSync(this.folder, { recursive: true, withFileTypes: true })
+        const collections = readdirSync(this.folder, { recursive: true, withFileTypes: true })
             .filter(dirent => dirent.isDirectory())
             .map(dirent => {
                 if(dirent.parentPath === this.folder) return dirent.name;
@@ -46,7 +45,7 @@ class dbActionC{
      */
     checkCollection(collection){
         const path = this.folder + "/" + collection;
-        if(!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
+        if(!existsSync(path)) mkdirSync(path, { recursive: true });
     }
 
     /**
@@ -62,8 +61,8 @@ class dbActionC{
         const file = this.folder + "/" + collection + "/" + getLastFile(this.folder + "/" + collection);
 
         if(id_gen) arg._id = arg._id || gen();
-        const data = format.stringify(arg);
-        fs.appendFileSync(file, data+"\n");
+        const data = stringify(arg);
+        appendFileSync(file, data+"\n");
         return arg;
     }
 
@@ -90,7 +89,7 @@ class dbActionC{
         let totalEntries = 0;
 
         for(let f of files){
-            let data = await fileM.find(this.folder + "/" + collection + "/" + f, arg, context, options);
+            let data = await _find(this.folder + "/" + collection + "/" + f, arg, context, options);
             if(options.reverse) data.reverse();
 
             if(options.max !== -1){
@@ -124,7 +123,7 @@ class dbActionC{
         files.reverse();
 
         for(let f of files){
-            let data = await fileM.findOne(this.folder + "/" + collection + "/" + f, arg, context);
+            let data = await _findOne(this.folder + "/" + collection + "/" + f, arg, context);
             if(data){
                 return data;
             }
@@ -143,7 +142,7 @@ class dbActionC{
      */
     async update(collection, arg, obj, context={}){
         this.checkCollection(collection);
-        return await fileM.update(this.folder, collection, arg, obj, context);
+        return await _update(this.folder, collection, arg, obj, context);
     }
 
     /**
@@ -157,7 +156,7 @@ class dbActionC{
      */
     async updateOne(collection, arg, obj, context={}){
         this.checkCollection(collection);
-        return await fileM.update(this.folder, collection, arg, obj, context, true);
+        return await _update(this.folder, collection, arg, obj, context, true);
     }
 
     /**
@@ -170,7 +169,7 @@ class dbActionC{
      */
     async remove(collection, arg, context={}){
         this.checkCollection(collection);
-        return await fileM.remove(this.folder, collection, arg, context);
+        return await _remove(this.folder, collection, arg, context);
     }
 
     /**
@@ -183,7 +182,7 @@ class dbActionC{
      */
     async removeOne(collection, arg, context={}){
         this.checkCollection(collection);
-        return await fileM.remove(this.folder, collection, arg, context, true);
+        return await _remove(this.folder, collection, arg, context, true);
     }
 
     /**
@@ -193,7 +192,7 @@ class dbActionC{
      * @return {void}
      */
     removeDb(collection){
-        fs.rmSync(this.folder + "/" + collection, { recursive: true, force: true });
+        rmSync(this.folder + "/" + collection, { recursive: true, force: true });
     }
 }
 
@@ -203,21 +202,21 @@ class dbActionC{
  * @returns {string} The name of the last file in the directory.
  */
 function getLastFile(path){
-    if(!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
+    if(!existsSync(path)) mkdirSync(path, { recursive: true });
     const files = getSortedFiles(path);
 
     if(files.length == 0){
-        fs.writeFileSync(path+"/1.db", "");
+        writeFileSync(path+"/1.db", "");
         return "1.db";
     }
 
     const last = files[files.length-1];
     const info = path + "/" + last.f;
 
-    if(fs.statSync(info).size < maxFileSize) return last.f;
+    if(statSync(info).size < maxFileSize) return last.f;
     
     const num = last.i + 1;
-    fs.writeFileSync(path + "/" + num + ".db", "");
+    writeFileSync(path + "/" + num + ".db", "");
     return num+".db";
 }
 
@@ -227,7 +226,7 @@ function getLastFile(path){
  * @return {string[]} An array of file names sorted by name.
  */
 function getSortedFiles(path){
-    let files = fs.readdirSync(path).filter(file => file.endsWith(".db"));
+    let files = readdirSync(path).filter(file => file.endsWith(".db"));
     if(files.length == 0) return [];
     files = files.map(file => parseInt(file.replace(".db", "")))
     files = files.sort();
@@ -235,4 +234,4 @@ function getSortedFiles(path){
     return files;
 }
 
-module.exports = dbActionC;
+export default dbActionC;

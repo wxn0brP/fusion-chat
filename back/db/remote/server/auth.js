@@ -1,7 +1,7 @@
-const jwt = require("jwt-simple");
+import jwt from "jwt-simple";
 const secret = process.env.JWT || "secret";
 
-async function authMiddleware(req, res, next){
+export async function authMiddleware(req, res, next){
     const token = req.headers["authorization"];
     if(!token){
         return res.status(401).json({ err: true, msg: "Access denied. No token provided." });
@@ -26,19 +26,13 @@ async function authMiddleware(req, res, next){
     }
 }
 
-async function addAccess(){
+export async function addAccess(){
     const user = await global.db.add("user", {});
     const token = jwt.encode(user, secret);
 
     return token;
 }
 
-async function removeAccess(id){
+export async function removeAccess(id){
     await global.db.removeOne("user", { _id: id });
-}
-
-module.exports = {
-    authMiddleware,
-    addAccess,
-    removeAccess
 }

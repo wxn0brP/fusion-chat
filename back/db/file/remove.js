@@ -1,7 +1,7 @@
-const fs = require("fs");
-const { pathRepair, createRL } = require("./utils");
-const format = require("../format");
-const more = require("../more");
+import { existsSync, promises, appendFileSync, readdirSync } from "fs";
+import { pathRepair, createRL } from "./utils.js";
+import { parse } from "../format.js";
+import { hasFieldsAdvanced } from "../more.js";
 
 /**
  * Removes entries from a file based on search criteria.
@@ -14,23 +14,23 @@ const more = require("../more");
  */
 async function removeWorker(file, search, context={}, one=false){
     file = pathRepair(file);
-    if(!fs.existsSync(file)){
-        await fs.promises.writeFile(file, "");
+    if(!existsSync(file)){
+        await promises.writeFile(file, "");
         return false;
     }
-    await fs.promises.copyFile(file, file+".tmp");
-    await fs.promises.writeFile(file, "");
+    await promises.copyFile(file, file+".tmp");
+    await promises.writeFile(file, "");
 
     const rl = createRL(file+".tmp");
   
     let removed = false;
     for await(let line of rl){
         if(one && removed){
-            fs.appendFileSync(file, line+"\n");
+            appendFileSync(file, line+"\n");
             continue;
         }
 
-        const data = format.parse(line);
+        const data = parse(line);
 
         if(typeof search === "function"){
             if(search(data, context)){
@@ -38,15 +38,15 @@ async function removeWorker(file, search, context={}, one=false){
                 continue;
             }
         }else if(typeof search === "object" && !Array.isArray(search)){
-            if(more.hasFieldsAdvanced(data, search)){
+            if(hasFieldsAdvanced(data, search)){
                 removed = true;
                 continue;
             }
         }
         
-        fs.appendFileSync(file, line+"\n");
+        appendFileSync(file, line+"\n");
     }
-    await fs.promises.writeFile(file+".tmp", "");
+    await promises.writeFile(file+".tmp", "");
     return removed;
 }
 
@@ -61,7 +61,7 @@ async function removeWorker(file, search, context={}, one=false){
  * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were removed, or `false` otherwise.
  */
 async function remove(folder, name, arg, context={}, one){
-    let files = fs.readdirSync(folder + "/" + name).filter(file => !/\.tmp$/.test(file));
+    let files = readdirSync(folder + "/" + name).filter(file => !/\.tmp$/.test(file));
     files.reverse();
     let remove = false;
     for(const file of files){
@@ -72,4 +72,4 @@ async function remove(folder, name, arg, context={}, one){
     return remove;
 }
 
-module.exports = remove;
+export default remove;

@@ -1,15 +1,16 @@
-const router = require("express").Router();
-const multer = require("multer");
-const { Image } = require("image-js");
-const path = require("path");
-const cropAndResizeProfile = require("../../logic/cropAndResizeProfile");
-const permissionSystem = require("../../logic/permission-system");
+import { Router } from "express";
+import multer, { memoryStorage } from "multer";
+import { Image } from "image-js";
+import { join } from "path";
+import cropAndResizeProfile from "../../logic/cropAndResizeProfile.js";
+import permissionSystem from "../../logic/permission-system/index.js";
 
+const router = Router();
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
 const UPLOAD_DIR = "userFiles/servers";
 
-const storage = multer.memoryStorage();
+const storage = memoryStorage();
 
 const upload = multer({
     storage: storage,
@@ -43,7 +44,7 @@ router.post("/serverProfileUpload", global.authenticateMiddleware, async (req, r
             return res.status(400).json({ err: true, msg: "No file uploaded." });
         }
 
-        const filePath = path.join(UPLOAD_DIR, `${serverId}.png`);
+        const filePath = join(UPLOAD_DIR, `${serverId}.png`);
 
         try{
             const image = await Image.load(req.file.buffer);
@@ -60,4 +61,4 @@ router.post("/serverProfileUpload", global.authenticateMiddleware, async (req, r
     });
 });
 
-module.exports = router;
+export default router;

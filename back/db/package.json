@@ -13,6 +13,7 @@
   "author": "wxn0brP",
   "license": "MIT",
   "private": false,
+  "type": "module",
   "dependencies": {
     "json5": "^2.2.3",
     "readline": "^1.3.0",

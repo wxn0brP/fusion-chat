@@ -1,7 +1,8 @@
-const router = require("express").Router();
-const crypto = require('crypto');
-const { create: createJWT } = require("../../logic/auth");
-const mailer = require("../../logic/mail");
+import { Router } from 'express';
+import { timingSafeEqual, createHash } from 'crypto';
+import { create as createJWT } from "../../logic/auth.js";
+import mailer from "../../logic/mail.js";
+const router = Router();
 
 router.post("/login", async (req, res) => {
     const { name, password } = req.body;
@@ -32,15 +33,15 @@ router.post("/login", async (req, res) => {
 });
 
 function comparePasswords(hashPassword, inputPassword){
-    return crypto.timingSafeEqual(Buffer.from(hashPassword, 'utf-8'), Buffer.from(generateHash(inputPassword), 'utf-8'));
+    return timingSafeEqual(Buffer.from(hashPassword, 'utf-8'), Buffer.from(generateHash(inputPassword), 'utf-8'));
 }
 
 function generateHash(password){
-    return crypto.createHash('sha256').update(password).digest("hex");
+    return createHash('sha256').update(password).digest("hex");
 }
 
 function randomDelay(min, max){
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from "fs";
 
 function dir(path){
     if(!fs.existsSync(path)) fs.mkdirSync(path);

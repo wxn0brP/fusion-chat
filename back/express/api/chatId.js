@@ -1,4 +1,5 @@
-const router = require("express").Router();
+import { Router } from "express";
+const router = Router();
 
 router.get("/chatId", async (req, res) => {
     const { chat } = req.query;
@@ -10,4 +11,4 @@ router.get("/chatId", async (req, res) => {
     res.json({ err: false, name: chatI.name });
 });
 
-module.exports = router;
+export default router;

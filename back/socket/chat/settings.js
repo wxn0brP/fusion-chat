@@ -1,6 +1,6 @@
-const valid = require("../../logic/validData");
+import valid from "../../logic/validData.js";
 
-module.exports = (socket) => {
+export default (socket) => {
     socket.ontimeout("status.update", 1000, async (status, text) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");

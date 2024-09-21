@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     type: "object",
     properties: {
         meta: {
@@ -48,9 +48,20 @@ module.exports = {
             items: {
                 type: "object",
                 properties: {
-                    rid: { type: "string", validId: true },
+                    rid: {
+                        anyOf: [
+                            { type: "string", validId: true },
+                            { type: "integer", minimum: 0 }
+                        ]
+                    },
                     name: { type: "string" },
-                    parent: { type: "string" },
+                    parent: {
+                        anyOf: [
+                            { type: "string", enum: ["all"] },
+                            { type: "string", validId: true },
+                            { type: "integer", minimum: 0 }
+                        ]
+                    },
                     p: {
                         anyOf: [
                             { type: "string", enum: ["all"] },

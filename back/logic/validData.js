@@ -1,5 +1,5 @@
-const Ajv = require("ajv");
-const ajvFormat = require("ajv-formats");
+import Ajv from "ajv";
+import ajvFormat from "ajv-formats";
 
 const ajv = new Ajv();
 ajvFormat(ajv);
@@ -121,7 +121,7 @@ const valid = {
     }
 }
 
-module.exports = valid;
+export default valid;
 
 ajv.addKeyword({
     keyword: "channelRP",

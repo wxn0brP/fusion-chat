@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+import fetch from "node-fetch";
 
 /**
  * A class representing a graph database.
@@ -128,4 +128,4 @@ class GraphRemote{
     }
 }
 
-module.exports = GraphRemote;
+export default GraphRemote;

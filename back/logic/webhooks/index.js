@@ -1,8 +1,8 @@
-const genId = require("../../db/gen");
-const validCustom = require("./custom"); 
-const sendMessage = require("../sendMessage");
+import genId from "../../db/gen.js";
+import * as validCustom from "./custom.js"; 
+import sendMessage from "../sendMessage.js";
 
-async function addCustom(webhookInfo){
+export async function addCustom(webhookInfo){
     const { chat, chnl, name, template } = webhookInfo;
     
     const webhook = {
@@ -18,7 +18,7 @@ async function addCustom(webhookInfo){
     await global.db.groupSettings.add(chat, webhook, false);
 }
 
-async function handleCustom(query, body){
+export async function handleCustom(query, body){
     const wh = await global.db.groupSettings.findOne(query.chat, { whid: query.id });
     if(!wh) return { code: 404, msg: "Webhook not found" };
     if(query.chnl != wh.chnl) return { code: 400, msg: "Invalid channel" };
@@ -55,9 +55,4 @@ async function handleCustom(query, body){
     }
 
     return { code: 200, msg: "Webhook processed and message sent" };
-}
-
-module.exports = {
-    addCustom,
-    handleCustom
 }
