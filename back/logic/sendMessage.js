@@ -1,4 +1,4 @@
-import { chatExsists } from "./chatMgmt.js";
+import { chatExsists, combinateId } from "./chatMgmt.js";
 import valid from "./validData.js";
 
 /**
@@ -18,10 +18,12 @@ import valid from "./validData.js";
  * @param {string} user.name - The name of the sender.
  * @param {object} [options] - Optional options object.
  * @param {boolean} [options.system] - Optional flag to send the message as a system message.
+ * @param {boolean} [options.customFields] - Optional flag to send the message with custom fields.
+ * @param {object} [customFields] - Optional custom fields to send with the message.
  * @return {Promise<object>} res - The result of the message sending operation.
  * @return {false|string[]} res.err - The error message or array of error messages if any.
  */
-export default async function sendMessage(req, user, options={}){
+export default async function sendMessage(req, user, options={}) {
     if(!user) return { err: ["error", "not auth"] };
     if(typeof req !== "object") return { err: ["error.valid", "mess", "req"] };
     let { to, msg, chnl } = req;
@@ -47,7 +49,7 @@ export default async function sendMessage(req, user, options={}){
 
         let p1 = user._id;
         let p2 = to.replace("$", "");
-        to = combinatevalid.id(p1, p2);
+        to = combinateId(p1, p2);
         global.db.mess.checkCollection(to);
     }else{
         if(!chatExsists(to)) return { err: ["error", "chat is not exists"] };
@@ -63,6 +65,7 @@ export default async function sendMessage(req, user, options={}){
         fr: user._id,
         msg: msg.trim(),
         chnl,
+        ...(options.customFields || {}),
     }
     if(req.enc) data.enc = req.enc;
     if(req.res) data.res = req.res;
@@ -83,6 +86,7 @@ export default async function sendMessage(req, user, options={}){
         _id: _id._id,
         enc: data.enc || undefined,
         res: data.res || undefined,
+        ...(options.customFields || {}),
     });
 
     if(!privChat){
@@ -110,8 +114,6 @@ export default async function sendMessage(req, user, options={}){
 
         data.toM = user._id;
         sendToSocket(toSend, "mess", data);
-
-        const user = await global.db.data.findOne("user", { _id: user._id });
         if(!data.silent) global.fireBaseMessage.send(toSend, "New message from " + user.name, data.msg);
     }
 

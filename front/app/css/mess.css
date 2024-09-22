@@ -112,7 +112,7 @@ main{
     margin-left: 5px;
 }
 
-.mess_message img{
+.mess_message .mess_meta img{
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -227,6 +227,23 @@ main{
     outline: none;
 }
 
+.embed{
+    border: 1px solid var(--txt);
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    width: 400px;
+}
+
+.embed .custom-fields{
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.embed .custom-field{
+    margin-bottom: 5px;
+}
+
 @media screen and (max-width: 800px){
     main{
         width: 100vw;
@@ -234,5 +251,9 @@ main{
 
     #messages{
         padding-top: 20px;
+    }
+
+    .embed{
+        width: 90%;
     }
 }

@@ -92,6 +92,8 @@ const messFunc = {
         if(data.e){
             messContentDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnux(parseInt(data.e, 36)));
         }
+        if(data.embed)
+            format.embed(data.embed, messContentDiv);
 
         if(data.reacts){
             const reactsDiv = document.createElement("div");
