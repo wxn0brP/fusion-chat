@@ -27,7 +27,7 @@ export default async function sendMessage(req, user, options={}){
     let { to, msg, chnl } = req;
 
     if(!valid.id(to))                           return { err: ["error.valid", "mess", "to"] };
-    if(!valid.idOrSpecyficvalid.str(chnl, ["main"]))  return { err: ["error.valid", "mess", "chnl"] };
+    if(!valid.idOrSpecyficStr(chnl, ["main"]))  return { err: ["error.valid", "mess", "chnl"] };
     if(!valid.str(msg, 0, 2000))                return { err: ["error.valid", "mess", "msg"] };
 
     //optional
