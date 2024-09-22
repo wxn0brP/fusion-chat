@@ -98,8 +98,11 @@ async function saveDbChanges(doc, changes, idName="_id"){
     const db = global.db.groupSettings.c(doc);
 
     for(const item of itemsToAdd) await db.add(item, false);
-    for(const item of itemsToRemove) await db.remove((r, item) => r[idName] == item[idName], item);
-    for(const item of itemsToUpdate) await db.update((r, item) => r[idName] == item[idName], item, item);
+    for(const item of itemsToRemove)
+        await db.remove((item, ctx) => item[ctx.idName] == ctx.item[ctx.idName], { item, idName });
+    
+    for(const item of itemsToUpdate)
+        await db.update((item, ctx) => item[ctx.idName] == ctx.item[ctx.idName], item, { item, idName });
 }
 
 function processCategoriesAndChannelIds(categories, channels){
