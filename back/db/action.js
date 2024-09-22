@@ -49,6 +49,17 @@ class dbActionC{
     }
 
     /**
+     * Check if a collection exists.
+     * @function
+     * @param {string} collection - The name of the collection.
+     * @returns {boolean} True if the collection exists, false otherwise.
+     */
+    issetCollection(collection){
+        const path = this.folder + "/" + collection;
+        return existsSync(path);
+    }
+
+    /**
      * Add a new entry to the specified database.
      * @async
      * @param {string} collection - The name of the collection.
@@ -57,7 +68,7 @@ class dbActionC{
      * @returns {Promise<Object>} A Promise that resolves to the added data.
      */
     async add(collection, arg, id_gen=true){
-        this.checkCollection(collection);
+        await this.checkCollection(collection);
         const file = this.folder + "/" + collection + "/" + getLastFile(this.folder + "/" + collection);
 
         if(id_gen) arg._id = arg._id || gen();
@@ -81,7 +92,7 @@ class dbActionC{
         options.reverse = options.reverse || false;
         options.max = options.max || -1;
 
-        this.checkCollection(collection);
+        await this.checkCollection(collection);
         const files = getSortedFiles(this.folder + "/" + collection).map(f => f.f);
         if(options.reverse) files.reverse();
         let datas = [];
@@ -118,7 +129,7 @@ class dbActionC{
      * @returns {Promise<Object|null>} A Promise that resolves to the first matching entry or null if not found.
      */
     async findOne(collection, arg, context={}){
-        this.checkCollection(collection);
+        await this.checkCollection(collection);
         const files = getSortedFiles(this.folder + "/" + collection).map(f => f.f);
         files.reverse();
 
@@ -141,7 +152,7 @@ class dbActionC{
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were updated, or `false` otherwise.
      */
     async update(collection, arg, obj, context={}){
-        this.checkCollection(collection);
+        await this.checkCollection(collection);
         return await _update(this.folder, collection, arg, obj, context);
     }
 
@@ -155,7 +166,7 @@ class dbActionC{
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was updated, or `false` otherwise.
      */
     async updateOne(collection, arg, obj, context={}){
-        this.checkCollection(collection);
+        await this.checkCollection(collection);
         return await _update(this.folder, collection, arg, obj, context, true);
     }
 
@@ -168,7 +179,7 @@ class dbActionC{
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were removed, or `false` otherwise.
      */
     async remove(collection, arg, context={}){
-        this.checkCollection(collection);
+        await this.checkCollection(collection);
         return await _remove(this.folder, collection, arg, context);
     }
 
@@ -181,7 +192,7 @@ class dbActionC{
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was removed, or `false` otherwise.
      */
     async removeOne(collection, arg, context={}){
-        this.checkCollection(collection);
+        await this.checkCollection(collection);
         return await _remove(this.folder, collection, arg, context, true);
     }
 

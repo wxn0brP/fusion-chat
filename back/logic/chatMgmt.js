@@ -32,8 +32,8 @@ export function combinateId(id_1, id_2) {
  * @param {string} chatId - the ID of the chat to check
  * @return {boolean} true if the chat exists, false otherwise
  */
-export function chatExsists(chatId){
-    return fs.existsSync("data/groupSettings/"+chatId);
+export async function chatExsists(chatId){
+    return await global.db.groupSettings.issetCollection(chatId);
 }
 
 /**

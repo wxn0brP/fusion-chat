@@ -2,10 +2,10 @@ import { Router } from "express";
 import parseParam from "./function.js";
 const router = Router();
 
-router.post("/getDBs", (req, res) => {
+router.post("/getDBs", async (req, res) => {
     try{
         const db = req.dataCenter;
-        const result = db.getDBs();
+        const result = await db.getDBs();
         res.json({ err: false, result });
     }catch(err){
         console.error(err);
@@ -13,14 +13,28 @@ router.post("/getDBs", (req, res) => {
     }
 });
 
-router.post("/checkCollection", (req, res) => {
+router.post("/checkCollection", async (req, res) => {
     const { collection } = req.body;
     if(!collection) return res.status(400).json({ err: true, msg: "collection is required" });
 
     try{
         const db = req.dataCenter;
-        db.checkCollection(collection);
+        await db.checkCollection(collection);
         res.json({ err: false, result: true });
+    }catch(err){
+        console.error(err);
+        res.status(500).json({ err: true, msg: err.message });
+    }
+});
+
+router.post("/issetCollection", async (req, res) => {
+    const { collection } = req.body;
+    if(!collection) return res.status(400).json({ err: true, msg: "collection is required" });
+
+    try{
+        const db = req.dataCenter;
+        const result = await db.issetCollection(collection);
+        res.json({ err: false, result });
     }catch(err){
         console.error(err);
         res.status(500).json({ err: true, msg: err.message });
