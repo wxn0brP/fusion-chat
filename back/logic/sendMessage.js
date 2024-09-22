@@ -1,4 +1,4 @@
-import { chatExsists, combinateId } from "./chatMgmt.js";
+import { chatExsists as _chatExsists, combinateId } from "./chatMgmt.js";
 import valid from "./validData.js";
 
 /**
@@ -50,9 +50,10 @@ export default async function sendMessage(req, user, options={}) {
         let p1 = user._id;
         let p2 = to.replace("$", "");
         to = combinateId(p1, p2);
-        global.db.mess.checkCollection(to);
+        await global.db.mess.checkCollection(to);
     }else{
-        if(!chatExsists(to)) return { err: ["error", "chat is not exists"] };
+        const chatExsists = await _chatExsists(to);
+        if(!chatExsists) return { err: ["error", "chat is not exists"] };
     }
 
     if(!privChat && !options.system){

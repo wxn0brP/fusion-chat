@@ -13,14 +13,14 @@ npm install @wxn0brp/database
 ## Usage Example
 
 ```javascript
-const DataBase = require('@wxn0brp/database');
+import DataBase from '@wxn0brp/database/database.js';
 
-async function main() {
+async function main(){
     // Initialize the database with a folder path and optional cache settings
     const db = new DataBase('./data');
 
     // Create or check a collection
-    db.checkCollection('users');
+    await db.checkCollection('users');
 
     // Add a new user to the collection
     await db.add('users', { name: 'Alice', age: 30 });
@@ -44,17 +44,18 @@ main().catch(console.error);
 
 | Method Name | Description | Parameters | Returns |
 | ----------- | ----------- | ---------- | ------- | 
-| `getDBs()` | Retrieves the names of all available databases. | None | `string[]` |
-| `checkCollection()` | Ensures that a collection exists, creating it if necessary. | `collection` (string): Name of the collection | `void` |
-| `add()` | Adds data to a collection, optionally generating an ID. | `collection` (string), `data` (Object), `id_gen` (boolean) | `Promise<Object>` |
-| `find()` | Finds data entries matching a query. | `collection` (string), `search` (function/Object), `context` (Object), `options` (Object) - { max, reverse } | `Promise<Array<Object>>` |
-| `findOne()` | Finds the first data entry matching a query. | `collection` (string), `search` (function/Object), `context` (Object) | `Promise<Object\|null>` |
-| `update()` | Updates data entries matching a query. | `collection` (string), `search` (function/Object), `arg` (function/Object), `context` (Object) | `Promise<boolean>` |
-| `updateOne()` | Updates the first data entry matching a query. | `collection` (string), `search` (function/Object), `arg` (function/Object), `context` (Object) | `Promise<boolean>` |
-| `remove()` | Removes data entries matching a query. | `collection` (string), `search` (function/Object), `context` (Object) | `Promise<boolean>` |
-| `removeOne()` | Removes the first data entry matching a query. | `collection` (string), `search` (function/Object), `context` (Object) | `Promise<boolean>` |
-| `updateOneOrAdd()` | Updates one entry or adds a new one if no match is found. | `collection` (string), `search` (function/Object), `arg` (function/Object), `add_arg` (function/Object), `context` (Object), `id_gen` (boolean) | `Promise<boolean>` |
-| `removeDb()` | Removes an entire database collection from the file system. | `collection` (string)  | `void` |
+| `getDBs` | Retrieves the names of all available databases. | None | `string[]` |
+| `checkCollection` | Ensures that a collection exists, creating it if necessary. | `collection` (string): Name of the collection | `Promise<void>` |
+| `issetCollection` | Checks if a collection exists. | `collection` (string): Name of the collection | `Promise<boolean>` |
+| `add` | Adds data to a collection, optionally generating an ID. | `collection` (string), `data` (Object), `id_gen` (boolean) | `Promise<Object>` |
+| `find` | Finds data entries matching a query. | `collection` (string), `search` (function/Object), `context` (Object), `options` (Object) - { max, reverse } | `Promise<Array<Object>>` |
+| `findOne` | Finds the first data entry matching a query. | `collection` (string), `search` (function/Object), `context` (Object) | `Promise<Object\|null>` |
+| `update` | Updates data entries matching a query. | `collection` (string), `search` (function/Object), `arg` (function/Object), `context` (Object) | `Promise<boolean>` |
+| `updateOne` | Updates the first data entry matching a query. | `collection` (string), `search` (function/Object), `arg` (function/Object), `context` (Object) | `Promise<boolean>` |
+| `remove` | Removes data entries matching a query. | `collection` (string), `search` (function/Object), `context` (Object) | `Promise<boolean>` |
+| `removeOne` | Removes the first data entry matching a query. | `collection` (string), `search` (function/Object), `context` (Object) | `Promise<boolean>` |
+| `updateOneOrAdd` | Updates one entry or adds a new one if no match is found. | `collection` (string), `search` (function/Object), `arg` (function/Object), `add_arg` (function/Object), `context` (Object), `id_gen` (boolean) | `Promise<boolean>` |
+| `removeDb` | Removes an entire database collection from the file system. | `collection` (string)  | `void` |
 
 ---
 

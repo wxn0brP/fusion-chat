@@ -97,8 +97,19 @@ class DataBaseRemote{
      * @function
      * @param {string} collection - The collection to check.
      */
-    checkCollection(collection){
-        return this._request("checkCollection", { collection });
+    async checkCollection(collection){
+        return await this._request("checkCollection", { collection });
+    }
+
+    /**
+     * Check if a collection exists.
+     *
+     * @function
+     * @param {string} collection - The name of the collection.
+     * @returns {boolean} True if the collection exists, false otherwise.
+     */
+    async issetCollection(collection){
+        return await this._request("issetCollection", { collection });
     }
 
     /**

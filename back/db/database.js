@@ -41,8 +41,8 @@ class DataBase{
      * @function
      * @returns {string[]} An array of database names.
      */
-    getDBs(){
-        return this.dbAction.getDBs();
+    async getDBs(){
+        return await this.dbAction.getDBs();
     }
 
     /**
@@ -51,8 +51,19 @@ class DataBase{
      * @function
      * @param {string} collection - The collection to check.
      */
-    checkCollection(collection){
-        this.dbAction.checkCollection(collection);
+    async checkCollection(collection){
+        await this.dbAction.checkCollection(collection);
+    }
+
+    /**
+     * Check if a collection exists.
+     *
+     * @function
+     * @param {string} collection - The name of the collection.
+     * @returns {boolean} True if the collection exists, false otherwise.
+     */
+    async issetCollection(collection){
+        return await this.dbAction.issetCollection(collection);
     }
 
     /**
