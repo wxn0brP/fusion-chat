@@ -33,7 +33,7 @@ export function combinateId(id_1, id_2) {
  * @return {boolean} true if the chat exists, false otherwise
  */
 export function chatExsists(chatId){
-    return fs.existsSync(global.dir+"../data/groupSettings/"+chatId);
+    return fs.existsSync("data/groupSettings/"+chatId);
 }
 
 /**

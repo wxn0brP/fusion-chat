@@ -38,6 +38,16 @@ const messCmds = {
                 socket.emit("message.search", vars.chat.to, vars.chat.chnl, query);
                 return 1;
             }
+        },
+        createEmbed: {
+            args: [
+                { name: "url", type: "text" }
+            ],
+            exe(msg, args){
+                if(args.length == 0) return 1;
+                socket.emit("send.embed.og", vars.chat.to, vars.chat.chnl, args[0]);
+                return 1;
+            }
         }
     }
 }

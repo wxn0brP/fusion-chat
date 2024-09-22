@@ -3,17 +3,16 @@ import * as validCustom from "./custom.js";
 import sendMessage from "../sendMessage.js";
 
 export async function addCustom(webhookInfo){
-    const { chat, chnl, name, template } = webhookInfo;
+    const { chat, chnl, name, template, ajv, required } = webhookInfo;
     
     const webhook = {
         whid: genId(),
         name,
         template,
-        chnl
+        chnl,
+        ajv: ajv || {},
+        required: required || [],
     }
-
-    if(webhookInfo.ajv) webhook.ajv = webhookInfo.ajv;
-    if(webhookInfo.required) webhook.required = webhookInfo.required;
 
     await global.db.groupSettings.add(chat, webhook, false);
 }
