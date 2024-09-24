@@ -39,13 +39,35 @@ const messCmds = {
                 return 1;
             }
         },
-        createEmbed: {
+        createLinkEmbed: {
             args: [
                 { name: "url", type: "text" }
             ],
             exe(msg, args){
                 if(args.length == 0) return 1;
                 socket.emit("send.embed.og", vars.chat.to, vars.chat.chnl, args[0]);
+                return 1;
+            }
+        },
+        createDataEmbed: {
+            args: [
+                { name: "title", type: "text" },
+                { name: "description", type: "text", optional: true },
+                { name: "url", type: "text", optional: true },
+                { name: "image", type: "text", optional: true },
+                { name: "custom fields", type: "map", optional: true }
+            ],
+            exe(msg, args){
+                if(args.length == 0) return 1;
+                const embed = {
+                    title: args[0],
+                    description: args[1],
+                    url: args[2],
+                    image: args[3],
+                    customFields: args[4]
+                }
+
+                socket.emit("send.embed.data", vars.chat.to, vars.chat.chnl, embed);
                 return 1;
             }
         }
@@ -157,9 +179,16 @@ const messCmd = {
             const arg = argsObj[i];
             const val = argsVal[i];
 
-            if(!val || val.trim() == ""){
-                if(arg.optional) continue;
-                return false;
+            if(arg.type != "map"){
+                if(!val || val.trim() == ""){
+                    if(arg.optional) continue;
+                    return false;
+                }
+            }else{
+                if(Object.keys(val).length == 0){
+                    if(arg.optional) continue;
+                    return false;
+                }
             }
 
             if(arg.type == "boolean" && val != "true" && val != "false") return false;
@@ -172,6 +201,7 @@ const messCmd = {
                 if(isNaN(h) || isNaN(m)) return false;
             }
             else if(arg.type == "list" && !arg.list.includes(val)) return false;
+            else if(arg.type == "map" && Object.keys(val).length == 0) return false;
         }
         return true;
     },
@@ -184,7 +214,7 @@ const messCmd = {
             const arg = argsObj[i];
             const val = argsVal[i];
 
-            if(!val || val.trim() == ""){
+            if(!val || (arg.type != "map" && val.trim() == "")){
                 if(arg.optional) continue;
                 return false;
             }
@@ -204,6 +234,19 @@ const messCmd = {
                     continue;
                 }
                 argsVal[i] = usersMap.get(val);
+            }else if(arg.type == "map"){
+                if(Object.keys(val).length == 0){
+                    argsVal[i] = {};
+                    continue;
+                }
+                const map = {};
+
+                Object.keys(val).forEach(valKey => {
+                    const data = val[valKey];
+                    if(!data.key || !data.value) return;
+                    map[data.key] = data.value;
+                });
+                argsVal[i] = map;
             }
         }
     },
@@ -303,6 +346,38 @@ const messCmd = {
 
                     ele.addEventListener("change", () => {
                         messCmd.temp[index] = ele.value;
+                    });
+                break;
+                case "map":
+                    typeDesc = "map";
+                    ele = document.createElement("div");
+                    messCmd.temp[index] = {};
+
+                    const create = document.createElement("button");
+                    create.innerHTML = "Create Map";
+                    create.style.marginTop = "5px";
+                    ele.appendChild(create);
+                    ele.appendChild(document.createElement("br"));
+                    create.addEventListener("click", () => {
+                        const key = document.createElement("input");
+                        const value = document.createElement("input");
+                        const span = document.createElement("span");
+                        ele.appendChild(key);
+                        ele.appendChild(span);
+                        ele.appendChild(value);
+                        ele.appendChild(document.createElement("br"));
+
+                        key.style.marginTop = "5px";
+                        span.innerHTML = ": ";
+                        const indexMap = Object.keys(messCmd.temp[index]).length;
+                        messCmd.temp[index][indexMap] = {};
+
+                        key.addEventListener("input", () => {
+                            messCmd.temp[index][indexMap].key = key.value;
+                        });
+                        value.addEventListener("input", () => {
+                            messCmd.temp[index][indexMap].value = value.value;
+                        });
                     });
                 break;
             }
