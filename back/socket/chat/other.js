@@ -2,6 +2,9 @@ import valid from "../../logic/validData.js";
 import ogs from "open-graph-scraper";
 import ogsToEmbed from "../../logic/ogToEmbed.js";
 import sendMessage from "../../logic/sendMessage.js";
+import embedData from "./valid/embedData.js";
+
+const embedDataShema = valid.objAjv(embedData);
 
 export default (socket) => {
     socket.ontimeout("get.ogs", 1_000, async (link, cb) => {
@@ -43,6 +46,30 @@ export default (socket) => {
                 {
                     customFields: {
                         embed: embed
+                    }
+                }
+            );
+            if(result.err) socket.emit(...result.err);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("send.embed.data", 1_000, async (to, chnl, embed) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!valid.id(to)) return socket.emit("error.valid", "send.embed.data", "to");
+            if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "send.embed.data", "chnl");
+
+            if(!embedDataShema(embed)) return socket.emit("error.valid", "send.embed.data", "embed", embedDataShema.errors);
+            const result = await sendMessage(
+                {
+                    to, chnl, msg: "Embed",
+                },
+                socket.user,
+                {
+                    customFields: {
+                        embed
                     }
                 }
             );
