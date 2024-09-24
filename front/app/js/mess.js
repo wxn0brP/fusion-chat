@@ -149,20 +149,31 @@ const messFunc = {
 
     linkClick(e){
         e.preventDefault();
-        const url = e.target.getAttribute("href");
+        let url = e.target.getAttribute("href");
         if(!url) return;
 
+        if(!/^(https?:\/\/)/i.test(url)) url = "http://" + url;
+
         const urlParts = url.split("/");
+        if(urlParts.length < 2) return uiFunc.uiMsg(translateFunc.get("Invalid link") + ".");
         const urlClored =
             urlParts[0] + "//" +
             "<span>" + urlParts[2] + "</span>" +
             "/" + urlParts.slice(3).join("/")
         
+        const end = () => {
+            linkClickDiv.fadeOut();
+            linkClickDiv.querySelector("#linkClick_yes").removeEventListener("click", handleYesClick);
+            linkClickDiv.querySelector("#linkClick_no").removeEventListener("click", end);
+        }
+        const handleYesClick = () => {
+            window.open(url, "_blank");
+            end();
+        }
         linkClickDiv.fadeIn();
         linkClickDiv.querySelector("#linkClick_link").innerHTML = urlClored;
-        linkClickDiv.querySelector("#linkClick_yes").addEventListener("click", () => {
-            window.open(url, "_blank");
-        })
+        linkClickDiv.querySelector("#linkClick_yes").addEventListener("click", handleYesClick);
+        linkClickDiv.querySelector("#linkClick_no").addEventListener("click", end);
     },
 
     emocjiPopup(cb){
