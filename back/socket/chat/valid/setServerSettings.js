@@ -37,7 +37,8 @@ export default {
                     rp: {
                         type: "array",
                         items: { type: "string", channelRP: true },
-                    }
+                    },
+                    desc: { type: "string", minLength: 0, maxLength: 150 }
                 },
                 required: ["chid", "name", "type", "category", "i", "rp"],
                 additionalProperties: false
@@ -58,8 +59,7 @@ export default {
                     parent: {
                         anyOf: [
                             { type: "string", enum: ["all"] },
-                            { type: "string", validId: true },
-                            { type: "integer", minimum: 0 }
+                            { type: "string", validId: true }
                         ]
                     },
                     p: {

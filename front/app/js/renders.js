@@ -162,7 +162,8 @@ const renderFunc = {
         })
         navs__groups__name.appendChild(usersDisplayBtn);
 
-        function buildChannel(name, cid, type, root){
+        function buildChannel(channel, root){
+            const { name, type, desc, id: cid } = channel;
             const btn = document.createElement("div");
             btn.onclick = () => {
                 if(type == "text"){
@@ -190,6 +191,7 @@ const renderFunc = {
 
             btn.innerHTML = typeEmoticon + " | " +name;
             root.appendChild(btn);
+            vars.servers.desc[cid] = desc;
         }
     
         function buildCategory(name, channels, root){
@@ -201,7 +203,7 @@ const renderFunc = {
             detail.appendChild(summary);
     
             channels.forEach(channel => {
-                buildChannel(channel.name, channel.id, channel.type, detail);
+                buildChannel(channel, detail);
                 if(channel.text) vars.servers.text.push(channel.id);
             });
             root.appendChild(detail);
@@ -215,6 +217,7 @@ const renderFunc = {
         }
 
         vars.servers.text = [];
+        vars.servers.desc = {};
         categories.forEach(category => {
             buildCategory(category.name, category.chnls, navs__groups__channels);
         });

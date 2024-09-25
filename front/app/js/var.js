@@ -25,6 +25,7 @@ const vars = {
         users: [],
         roles: [],
         text: [],
+        desc: {},
     },
     mainView: {
         friends: [],

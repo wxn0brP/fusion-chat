@@ -4,6 +4,7 @@ import processDbChanges from "../../logic/processDbChanges.js";
 import { addCustom } from "../../logic/webhooks/index.js";
 import serServerSettingsData from "./valid/setServerSettings.js";
 import genId from "../../db/gen.js";
+import * as emojiMgmt from "../../logic/emojiMgmt.js";
 const setServerSettingsShema = valid.objAjv(serServerSettingsData);
 
 export default (socket) => {
@@ -69,7 +70,7 @@ export default (socket) => {
             const n_roles = processRolesIds(data.roles);
 
             const categoriesChanges = processDbChanges(o_categories, pcaci.categories, ["name","i"], "cid");
-            const channelsChanges = processDbChanges(o_channels, pcaci.channels, ["name","i","rp"], "chid");
+            const channelsChanges = processDbChanges(o_channels, pcaci.channels, ["name","i","rp","desc"], "chid");
             const rolesChanges = processDbChanges(o_roles, n_roles, ["rid", "parent", "name", "color", "p"], "rid");
             const usersChanges = processDbChanges(o_users, data.users, ["uid", "roles"], "uid");
             const emojisChanges = processDbChanges(o_emojis, data.emojis, ["name"], "unicode");
