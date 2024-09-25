@@ -3,7 +3,7 @@ document.querySelector("#nav__toggle").addEventListener("click", () => {
     nav.left = nav.left == "0px" ? "-360px" : "0px";
 });
 
-document.querySelector("#navs__user img").src = "/profileImg?id=" + vars.user._id;
+document.querySelector("#navs__user img").src = "/api/profileImg?id=" + vars.user._id;
 
 document.querySelector("#app").addEventListener("contextmenu", (e) => {
     e.preventDefault();
@@ -24,25 +24,6 @@ setupSwipe(
         // down
     }
 );
-
-(function initEmocji(){
-    const pickerOptions = {
-        onEmojiSelect: emit,
-        theme: 'dark',
-        onClickOutside: () => emit(),
-        locale: navigator.language.substring(0, 2),
-    };
-
-    const picker = new EmojiMart.Picker(pickerOptions)
-    emocjiDiv.appendChild(picker);
-
-    function emit(emoticon){
-        const event = new CustomEvent('emocji', {
-            detail: emoticon?.native || "",
-        });
-        emocjiDiv.dispatchEvent(event);
-    }
-})();
 
 messInput.addEventListener("paste", function(e){
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;

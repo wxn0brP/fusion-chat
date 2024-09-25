@@ -6,7 +6,7 @@
  * @returns {boolean} - Whether the object meets the criteria.
  * @throws {Error} - If fields is not an object.
  */
-function hasFieldsAdvanced(obj, fields){
+export function hasFieldsAdvanced(obj, fields){
     if(typeof fields !== 'object' || fields === null){
         throw new Error("Fields must be an object");
     }
@@ -38,7 +38,7 @@ function hasFieldsAdvanced(obj, fields){
  * @param {Object} fields - Criteria to compare.
  * @returns {boolean} - Whether the object matches the criteria.
  */
-function hasFields(obj, fields){
+export function hasFields(obj, fields){
     const keys = Object.keys(fields);
     return keys.every(key => {
         if(obj[key]){
@@ -58,17 +58,11 @@ function hasFields(obj, fields){
  * @param {Object} newVal - An object containing new values to update in the target object.
  * @returns {Object} The updated object.
  */
-function updateObject(obj, newVal){
+export function updateObject(obj, newVal){
     for(let key in newVal){
         if(newVal.hasOwnProperty(key)){
             obj[key] = newVal[key];
         }
     }
     return obj;
-}
-
-module.exports = {
-    hasFieldsAdvanced,
-    hasFields,
-    updateObject
 }

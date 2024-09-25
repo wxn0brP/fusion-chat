@@ -1,1 +1,1 @@
-require("./back")
+import "./back/index.js";

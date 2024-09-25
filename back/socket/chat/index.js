@@ -1,11 +1,13 @@
-const { auth } = require("../../logic/auth");
-const mess = require("./mess");
-const servers = require("./servers");
-const voice = require("./voice");
-const settings = require("./settings");
-const chats = require("./chats");
-const evt = require("./evt");
-const friends = require("./friends");
+import { auth } from "../../logic/auth.js";
+import mess from "./mess.js";
+import servers from "./servers.js";
+import serverSettings from "./serversSettings.js";
+import voice from "./voice.js";
+import settings from "./settings.js";
+import chats from "./chats.js";
+import evt from "./evt.js";
+import friends from "./friends.js";
+import other from "./other.js";
 
 const tmpBan = new Map();
 
@@ -96,9 +98,11 @@ io.of("/").on("connection", (socket) => {
 
     mess(socket);
     servers(socket);
+    serverSettings(socket);
     voice(socket);
     settings(socket);
     chats(socket);
     friends(socket);
     evt(socket);
+    other(socket);
 });

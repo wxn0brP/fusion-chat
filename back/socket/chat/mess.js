@@ -1,124 +1,17 @@
-const chatMgmt = require("../../logic/chatMgmt");
-const valid = require("../../logic/validData");
-const permissionSystem = require("../../logic/permission-system");
-const { extractTimeFromId } = require("../../logic/utils");
+import sendMessage from "../../logic/sendMessage.js";
+import { combinateId } from "../../logic/chatMgmt.js";
+import valid from "../../logic/validData.js";
+import permissionSystem from "../../logic/permission-system/index.js";
+import { extractTimeFromId } from "../../logic/utils.js";
+import messageSearchData from "./valid/messageSearch.js";
 
-const validShema = {
-    messageSearch: valid.objAjv(require("./valid/messageSearch")),
-};
+const messageSearchShema = valid.objAjv(messageSearchData);
 
-module.exports = (socket) => {
-    socket.ontimeout("mess", 200,
-    /**
-     * Handles the 'mess' event for sending messages in a chat.
-     * Validates the message request, checks if the chat exists, and sends the message to the recipient.
-     * Supports both friend chats and channel chats.
-     *
-     * @param {object} req - The request object containing message details.
-     * @param {string} req.to - The identifier of the recipient or chat.
-     * @param {string} req.msg - The message content.
-     * @param {string} req.chnl - The channel identifier.
-     * @param {string} [req.enc] - Optional flag to indicate if the message is encrypted.
-     * @param {string} [req.res] - Optional identifier for the message being replied to.
-     * @param {boolean} [req.silent] - Optional flag to send the message silently without notification.
-     */
-    async (req) => {
+export default (socket) => {
+    socket.ontimeout("mess", 200, async (req) => {
         try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(typeof req !== "object") return socket.emit("error.valid", "mess", "req");
-            let { to, msg, chnl } = req;
-    
-            if(!valid.id(to))                           return socket.emit("error.valid", "mess", "to");
-            if(!valid.idOrSpecyficStr(chnl, ["main"]))  return socket.emit("error.valid", "mess", "chnl");
-            if(!valid.str(msg, 0, 2000))                return socket.emit("error.valid", "mess", "msg");
-
-            //optional
-            if(req.enc && !valid.str(req.enc, 0, 30))   return socket.emit("error.valid", "mess", "enc");
-            if(req.res && !valid.id(req.res))           return socket.emit("error.valid", "mess", "res");
-            if(req.silent && !valid.bool(req.silent))   return socket.emit("error.valid", "mess", "silent");
-            
-            let privChat = to.startsWith("$");
-            if(privChat){
-                const priv = await global.db.userDatas.findOne(socket.user._id, { priv: to.replace("$", "") });
-                if(!priv) return socket.emit("error", "priv not found");
-                if(priv.blocked) return socket.emit("error", "blocked");
-
-                const toPriv = await global.db.userDatas.findOne(to.replace("$", ""), { priv: socket.user._id });
-                if(!toPriv) return socket.emit("error", "priv not found");
-                if(toPriv.blocked) return socket.emit("error", "blocked");
-
-                let p1 = socket.user._id;
-                let p2 = to.replace("$", "");
-                to = chatMgmt.combinateId(p1, p2);
-                global.db.mess.checkCollection(to);
-            }else{
-                if(!chatMgmt.chatExsists(to)) return socket.emit("error", "chat is not exists");
-            }
-
-            if(!privChat){
-                const perm = await getChnlPerm(socket.user._id, to, chnl); 
-                if(!perm.visable) return socket.emit("error", "channel is not exists");
-                if(!perm.text) return socket.emit("error", "not perm to write");
-            }
-    
-            let message = msg.trim();
-            if(msg.length > 500) return socket.emit("error", "msg is too long");
-            
-            let data = {
-                fr: socket.user._id,
-                msg: message,
-                chnl,
-            }
-            if(req.enc) data.enc = req.enc;
-            if(req.res) data.res = req.res;
-    
-            let _id = await global.db.mess.add(to, data);
-    
-            if(!privChat) data.to = to;
-            else data.to = "$"+socket.user._id;
-            
-            data._id = _id._id;
-            if(req.silent) data.silent = req.silent || false;
-            sendToSocket(socket.user._id, "mess", {
-                fr: socket.user._id,
-                msg: data.msg,
-                chnl,
-                to: "@",
-                toM: req.to,
-                _id: _id._id,
-                enc: data.enc || undefined,
-                res: data.res || undefined,
-            });
-    
-            if(!privChat){
-                data.toM = to;
-                let chat = await global.db.usersPerms.find(to, r => r.uid);
-                const server = (await global.db.groupSettings.findOne(to, { _id: "set"}));
-                const fromMsg = `${server.name} @${socket.user.name}`;
-
-                chat.forEach(async u => {
-                    u = u.uid;
-                    if(u == socket.user._id) return;
-
-                    const group = await global.db.userDatas.findOne(u, { group: data.to });
-                    if(group.muted && group.muted != -1){
-                        const muted = group.muted;
-                        if(muted == 0) return;
-                        if(muted > new Date().getTime()) return;
-                    }
-
-                    sendToSocket(u, "mess", data);
-                    if(!data.silent) global.fireBaseMessage.send(u, "New message from " + fromMsg, data.msg);
-                })
-            }else{
-                let toSend = req.to.replace("$","");
-
-                data.toM = socket.user._id;
-                sendToSocket(toSend, "mess", data);
-
-                const user = await global.db.data.findOne("user", { _id: socket.user._id });
-                if(!data.silent) global.fireBaseMessage.send(toSend, "New message from " + user.name, data.msg);
-            }
+            const result = await sendMessage(req, socket.user);
+            if(result.err) return socket.emit(...result.err);
         }catch(e){
             socket.logError(e);
         }
@@ -136,7 +29,7 @@ module.exports = (socket) => {
             if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
-                to = chatMgmt.combinateId(p1, p2);
+                to = combinateId(p1, p2);
             }
 
             const mess = await global.db.mess.findOne(to, { _id });
@@ -173,7 +66,7 @@ module.exports = (socket) => {
             if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
-                to = chatMgmt.combinateId(p1, p2);
+                to = combinateId(p1, p2);
             }
 
             const mess = await global.db.mess.findOne(to, { _id });
@@ -212,7 +105,7 @@ module.exports = (socket) => {
             if(privChat){
                 const p1 = socket.user._id;
                 const p2 = to.replace("$", "");
-                to = chatMgmt.combinateId(p1, p2);
+                to = combinateId(p1, p2);
             }
 
             if(!privChat){
@@ -220,7 +113,7 @@ module.exports = (socket) => {
                 if(!perm.visable) return socket.emit("error", "channel is not exist");
             }
 
-            const responeAll = await global.db.mess.find(to, { chnl }, { reverse: true, max: end+start });
+            const responeAll = await global.db.mess.find(to, { chnl }, {}, { reverse: true, max: end+start });
             const respone = responeAll.slice(start, end);
 
             socket.emit("message.fetch", respone);
@@ -248,20 +141,20 @@ module.exports = (socket) => {
                 if(firendChat){
                     const p1 = socket.user._id;
                     const p2 = to.replace("$", "");
-                    toM = chatMgmt.combinateId(p1, p2);
+                    toM = combinateId(p1, p2);
                 }
-                const lastIdMess = await global.db.mess.find(toM, { chnl }, { reverse: true, max: 1 });
+                const lastIdMess = await global.db.mess.find(toM, { chnl }, {}, { reverse: true, max: 1 });
                 if(lastIdMess.length == 0) return;
 
                 mess_id = lastIdMess[0]._id;
                 socket.emit("message.markAsRead", to, chnl, mess_id);
             }
 
-            await global.db.userDatas.updateOne(socket.user._id, search, (data) => {
+            await global.db.userDatas.updateOne(socket.user._id, search, (data, context) => {
                 if(!data.last) data.last = {};
-                data.last[chnl] = mess_id;
+                data.last[context.chnl] = context.mess_id;
                 return data;
-            });
+            }, { chnl, mess_id });
         }catch(e){
             socket.logError(e);
         }
@@ -279,7 +172,7 @@ module.exports = (socket) => {
             if(server.startsWith("$")){
                 const p1 = socket.user._id;
                 const p2 = server.replace("$", "");
-                toM = chatMgmt.combinateId(p1, p2);
+                toM = combinateId(p1, p2);
             }
             const msg = await global.db.mess.findOne(toM, { _id: msgId });
             if(!msg) return socket.emit("error", "msg does not exist");
@@ -312,20 +205,20 @@ module.exports = (socket) => {
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(server)) return socket.emit("error.valid", "message.search", "server");
             if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.search", "chnl");
-            if(!validShema.messageSearch(query))
-                return socket.emit("error.valid", "message.search", "search", validShema.messageSearch.errors);
+            if(!messageSearchShema(query))
+                return socket.emit("error.valid", "message.search", "search", messageSearchShema.errors);
 
             const priv = server.startsWith("$");
             if(priv){
                 const p1 = socket.user._id;
                 const p2 = server.replace("$", "");
-                server = chatMgmt.combinateId(p1, p2);
+                server = combinateId(p1, p2);
             }
 
-            const results = await global.db.mess.find(server, (data) => {
+            const results = await global.db.mess.find(server, (data, context) => {
                 if(data.chnl != chnl) return false;
-                return filterMessages(query, data);
-            });
+                return filterMessages(context.query, data);
+            }, { query });
 
             socket.emit("message.search", results);
         }catch(e){
@@ -337,7 +230,7 @@ module.exports = (socket) => {
        try{
            if(!socket.user) return socket.emit("error", "not auth");
            if(!valid.id(server)) return socket.emit("error.valid", "message.pin", "server");
-           if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "message.pin", "chnl");
+           if(!valid.idOrSpecyficvalid(chnl, ["main"])) return socket.emit("error.valid", "message.pin", "chnl");
            if(!valid.id(msgId)) return socket.emit("error.valid", "message.pin", "msgId");
            if(!valid.bool(pin)) return socket.emit("error.valid", "message.pin", "pin");
            
@@ -346,7 +239,7 @@ module.exports = (socket) => {
            if(priv){
                const p1 = socket.user._id;
                const p2 = server.replace("$", "");
-               chat = chatMgmt.combinateId(p1, p2);
+               chat = combinateId(p1, p2);
            }
 
            await global.db.mess.updateOne(chat, { _id: msgId }, { pinned: pin });
@@ -378,13 +271,13 @@ module.exports = (socket) => {
             if(priv){
                 const p1 = socket.user._id;
                 const p2 = server.replace("$", "");
-                server = chatMgmt.combinateId(p1, p2);
+                server = combinateId(p1, p2);
             }
 
-            const results = await global.db.mess.find(server, (data) => {
-                if(data.chnl != chnl) return false;
+            const results = await global.db.mess.find(server, (data, context) => {
+                if(data.chnl != context.chnl) return false;
                 return data.pinned === true;
-            });
+            }, { chnl });
 
             socket.emit("message.fetch.pinned", results);
         }catch(e){
@@ -395,7 +288,7 @@ module.exports = (socket) => {
 
 global.getChnlPerm = async function(user, server, chnl){
     const permission = new permissionSystem(server);
-    const channel = await global.db.groupSettings.findOne(server, c => c.chid == chnl);
+    const channel = await global.db.groupSettings.findOne(server, (c, context) => c.chid == context.chnl, { chnl });
     if(!channel) return {
         visable: false,
         text: false

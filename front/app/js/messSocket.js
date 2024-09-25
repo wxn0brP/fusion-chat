@@ -52,14 +52,9 @@ socket.on("message.fetch", (data) => {
     try{
         data.forEach((mess) => {
             try{
-                messFunc.addMess({
-                    fr: mess.fr,
-                    msg: mess.msg,
-                    _id: mess._id,
-                    e: mess.lastEdit ? mess.lastEdit : false,
-                    res: mess.res,
-                    reacts: mess.reacts || {},
-                }, false, true);
+                mess.e = mess.lastEdit ? mess.lastEdit : false;
+                mess.reacts = mess.reacts || {};
+                messFunc.addMess(mess, false, true);
             }catch(e){
                 lo(e);
                 lo(mess);

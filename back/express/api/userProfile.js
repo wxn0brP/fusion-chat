@@ -1,14 +1,16 @@
-const multer = require("multer");
-const { Image } = require("image-js");
-const path = require("path");
-const cropAndResizeProfile = require("../../logic/cropAndResizeProfile");
-const permissionSystem = require("../../logic/permission-system");
+import { Router } from "express";
+import multer, { memoryStorage } from "multer";
+import { Image } from "image-js";
+import { join } from "path";
+import { readFileSync, existsSync } from "fs";
+import cropAndResizeProfile from "../../logic/cropAndResizeProfile.js";
 
+const router = Router();
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
-const UPLOAD_DIR = "userFiles/servers";
+const UPLOAD_DIR = "userFiles/profiles";
 
-const storage = multer.memoryStorage();
+const storage = memoryStorage();
 
 const upload = multer({
     storage: storage,
@@ -23,16 +25,7 @@ const upload = multer({
     }
 }).single("file");
 
-app.post("/serverProfileUpload", global.authenticateMiddleware, async (req, res) => {
-    const serverId = req.headers.serverid;
-    if(!serverId) return res.status(400).json({ err: true, msg: "No server id provided." });
-
-    const permission = new permissionSystem(serverId);
-    const userId = req.user;
-
-    const userPerm = await permission.userPermison(userId, "admin");
-    if(!userPerm) return res.status(403).json({ err: true, msg: "You do not have permission to do that." });
-
+router.post("/profileUpload", global.authenticateMiddleware, (req, res) => {
     upload(req, res, async (err) => {
         if(err){
             return res.status(400).json({ err: true, msg: err.message });
@@ -42,19 +35,44 @@ app.post("/serverProfileUpload", global.authenticateMiddleware, async (req, res)
             return res.status(400).json({ err: true, msg: "No file uploaded." });
         }
 
-        const filePath = path.join(UPLOAD_DIR, `${serverId}.png`);
+        const userId = req.user;
+        const filePath = join(UPLOAD_DIR, `${userId}.png`);
 
         try{
             const image = await Image.load(req.file.buffer);
             const processedImage = cropAndResizeProfile(image);
             await processedImage.save(filePath, { format: "png", compressionLevel: 0 });
 
-            await global.db.groupSettings.updateOne(serverId, { _id: "set"}, { img: true });
-
             res.json({ err: false, msg: "Profile picture uploaded successfully.", path: filePath });
-            global.sendToChatUsers(serverId, "refreshData", "group.get");
         }catch(error){
             res.status(500).json({ err: true, msg: "An error occurred while processing the image." });
         }
     });
 });
+
+router.get("/profileImg", (req, res) => {
+    function def(){
+        res.set("X-Content-Default", "true");
+        res.send(readFileSync("front/static/defaultProfile.png"));
+    }
+
+    const id = req.query.id;
+    if(!id) return def();
+
+    const file = "userFiles/profiles/"+id+".png";
+
+    if(existsSync(file)){
+        res.set("X-Content-Default", "false");
+        res.send(readFileSync(file));
+    }else def();
+});
+
+router.get("/isProfileImg", (req, res) => {
+    const id = req.query.id;
+    if(!id) return res.json(false);
+
+    const file = "userFiles/profiles/"+id+".png";
+    res.json(existsSync(file));
+});
+
+export default router;

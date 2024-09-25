@@ -7,6 +7,8 @@ SettingsServerManager.prototype.changeDisplay = function(options){
         editRole: false,
         usersManager: false,
         emoji: false,
+        webhook: false,
+        editWebhook: false,
         ...options
     };
 
@@ -25,6 +27,7 @@ SettingsServerManager.prototype.renderCategorySwitcher = function(){
         { text: translateFunc.get("Roles"), name: 'role' },
         { text: translateFunc.get("Users Manager"), name: 'usersManager' },
         { text: translateFunc.get("Emoji Manager"), name: 'emoji' },
+        { text: translateFunc.get("Webhooks"), name: 'webhook' },
     ]
     .map(category => {
         const button = document.createElement('button');

@@ -3,7 +3,6 @@ const messInput = document.querySelector("#mess-input");
 const replyCloseDiv = document.querySelector("#replyClose");
 const editCloseDiv = document.querySelector("#editClose");
 const sendBtn = document.querySelector("#barc__sendBtn");
-const emocjiDiv = document.querySelector("#emocjiDiv");
 const linkClickDiv = document.querySelector("#linkClick");
 const messages_nav = document.querySelector("#messages_nav");
 const messages_nav_priv = document.querySelector("#messages_nav__priv");
@@ -63,7 +62,7 @@ const messFunc = {
         fromDiv.setAttribute("_author", data.fr);
 
         const fromDivImg = document.createElement("img");
-        fromDivImg.src = "/profileImg?id=" + data.fr;
+        fromDivImg.src = "/api/profileImg?id=" + data.fr;
         fromDiv.appendChild(fromDivImg);
 
         const fromDivText = document.createElement("div");
@@ -93,6 +92,8 @@ const messFunc = {
         if(data.e){
             messContentDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnux(parseInt(data.e, 36)));
         }
+        if(data.embed)
+            format.embed(data.embed, messContentDiv);
 
         if(data.reacts){
             const reactsDiv = document.createElement("div");
@@ -148,31 +149,71 @@ const messFunc = {
 
     linkClick(e){
         e.preventDefault();
-        const url = e.target.getAttribute("href");
+        let url = e.target.getAttribute("href");
         if(!url) return;
 
+        if(!/^(https?:\/\/)/i.test(url)) url = "http://" + url;
+
         const urlParts = url.split("/");
+        if(urlParts.length < 2) return uiFunc.uiMsg(translateFunc.get("Invalid link") + ".");
         const urlClored =
             urlParts[0] + "//" +
             "<span>" + urlParts[2] + "</span>" +
             "/" + urlParts.slice(3).join("/")
         
+        const end = () => {
+            linkClickDiv.fadeOut();
+            linkClickDiv.querySelector("#linkClick_yes").removeEventListener("click", handleYesClick);
+            linkClickDiv.querySelector("#linkClick_no").removeEventListener("click", end);
+        }
+        const handleYesClick = () => {
+            window.open(url, "_blank");
+            end();
+        }
         linkClickDiv.fadeIn();
         linkClickDiv.querySelector("#linkClick_link").innerHTML = urlClored;
-        linkClickDiv.querySelector("#linkClick_yes").addEventListener("click", () => {
-            window.open(url, "_blank");
-        })
+        linkClickDiv.querySelector("#linkClick_yes").addEventListener("click", handleYesClick);
+        linkClickDiv.querySelector("#linkClick_no").addEventListener("click", end);
     },
 
     emocjiPopup(cb){
-        emocjiDiv.fadeIn();
+        emojiDiv.fadeIn();
         function evt(e){
             cb(e.detail);
-            emocjiDiv.removeEventListener("emocji", evt);
-            emocjiDiv.fadeOut();
+            emojiDiv.removeEventListener("emocji", evt);
+            emojiDiv.fadeOut();
         }
         setTimeout(() => {
-            emocjiDiv.addEventListener("emocji", evt);
+            emojiDiv.addEventListener("emocji", evt);
+            emojiInput.value = "";
+            emojiFunc.renderEmoji();
+
+            const to = vars.chat.to;
+            if(to == "main" || to.startsWith("$")) return;
+            socket.emit("server.emojis.sync", to, (emojis) => {
+                emojiFunc.customEmojisCat = [{
+                    id: "Custom",
+                    emojis: [
+                        ...emojis.map(emoji => emoji.name)
+                    ]
+                }];
+    
+                emojiFunc.customEmojis = {}
+                emojis.forEach(emoji => {
+                    emojiFunc.customEmojis[emoji.name] = {
+                        id: emoji.name,
+                        name: emoji.name,
+                        keywords: [emoji.name],
+                        skins: [
+                            {
+                                native: String.fromCharCode(emoji.unicode),
+                            }
+                        ]
+                    }
+                });
+    
+                emojiFunc.renderEmoji();
+            });
         }, 100);
     },
 
@@ -245,26 +286,6 @@ const messFunc = {
         }
         vars.chat.pinned.forEach((m) => {
             messFunc.addMess(m);
-        });
-    },
-
-    addServerEmoji(){
-        const to = vars.chat.to;
-        if(!to) return;
-        if(to == "main" || to.startsWith("$")) return;
-
-        socket.emit("server.emojis.sync", to, async (emojis) => {
-            const labels = emojis.map(emoji => emoji.name);
-            const values = emojis.map(emoji => emoji.unicode);
-
-            const input = await uiFunc.selectPrompt(
-                translateFunc.get("Choose an emoji"),
-                labels,
-                values
-            );
-
-            if(!input) return;
-            messInput.value += "&#" + input + ";";
         });
     },
 }

@@ -112,7 +112,7 @@ main{
     margin-left: 5px;
 }
 
-.mess_message img{
+.mess_message .mess_meta img{
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -163,13 +163,6 @@ main{
     fill: var(--fil);
 }
 
-#emocjiDiv{
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
-    display: none;
-}
-
 #barc__emocji, #barc__sendFile{
     width: 2.5rem;
     border: none;
@@ -207,11 +200,13 @@ main{
     bottom: 60px;
     left: 10px;
     width: 90%;
+    max-height: 70vh;
     background-color: var(--menu);
     color: var(--txt);
     border-radius: 10px;
     padding: 10px;
     z-index: 2;
+    overflow: auto;
 
     text-align: left;
 }
@@ -221,7 +216,7 @@ main{
     margin-bottom: 5px;
 }
 
-#barc__commads ul li :where(input, select){
+#barc__commads ul li :where(input, select, button){
     background-color: var(--menu);
     color: var(--txt);
     border: 2px solid var(--accent);
@@ -234,6 +229,23 @@ main{
     outline: none;
 }
 
+.embed{
+    border: 1px solid var(--txt);
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    width: 400px;
+}
+
+.embed .custom-fields{
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.embed .custom-field{
+    margin-bottom: 5px;
+}
+
 @media screen and (max-width: 800px){
     main{
         width: 100vw;
@@ -241,5 +253,9 @@ main{
 
     #messages{
         padding-top: 20px;
+    }
+
+    .embed{
+        width: 90%;
     }
 }

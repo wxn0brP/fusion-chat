@@ -1,4 +1,4 @@
-function processDbChanges(oldData, newData, trackParams = [], idName="_id"){
+export default function processDbChanges(oldData, newData, trackParams = [], idName="_id"){
     // Helper function to check if objects are equal based on trackParams
     const areObjectsEqual = (obj1, obj2, params) => {
         return params.every(param => {
@@ -20,5 +20,3 @@ function processDbChanges(oldData, newData, trackParams = [], idName="_id"){
 
     return { itemsToAdd, itemsToRemove, itemsToUpdate };
 }
-
-module.exports = processDbChanges;

@@ -1,10 +1,3 @@
-const update = require("./update");
-const remove = require("./remove");
-const { find, findOne } = require("./find");
-
-module.exports = {
-    update,
-    remove,
-    find,
-    findOne
-}
+export { default as update } from "./update.js";
+export { default as remove } from "./remove.js";
+export * from "./find.js";

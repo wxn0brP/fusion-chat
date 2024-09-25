@@ -1,12 +1,14 @@
-const fs = require("fs");
-const path = __dirname + "/route/";
-const express = require("express");
-const router = express.Router();
-const htmlMinifier = require("html-minifier");
-app.use("/", router);
+import { readdirSync, readFileSync } from "fs";
+import { Router } from "express";
+import { minify } from "html-minifier";
+
+const frontRouter = Router();
+const apiRouter = Router();
+app.use("/", frontRouter);
+app.use("/api", apiRouter);
 
 function minifity(body){
-    return htmlMinifier.minify(body, {
+    return minify(body, {
         collapseWhitespace: true,
         minifyCSS: true,
         minifyJS: true,
@@ -18,11 +20,15 @@ function minifity(body){
     });
 }
 
-fs.readdirSync(path).forEach(file => require(path+file));
+const apiPath = "./back/express/api/";
+readdirSync(apiPath).filter(file => file.includes(".js")).forEach(async file => {
+    const router = await import("./api/"+file);
+    apiRouter.use("/", router.default);
+});
 
-fs.readdirSync(global.dir+"../front/public").filter(file => file.includes(".html")).forEach(file => {
-    router.get("/"+file.replace(".html", ""), (req, res) => {
-        let data = fs.readFileSync(global.dir+"../front/public/"+file, "utf-8");
+readdirSync("front/public").filter(file => file.includes(".html")).forEach(file => {
+    frontRouter.get("/"+file.replace(".html", ""), (req, res) => {
+        let data = readFileSync("front/public/"+file, "utf-8");
         res.send(minifity(data));
     })
 });
@@ -46,16 +52,31 @@ async function renderLayout(res, layout, bodyPath, layoutData, bodyData){
     });
 }
 
-router.get("/app", (req, res) => {
-    res.render("app/app");
+frontRouter.get("/app", (req, res) => {
+    try{
+        res.render("app/app");
+    }catch(err){
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
-router.get("/", (req, res) => {
-    renderLayout(res, "layout/main", "main/index", {}, {})
+frontRouter.get("/", (req, res) => {
+    try{
+        renderLayout(res, "layout/main", "main/index", {}, {});
+    }catch(err){
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
-fs.readdirSync(global.dir+"../front/main").filter(file => file.includes(".ejs")).map(file => file.replace(".ejs", "")).forEach(site => {
-    router.get("/"+site, (req, res) => {
-        renderLayout(res, "layout/main", "main/"+site, {}, {});
+readdirSync("front/main").filter(file => file.includes(".ejs")).map(file => file.replace(".ejs", "")).forEach(site => {
+    frontRouter.get("/"+site, (req, res) => {
+        try{
+            renderLayout(res, "layout/main", "main/"+site, {}, {});
+        }catch(err){
+            console.error(err);
+            res.status(500).send("Internal Server Error");
+        }
     })
 });

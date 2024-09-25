@@ -1,9 +1,11 @@
-require("./setUp");
-require("dotenv").config();
-global.dir = __dirname + "/";
-require("./global");
-require("./dataBase");
-require("./firebase");
+await import("./setUp.js");
+import dotenv from "dotenv";
+dotenv.config();
+
+global.dir = "file://" + process.cwd() + "/";
+await import("./global.js");
+await import("./dataBase.js");
+await import("./firebase.js");
 
 process.on("uncaughtException", (e) => {
     try{
@@ -28,11 +30,12 @@ process.on('unhandledRejection', (reason, promise) => {
     }
 });
 
-const app = require("./express");
-const server = require("http").createServer(app);
+const app = (await import("./express/index.js")).default;
+import http from "http";
+const server = http.createServer(app);
 global.server = server;
 
-require("./socket");
+await import("./socket/index.js");
 
 lo("__________________"+(new Date()+"").split(" ").slice(1,5).join(" "));
 server.listen(process.env.PORT, function(){

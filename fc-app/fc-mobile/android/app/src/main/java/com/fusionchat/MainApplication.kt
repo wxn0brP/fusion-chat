@@ -1,5 +1,6 @@
 package com.fusionchat
 import com.fusionchat.AudioModule
+import com.fusionchat.InstallSourceModule
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -20,6 +21,7 @@ class MainApplication : Application(), ReactApplication {
         override fun getPackages(): List<ReactPackage> {
             return PackageList(this).packages.apply {
                 add(AudioModulePackage())
+                add(InstallSourceModulePackage())
             }
         }
 

@@ -54,10 +54,10 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: app-release.apk
+        name: app-release
         path: fc-app/fc-mobile/android/app/build/outputs/apk/release/
         
-  release:
+  release-android:
     needs: build-android
     runs-on: ubuntu-latest
     steps:
@@ -67,7 +67,8 @@ jobs:
     - name: Download Artifact
       uses: actions/download-artifact@v3
       with:
-        name: app-release.apk
+        name: app-release
+        path: app-release
         
     - name: Get version from package.json
       id: get_version
@@ -89,16 +90,13 @@ jobs:
           -H "Accept: application/vnd.github.v3+json" \
           -d "{\"tag_name\":\"${TAG}\",\"name\":\"${TAG}\",\"body\":\"${BODY}\",\"draft\":false,\"prerelease\":false}" \
           "https://api.github.com/repos/${REPO}/releases"
-      env:
-        GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
         
-    - name: Upload APK to Release in Target Repository
+    - name: Upload APKs to Release in Target Repository
       run: |
-        VERSION=${{ steps.get_version.outputs.VERSION }}  
+        VERSION=${{ steps.get_version.outputs.VERSION }}
         REPO="wxn0brP/fc-mobile"
         TAG="v${VERSION}"
-        ASSET_NAME="fusion-chat-${VERSION}.apk"
-        
+
         # Find the upload URL from the release response
         UPLOAD_URL=$(curl -s \
           -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
@@ -106,9 +104,18 @@ jobs:
           "https://api.github.com/repos/${REPO}/releases/tags/${TAG}" \
           | jq -r '.upload_url' | sed -e "s/{?name,label}//")
         
-        # Upload APK  
-        curl -X POST \
-          -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
-          -H "Content-Type: application/vnd.android.package-archive" \
-          --data-binary "@app-release.apk" \
-          "${UPLOAD_URL}?name=${ASSET_NAME}"
+        # Upload APKs with specific naming convention
+        for apk in app-release/*-release.apk; do
+          ARCH=$(basename "$apk" | sed -E 's/app-(.*)-release.apk/\1/')
+          ASSET_NAME="fusion_chat-${ARCH}-v${VERSION}.apk"
+          echo "Uploading ${apk} as ${ASSET_NAME}"
+          if [ -s "$apk" ]; then
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.FC_DESKTOP_TOKEN }}" \
+              -H "Content-Type: application/vnd.android.package-archive" \
+              --data-binary "@$apk" \
+              "${UPLOAD_URL}?name=${ASSET_NAME}"
+          else
+            echo "Warning: File $apk is empty or does not exist."
+          fi
+        done

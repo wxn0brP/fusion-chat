@@ -1,8 +1,7 @@
-const fs = require("fs");
-const gen = require("./gen");
-const format = require("./format");
-const fileM = require("./file");
-const CacheManager = require("./cacheManager");
+import { existsSync, mkdirSync, readdirSync, appendFileSync, rmSync, writeFileSync, statSync } from "fs";
+import gen from "./gen.js";
+import { stringify } from "./format.js";
+import { find as _find, findOne as _findOne, update as _update, remove as _remove } from "./file/index.js";
 
 const maxFileSize = 2 * 1024 * 1024; //2 MB
 
@@ -15,14 +14,13 @@ class dbActionC{
      * Creates a new instance of dbActionC.
      * @constructor
      * @param {string} folder - The folder where database files are stored.
-     * @param {number} cacheThreshold - The cache threshold for query results.
-     * @param {number} ttl - The time-to-live (TTL) for cached data.
+     * @param {object} options - The options object.
      */
-    constructor(folder, cacheThreshold, ttl){
+    constructor(folder, options){
         this.folder = folder;
-        this.cacheManager = new CacheManager(cacheThreshold, ttl);
+        // this.cacheManager = new CacheManager(options.cacheThreshold, options.cacheTTL);
         
-        if(!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+        if(!existsSync(folder)) mkdirSync(folder, { recursive: true });
     }
 
     /**
@@ -30,7 +28,14 @@ class dbActionC{
      * @returns {string[]} An array of database names.
      */
     getDBs(){
-        return fs.readdirSync(this.folder);
+        const collections = readdirSync(this.folder, { recursive: true, withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .map(dirent => {
+                if(dirent.parentPath === this.folder) return dirent.name;
+                return dirent.parentPath.replace(this.folder + "/", "") + "/" + dirent.name
+            });
+
+        return collections;
     }
 
     /**
@@ -40,7 +45,18 @@ class dbActionC{
      */
     checkCollection(collection){
         const path = this.folder + "/" + collection;
-        if(!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
+        if(!existsSync(path)) mkdirSync(path, { recursive: true });
+    }
+
+    /**
+     * Check if a collection exists.
+     * @function
+     * @param {string} collection - The name of the collection.
+     * @returns {boolean} True if the collection exists, false otherwise.
+     */
+    issetCollection(collection){
+        const path = this.folder + "/" + collection;
+        return existsSync(path);
     }
 
     /**
@@ -52,12 +68,12 @@ class dbActionC{
      * @returns {Promise<Object>} A Promise that resolves to the added data.
      */
     async add(collection, arg, id_gen=true){
-        this.checkCollection(collection);
+        await this.checkCollection(collection);
         const file = this.folder + "/" + collection + "/" + getLastFile(this.folder + "/" + collection);
 
         if(id_gen) arg._id = arg._id || gen();
-        const data = format.stringify(arg);
-        fs.appendFileSync(file, data+"\n");
+        const data = stringify(arg);
+        appendFileSync(file, data+"\n");
         return arg;
     }
 
@@ -66,24 +82,25 @@ class dbActionC{
      * @async
      * @param {string} collection - The name of the collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
+     * @param {Object} context - The context object (for functions).
      * @param {Object} options - The options for the search.
      * @param {number} options.max - The maximum number of entries to return. Default is -1, meaning no limit.
      * @param {boolean} options.reverse - Whether to reverse the order of returned entries. Default is false.
      * @returns {Promise<Object[]>} A Promise that resolves to an array of matching entries.
      */
-    async find(collection, arg, options={}){
+    async find(collection, arg, context={}, options={}){
         options.reverse = options.reverse || false;
         options.max = options.max || -1;
 
-        this.checkCollection(collection);
-        let files = fs.readdirSync(this.folder + "/" + collection).filter(file => !/\.tmp$/.test(file));
+        await this.checkCollection(collection);
+        const files = getSortedFiles(this.folder + "/" + collection).map(f => f.f);
         if(options.reverse) files.reverse();
         let datas = [];
 
         let totalEntries = 0;
 
         for(let f of files){
-            let data = await fileM.find(this.folder + "/" + collection + "/" + f, arg, options);
+            let data = await _find(this.folder + "/" + collection + "/" + f, arg, context, options);
             if(options.reverse) data.reverse();
 
             if(options.max !== -1){
@@ -108,15 +125,16 @@ class dbActionC{
      * @async
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<Object|null>} A Promise that resolves to the first matching entry or null if not found.
      */
-    async findOne(collection, arg){
-        this.checkCollection(collection);
-        let files = fs.readdirSync(this.folder + "/" + collection).filter(file => !/\.tmp$/.test(file));
+    async findOne(collection, arg, context={}){
+        await this.checkCollection(collection);
+        const files = getSortedFiles(this.folder + "/" + collection).map(f => f.f);
         files.reverse();
 
         for(let f of files){
-            let data = await fileM.findOne(this.folder + "/" + collection + "/" + f, arg);
+            let data = await _findOne(this.folder + "/" + collection + "/" + f, arg, context);
             if(data){
                 return data;
             }
@@ -130,11 +148,12 @@ class dbActionC{
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @param {function|Object} obj - The updater function or object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were updated, or `false` otherwise.
      */
-    async update(collection, arg, obj){
-        this.checkCollection(collection);
-        return await fileM.update(this.folder, collection, arg, obj);
+    async update(collection, arg, obj, context={}){
+        await this.checkCollection(collection);
+        return await _update(this.folder, collection, arg, obj, context);
     }
 
     /**
@@ -143,11 +162,12 @@ class dbActionC{
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
      * @param {function|Object} obj - The updater function or object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was updated, or `false` otherwise.
      */
-    async updateOne(collection, arg, obj){
-        this.checkCollection(collection);
-        return await fileM.update(this.folder, collection, arg, obj, true);
+    async updateOne(collection, arg, obj, context={}){
+        await this.checkCollection(collection);
+        return await _update(this.folder, collection, arg, obj, context, true);
     }
 
     /**
@@ -155,11 +175,12 @@ class dbActionC{
      * @async
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<boolean>} A Promise that resolves to `true` if entries were removed, or `false` otherwise.
      */
-    async remove(collection, arg){
-        this.checkCollection(collection);
-        return await fileM.remove(this.folder, collection, arg);
+    async remove(collection, arg, context={}){
+        await this.checkCollection(collection);
+        return await _remove(this.folder, collection, arg, context);
     }
 
     /**
@@ -167,11 +188,12 @@ class dbActionC{
      * @async
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} arg - The search criteria. It can be a function or an object.
+     * @param {Object} context - The context object (for functions).
      * @returns {Promise<boolean>} A Promise that resolves to `true` if one entry was removed, or `false` otherwise.
      */
-    async removeOne(collection, arg){
-        this.checkCollection(collection);
-        return await fileM.remove(this.folder, collection, arg, true);
+    async removeOne(collection, arg, context={}){
+        await this.checkCollection(collection);
+        return await _remove(this.folder, collection, arg, context, true);
     }
 
     /**
@@ -181,7 +203,7 @@ class dbActionC{
      * @return {void}
      */
     removeDb(collection){
-        fs.rmSync(this.folder + "/" + collection, { recursive: true, force: true });
+        rmSync(this.folder + "/" + collection, { recursive: true, force: true });
     }
 }
 
@@ -191,24 +213,36 @@ class dbActionC{
  * @returns {string} The name of the last file in the directory.
  */
 function getLastFile(path){
-    if(!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
-    let files = fs.readdirSync(path).filter(file => !/\.tmp$/.test(file));
+    if(!existsSync(path)) mkdirSync(path, { recursive: true });
+    const files = getSortedFiles(path);
 
     if(files.length == 0){
-        fs.writeFileSync(path+"/1.db", "");
+        writeFileSync(path+"/1.db", "");
         return "1.db";
     }
-    files = files.sort();
+
     const last = files[files.length-1];
-    const info = path + "/" + last;
-    if(fs.statSync(info).size > maxFileSize){
-        const temName = last.replace(".db", "");
-        const int = parseInt(temName) + 1;
-        fs.writeFileSync(path + "/" + int + ".db", "");
-        return int+".db";
-    }else{
-        return last;
-    }
+    const info = path + "/" + last.f;
+
+    if(statSync(info).size < maxFileSize) return last.f;
+    
+    const num = last.i + 1;
+    writeFileSync(path + "/" + num + ".db", "");
+    return num+".db";
 }
 
-module.exports = dbActionC;
+/**
+ * Get all files in a directory sorted by name.
+ * @param {string} path - The path to the directory.
+ * @return {string[]} An array of file names sorted by name.
+ */
+function getSortedFiles(path){
+    let files = readdirSync(path).filter(file => file.endsWith(".db"));
+    if(files.length == 0) return [];
+    files = files.map(file => parseInt(file.replace(".db", "")))
+    files = files.sort();
+    files = files.map(file => { return { i: file, f: file+".db" } });
+    return files;
+}
+
+export default dbActionC;

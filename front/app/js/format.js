@@ -5,14 +5,14 @@ const format = {
 
         const elemensts = format.getElements(mess_plain);
         for(const element of elemensts){
-            div.appendChild(document.createElement('br'));
+            div.appendChild(document.createElement("br"));
             div.appendChild(element);
         }
     },
 
     changeText(text){
-        text = text.replace(/</g, '&lt;');
-        text = text.replace(/>/g, '&gt;');
+        text = text.replace(/</g, "&lt;");
+        text = text.replace(/>/g, "&gt;");
 
         const excludePattern = /```(.*?)```/g;
         const excludeMatches = text.match(excludePattern);
@@ -26,10 +26,10 @@ const format = {
             }
         }
 
-        text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-        text = text.replace(/\/\/\/(.*?)\/\/\//g, '<i>$1</i>');
-        text = text.replace(/--(.*?)--/g, '<strike>$1</strike>');
-        text = text.replace(/__(.*?)__/g, '<u>$1</u>');
+        text = text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+        text = text.replace(/\/\/\/(.*?)\/\/\//g, "<i>$1</i>");
+        text = text.replace(/--(.*?)--/g, "<strike>$1</strike>");
+        text = text.replace(/__(.*?)__/g, "<u>$1</u>");
 
         text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" onclick="messFunc.linkClick(event)">$1</a>');
         text = text.replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>');
@@ -84,7 +84,7 @@ const format = {
 
         if(/\.(mp3|wav|ogg|.m4a)$/i.test(link)){
             if(!chcek(link)) return;
-            const ele = document.createElement('audio');
+            const ele = document.createElement("audio");
             ele.src = link;
             ele.controls = true;
             return ele;
@@ -92,44 +92,44 @@ const format = {
 
         if(/\.(mp4|mkv|webm|avi)$/i.test(link)){
             if(!chcek(link)) return;
-            const ele = document.createElement('video');
+            const ele = document.createElement("video");
             ele.src = link;
             ele.controls = true;
-            ele.style.maxWidth = '65%';
-            ele.style.height = 'auto'; 
-            ele.style.borderRadius = '2rem';
+            ele.style.maxWidth = "65%";
+            ele.style.height = "auto"; 
+            ele.style.borderRadius = "2rem";
             return ele;
         }
 
         if(/\.(png|jpg|gif|ico|jpeg|webp)$/i.test(link)){
             if(!chcek(link)) return;
-            const ele = document.createElement('img');
+            const ele = document.createElement("img");
             ele.src = link;
-            ele.style.maxWidth = '100%';
-            ele.style.height = 'auto';
+            ele.style.maxWidth = "100%";
+            ele.style.height = "auto";
             return ele;
         }
 
-        if(link.includes("youtube.com") || link.includes("youtu.be")) {
+        if(link.includes("youtube.com") || link.includes("youtu.be")){
             function extractYouTubeVideoId(link) {
                 const match = link.match(/(?:\?v=|\/embed\/|\.be\/|\/v\/|\/\d{1,2}\/|\/e\/|watch\?v=|youtu\.be\/|youtube\.com\/(?:v|e|embed)\/|youtube\.com\/user\/[^#\/]+#p\/[^#\/]+\/)([^"&?\/ ]{11})/);
                 return (match && match[1]) ? match[1] : null;
             }
             
             const videoId = extractYouTubeVideoId(link);
-            const iframe = document.createElement('iframe');
+            const iframe = document.createElement("iframe");
             iframe.src = `https://www.youtube.com/embed/${videoId}`;
             
             iframe.allowFullscreen = true;
-            iframe.style.maxWidth = '100%';
-            iframe.style.width = '500px';
-            iframe.style.height = '300px';
-            iframe.style.borderRadius = '2rem';
+            iframe.style.maxWidth = "100%";
+            iframe.style.width = "500px";
+            iframe.style.height = "300px";
+            iframe.style.borderRadius = "2rem";
             return iframe;
         }
         
         if(link.includes("tiktok.com")){
-            const iframe = document.createElement('iframe');
+            const iframe = document.createElement("iframe");
             function extractTikTokVideoId(link){
                 const regex = /tiktok\.com\/(?:@[\w.-]+\/video\/|v\/|embed\/v2\/)([\w-]+)/;
                 const match = link.match(regex);
@@ -139,10 +139,10 @@ const format = {
             iframe.src = `https://www.tiktok.com/embed/v2/${videoId}`;
             iframe.allowfullscreen = true;
             
-            iframe.style.maxWidth = '100%';
-            iframe.style.width = '400px';
-            iframe.style.height = '700px';
-            iframe.style.borderRadius = '2rem';
+            iframe.style.maxWidth = "100%";
+            iframe.style.width = "400px";
+            iframe.style.height = "700px";
+            iframe.style.borderRadius = "2rem";
             return iframe;
         }
 
@@ -162,7 +162,7 @@ const format = {
         }
 
         if(link.includes("spotify.com")){
-            const iframe = document.createElement('iframe');
+            const iframe = document.createElement("iframe");
             function extractSpotifyId(link){
                 const trackMatch = link.match(/track\/([a-zA-Z0-9]+)/);
                 if(trackMatch && trackMatch[1]){
@@ -179,31 +179,56 @@ const format = {
             iframe.src = `https://open.spotify.com/embed/${videoId}`;
             iframe.allowfullscreen = true;
             
-            iframe.style.maxWidth = '100%';
-            iframe.style.width = '400px';
-            iframe.style.height = '84px';
-            iframe.style.borderRadius = '1rem';
+            iframe.style.maxWidth = "100%";
+            iframe.style.width = "400px";
+            iframe.style.height = "84px";
+            iframe.style.borderRadius = "1rem";
             return iframe;
         }
+    },
 
-        const extRegex = /\.(js|html|css|py|c|cpp|java|cs|php|rb|swift|kt|ts|go|rs|pl|sh|sql|r|m|txt)$/i
-        if(extRegex.test(link)){
-            const language = link.match(extRegex)[0].replace(".","");
-    
-            const pre = document.createElement("pre");
-            pre.classList.add("preCode");
-            pre.innerHTML = `<span style="color: green;">${language}</span>:<br /><br />`;
-            pre.style.overflow = "auto";
+    embed(embedData, messDiv){
+        const embedContainer = document.createElement("div");
+        embedContainer.classList.add("embed");
+
+        embedContainer.innerHTML = `
+            <div style="display: flex;">
+                ${embedData.image ? `<div style="width: 35%;">
+                    <img src="${embedData.image}" style="width: 90%;" />
+                </div>` : ""}
+                <div ${embedData.image ? "style='width: 65%;'" : ""}>
+                    ${embedData.title ? `<h1>${embedData.title}</h1><br />` : ""}
+                    ${embedData.description ? `<p>${embedData.description}</p><br />` : ""}
+                    ${embedData.url ? `
+                        <b>Link: </b>
+                        <a href="${embedData.url}" onclick="messFunc.linkClick(event)">${embedData.url}</a>
+                    `: ""}
+                </div>
+            </div>
+        `
+
+        if(embedData.customFields){
+            embedContainer.innerHTML += `<br /><hr>`;
+            const customFieldsContainer = document.createElement("div");
+            customFieldsContainer.classList.add("custom-fields");
             
-            const code = document.createElement("code");
-            const file = cw.get(link);
-            code.innerHTML = hljs.highlight(file, {language}).value;
-            if(file.length>500 || file.split("\n").length > 10){
-                pre.style.maxHeight = "17rem";
+            for(const [key, value] of Object.entries(embedData.customFields)){
+                const fieldContainer = document.createElement("div");
+                fieldContainer.classList.add("custom-field");
+
+                const fieldName = document.createElement("strong");
+                fieldName.innerText = key + ": ";
+                fieldContainer.appendChild(fieldName);
+
+                const fieldValue = document.createElement("span");
+                fieldValue.innerText = value;
+                fieldContainer.appendChild(fieldValue);
+
+                customFieldsContainer.appendChild(fieldContainer);
             }
-    
-            pre.appendChild(code);
-            return pre;
+            embedContainer.appendChild(customFieldsContainer);
         }
+
+        messDiv.appendChild(embedContainer);
     }
 }

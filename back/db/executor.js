@@ -51,4 +51,4 @@ class executorC{
     }
 }
 
-module.exports = executorC;
+export default executorC;

@@ -27,7 +27,7 @@ const renderFunc = {
             const structDiv = document.createElement("div");
 
             const profileImg = document.createElement("img");
-            profileImg.src = "/profileImg?id=" + id;
+            profileImg.src = "/api/profileImg?id=" + id;
             structDiv.appendChild(profileImg);
 
             structDiv.innerHTML += apis.www.changeUserID(id);
@@ -85,7 +85,7 @@ const renderFunc = {
     },
 
     localUserProfile(){
-        navs__user__name.innerHTML = vars.user.fr;
+        navs__user__name.innerHTML = apis.www.changeUserID(vars.user._id);
         navs__user__status.innerHTML = vars.user.statusText || vars.user.status || "Online";
     },
 
@@ -95,7 +95,7 @@ const renderFunc = {
 
         userProfileDiv.innerHTML = `
             <div id="userProfileInfo">
-                <img src="/profileImg?id=${data._id}" alt="User logo">
+                <img src="/api/profileImg?id=${data._id}" alt="User logo">
                 <div>
                     <h1>${data.name}</h1>
                     <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
@@ -146,7 +146,7 @@ const renderFunc = {
         renderUtils.initPopup(userProfileDiv);
     },
 
-    serverInit(sid, name, categories){
+    serverInit(sid, name, categories, isOwnEmoji){
         navs__groups__name.innerHTML = name;
         const settingsBtn = document.createElement("span");
         settingsBtn.innerHTML = "⚙️";
@@ -229,6 +229,23 @@ const renderFunc = {
         }
 
         coreFunc.changeChnl(vars.chat.chnl);
+
+        if(isOwnEmoji){
+            const emojiStyle = document.createElement("style");
+            emojiStyle.innerHTML = `
+                @font-face{
+                    font-family: 'emoji';
+                    src: url("/userFiles/emoji/${sid}.ttf") format("truetype");
+                    font-weight: normal;
+                    font-style: normal;
+                }
+                
+                *{
+                    font-family: 'emoji', 'Ubuntu', sans-serif;
+                }
+            `;
+            emojiStyleDiv.appendChild(emojiStyle);
+        }
     },
 
     usersInChat(data){
@@ -264,7 +281,7 @@ const renderFunc = {
             });
 
             const userImg = document.createElement("img");
-            userImg.src = "/profileImg?id="+userID;
+            userImg.src = "/api/profileImg?id="+userID;
             userDiv.appendChild(userImg);
 
             const nameDiv = document.createElement("div");

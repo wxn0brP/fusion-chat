@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     type: "object",
     properties: {
         meta: {
@@ -48,9 +48,20 @@ module.exports = {
             items: {
                 type: "object",
                 properties: {
-                    rid: { type: "string", validId: true },
+                    rid: {
+                        anyOf: [
+                            { type: "string", validId: true },
+                            { type: "integer", minimum: 0 }
+                        ]
+                    },
                     name: { type: "string" },
-                    parent: { type: "string" },
+                    parent: {
+                        anyOf: [
+                            { type: "string", enum: ["all"] },
+                            { type: "string", validId: true },
+                            { type: "integer", minimum: 0 }
+                        ]
+                    },
                     p: {
                         anyOf: [
                             { type: "string", enum: ["all"] },
@@ -96,7 +107,23 @@ module.exports = {
                 additionalProperties: false
             }
         },
+        webhooks: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    whid: { type: "string", validId: true },
+                    name: { type: "string" },
+                    chnl: { type: "string", validId: true },
+                    template: { type: "string", minLength: 1, maxLength: 500 },
+                    required: { type: "array", items: { type: "string" } },
+                    ajv: { type: "object", additionalProperties: true }
+                },
+                required: ["whid", "name", "chnl", "template", "required", "ajv"],
+                additionalProperties: false
+            }
+        }
     },
-    required: ["meta", "categories", "channels", "roles", "users", "emojis"],
+    required: ["meta", "categories", "channels", "roles", "users", "emojis", "webhooks"],
     additionalProperties: false
 };
