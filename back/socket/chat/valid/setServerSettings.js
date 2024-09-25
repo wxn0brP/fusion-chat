@@ -59,8 +59,7 @@ export default {
                     parent: {
                         anyOf: [
                             { type: "string", enum: ["all"] },
-                            { type: "string", validId: true },
-                            { type: "integer", minimum: 0 }
+                            { type: "string", validId: true }
                         ]
                     },
                     p: {

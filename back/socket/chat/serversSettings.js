@@ -4,6 +4,7 @@ import processDbChanges from "../../logic/processDbChanges.js";
 import { addCustom } from "../../logic/webhooks/index.js";
 import serServerSettingsData from "./valid/setServerSettings.js";
 import genId from "../../db/gen.js";
+import * as emojiMgmt from "../../logic/emojiMgmt.js";
 const setServerSettingsShema = valid.objAjv(serServerSettingsData);
 
 export default (socket) => {
