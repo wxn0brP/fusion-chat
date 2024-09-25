@@ -37,7 +37,8 @@ export default {
                     rp: {
                         type: "array",
                         items: { type: "string", channelRP: true },
-                    }
+                    },
+                    desc: { type: "string", minLength: 0, maxLength: 150 }
                 },
                 required: ["chid", "name", "type", "category", "i", "rp"],
                 additionalProperties: false

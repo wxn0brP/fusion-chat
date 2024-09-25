@@ -60,6 +60,7 @@ SettingsServerManager.prototype.renderChannels = function(){
                 i: channels.filter(channel => channel.category === category.cid).length,
                 rp: [],
                 chid: window.genId(),
+                desc: ""
             };
             this.settings.channels.push(newChannel);
             this.renderChannels(); 
@@ -134,6 +135,7 @@ SettingsServerManager.prototype.renderEditChannel = function(channel){
     containerElement.innerHTML = `<h1>${translateFunc.get("Edit channel")}</h1>`;
 
     const nameInp = this.initInputText(containerElement, translateFunc.get("Name"), channel.name);
+    const descInp = this.initInputText(containerElement, translateFunc.get("Description"), channel.desc || "");
     const _this = this;
 
     const allPerm = [
@@ -162,6 +164,7 @@ SettingsServerManager.prototype.renderEditChannel = function(channel){
     this.addSeparator(containerElement, 15);
     this.initButton(containerElement, translateFunc.get("Save"), () => {
         channel.name = nameInp.value;
+        channel.desc = descInp.value || "";
         channel.rp = [];
 
         containerElement.querySelectorAll("input[type=checkbox][data-role][data-perm]").forEach(checkbox => {

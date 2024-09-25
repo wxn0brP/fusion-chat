@@ -2,6 +2,7 @@ const navs__main = document.querySelector("#navs__main");
 const navs__groups = document.querySelector("#navs__groups");
 const navs__main__call = document.querySelector("#navs__main__call");
 const emojiStyleDiv = document.querySelector("#emoji-style");
+const messages_nav__server__description = document.querySelector("#messages_nav__server__description");
 
 const coreFunc = {
     changeChat(id, div=null){
@@ -75,6 +76,7 @@ const coreFunc = {
 
         document.querySelectorAll(".channel_text").forEach(e => e.classList.remove("channel_textActive"));
         document.querySelector("#channel_"+id).classList.add("channel_textActive");
+        messages_nav__server__description.innerHTML = vars.servers.desc[id] || "";
         
         coreFunc.loadChat();
         socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);

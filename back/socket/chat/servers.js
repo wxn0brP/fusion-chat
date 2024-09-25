@@ -45,6 +45,7 @@ export default (socket) => {
                         name: c.name,
                         type: c.type,
                         text,
+                        desc: c.desc,
                     }
                 }).filter(c => !!c);
 
