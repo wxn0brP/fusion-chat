@@ -117,7 +117,23 @@ export default {
                     chnl: { type: "string", validId: true },
                     template: { type: "string", minLength: 1, maxLength: 500 },
                     required: { type: "array", items: { type: "string" } },
-                    ajv: { type: "object", additionalProperties: true }
+                    ajv: { type: "object", additionalProperties: true },
+                    token: { type: "string" },
+                    embed: {
+                        type: "object",
+                        properties: {
+                            title: { type: "string" },
+                            url: { type: "string" },
+                            description: { type: "string" },
+                            image: { type: "string" },
+                            customFields: {
+                                type: "object",
+                                additionalProperties: { type: "string"},
+                            }
+                        },
+                        required: ["title"],
+                        additionalProperties: false
+                    }
                 },
                 required: ["whid", "name", "chnl", "template", "required", "ajv"],
                 additionalProperties: false

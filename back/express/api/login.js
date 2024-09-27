@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { timingSafeEqual, createHash } from 'crypto';
-import { create as createJWT } from "../../logic/auth.js";
+import { createUser as createJWT } from "../../logic/auth.js";
 import mailer from "../../logic/mail.js";
 const router = Router();
 

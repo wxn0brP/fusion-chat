@@ -11,7 +11,7 @@ class SettingsServerManager{
     /* init gui elements */
 
     init(){
-        this.container.innerHTML = '';
+        this.container.innerHTML = "";
 
         this.renderCategorySwitcher();
         this.metaDiv = this.initCategoryElement();
@@ -32,17 +32,17 @@ class SettingsServerManager{
         this.renderWebhooks();
         this.changeDisplay({ meta: true });
 
-        const saveButton = document.createElement('button');
-        saveButton.textContent = 'Save';
-        saveButton.className = 'settings__exitButton';
+        const saveButton = document.createElement("button");
+        saveButton.textContent = translateFunc.get("Save");
+        saveButton.className = "settings__exitButton";
         saveButton.onclick = () => this.saveSettings();
         
-        const exitButton = document.createElement('button');
-        exitButton.textContent = 'Exit without save';
-        exitButton.className = 'settings__exitButton';
+        const exitButton = document.createElement("button");
+        exitButton.textContent = translateFunc.get("Exit without save");
+        exitButton.className = "settings__exitButton";
         exitButton.onclick = () => this.exitWithoutSaving();
 
-        this.container.appendChild(document.createElement('br'));
+        this.container.appendChild(document.createElement("br"));
         this.container.appendChild(saveButton);
         this.container.appendChild(exitButton);
         this.container.fadeIn();

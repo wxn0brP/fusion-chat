@@ -51,16 +51,27 @@ SettingsServerManager.prototype.renderWebhooks = function(){
 }
 
 SettingsServerManager.prototype.renderWebhookEdit = function(id){
+    const _this = this;
     const container = this.editWebhookDiv;
     container.innerHTML = `<h1>${translateFunc.get("Edit webhook")}</h1>`;
 
     const webhook = this.settings.webhooks.find(w => w.whid == id);
     if(!webhook) return uiFunc.msg(translateFunc.get("Webhook not found"));
 
-    const webhookUrl = `URL (POST): <b>${window.location.origin}/api/webhook/custom?id=${id}&chat=${this.serverId}&chnl=${webhook.chnl}</b>`;
-    const webhookUrlSpan = document.createElement("span");
-    webhookUrlSpan.innerHTML = webhookUrl;
-    container.appendChild(webhookUrlSpan);
+    if(webhook.token){
+        const webhookUrl = `${window.location.origin}/api/webhook/custom?token=${webhook.token}`;
+        const webhookUrlCopy = document.createElement("button");
+        webhookUrlCopy.innerHTML = "URL (POST) " + translateFunc.get("Copy");
+        webhookUrlCopy.onclick = () => {
+            navigator.clipboard.writeText(webhookUrl);
+            uiFunc.uiMsg(translateFunc.get("Copied to clipboard"));
+        }
+        container.appendChild(webhookUrlCopy);
+    }else{
+        const webhookUrl = document.createElement("span");
+        webhookUrl.innerHTML = translateFunc.get("Save webhook (and settings) first to get URL");
+        container.appendChild(webhookUrl);
+    }
 
     this.addSeparator(container, 15);
     const name = this.initInputText(container, translateFunc.get("Name"), webhook.name);
@@ -111,17 +122,103 @@ SettingsServerManager.prototype.renderWebhookEdit = function(id){
     container.appendChild(advancedDiv);
 
     this.addSeparator(container, 10);
+
+    const embedSettings = document.createElement("div");
+    embedSettings.innerHTML = `<h2>${translateFunc.get("Embed settings")}</h2>`;
+    this.addSeparator(embedSettings, 5);
+
+    const embed = webhook.embed || {};
+
+    const embedTitle = this.initInputText(embedSettings, translateFunc.get("Title"), embed.title || "");
+    this.addSeparator(embedSettings, 5);
+    const embedUrl = this.initInputText(embedSettings, translateFunc.get("Url"), embed.url || "");
+    this.addSeparator(embedSettings, 5);
+    const embedDesc = this.initInputText(embedSettings, translateFunc.get("Description"), embed.description || "");
+    this.addSeparator(embedSettings, 5);
+    const embedImage = this.initInputText(embedSettings, translateFunc.get("Image"), embed.image || "");
+    this.addSeparator(embedSettings, 5);
+
+    const embedCustomFields = document.createElement("div");
+    embedCustomFields.innerHTML = `<h3>${translateFunc.get("Custom fields")}</h3>`;
+    embedSettings.appendChild(embedCustomFields);
+    this.addSeparator(embedCustomFields, 5);
+
+    const embedCustomFieldsData = [];
+
+    function createEmbedCustomFields(key, value){
+        const li = document.createElement("li");
+        const customFieldName = document.createElement("input");
+        const customFieldValue = document.createElement("input");
+        customFieldName.type = "text";
+        customFieldValue.type = "text";
+        customFieldName.value = key;
+        customFieldValue.value = value;
+        customFieldValue.classList.add("margin-left");
+        const data = { name: customFieldName, value: customFieldValue };
+        
+        const remove = document.createElement("button");
+        remove.innerHTML = translateFunc.get("Remove");
+        remove.classList.add("margin-left");
+        remove.addEventListener("click", () => {
+            embedCustomFieldsData.splice(embedCustomFieldsData.indexOf(data), 1);
+            li.remove();
+        });
+
+        li.appendChild(customFieldName);
+        li.appendChild(customFieldValue);
+        li.appendChild(remove);
+        _this.addSeparator(li, 5);
+        embedCustomFieldsList.appendChild(li);
+        embedCustomFieldsData.push(data);
+    }
+
+    this.initButton(embedCustomFields, translateFunc.get("Add"), () => createEmbedCustomFields("",""));
+    this.addSeparator(embedSettings, 5);
+
+    const embedCustomFieldsList = document.createElement("ul");
+    embedCustomFieldsList.style.listStyleType = "none";
+    embedCustomFieldsList.style.paddingLeft = "3px";
+    embedCustomFields.appendChild(embedCustomFieldsList);
+    this.addSeparator(embedCustomFieldsList, 5);
+
+    if(webhook.embed && webhook.embed.customFields){
+        Object.entries(webhook.embed.customFields).forEach(([key, value]) => createEmbedCustomFields(key, value));
+    }
+
+    container.appendChild(embedSettings);
+
+    this.addSeparator(container, 15);
     this.initButton(container, translateFunc.get("Save"), () => {
         webhook.name = name.value;
         webhook.template = template.value;
         webhook.ajv = ajv.value ? JSON.parse(ajv.value) : {};
         webhook.required = required.value ? JSON.parse(required.value) : [];
+        webhook.chnl = chnl.value;
+
+        if(embedTitle.value.trim() !== ""){
+            const embed = {
+                title: embedTitle.value.trim(),
+                url: embedUrl.value.trim(),
+                description: embedDesc.value.trim(),
+                image: embedImage.value.trim(),
+                customFields:
+                    embedCustomFieldsData
+                    .map(({ name, value }) => ({ name: name.value.trim(), value: value.value.trim() }))
+                    .reduce((acc, { name, value }) => { acc[name] = value; return acc; }, {})
+            }
+
+            webhook.embed = embed;
+        }else{
+            webhook.embed = undefined;
+        }
+
         this.renderWebhooks();
         container.fadeOut();
     });
 
     this.initButton(container, translateFunc.get("Cancel"), () => {
         container.fadeOut();
+        if(!webhook.embed.title) webhook.embed = undefined;
     });
 
     this.initButton(container, translateFunc.get("Delete"), () => {
