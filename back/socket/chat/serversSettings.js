@@ -74,7 +74,7 @@ export default (socket) => {
             const rolesChanges = processDbChanges(o_roles, n_roles, ["rid", "parent", "name", "color", "p"], "rid");
             const usersChanges = processDbChanges(o_users, data.users, ["uid", "roles"], "uid");
             const emojisChanges = processDbChanges(o_emojis, data.emojis, ["name"], "unicode");
-            const webhooksChanges = processDbChanges(o_webhooks, data.webhooks, ["name", "chnl", "tamplate", "required", "ajv"], "whid");
+            const webhooksChanges = processDbChanges(o_webhooks, data.webhooks, ["name", "chnl", "tamplate", "required", "ajv","embed"], "whid");
 
             await saveDbChanges(id, categoriesChanges, "cid");
             await saveDbChanges(id, channelsChanges, "chid");
@@ -96,15 +96,37 @@ export default (socket) => {
 }
 
 async function saveDbChanges(doc, changes, idName="_id"){
-    const { itemsToAdd, itemsToRemove, itemsToUpdate } = changes;
+    const { itemsToAdd, itemsToRemove, itemsToUpdate, itemsWithRemovedFields } = changes;
     const db = global.db.groupSettings.c(doc);
 
-    for(const item of itemsToAdd) await db.add(item, false);
-    for(const item of itemsToRemove)
-        await db.remove((item, ctx) => item[ctx.idName] == ctx.item[ctx.idName], { item, idName });
+    for(const item of itemsToAdd)
+        await db.add(item, false);
+
+    for(const item of itemsToRemove){
+        await db.remove(
+            (item, ctx) => item[ctx.idName] == ctx.item[ctx.idName],
+            { item, idName }
+        );
+    }
     
-    for(const item of itemsToUpdate)
-        await db.update((item, ctx) => item[ctx.idName] == ctx.item[ctx.idName], item, { item, idName });
+    for(const item of itemsToUpdate){
+        await db.update(
+            (item, ctx) => item[ctx.idName] == ctx.item[ctx.idName],
+            item,
+            { item, idName }
+        );
+    }
+
+    for(const item of itemsWithRemovedFields){
+        await db.update(
+            (item, ctx) => item[ctx.idName] == ctx.item[ctx.idName],
+            (item, ctx) => {
+                for(const deletedParam of ctx.item.deletedParams) delete item[deletedParam];
+                return item;
+            },
+            { item, idName }
+        );
+    }
 }
 
 function processCategoriesAndChannelIds(categories, channels){
@@ -163,14 +185,11 @@ async function processEmojis(id, emojisChanges){
 }
 
 async function proccesWebhooks(id, webhooksChanges){
-    const saveChanges = {
-        itemsToAdd: [],
-        itemsToRemove: webhooksChanges.itemsToRemove,
-        itemsToUpdate: webhooksChanges.itemsToUpdate
-    };
-    await saveDbChanges(id, saveChanges, "whid");
+    const itemsToAdd = [...webhooksChanges.itemsToAdd];
+    webhooksChanges.itemsToAdd = [];
+    await saveDbChanges(id, webhooksChanges, "whid");
 
-    for(const item of webhooksChanges.itemsToAdd){
+    for(const item of itemsToAdd){
         const webhookInfo = {
             name: item.name,
             chat: id,

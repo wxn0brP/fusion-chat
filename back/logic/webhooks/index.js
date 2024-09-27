@@ -1,6 +1,7 @@
 import genId from "../../db/gen.js";
-import * as validCustom from "./custom.js"; 
+import * as customWebhookUtils from "./custom.js"; 
 import sendMessage from "../sendMessage.js";
+import { decode, create } from "../../logic/auth.js";
 
 export async function addCustom(webhookInfo){
     const { chat, chnl, name, template, ajv, required } = webhookInfo;
@@ -14,34 +15,63 @@ export async function addCustom(webhookInfo){
         required: required || [],
     }
 
+    const token = create({
+        id: webhook.whid,
+        chat,
+    });
+
+    webhook.token = token;
+
     await global.db.groupSettings.add(chat, webhook, false);
 }
 
 export async function handleCustom(query, body){
-    const wh = await global.db.groupSettings.findOne(query.chat, { whid: query.id });
-    if(!wh) return { code: 404, msg: "Webhook not found" };
-    if(query.chnl != wh.chnl) return { code: 400, msg: "Invalid channel" };
+    const token = decode(query.token);
+    if(!token) return { code: 400, msg: "Invalid token" };
 
-    const isValid = validCustom.check(wh, body);
+    const wh = await global.db.groupSettings.findOne(token.chat, { whid: token.id });
+    if(!wh) return { code: 404, msg: "Webhook not found" };
+
+    const isValid = customWebhookUtils.check(wh, body);
     if(!isValid) return { code: 400, msg: "Invalid data" };
 
-    const formattedMessage = validCustom.processTemplate(wh.template, body);
+    const formattedMessage = customWebhookUtils.processTemplate(wh.template, body);
 
     const message = {
-        to: query.chat,
+        to: token.chat,
         chnl: wh.chnl,
         msg: formattedMessage,
         silent: query.silent === "true" || false
     }
 
+    let embed = null;
+    if(wh.embed){
+        const { title, description, url, image, customFields } = wh.embed;
+        embed = {
+            title: customWebhookUtils.processTemplate(title, body),
+        }
+        if(description) embed.description = customWebhookUtils.processTemplate(description, body);
+        if(url) embed.url = customWebhookUtils.processTemplate(url, body);
+        if(image) embed.image = customWebhookUtils.processTemplate(image, body);
+        if(customFields){
+            embed.customFields = {};
+            for(const [key, value] of Object.entries(customFields)){
+                embed.customFields[key] = customWebhookUtils.processTemplate(value, body);
+            }
+        }
+    }
+
     const res = await sendMessage(
         message,
         {
-            _id: query.id,
+            _id: wh.whid,
             name: wh.name
         },
         {
-            system: true
+            system: true,
+            customFields: {
+                embed: embed ? embed : undefined
+            }
         }
     );
 
