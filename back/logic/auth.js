@@ -23,6 +23,7 @@ export async function auth(token){
 
     const user = await global.db.data.findOne("user", { _id: id });
     if(!user) return false;
+    delete user.password;
 
     return user;
 }
