@@ -5,7 +5,7 @@ import config from "./config";
 const registerApp = async (id, user) => {
     try{
         const token = await messaging().getToken();
-        const res = await axios.post(config.link+"/notif-reg", {
+        const res = await axios.post(config.link+"/api/notif-reg", {
             token,
             id,
             user
