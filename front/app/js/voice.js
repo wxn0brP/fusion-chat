@@ -6,80 +6,119 @@ const voiceHTML = {
     voiceShow: document.querySelector("#groups__voice_show"),
 }
 
-const voiceConfig = {
-    prefix: "FusionChat-",
-}
+const voiceFunc = {
+    local_stream: null,
+    muteMic: false,
+    sending: false,
+    joined: false,
 
-const voiceDebug = {
-    logBuffer: [],
-    maxLogSize: 1000,
-    filters: {
-        info: true,
-        warn: true,
-        error: true
-    },
-
-    log(level, action, message){
-        if(!this.filters[level]) return;
-
-        const time = new Date();
-        const logEntry = { time, level: level.toUpperCase(), user: vars.user._id, action, message };
-        
-        if(this.logBuffer.length >= this.maxLogSize){
-            this.logBuffer.shift();
+    async initCall(){
+        try{
+            voiceHTML.voiceShow.style.display = "";
+            if(this.local_stream) return;
+            const stream = await this.getStream(true, false);
+            voiceFunc.local_stream = stream;
+            voiceHTML.div.fadeIn();
+        }catch(error){
+            console.error('initCall', `Error joining voice channel: ${error.message}`);
         }
-        this.logBuffer.push(logEntry);
-        
-        debugFunc.msg(`[${time.toLocaleTimeString()}] [${logEntry.level}] [Action: ${logEntry.action}] ${logEntry.message}`);
     },
 
-    info(action, message){
-        this.log('info', action, message);
+    async joinToVoiceChannel(to){
+        await this.initCall();
+        this.joined = to;
+        socket.emit("voice.join", to);
+        socket.emit("voice.getUsers");
     },
 
-    warn(action, message){
-        this.log('warn', action, message);
+    send(){
+        if(this.sending) return;
+        const _this = this;
+
+        let buffer = [];
+        const mediaRecorder = new MediaRecorder(this.local_stream, { mimeType: "video/webm; codecs=vp8,opus" });
+        mediaRecorder.ondataavailable = (event) => {
+            if(event.data.size == 0) return;
+            buffer.push(event.data);
+        };
+
+        mediaRecorder.onstop = () => {
+            if(buffer.length == 0) return lo("no voice data");
+
+            socket.volatile.emit("voice.sendData", buffer);
+            buffer = [];
+        };
+
+        this.sending = setInterval(() => {
+            mediaRecorder.stop();
+            setTimeout(() => {
+                if(!_this.sending) return;
+                mediaRecorder.start();
+            }, 10);
+        }, 100);
+
+        mediaRecorder.start(100);
     },
 
-    error(action, message){
-        this.log('error', action, message);
+    // addMediaHtml(stream, id){
+    //     const audio = document.createElement("audio");
+    //     audio.srcObject = stream;
+    //     audio.id = "audio_call_"+id;
+    //     audio.setAttribute("controls", "");
+    //     audio.setAttribute("autoplay", "");
+    //     audio.style.display = "none";
+
+    //     voiceHTML.mediaContainer.appendChild(audio);
+
+    //     return audio;
+    // },
+
+    endCall(){
+        if(this.sending) clearInterval(this.sending);
+        this.sending = false;
+        this.joined = false;
+        socket.emit("voice.leave");
+
+        voiceHTML.div.fadeOut();
+        voiceHTML.mediaContainer.innerHTML = "";
+        voiceHTML.voiceShow.style.display = "none";
+
+        if(apis.app.apiType == "rn"){
+            apis.api.send({
+                type: "stopAudio",
+            });
+        }else{
+            voiceFunc.local_stream.getTracks().forEach((track) => {
+                track.stop();
+            });
+            voiceFunc.local_stream = null;
+        }
     },
 
-    getLogs(){
-        return this.logBuffer;
+    startCall(){
+        const id = vars.chat.to.replace("$","");
+        if(id == "main") return;
+
+        const isConfirm = confirm(translateFunc.get("Are you sure you want to call $", apis.www.changeUserID(id)) + "?");
+        if(!isConfirm) return;
+
+        socket.emit("call.private.init", id);
     },
 
-    clearLogs(){
-        this.logBuffer = [];
-    },
+    toggleMute(){
+        voiceFunc.muteMic = !voiceFunc.muteMic;
+        if(apis.app.apiType == "rn"){
+            apis.api.send({
+                type: voiceFunc.muteMic ? "stopAudio" : "startAudio",
+            })
+        }else{
+            const tracks = voiceFunc.local_stream.getAudioTracks();
+            tracks.forEach((track) => {
+                track.enabled = !voiceFunc.muteMic;
+            });
+        }
 
-    setFilter(level, state){
-        this.filters[level] = state;
-    },
-
-    exportLogs(){
-        const logData = JSON.stringify(this.logBuffer, null, 2);
-        const blob = new Blob([logData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `logs-${vars.user._id}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-}
-
-const voiceUtils = {
-    initPeer(fr, to){
-        const id = voiceUtils.formatCallId(fr, to);
-        voiceDebug.info(fr, 'initPeer', `Initializing peer connection; id: ${id}`);
-        return new Peer(id, {
-            secure: true,
-            port: 443,
-            restartIce: true,
-        });
+        voiceHTML.muteMic.innerHTML = translateFunc.get(voiceFunc.muteMic ? "Unmute" : "Mute");
     },
 
     async getStream(audio=true, video=false){
@@ -108,7 +147,6 @@ const voiceUtils = {
         try{
             const permisons = await getUserMedia({ audio, video });
             if(!permisons){
-                voiceDebug.error('getStream', 'No permissions to get stream');
                 uiFunc.uiMsg(translateFunc.get('Error getting stream'));
                 return stream;
             }
@@ -133,211 +171,64 @@ const voiceUtils = {
             return stream;
         }
     },
-
-    formatCallId(fromUserId, toUserId){
-        return `${voiceConfig.prefix}${fromUserId}-2-${toUserId}`;
-    },
-
-    postSetupPeer(peer, to){
-        peer.fc_data = {
-            to,
-            fr: vars.user._id
-        }
-        peer.on("open", () => {
-            voiceDebug.info('postSetupPeer', `Peer connection opened; to: ${to}`);
-        });
-
-        peer.on("close", () => {
-            voiceDebug.warn('postSetupPeer', `Peer connection closed; to: ${to}`);
-        });
-    }
 }
 
-const voiceFunc = {
-    local_stream: new MediaStream(),
-    peers: [],
-    muteMic: false,
-
-    async initCall(){
-        try{
-            const stream = await voiceUtils.getStream(true, false);
-            voiceFunc.local_stream = stream;
-            voiceHTML.div.fadeIn();
-            voiceHTML.voiceShow.style.display = "";
-        }catch(error){
-            voiceDebug.error('initCall', `Error joining voice channel: ${error.message}`);
-        }
-    },
-
-    async joinToVoiceChannel(to){
-        await voiceFunc.initCall();
-        socket.emit("voice.join", to);
-        socket.emit("voice.getUsers", to, true);
-        voiceDebug.info('initCall', `Joined voice channel: ${to}`);
-    },
-
-    makeConnectionHandler(to){
-        const peer = voiceUtils.initPeer(to, vars.user._id);
-        voiceFunc.peers.push(peer);
-        voiceUtils.postSetupPeer(peer, to);
-
-        peer.on("call", (call) => {
-            voiceDebug.info('makeConnectionHandler', `Incoming call; to: ${to}`);
-            call.answer(voiceFunc.local_stream);
-
-            call.on("stream", (stream) => {
-                voiceFunc.addMediaHtml(stream, to);
-                voiceDebug.info('makeConnectionHandler', `Stream received; to: ${to}`);
-            });
-
-            call.on("close", () => {
-                voiceDebug.warn('makeConnectionHandler', `Call closed; to: ${to}`);
-            });
-        });
-
-        return peer;
-    },
-
-    makeConnectionCaller(to){
-        const peer = voiceUtils.initPeer(to, vars.user._id);
-        voiceFunc.peers.push(peer);
-        voiceUtils.postSetupPeer(peer, to);
-        
-        peer.on("open", () => {
-            const id = voiceUtils.formatCallId(vars.user._id, to);
-            const call = peer.call(id, voiceFunc.local_stream);
-            voiceDebug.info('makeConnectionCaller', `Outgoing call to: ${id}`);
-            call.on("stream", (stream) => {
-                voiceFunc.addMediaHtml(stream, to);
-                voiceDebug.info('makeConnectionCaller', `Stream received from call; to: ${to}`);
-            });
-
-            call.on("close", () => {
-                voiceDebug.warn('makeConnectionCaller', `Call closed; to: ${to}`);
-            });
-        })
-
-        return peer;
-    },
-
-    addMediaHtml(stream, id){
-        const audio = document.createElement("audio");
-        audio.srcObject = stream;
-        audio.id = "audio_call_"+id;
-        audio.setAttribute("controls", "");
-        audio.setAttribute("autoplay", "");
-        audio.style.display = "none";
-
-        voiceHTML.mediaContainer.appendChild(audio);
-        voiceDebug.info('addMediaHtml', `Added media HTML for call: ${id}`);
-
-        return audio;
-    },
-
-    endCall(){
-        voiceFunc.peers.forEach((peer) => {
-            peer.destroy();
-        });
-        socket.emit("voice.leave");
-
-        voiceFunc.peers = [];
-        voiceHTML.div.fadeOut();
-        voiceHTML.mediaContainer.innerHTML = "";
-        voiceHTML.voiceShow.style.display = "none";
-
-        if(apis.app.apiType == "rn"){
-            apis.api.send({
-                type: "stopAudio",
-            });
-        }else{
-            voiceFunc.local_stream.getTracks().forEach((track) => {
-                track.stop();
-            });
-            voiceFunc.local_stream = new MediaStream();
-        }
-        voiceDebug.info('endCall', "Call ended and cleaned up.");
-
-        socket.emit("call.logs", voiceDebug.getLogs());
-
-        if(!debugFunc.isDebug){
-            const isConfirm = confirm(translateFunc.get("Would you like to export the journal") + "?");
-            if(isConfirm) voiceDebug.exportLogs();
-        }
-    },
-
-    startCall(){
-        const id = vars.chat.to.replace("$","");
-        if(id == "main") return;
-
-        const isConfirm = confirm(translateFunc.get("Are you sure you want to call $", apis.www.changeUserID(id)) + "?");
-        if(!isConfirm) return;
-
-        socket.emit("call.initiate", id);
-    },
-
-    toggleMute(){
-        voiceFunc.muteMic = !voiceFunc.muteMic;
-        if(apis.app.apiType == "rn"){
-            apis.api.send({
-                type: voiceFunc.muteMic ? "stopAudio" : "startAudio",
-            })
-        }else{
-            const tracks = voiceFunc.local_stream.getAudioTracks();
-            tracks.forEach((track) => {
-                track.enabled = !voiceFunc.muteMic;
-            });
-        }
-
-        voiceDebug.info('toggleMute', `Mic ${voiceFunc.muteMic ? "muted" : "unmuted"}`);
-        voiceHTML.muteMic.innerHTML = translateFunc.get(voiceFunc.muteMic ? "Unmute" : "Mute");
-    }
-}
-
-socket.on("voice.join", (to) => {
-    voiceDebug.info('socket', `Handling joinVoiceChannel for ${to}`);
-    voiceFunc.makeConnectionHandler(to);
+socket.on("voice.sendData", (from, data) => {
+    const blob = new Blob(data, { type: "audio/webm; codecs=vp8,opus" });
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.play().catch(() => {});
 });
 
-socket.on("voice.getUsers", (users, make) => {
-    if(make){
-        users.forEach((to) => {
-            if(to == vars.user._id) return;
-    
-            voiceDebug.info('socket', `Handling getVoiceChannelUsers for ${to}`);
-            voiceFunc.makeConnectionCaller(to);
-        });
-    }
+socket.on("connect", () => {
+    if(!voiceFunc.joined) return;
+    lo("reconnected to voice channel");
+    voiceFunc.joinToVoiceChannel(voiceFunc.joined);
+});
 
+socket.on("voice.getUsers", (users) => {
     voiceHTML.users.innerHTML = "";
     users.forEach((user) => {
         const li = document.createElement("li");
         li.innerHTML = apis.www.changeUserID(user);
         voiceHTML.users.appendChild(li);
     });
+
+    if(users.length > 1){
+        voiceFunc.send();
+    }else if(users.length == 1){
+        clearInterval(voiceFunc.sending);
+        voiceFunc.sending = false;
+    }
 });
 
-socket.on("call.initiate", (id) => {
+socket.on("call.private.init", (id) => {
     const isConfirm = confirm(translateFunc.get("$ is calling you. Accept", apis.www.changeUserID(id)) + "?");
-    socket.emit("call.answer", id, isConfirm);
+    socket.emit("call.private.answer", id, isConfirm);
 
     if(!isConfirm) return;
 
-    voiceDebug.info('socket', `Handling callToUser for ${id}`);
-    voiceFunc.joinToVoiceChannel(id + "=" + vars.user._id);
+    const room = "user_" + [id, vars.user._id].sort().join("=");
+    voiceFunc.joinToVoiceChannel(room);
 });
 
-socket.on("call.answer", (id, answer) => {
+socket.on("call.private.answer", (id, answer) => {
     if(!answer){
         alert(translateFunc.get("Call rejected"));
         return;
     }
 
-    voiceDebug.info('socket', `Handling callToUserAnswer for ${id}`);
-    setTimeout(() => {
-        voiceFunc.joinToVoiceChannel(vars.user._id + "=" + id);
-    }, 1000);
+    const isConfirm = confirm(translateFunc.get("$ accepted your call. Join in this device", apis.www.changeUserID(id)) + "?");
+    if(!isConfirm) return;
+
+    const room = "user_" + [id, vars.user._id].sort().join("=");
+    voiceFunc.joinToVoiceChannel(room);
 });
 
 socket.on("voice.leave", (id) => {
     uiFunc.uiMsg(translateFunc.get("$ left the voice channel", apis.www.changeUserID(id)));
+});
+
+socket.on("voice.join", (to) => {
+    uiFunc.uiMsg(translateFunc.get("$ joined the voice channel", apis.www.changeUserID(to)));
 });

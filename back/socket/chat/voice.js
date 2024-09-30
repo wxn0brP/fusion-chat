@@ -1,44 +1,42 @@
 import valid from "../../logic/validData.js";
-import { existsSync, mkdirSync, writeFileSync } from "fs";
-if(!existsSync("data/calls")) mkdirSync("data/calls");
 
-const rooms = new Map();
+const roomPrefix = "voice-";
 
 export default (socket) => {
+    socket.voiceRoom = null;
+
     socket.ontimeout("voice.join", 100, async (to) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.str(to, 0, 30)) return socket.emit("error", "valid data");
 
-            if(!rooms.has(to)){
-                rooms.set(to, [ socket ]);
-                return;
-            }
-
-            if(rooms.get(to).filter(s => s.user._id == socket.user._id).length > 0) return socket.emit("error", "already in room");
-
-            rooms.get(to).forEach(s => {
-                s.emit("voice.join", socket.user._id);
-                s.emit("refreshData", "voice.getUsers", to, false);
-            });
-            rooms.get(to).push(socket);
+            emitToRoom(to, "voice.join", socket.user._id);
+            emitToRoom(to, "refreshData", "voice.getUsers", to);
+            socket.join(roomPrefix + to);
+            socket.voiceRoom = to;
         }catch(e){
             socket.logError(e);
         }
     });
 
+    socket.ontimeout("voice.sendData", 50, async (data) => {
+        try{
+            if(!socket.user) return socket.emit("error", "not auth");
+            if(!socket.voiceRoom) return;
+            emitToRoom(socket.voiceRoom, "voice.sendData", socket.user._id, data);
+        }catch(e){
+            socket.logError(e);
+        }
+    })
+
     function leaveVoiceChannel(){
-        rooms.forEach((users, to) => {
-            users.forEach((user) => {
-                if(user.user._id != socket.user._id) return;
-                rooms.get(to).splice(rooms.get(to).indexOf(socket), 1);
-                
-                users.forEach(s => {
-                    s.emit("refreshData", "voice.getUsers", to, false);
-                    s.emit("voice.leave", socket.user._id);
-                })
-            });
-        });
+        if(!socket.voiceRoom) return;
+        const room = socket.voiceRoom;
+
+        socket.leave(roomPrefix + room);
+        socket.voiceRoom = null;
+        emitToRoom(room, "refreshData", "voice.getUsers");
+        emitToRoom(room, "voice.leave", socket.user._id);
     }
 
     socket.ontimeout("voice.leave", 100, async () => {
@@ -57,21 +55,27 @@ export default (socket) => {
         }
     })
 
-    socket.ontimeout("voice.getUsers", 100, async (to, make) => {
+    socket.ontimeout("voice.getUsers", 100, async () => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(to, 0, 30)) return socket.emit("error", "valid data");
+            if(!socket.voiceRoom) return;
+            const to = socket.voiceRoom;
 
-            if(!rooms.has(to)) return socket.emit("voice.getUsers", []);
-            const data = rooms.get(to).map(s => s.user._id);
+            const sockets = io.of("/").adapter.rooms.get(roomPrefix + to);
+            const users = [];
 
-            socket.emit("voice.getUsers", data, make);
+            for(const socketId of sockets){
+                const socket = io.sockets.sockets.get(socketId);
+                if(socket && socket.user) users.push(socket.user._id);
+            }
+
+            socket.emit("voice.getUsers", [...new Set(users)]);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("call.initiate", 100, async (id) => {
+    socket.ontimeout("call.private.init", 100, async (id) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
@@ -79,38 +83,25 @@ export default (socket) => {
             const sockets = global.getSocket(id);
             if(sockets.length == 0) return socket.emit("call.answer", id, false);
 
-            global.sendToSocket(id, "call.initiate", socket.user._id);
+            global.sendToSocket(id, "call.private.init", socket.user._id);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("call.answer", 100, async (id, answer) => {
+    socket.ontimeout("call.private.answer", 100, async (id, answer) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error", "valid data");
             if(!valid.bool(answer)) return socket.emit("error", "valid data");
 
-            global.sendToSocket(id, "call.answer", socket.user._id, answer);
+            global.sendToSocket(id, "call.private.answer", socket.user._id, answer);
         }catch(e){
             socket.logError(e);
         }
     });
+}
 
-    socket.ontimeout("call.logs", 100, async (logs) => {
-        try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.arrayContainsOnlyType(logs, "object")) return socket.emit("error", "valid data");
-
-            const uid = socket.user._id;
-            if(!existsSync("data/calls/"+uid)) mkdirSync("data/calls/"+uid);
-
-            const date = new Date().toISOString();
-            const path = "data/calls/" + uid + "/" + date + ".json";
-
-            writeFileSync(path, JSON.stringify(logs));
-        }catch(e){
-            socket.logError(e);
-        }
-    });
+function emitToRoom(room, ...args){
+    io.of("/").to(roomPrefix + room).emit(...args);
 }
