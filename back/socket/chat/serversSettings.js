@@ -2,10 +2,10 @@ import valid from "../../logic/validData.js";
 import permissionSystem from "../../logic/permission-system/index.js";
 import processDbChanges from "../../logic/processDbChanges.js";
 import { addCustom } from "../../logic/webhooks/index.js";
-import serServerSettingsData from "./valid/setServerSettings.js";
+import setServerSettingsData from "./valid/setServerSettings.js";
 import genId from "../../db/gen.js";
 import * as emojiMgmt from "../../logic/emojiMgmt.js";
-const setServerSettingsShema = valid.objAjv(serServerSettingsData);
+const setServerSettingsShema = valid.objAjv(setServerSettingsData);
 
 export default (socket) => {
     socket.ontimeout("server.settings.get", 5_000, async (id) => {
@@ -17,15 +17,16 @@ export default (socket) => {
             const userPerm = await perm.userPermison(socket.user._id, "manage server");
             if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
 
-            const meta = await global.db.groupSettings.findOne(id, { _id: "set" });
+            const dbData = await global.db.groupSettings.find(id, {});
+            const meta = dbData.find(d => d._id === "set");
             delete meta._id;
-            const categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
-            const channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
-            const roles = await perm.getRoles();
-            const users = await global.db.usersPerms.find(id, (u) => !!u.uid);
-            const banUsers = await global.db.usersPerms.find(id, (u) => !!u.ban);
-            const emojis = await global.db.groupSettings.find(id, (e) => !!e.unicode);
-            const webhooks = await global.db.groupSettings.find(id, (w) => !!w.whid);
+            const categories = dbData.filter(d => !!d.cid);
+            const channels = dbData.filter(d => !!d.chid);
+            const roles = dbData.filter(d => !!d.rid);
+            const users = await global.db.usersPerms.find(id, d => !!d.uid);
+            const banUsers = dbData.filter(d => !!d.ban);
+            const emojis = dbData.filter(d => !!d.unicode);
+            const webhooks = dbData.filter(d => !!d.whid);
 
             const data = {
                 meta,
@@ -59,18 +60,18 @@ export default (socket) => {
                 return socket.emit("error.valid", "server.settings.set", "data", setServerSettingsShema.errors);
             }
 
-            const o_categories = await global.db.groupSettings.find(id, (c) => !!c.cid);
-            const o_channels = await global.db.groupSettings.find(id, (c) => !!c.chid);
-            const o_roles = await perm.getRoles();
-            const o_users = await global.db.usersPerms.find(id, (u) => !!u.uid);
-            const o_emojis = await global.db.groupSettings.find(id, (e) => !!e.unicode);
-            const o_webhooks = await global.db.groupSettings.find(id, (w) => !!w.whid);
+            const dbData = await global.db.groupSettings.find(id, {});
+            const o_categories = dbData.filter(d => !!d.cid);
+            const o_channels = dbData.filter(d => !!d.chid);
+            const o_roles = dbData.filter(d => !!d.rid);
+            const o_users = await global.db.usersPerms.find(id, d => !!d.uid);
+            const o_emojis = dbData.filter(d => !!d.unicode);
+            const o_webhooks = dbData.filter(d => !!d.whid);
 
-            const pcaci = processCategoriesAndChannelIds(data.categories, data.channels);
             const n_roles = processRolesIds(data.roles);
 
-            const categoriesChanges = processDbChanges(o_categories, pcaci.categories, ["name","i"], "cid");
-            const channelsChanges = processDbChanges(o_channels, pcaci.channels, ["name","i","rp","desc"], "chid");
+            const categoriesChanges = processDbChanges(o_categories, data.categories, ["name","i"], "cid");
+            const channelsChanges = processDbChanges(o_channels, data.channels, ["name","i","rp","desc"], "chid");
             const rolesChanges = processDbChanges(o_roles, n_roles, ["rid", "parent", "name", "color", "p"], "rid");
             const usersChanges = processDbChanges(o_users, data.users, ["uid", "roles"], "uid");
             const emojisChanges = processDbChanges(o_emojis, data.emojis, ["name"], "unicode");
@@ -84,7 +85,7 @@ export default (socket) => {
             await saveDbChanges(id, emojisChanges, "unicode");
 
             await processEmojis(id, emojisChanges);
-            await proccesWebhooks(id, webhooksChanges);
+            await proccessWebhooks(id, webhooksChanges);
 
             await global.db.groupSettings.updateOne(id, { _id: "set" }, data.meta);
 
@@ -129,28 +130,6 @@ async function saveDbChanges(doc, changes, idName="_id"){
     }
 }
 
-function processCategoriesAndChannelIds(categories, channels){
-    for(let i=0; i<categories.length; i++){
-        const category = categories[i];
-        if(typeof category.cid == "number"){
-            const newId = genId();
-
-            const childChannels = channels.filter(c => c.category == category.cid);
-            childChannels.forEach(c => c.category = newId);
-            categories[i].cid = newId;
-        }
-    }
-
-    for(let i=0; i<channels.length; i++){
-        const channel = channels[i];
-        if(typeof channel.chid == "number" || channel.chid == undefined){
-            channels[i].chid = genId();
-        }
-    }
-
-    return { categories, channels };
-}
-
 function processRolesIds(roles){
     for(let i=0; i<roles.length; i++){
         const role = roles[i];
@@ -184,7 +163,7 @@ async function processEmojis(id, emojisChanges){
     }
 }
 
-async function proccesWebhooks(id, webhooksChanges){
+async function proccessWebhooks(id, webhooksChanges){
     const itemsToAdd = [...webhooksChanges.itemsToAdd];
     webhooksChanges.itemsToAdd = [];
     await saveDbChanges(id, webhooksChanges, "whid");
