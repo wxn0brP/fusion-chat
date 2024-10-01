@@ -8,36 +8,50 @@ import * as emojiMgmt from "../../logic/emojiMgmt.js";
 const setServerSettingsShema = valid.objAjv(setServerSettingsData);
 
 export default (socket) => {
-    socket.ontimeout("server.settings.get", 5_000, async (id) => {
+    socket.ontimeout("server.settings.get", 5_000, async (id, sections=[]) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             if(!valid.id(id)) return socket.emit("error.valid", "server.settings.get", "id");
+            if(!valid.arrayString(sections)) return socket.emit("error.valid", "server.settings.get", "sections");
+
+            if(sections.length == 0){
+                sections = [
+                    "meta",
+                    "categories",
+                    "channels",
+                    "roles",
+                    "users",
+                    "banUsers",
+                    "emojis",
+                    "webhooks",
+                ]
+            }
 
             const perm = new permissionSystem(id);
             const userPerm = await perm.userPermison(socket.user._id, "manage server");
             if(!userPerm) return socket.emit("error", "You don't have permission to edit this server");
 
-            const dbData = await global.db.groupSettings.find(id, {});
-            const meta = dbData.find(d => d._id === "set");
-            delete meta._id;
-            const categories = dbData.filter(d => !!d.cid);
-            const channels = dbData.filter(d => !!d.chid);
-            const roles = dbData.filter(d => !!d.rid);
-            const users = await global.db.usersPerms.find(id, d => !!d.uid);
-            const banUsers = dbData.filter(d => !!d.ban);
-            const emojis = dbData.filter(d => !!d.unicode);
-            const webhooks = dbData.filter(d => !!d.whid);
+            let dbData;
+            const getDbDataReq = ["meta", "categories", "channels", "roles", "banUsers", "emojis", "webhooks"];
+            if(sections.some(d => getDbDataReq.includes(d))){
+                dbData = await global.db.groupSettings.find(id, {});
+            }
+            const data = {};
 
-            const data = {
-                meta,
-                categories,
-                channels,
-                roles,
-                users: users.map(u => { return { uid: u.uid, roles: u.roles }}),
-                banUsers: banUsers.map(u => u.ban),
-                emojis,
-                webhooks,
-            };
+            if(sections.includes("meta")){
+                data.meta = dbData.find(d => d._id === "set");
+                delete data.meta._id;
+            }
+            if(sections.includes("categories")) data.categories = dbData.filter(d => !!d.cid);
+            if(sections.includes("channels")) data.channels = dbData.filter(d => !!d.chid);
+            if(sections.includes("roles")) data.roles = dbData.filter(d => !!d.rid);
+            if(sections.includes("emojis")) data.emojis = dbData.filter(d => !!d.unicode);
+            if(sections.includes("webhooks")) data.webhooks = dbData.filter(d => !!d.whid);
+            if(sections.includes("banUsers")) data.banUsers = dbData.filter(d => !!d.ban).map(u => u.ban);
+            if(sections.includes("users")){
+                const users = await global.db.usersPerms.find(id, d => !!d.uid);
+                data.users = users.map(u => { return { uid: u.uid, roles: u.roles }});
+            }
 
             socket.emit("server.settings.get", data, id);
         }catch(e){
@@ -60,34 +74,52 @@ export default (socket) => {
                 return socket.emit("error.valid", "server.settings.set", "data", setServerSettingsShema.errors);
             }
 
-            const dbData = await global.db.groupSettings.find(id, {});
-            const o_categories = dbData.filter(d => !!d.cid);
-            const o_channels = dbData.filter(d => !!d.chid);
-            const o_roles = dbData.filter(d => !!d.rid);
-            const o_users = await global.db.usersPerms.find(id, d => !!d.uid);
-            const o_emojis = dbData.filter(d => !!d.unicode);
-            const o_webhooks = dbData.filter(d => !!d.whid);
+            let dbData;
+            const sections = Object.keys(data);
+            const getDbDataReq = ["meta", "categories", "channels", "roles", "banUsers", "emojis", "webhooks"];
+            if(sections.some(d => getDbDataReq.includes(d))){
+                dbData = await global.db.groupSettings.find(id, {});
+            }
 
-            const n_roles = processRolesIds(data.roles);
+            if(data.meta) await global.db.groupSettings.updateOne(id, { _id: "set" }, data.meta);
 
-            const categoriesChanges = processDbChanges(o_categories, data.categories, ["name","i"], "cid");
-            const channelsChanges = processDbChanges(o_channels, data.channels, ["name","i","rp","desc"], "chid");
-            const rolesChanges = processDbChanges(o_roles, n_roles, ["rid", "parent", "name", "color", "p"], "rid");
-            const usersChanges = processDbChanges(o_users, data.users, ["uid", "roles"], "uid");
-            const emojisChanges = processDbChanges(o_emojis, data.emojis, ["name"], "unicode");
-            const webhooksChanges = processDbChanges(o_webhooks, data.webhooks, ["name", "chnl", "tamplate", "required", "ajv","embed"], "whid");
+            if(data.categories){
+                const old_categories = dbData.filter(d => !!d.cid);
+                const categoriesChanges = processDbChanges(old_categories, data.categories, ["name","i"], "cid");
+                await saveDbChanges(id, categoriesChanges, "cid");
+            }
 
-            await saveDbChanges(id, categoriesChanges, "cid");
-            await saveDbChanges(id, channelsChanges, "chid");
-            await saveDbChanges(id, rolesChanges, "rid");
-            for(const item of usersChanges.itemsToUpdate)
-                await global.db.usersPerms.update(id, (u, item) => u.uid == item.uid, item, item);
-            await saveDbChanges(id, emojisChanges, "unicode");
+            if(data.channels){
+                const old_channels = dbData.filter(d => !!d.chid);
+                const channelsChanges = processDbChanges(old_channels, data.channels, ["name","i","rp","desc"], "chid");
+                await saveDbChanges(id, channelsChanges, "chid");
+            }
 
-            await processEmojis(id, emojisChanges);
-            await proccessWebhooks(id, webhooksChanges);
+            if(data.roles){
+                const old_roles = dbData.filter(d => !!d.rid);
+                const new_roles = processRolesIds(data.roles);
+                const rolesChanges = processDbChanges(old_roles, new_roles, ["rid", "parent", "name", "color", "p"], "rid");
+                await saveDbChanges(id, rolesChanges, "rid");
+            }
 
-            await global.db.groupSettings.updateOne(id, { _id: "set" }, data.meta);
+            if(data.users){
+                const old_users = await global.db.usersPerms.find(id, d => !!d.uid);
+                const usersChanges = processDbChanges(old_users, data.users, ["uid", "roles"], "uid");
+                for(const item of usersChanges.itemsToUpdate)
+                    await global.db.usersPerms.update(id, (u, item) => u.uid == item.uid, item, item);
+            }
+
+            if(data.emojis){
+                const old_emojis = dbData.filter(d => !!d.unicode);
+                const emojisChanges = processDbChanges(old_emojis, data.emojis, ["name"], "unicode");
+                await processEmojis(id, emojisChanges);
+            }
+
+            if(data.webhooks){
+                const old_webhooks = dbData.filter(d => !!d.whid);
+                const webhooksChanges = processDbChanges(old_webhooks, data.webhooks, ["name", "url"], "whid");
+                await proccessWebhooks(id, webhooksChanges);
+            }
 
             global.sendToChatUsers(id, "refreshData", { server: id, evt: ["server.setup", "server.roles.sync"] }, id);
         }catch(e){

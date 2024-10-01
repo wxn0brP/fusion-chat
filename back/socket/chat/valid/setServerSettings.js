@@ -140,6 +140,5 @@ export default {
             }
         }
     },
-    required: ["meta", "categories", "channels", "roles", "users", "emojis", "webhooks"],
     additionalProperties: false
 };
