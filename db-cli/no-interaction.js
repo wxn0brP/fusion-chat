@@ -1,5 +1,5 @@
-const init = require("./init");
-const dbFunc = require("./dbFunc");
+import init from "./init.js";
+import { add, find, findOne, update, updateOne, remove, removeOne, updateOneOrAdd } from "./dbFunc.js";
 
 const operationsInfo = {
     "dbSel": ["string"],
@@ -62,32 +62,32 @@ async function processOperation(operation, args){
     }
 
     if(operation === "add"){
-        return await dbFunc.add(selected, ...args);
+        return await add(selected, ...args);
     }else
     if(operation === "find"){
-        return await dbFunc.find(selected, ...args);
+        return await find(selected, ...args);
     }else
     if(operation === "findOne"){
-        return await dbFunc.findOne(selected, ...args);
+        return await findOne(selected, ...args);
     }else
     if(operation === "update"){
-        return await dbFunc.update(selected, ...args);
+        return await update(selected, ...args);
     }else
     if(operation === "updateOne"){
-        return await dbFunc.updateOne(selected, ...args);
+        return await updateOne(selected, ...args);
     }else
     if(operation === "remove"){
-        return await dbFunc.remove(selected, ...args);
+        return await remove(selected, ...args);
     }else
     if(operation === "removeOne"){
-        return await dbFunc.removeOne(selected, ...args);
+        return await removeOne(selected, ...args);
     }else
     if(operation === "updateOneOrAdd"){
-        return await dbFunc.updateOneOrAdd(selected, ...args);
+        return await updateOneOrAdd(selected, ...args);
     }
 }
 
-module.exports = async (operations) => {
+export default async (operations) => {
     if(operations.length === 0) process.exit(3);
     init.init();
 

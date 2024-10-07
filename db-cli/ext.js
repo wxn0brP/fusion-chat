@@ -1,22 +1,21 @@
-const fs = require("fs");
-const path = require("path");
+import { existsSync, writeFileSync, mkdirSync, readdirSync, readFileSync } from "fs";
+import { join } from "path";
 
 const extensions = [];
-const cfgPath = path.join(__dirname, "cfg/ext.json");
-if(!fs.existsSync(cfgPath)) fs.writeFileSync(cfgPath, "{}", "utf8");
+const cfgPath = join(__dirname, "cfg/ext.json");
+if(!existsSync(cfgPath)) writeFileSync(cfgPath, "{}", "utf8");
 
-const extPath = path.join(__dirname, "ext");
-if(!fs.existsSync(extPath)){
-    fs.mkdirSync(extPath);
+const extPath = join(__dirname, "ext");
+if(!existsSync(extPath)){
+    mkdirSync(extPath);
 }
 
-function loadExtension(file){
-    const ext = require(path.join(__dirname, "ext", file));
+async function loadExtension(file){
+    const ext = await import(join(__dirname, 'ext', file+".js"));
     const extRequire = ext.req;
     for(const req of extRequire){
         if(!global.databases[req]) return;
     }
-    delete ext.req;
 
     extensions.push(ext);
 }
@@ -52,12 +51,12 @@ function updateConfig(files, cfg=[]){
     return cfg;
 }
 
-function load(){
-    const exts = fs.readdirSync(extPath).filter(file => file.endsWith(".js")).map(file => file.replace(".js", ""));
+async function load(){
+    const exts = readdirSync(extPath).filter(file => file.endsWith(".js")).map(file => file.replace(".js", ""));
 
-    let cfg = JSON.parse(fs.readFileSync(cfgPath, "utf8") || "{}");
+    let cfg = JSON.parse(readFileSync(cfgPath, "utf8") || "{}");
     cfg = updateConfig(exts, cfg);
-    fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2), "utf8");
+    writeFileSync(cfgPath, JSON.stringify(cfg, null, 2), "utf8");
 
     const mode = global.runMode;
     let onExts = [];
@@ -68,14 +67,14 @@ function load(){
         onExts = Object.keys(cfg).filter(ext => cfg[ext].no_in);
     }
 
-    lo("Extensions:", onExts);
+    if(mode === "interactive") lo("Extensions:", onExts);
     
     for(const ext of onExts){
-        loadExtension(ext);
+        await loadExtension(ext);
     }
 }
 
-module.exports = {
+export default {
     process,
     load
 };

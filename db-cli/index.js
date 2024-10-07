@@ -1,25 +1,27 @@
-const { Command } = require("commander");
-const chalk = require("chalk");
-const fs = require("fs");
-const path = require("path");
+const { Command } = await import("commander");
+import chalk from "chalk";
+import { existsSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from "fs";
+import { join } from "path";
 
-const cfgDir = path.join(__dirname, "cfg");
-if(!fs.existsSync(cfgDir)){
-    fs.mkdirSync(cfgDir);
+global.__dirname = import.meta.dirname;
+
+const cfgDir = join(__dirname, "cfg");
+if(!existsSync(cfgDir)){
+    mkdirSync(cfgDir);
 }
 
-const configPath = path.join(__dirname, "cfg/dbs.json");
-if(!fs.existsSync(configPath)){
-    fs.writeFileSync(configPath, "{}", "utf8");
+const configPath = join(__dirname, "cfg/dbs.json");
+if(!existsSync(configPath)){
+    writeFileSync(configPath, "{}", "utf8");
 }
 
-global.dbConfig = require(configPath);
+global.dbConfig = JSON.parse(readFileSync(configPath, "utf8") || "{}");
 global.lo = console.log;
 
 const program = new Command();
 
 function saveConfig(){
-    fs.writeFileSync(configPath, JSON.stringify(dbConfig, null, 2), "utf8");
+    writeFileSync(configPath, JSON.stringify(dbConfig, null, 2), "utf8");
 }
 
 program
@@ -64,7 +66,7 @@ program
     .command("auto-add <folder>")
     .description("Automatically add all databases from <folder>")
     .action((folder) => {
-        const dbs = fs.readdirSync(folder, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
+        const dbs = readdirSync(folder, { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
         for(const db of dbs){
             if(dbConfig[db]) continue;
             dbConfig[db] = folder + "/" + db;
@@ -84,7 +86,9 @@ program
         }
         global.runMode = "interactive";
 
-        await require("./interactive")();
+        import("./interactive.js").then(module => {
+            module.default();
+        })
     });
 
 program
@@ -97,14 +101,16 @@ program
         }
         global.runMode = "no interactive";
 
-        require("./no-interaction")(operations);
+        import("./no-interaction.js").then(module => {
+            module.default(operations);
+        });
     });
 
 program
     .command("noif <file>")
     .description("Disable interactive mode. Load operations from <file>")
     .action((file) => {
-        if(!fs.existsSync(file)){
+        if(!existsSync(file)){
             process.exit(3);
         }
 
@@ -115,8 +121,10 @@ program
 
         global.runMode = "no interactive";
 
-        const operations = fs.readFileSync(file, "utf8").split("\n").filter(line => !!line);
-        require("./no-interaction")(operations);
+        const operations = readFileSync(file, "utf8").split("\n").filter(line => !!line);
+        import("./no-interaction.js").then(module => {
+            module.default(operations);
+        });
     });
 
 program.parse(process.argv);
