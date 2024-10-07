@@ -4,8 +4,9 @@
   "main": "index.js",
   "author": "wxn0brP",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
-    "chalk": "4.1.2",
+    "chalk": "^5.3.0",
     "commander": "^12.1.0",
     "inquirer": "^10.1.8"
   }
