@@ -27,4 +27,5 @@ global.sendToChatUsers = async (to, channel, ...args) => {
 }
 
 await import("./chat/index.js");
+await import("./dev-panel/index.js");
 await import("./qrCodeLogin.js");

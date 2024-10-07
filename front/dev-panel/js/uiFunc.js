@@ -46,23 +46,9 @@ const uiFunc = {
     },
     
     uiMsg(data, extraTime=0){
-        if(debugFunc.isDebug) lo("uiMsg:", data);
-
         const speed = 1/3; //1s = 3 words
         const time = data.split(" ").length * speed + 6 + extraTime;
         uiFunc.uiMessage(data, undefined, time * 1000, "uiMsgClass");
-    },
-
-    editMess(id){
-        const messageDiv = document.querySelector("#mess__"+id+" .mess_content");
-        if(!messageDiv) return;
-        const message = messageDiv.getAttribute("_plain");
-        const input = document.querySelector("#mess-input");
-        input.value = message;
-        vars.temp.editId = id;
-        
-        editCloseDiv.style.display = "block";
-        coreFunc.focusInp(true);
     },
 
     prompt(text, defaultValue=""){

@@ -27,6 +27,7 @@ socket.on("status.get", (status, text) => {
 });
 
 socket.on("message.markAsRead", (toR, chnl, id) => {
+    if(!toR || !chnl || !id) return;
     try{
         const to = toR.replace("$", "");
         const friendChat = toR.startsWith("$");

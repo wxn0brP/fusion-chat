@@ -1,27 +1,16 @@
-import valid from "../../logic/validData.js";
-import ogs from "open-graph-scraper";
-import ogsToEmbed from "../../logic/ogToEmbed.js";
-import sendMessage from "../../logic/sendMessage.js";
-import embedData from "./valid/embedData.js";
-
-const embedDataShema = valid.objAjv(embedData);
+import {
+    get_ogs,
+    send_embed_og,
+    send_embed_data,
+} from "./logic/other.js";
 
 export default (socket) => {
     socket.ontimeout("get.ogs", 1_000, async (link, cb) => {
         try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(link, 0, 300)) return socket.emit("error.valid", "get.ogs", "link");
-            if(!/^https?:\/\//.test(link)) return socket.emit("error.valid", "get.ogs", "link");
-            if(typeof cb !== "function") return socket.emit("error.valid", "get.ogs", "cb");
-
-            try{
-                const { error, result } = await ogs({ url: link });
-                if(error) return cb(null);
-                cb(result);
-            }catch(e){
-                socket.logError(`OGS fetching error: ${e.message}`);
-                cb(null);
-            }
+            const { err, res } = await get_ogs(link);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("get.ogs", res);
         }catch(e){
             socket.logError(e);
         }
@@ -29,27 +18,8 @@ export default (socket) => {
 
     socket.ontimeout("send.embed.og", 1_000, async (to, chnl, link) => {
         try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(to)) return socket.emit("error.valid", "send.embed.og", "to");
-            if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "send.embed.og", "chnl");
-            if(!valid.str(link, 0, 300)) return socket.emit("error.valid", "send.embed.og", "link");
-            if(!/^https?:\/\//.test(link)) return socket.emit("error.valid", "send.embed.og", "link");
-
-            const embed = await ogsToEmbed(link);
-            if(!embed) return socket.emit("error", "ogToEmbed error");
-            
-            const result = await sendMessage(
-                {
-                    to, chnl, msg: "Embed",
-                },
-                socket.user,
-                {
-                    customFields: {
-                        embed: embed
-                    }
-                }
-            );
-            if(result.err) socket.emit(...result.err);
+            const { err } = await send_embed_og(socket.user, to, chnl, link);
+            if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
@@ -57,23 +27,8 @@ export default (socket) => {
 
     socket.ontimeout("send.embed.data", 1_000, async (to, chnl, embed) => {
         try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(to)) return socket.emit("error.valid", "send.embed.data", "to");
-            if(!valid.idOrSpecyficStr(chnl, ["main"])) return socket.emit("error.valid", "send.embed.data", "chnl");
-
-            if(!embedDataShema(embed)) return socket.emit("error.valid", "send.embed.data", "embed", embedDataShema.errors);
-            const result = await sendMessage(
-                {
-                    to, chnl, msg: "Embed",
-                },
-                socket.user,
-                {
-                    customFields: {
-                        embed
-                    }
-                }
-            );
-            if(result.err) socket.emit(...result.err);
+            const { err } = await send_embed_data(socket.user, to, chnl, embed);
+            if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }

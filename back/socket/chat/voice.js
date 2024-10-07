@@ -1,19 +1,18 @@
-import valid from "../../logic/validData.js";
-
-const roomPrefix = "voice-";
+import {
+    voice_getUsers,
+    voice_join,
+    voice_sendData,
+    leaveVoiceChannel,
+    call_private_answer,
+    call_private_init,
+} from "./logic/voice.js";
 
 export default (socket) => {
     socket.voiceRoom = null;
-
     socket.ontimeout("voice.join", 100, async (to) => {
         try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.str(to, 0, 30)) return socket.emit("error", "valid data");
-
-            emitToRoom(to, "voice.join", socket.user._id);
-            emitToRoom(to, "refreshData", "voice.getUsers", to);
-            socket.join(roomPrefix + to);
-            socket.voiceRoom = to;
+            const { err } = await voice_join(socket, to);
+            if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
@@ -21,27 +20,16 @@ export default (socket) => {
 
     socket.ontimeout("voice.sendData", 50, async (data) => {
         try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!socket.voiceRoom) return;
-            emitToRoom(socket.voiceRoom, "voice.sendData", socket.user._id, data);
+            const { err } = await voice_sendData(socket.user, socket.voiceRoom, data);
+            if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
-    })
-
-    function leaveVoiceChannel(){
-        if(!socket.voiceRoom) return;
-        const room = socket.voiceRoom;
-
-        socket.leave(roomPrefix + room);
-        socket.voiceRoom = null;
-        emitToRoom(room, "refreshData", "voice.getUsers");
-        emitToRoom(room, "voice.leave", socket.user._id);
-    }
+    });
 
     socket.ontimeout("voice.leave", 100, async () => {
         try{
-            leaveVoiceChannel();
+            leaveVoiceChannel(socket);
         }catch(e){
             socket.logError(e);
         }
@@ -49,41 +37,31 @@ export default (socket) => {
 
     socket.on("disconnect", () => {
         try{
-            leaveVoiceChannel();
+            leaveVoiceChannel(socket);
         }catch(e){
             socket.logError(e);
         }
     })
 
-    socket.ontimeout("voice.getUsers", 100, async () => {
+    socket.ontimeout("voice.getUsers", 100, (cb) => {
         try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!socket.voiceRoom) return;
-            const to = socket.voiceRoom;
-
-            const sockets = io.of("/").adapter.rooms.get(roomPrefix + to);
-            const users = [];
-
-            for(const socketId of sockets){
-                const socket = io.sockets.sockets.get(socketId);
-                if(socket && socket.user) users.push(socket.user._id);
-            }
-
-            socket.emit("voice.getUsers", [...new Set(users)]);
+            const { err, res } = voice_getUsers(socket.user);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("voice.getUsers", res);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.ontimeout("call.private.init", 100, async (id) => {
+    socket.ontimeout("call.private.init", 100, async (id, cb) => {
         try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
+            const { err, res } = await call_private_init(socket.user, id);
+            if(err) return socket.emit(...err);
 
-            const sockets = global.getSocket(id);
-            if(sockets.length == 0) return socket.emit("call.answer", id, false);
-
-            global.sendToSocket(id, "call.private.init", socket.user._id);
+            if(!res) return;
+            if(cb) cb(id, false);
+            else socket.emit("call.private.init", id, false);
         }catch(e){
             socket.logError(e);
         }
@@ -91,17 +69,10 @@ export default (socket) => {
 
     socket.ontimeout("call.private.answer", 100, async (id, answer) => {
         try{
-            if(!socket.user) return socket.emit("error", "not auth");
-            if(!valid.id(id)) return socket.emit("error", "valid data");
-            if(!valid.bool(answer)) return socket.emit("error", "valid data");
-
-            global.sendToSocket(id, "call.private.answer", socket.user._id, answer);
+            const { err } = await call_private_answer(socket.user, id, answer);
+            if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
     });
-}
-
-function emitToRoom(room, ...args){
-    io.of("/").to(roomPrefix + room).emit(...args);
 }

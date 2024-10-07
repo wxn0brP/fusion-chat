@@ -1,17 +1,10 @@
 import { auth } from "../../logic/auth.js";
-import mess from "./mess.js";
-import servers from "./servers.js";
-import serverSettings from "./serversSettings.js";
-import voice from "./voice.js";
-import settings from "./settings.js";
-import chats from "./chats.js";
-import evt from "./evt.js";
-import friends from "./friends.js";
-import other from "./other.js";
+import botsMgmt from "./botsMgmt.js";
+import editBot from "./editBot.js";
 
 const tmpBan = new Map();
 
-io.of("/").use(async (socket, next) => {
+io.of("/dev-panel").use(async (socket, next) => {
     const authData = socket.handshake.auth;
     if(!authData) return next(new Error("Authentication error: Missing authentication data."));
 
@@ -35,7 +28,7 @@ io.of("/").use(async (socket, next) => {
     next();
 });
 
-io.of("/").on("connection", (socket) => {
+io.of("/dev-panel").on("connection", (socket) => {
     socket.logError = (e) => {
         lo("Error: ", e);
         global.db.logs.add("socket.io", {
@@ -97,13 +90,6 @@ io.of("/").on("connection", (socket) => {
         });
     }
 
-    mess(socket);
-    servers(socket);
-    serverSettings(socket);
-    voice(socket);
-    settings(socket);
-    chats(socket);
-    friends(socket);
-    evt(socket);
-    other(socket);
+    botsMgmt(socket);
+    editBot(socket);
 });

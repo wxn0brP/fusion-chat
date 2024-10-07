@@ -13,6 +13,7 @@ const databases = [
     { name: "userDatas", type: "database" },        //user datas
     { name: "dataGraph", type: "graph" },           //all types data graph
     { name: "groupData", type: "database" },        //group data
+    { name: "botData", type: "database" },          //bot data
 ];
 
 function getRemoteConfig(name, path){
