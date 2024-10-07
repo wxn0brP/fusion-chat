@@ -1,5 +1,6 @@
 import { chatExsists as _chatExsists, combinateId } from "./chatMgmt.js";
 import valid from "./validData.js";
+import ValidError from "./validError.js";
 
 /**
  * @async
@@ -17,35 +18,43 @@ import valid from "./validData.js";
  * @param {string} user._id - The identifier of the sender.
  * @param {string} user.name - The name of the sender.
  * @param {object} [options] - Optional options object.
- * @param {boolean} [options.system] - Optional flag to send the message as a system message.
+ * @param {boolean} [options.system] - Optional flag to send the message as a system message. Default is false.
  * @param {boolean} [options.customFields] - Optional flag to send the message with custom fields.
- * @param {object} [customFields] - Optional custom fields to send with the message.
+ * @param {number} [options.minMsg] - Optional minimum number of messages to send. Default is 0.
+ * @param {number} [options.maxMsg] - Optional maximum number of messages to send. Default is 2000.
  * @return {Promise<object>} res - The result of the message sending operation.
  * @return {false|string[]} res.err - The error message or array of error messages if any.
  */
-export default async function sendMessage(req, user, options={}) {
-    if(!user) return { err: ["error", "not auth"] };
-    if(typeof req !== "object") return { err: ["error.valid", "mess", "req"] };
+export default async function sendMessage(req, user, options={}){
+    const validE = new ValidError("mess");
+    if(!user) return validE.err("not auth");
+    if(typeof req !== "object") return validE.valid("req");
     let { to, msg, chnl } = req;
+    options = {
+        system: false,
+        minMsg: 0,
+        maxMsg: 2000,
+        ...options
+    }
 
-    if(!valid.id(to))                           return { err: ["error.valid", "mess", "to"] };
-    if(!valid.idOrSpecyficStr(chnl, ["main"]))  return { err: ["error.valid", "mess", "chnl"] };
-    if(!valid.str(msg, 0, 2000))                return { err: ["error.valid", "mess", "msg"] };
+    if(!valid.id(to))                                   return validE.valid("to");
+    if(!valid.idOrSpecyficStr(chnl, ["main"]))          return validE.valid("chnl");
+    if(!valid.str(msg, options.minMsg, options.maxMsg)) return validE.valid("msg");
 
     //optional
-    if(req.enc && !valid.str(req.enc, 0, 30))   return { err: ["error.valid", "mess", "enc"] };
-    if(req.res && !valid.id(req.res))           return { err: ["error.valid", "mess", "res"] };
-    if(req.silent && !valid.bool(req.silent))   return { err: ["error.valid", "mess", "silent"] };
+    if(req.enc && !valid.str(req.enc, 0, 30))   return validE.valid("enc");
+    if(req.res && !valid.id(req.res))           return validE.valid("res");
+    if(req.silent && !valid.bool(req.silent))   return validE.valid("silent");
     
     const privChat = to.startsWith("$");
     if(privChat){
         const priv = await global.db.userDatas.findOne(user._id, { priv: to.replace("$", "") });
-        if(!priv) return { err: ["error", "priv not found"] };
-        if(priv.blocked) return { err: ["error", "blocked"] };
+        if(!priv) return validE.err("priv not found");
+        if(priv.blocked) return validE.err("blocked");
 
         const toPriv = await global.db.userDatas.findOne(to.replace("$", ""), { priv: user._id });
-        if(!toPriv) return { err: ["error", "priv not found"] };
-        if(toPriv.blocked) return { err: ["error", "blocked"] };
+        if(!toPriv) return validE.err("priv not found");
+        if(toPriv.blocked) return validE.err("blocked");
 
         let p1 = user._id;
         let p2 = to.replace("$", "");
@@ -53,13 +62,13 @@ export default async function sendMessage(req, user, options={}) {
         await global.db.mess.checkCollection(to);
     }else{
         const chatExsists = await _chatExsists(to);
-        if(!chatExsists) return { err: ["error", "chat is not exists"] };
+        if(!chatExsists) return validE.err("chat is not exists");
     }
 
     if(!privChat && !options.system){
         const perm = await getChnlPerm(user._id, to, chnl); 
-        if(!perm.visable) return { err: ["error", "channel is not exists"] };
-        if(!perm.text) return { err: ["error", "not perm to write"] };
+        if(!perm.visable) return validE.err("channel is not exists");
+        if(!perm.text) return validE.err("not perm to write");
     }
 
     let data = {

@@ -63,8 +63,8 @@ cw.proto = {
         return this;
     },
     
-    animateFade(ele, from, time=200){
-        const style = ele.style;
+    animateFade(from, { time=200, cb=null }){
+        const style = this.style;
         const steps = 50;
         const timeToStep = time / steps;
         const d = (from == 0 ? 1 : -1)/steps;
@@ -74,6 +74,7 @@ cw.proto = {
         const interval = setInterval(() => {
             if(index >= steps){
                 clearInterval(interval);
+                if(cb && typeof cb == "function") cb();
                 return;
             }
             style.opacity = parseFloat(style.opacity) + d;
@@ -82,15 +83,22 @@ cw.proto = {
         return this;
     },
 
-    fadeIn(display="block"){
+    fadeIn(display="block", cb=null){
+        if(typeof display == "function"){
+            cb = display;
+            display = "block";
+        }
+        
         this.css("display", display);
-        this.animateFade(this, 0);
+        this.animateFade(0, { cb });
+        this.fade = true;
         return this;
     },
 
-    fadeOut(){
-        this.animateFade(this, 1, 300);
-        setTimeout(() => this.css("display", "none"), 700);
+    fadeOut(cb=null){
+        this.animateFade(1, { time: 300, cb });
+        setTimeout(() => this.css("display", "none"), 300);
+        this.fade = false;
         return this;
     },
 
@@ -98,10 +106,8 @@ cw.proto = {
     fadeToogle(){
         if(this.fade){
             this.fadeOut();
-            this.fade = false;
         }else{
             this.fadeIn();
-            this.fade = true;
         }
         return this;
     },

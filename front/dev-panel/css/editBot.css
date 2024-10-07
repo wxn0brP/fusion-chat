@@ -1,0 +1,42 @@
+#page_editBot input[type="checkbox"]{
+    margin-right: 0.5rem;
+    border-radius: 5px;
+    width: 1.3rem;
+    aspect-ratio: 1 / 1;
+    
+    cursor: pointer;
+    border: 1px solid var(--txt);
+    background-color: var(--back);
+    color: var(--txt);
+}
+
+#page_editBot input[type="checkbox"]:checked{
+    background-color: var(--accent);
+}
+
+#permissionsForm{
+    width: 80%;
+    margin-inline: auto;
+    background-color: var(--panel);
+    color: var(--txt);
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
+}
+
+#permissionsForm #permissionsTable{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+}
+
+#permissionsForm #permissionsTable div{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#permissionsForm details summary{
+    font-size: 1.5rem;
+    cursor: pointer;
+}

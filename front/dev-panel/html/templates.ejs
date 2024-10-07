@@ -1,0 +1,17 @@
+<script id="permissionsFormTemplate" type="text/x-handlebars-template">
+    <details>
+        <summary>Permissions</summary>
+        <br />
+        <div id="permissionsTable">
+            {{#each botData.permMap}}
+            <div>
+                <label>
+                    <input type="checkbox" data-perm="{{@key}}" {{#if this}}checked{{/if}}>
+                    {{@key}}
+                </label>
+            </div>
+            {{/each}}
+        </div>
+    </details>
+    <br />
+</script>  

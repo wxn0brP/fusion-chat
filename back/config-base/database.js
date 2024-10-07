@@ -34,5 +34,9 @@ export default {
     groupData: {
         type: "local",
         path: "data/groupData",
-    }
+    },
+    botData: {
+        type: "local",
+        path: "data/botData",
+    },
 }

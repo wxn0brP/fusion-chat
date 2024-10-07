@@ -70,6 +70,15 @@ frontRouter.get("/", (req, res) => {
     }
 });
 
+frontRouter.get("/dev-panel", (req, res) => {
+    try{
+        res.render("dev-panel/dev-panel");
+    }catch(err){
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 readdirSync("front/main").filter(file => file.includes(".ejs")).map(file => file.replace(".ejs", "")).forEach(site => {
     frontRouter.get("/"+site, (req, res) => {
         try{
