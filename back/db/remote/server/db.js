@@ -56,13 +56,13 @@ router.post("/add", async (req, res) => {
 });
 
 router.post("/find", async (req, res) => {
-    const { collection, search, context, options } = req.body;
+    const { collection, search, context, options, findOpts } = req.body;
     if(!collection || !search) return res.status(400).json({ err: true, msg: "collection & search is required" });
 
     try{
         const parsedSearch = parseParam(search);
         const db = req.dataCenter;
-        const result = await db.find(collection, parsedSearch, context || {}, options);
+        const result = await db.find(collection, parsedSearch, context || {}, options || {}, findOpts || {});
         res.json({ err: false, result });
     }catch(err){
         console.error(err);
@@ -71,13 +71,13 @@ router.post("/find", async (req, res) => {
 });
 
 router.post("/findOne", async (req, res) => {
-    const { collection, search, context } = req.body;
+    const { collection, search, context, findOpts } = req.body;
     if(!collection || !search) return res.status(400).json({ err: true, msg: "collection & search is required" });
 
     try{
         const parsedSearch = parseParam(search);
         const db = req.dataCenter;
-        const result = await db.findOne(collection, parsedSearch, context || {});
+        const result = await db.findOne(collection, parsedSearch, context || {}, findOpts || {});
         res.json({ err: false, result });
     }catch(err){
         console.error(err);
