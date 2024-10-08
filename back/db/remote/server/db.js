@@ -1,5 +1,6 @@
 import { Router } from "express";
 import parseParam from "./function.js";
+import { isPathSafe } from "./pathUtils.js";
 const router = Router();
 
 router.post("/getDBs", async (req, res) => {
@@ -16,6 +17,7 @@ router.post("/getDBs", async (req, res) => {
 router.post("/checkCollection", async (req, res) => {
     const { collection } = req.body;
     if(!collection) return res.status(400).json({ err: true, msg: "collection is required" });
+    if(!isPathSafe(baseDir, collection)) return res.status(400).json({ err: true, msg: "invalid collection" });
 
     try{
         const db = req.dataCenter;
@@ -30,6 +32,7 @@ router.post("/checkCollection", async (req, res) => {
 router.post("/issetCollection", async (req, res) => {
     const { collection } = req.body;
     if(!collection) return res.status(400).json({ err: true, msg: "collection is required" });
+    if(!isPathSafe(baseDir, collection)) return res.status(400).json({ err: true, msg: "invalid collection" });
 
     try{
         const db = req.dataCenter;
@@ -44,6 +47,7 @@ router.post("/issetCollection", async (req, res) => {
 router.post("/add", async (req, res) => {
     const { collection, data } = req.body;
     if(!collection || !data) return res.status(400).json({ err: true, msg: "collection & data is required" });
+    if(!isPathSafe(baseDir, collection)) return res.status(400).json({ err: true, msg: "invalid collection" });
 
     try{
         const db = req.dataCenter;
@@ -58,6 +62,7 @@ router.post("/add", async (req, res) => {
 router.post("/find", async (req, res) => {
     const { collection, search, context, options, findOpts } = req.body;
     if(!collection || !search) return res.status(400).json({ err: true, msg: "collection & search is required" });
+    if(!isPathSafe(baseDir, collection)) return res.status(400).json({ err: true, msg: "invalid collection" });
 
     try{
         const parsedSearch = parseParam(search);
@@ -73,6 +78,7 @@ router.post("/find", async (req, res) => {
 router.post("/findOne", async (req, res) => {
     const { collection, search, context, findOpts } = req.body;
     if(!collection || !search) return res.status(400).json({ err: true, msg: "collection & search is required" });
+    if(!isPathSafe(baseDir, collection)) return res.status(400).json({ err: true, msg: "invalid collection" });
 
     try{
         const parsedSearch = parseParam(search);
@@ -104,6 +110,7 @@ router.post("/update", async (req, res) => {
 router.post("/updateOne", async (req, res) => {
     const { collection, search, arg, context } = req.body;
     if(!collection || !search || !arg) return res.status(400).json({ err: true, msg: "collection & search & arg is required" });
+    if(!isPathSafe(baseDir, collection)) return res.status(400).json({ err: true, msg: "invalid collection" });
 
     try{
         const parsedSearch = parseParam(search);
@@ -120,6 +127,7 @@ router.post("/updateOne", async (req, res) => {
 router.post("/remove", async (req, res) => {
     const { collection, search, context } = req.body;
     if(!collection || !search) return res.status(400).json({ err: true, msg: "collection & search is required" });
+    if(!isPathSafe(baseDir, collection)) return res.status(400).json({ err: true, msg: "invalid collection" });
 
     try{
         const parsedSearch = parseParam(search);
@@ -135,6 +143,7 @@ router.post("/remove", async (req, res) => {
 router.post("/removeOne", async (req, res) => {
     const { collection, search, context } = req.body;
     if(!collection || !search) return res.status(400).json({ err: true, msg: "collection & search is required" });
+    if(!isPathSafe(baseDir, collection)) return res.status(400).json({ err: true, msg: "invalid collection" });
 
     try{
         const parsedSearch = parseParam(search);
@@ -150,6 +159,7 @@ router.post("/removeOne", async (req, res) => {
 router.post("/updateOneOrAdd", async (req, res) => {
     const { collection, search, arg, add_arg, context, id_gen } = req.body;
     if(!collection || !search || !arg) return res.status(400).json({ err: true, msg: "collection & search & arg is required" });
+    if(!isPathSafe(baseDir, collection)) return res.status(400).json({ err: true, msg: "invalid collection" });
 
     try{
         const parsedSearch = parseParam(search);
@@ -167,6 +177,7 @@ router.post("/updateOneOrAdd", async (req, res) => {
 router.post("/removeDb", async (req, res) => {
     const { name } = req.body;
     if(!name) return res.status(400).json({ err: true, msg: "name is required" });
+    if(!isPathSafe(baseDir, name)) return res.status(400).json({ err: true, msg: "invalid name" });
 
     try{
         const db = req.dataCenter;

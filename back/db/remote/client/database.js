@@ -15,37 +15,9 @@ class DataBaseRemote{
      * @param {string} remote.folder - The folder path where the database files are stored.
      * @param {string} remote.auth - The authentication token.
      * @param {string} remote.url - The URL of the remote database.
-     * @param {object} [options] - The options object.
-     * @param {number} [options.cacheThreshold=3] - The cache threshold for database entries (default: 3).
-     * @param {number} [options.cacheTTL=300000] - The time-to-live (TTL) for cached entries in milliseconds (default: 300,000 milliseconds or 5 minutes).
      */
-    constructor(remote, options){
+    constructor(remote){
         this.remote = remote;
-        this.options = options;
-    }
-
-    /**
-     * Initialize the database.
-     * @async
-     * @function
-     * @returns {Promise<boolean>} A Promise that resolves when the database is initialized.
-     */
-    async _init(){
-        const res = await got.post(this.remote.url + "/register", {
-            json: {
-                name: this.remote.name,
-                path: this.remote.path,
-                type: "database",
-                options: this.options
-            },
-            headers: {
-                "Authorization": this.remote.auth
-            },
-            responseType: "json"
-        });
-
-        if(res.body.err) throw new Error(res.body.msg);
-        return true;
     }
 
     /**
