@@ -137,11 +137,12 @@ class DataBaseRemote{
      * @param {Object} options - The options for the search.
      * @param {number} options.max - The maximum number of entries to return. Default is -1, meaning no limit.
      * @param {boolean} options.reverse - Whether to reverse the order of returned entries. Default is false.
+     * @param {Object} findOpts - Update result object with findOpts options.
      * @returns {Promise<Array<Object>>} A Promise that resolves with the matching data.
      */
-    async find(collection, search, context={}, options={}){
+    async find(collection, search, context={}, options={}, findOpts={}){
         if(typeof search === "function") search = search.toString();
-        return await this._request("find", { collection, search, options, context });
+        return await this._request("find", { collection, search, options, context, findOpts });
     }
 
     /**
@@ -152,11 +153,12 @@ class DataBaseRemote{
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} search - The query. It can be an object or a function.
      * @param {Object} context - The context object (for functions).
+     * @param {Object} findOpts - Update result object with findOpts options.
      * @returns {Promise<Object|null>} A Promise that resolves with the first matching data entry.
      */
-    async findOne(collection, search, context={}){
+    async findOne(collection, search, context={}, findOpts={}){
         if(typeof search === "function") search = search.toString();
-        return await this._request("findOne", { collection, search, context });
+        return await this._request("findOne", { collection, search, context, findOpts });
     }
 
     /**

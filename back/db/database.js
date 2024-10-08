@@ -91,10 +91,11 @@ class DataBase{
      * @param {Object} options - The options for the search.
      * @param {number} options.max - The maximum number of entries to return. Default is -1, meaning no limit.
      * @param {boolean} options.reverse - Whether to reverse the order of returned entries. Default is false.
+     * @param {Object} findOpts - Update result object with findOpts options.
      * @returns {Promise<Array<Object>>} A Promise that resolves with the matching data.
      */
-    async find(collection, search, context={}, options={}){
-        return await this.executor.addOp(this.dbAction.find.bind(this.dbAction), collection, search, context, options);
+    async find(collection, search, context={}, options={}, findOpts={}){
+        return await this.executor.addOp(this.dbAction.find.bind(this.dbAction), collection, search, context, options, findOpts);
     }
 
     /**
@@ -105,10 +106,11 @@ class DataBase{
      * @param {string} collection - Name of the database collection.
      * @param {function|Object} search - The query. It can be an object or a function.
      * @param {Object} context - The context object (for functions).
+     * @param {Object} findOpts - Update result object with findOpts options.
      * @returns {Promise<Object|null>} A Promise that resolves with the first matching data entry.
      */
-    async findOne(collection, search, context={}){
-        return await this.executor.addOp(this.dbAction.findOne.bind(this.dbAction), collection, search, context);
+    async findOne(collection, search, context={}, findOpts={}){
+        return await this.executor.addOp(this.dbAction.findOne.bind(this.dbAction), collection, search, context, findOpts);
     }
 
     /**
