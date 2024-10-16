@@ -27,7 +27,7 @@ class dbActionC{
      * Get a list of available databases in the specified folder.
      * @returns {string[]} An array of database names.
      */
-    getDBs(){
+    getCollections(){
         const collections = readdirSync(this.folder, { recursive: true, withFileTypes: true })
             .filter(dirent => dirent.isDirectory())
             .map(dirent => {

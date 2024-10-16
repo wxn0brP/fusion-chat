@@ -44,7 +44,7 @@ main().catch(console.error);
 
 | Method Name | Description | Parameters | Returns |
 | ----------- | ----------- | ---------- | ------- | 
-| `getDBs` | Retrieves the names of all available databases. | None | `string[]` |
+| `getCollections` | Retrieves the names of all available collections. | None | `string[]` |
 | `checkCollection` | Ensures that a collection exists, creating it if necessary. | `collection` (string): Name of the collection | `Promise<void>` |
 | `issetCollection` | Checks if a collection exists. | `collection` (string): Name of the collection | `Promise<boolean>` |
 | `add` | Adds data to a collection, optionally generating an ID. | `collection` (string), `data` (Object), `id_gen` (boolean) | `Promise<Object>` |

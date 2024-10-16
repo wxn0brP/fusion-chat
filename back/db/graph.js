@@ -83,6 +83,48 @@ class Graph{
 
         return null;
     }
+
+    /**
+     * Gets all edges in the database.
+     * @async
+     * @function
+     * @param {string} collection - The name of the collection.
+     * @returns {Promise<Object[]>} A promise that resolves with all edges in the database.
+     */
+    async getAll(collection){
+        return await this.db.find(collection, {});
+    }
+
+    /**
+     * Get the names of all available databases.
+     *
+     * @function
+     * @returns {string[]} An array of database names.
+     */
+    async getCollections(){
+        return await this.db.getCollections();
+    }
+
+    /**
+     * Check and create the specified collection if it doesn't exist.
+     *
+     * @function
+     * @param {string} collection - The collection to check.
+     */
+    async checkCollection(collection){
+        await this.dbAction.checkCollection(collection);
+    }
+
+    /**
+     * Check if a collection exists.
+     *
+     * @function
+     * @param {string} collection - The name of the collection.
+     * @returns {boolean} True if the collection exists, false otherwise.
+     */
+    async issetCollection(collection){
+        return await this.dbAction.issetCollection(collection);
+    }
 }
 
 export default Graph;

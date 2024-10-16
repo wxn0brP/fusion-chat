@@ -3,10 +3,15 @@ import parseParam from "./function.js";
 import { isPathSafe } from "./pathUtils.js";
 const router = Router();
 
-router.post("/getDBs", async (req, res) => {
+router.use((req, res, next) => {
+    if(req.dbType == "database") return next();
+    return res.status(400).json({ err: true, msg: "Invalid data center type." });
+});
+
+router.post("/getCollections", async (req, res) => {
     try{
         const db = req.dataCenter;
-        const result = await db.getDBs();
+        const result = await db.getCollections();
         res.json({ err: false, result });
     }catch(err){
         console.error(err);

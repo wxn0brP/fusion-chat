@@ -31,7 +31,7 @@ class DataBaseRemote{
      */
     async _request(type, data){
         data.db = this.remote.name;
-        const res = await got.post(this.remote.url + "/database/" + type, {
+        const res = await got.post(this.remote.url + "/db/database/" + type, {
             json: data,
             headers: {
                 "Authorization": this.remote.auth
@@ -59,8 +59,8 @@ class DataBaseRemote{
      * @function
      * @returns {string[]} An array of database names.
      */
-    async getDBs(){
-        return await this._request("getDBs", {});
+    async getCollections(){
+        return await this._request("getCollections", {});
     }
 
     /**

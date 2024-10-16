@@ -41,8 +41,8 @@ class DataBase{
      * @function
      * @returns {string[]} An array of database names.
      */
-    async getDBs(){
-        return await this.dbAction.getDBs();
+    async getCollections(){
+        return await this.dbAction.getCollections();
     }
 
     /**
