@@ -30,7 +30,7 @@ class GraphRemote{
      */
     async _request(type, data){
         data.db = this.remote.name;
-        const res = await got.post(this.remote.url + "/graph/" + type, {
+        const res = await got.post(this.remote.url + "/db/graph/" + type, {
             json: data,
             headers: {
                 "Authorization": this.remote.auth
@@ -91,6 +91,48 @@ class GraphRemote{
      */
     async findOne(collection, nodeA, nodeB){
         return await this._request("findOne", { collection, nodeA, nodeB });
+    }
+
+    /**
+     * Get all edges in the collection.
+     * @async
+     * @function
+     * @param {string} collection - The name of the collection.
+     * @returns {Promise<Object[]>} A promise that resolves with the found edges.
+     */
+    async getAll(collection){
+        return await this._request("getAll", { collection });
+    }
+
+    /**
+     * Get the names of all available databases.
+     *
+     * @function
+     * @returns {string[]} An array of database names.
+     */
+    async getCollections(){
+        return await this._request("getCollections", {});
+    }
+
+    /**
+     * Check and create the specified collection if it doesn't exist.
+     *
+     * @function
+     * @param {string} collection - The collection to check.
+     */
+    async checkCollection(collection){
+        return await this._request("checkCollection", { collection });
+    }
+
+    /**
+     * Check if a collection exists.
+     *
+     * @function
+     * @param {string} collection - The name of the collection.
+     * @returns {boolean} True if the collection exists, false otherwise.
+     */
+    async issetCollection(collection){
+        return await this._request("issetCollection", { collection });
     }
 }
 

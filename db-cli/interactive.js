@@ -105,7 +105,7 @@ async function mainMenuWindow(){
             console.log(chalk.red("Please select a database first."));
             return;
         }
-        const choicesRaw = await selected.db.getDBs();
+        const choicesRaw = await selected.db.getCollections();
         const choices = await ext.process("list_table", selected.dbName, null, choicesRaw);
 
         const { table } = await inquirer.prompt([
@@ -123,7 +123,7 @@ async function mainMenuWindow(){
 
     if(operation === "Display tables"){
         if(!selected.db) return;
-        const tables = await selected.db.getDBs();
+        const tables = await selected.db.getCollections();
         const extTables = await ext.process("display_table", selected.dbName, null, tables);
         console.log("\n", chalk.green("Tables:"), extTables, "\n");
         await waitEnter();
@@ -136,7 +136,7 @@ async function mainMenuWindow(){
 
     if(operation === "add"){
         const data = await promptForKeyValuePairs();
-        const extData = await dbFunc.add(selected, data);
+        const extData = await add(selected, data);
         console.log(chalk.green("Data added:"), extData);
     }
 

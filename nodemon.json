@@ -6,7 +6,8 @@
         "fc-index",
         "fc-app",
         "app-test",
-        "bots"
+        "bots",
+        "back/db/remote/server/gui"
     ],
     "events": {
         "restart": "clear"
