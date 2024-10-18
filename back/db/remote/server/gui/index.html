@@ -4,14 +4,15 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>wxn0brP database gui</title>
-        <link rel="stylesheet" href="style.css">
-        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/main.css">
         <link rel="shortcut icon" href="favicon.svg" type="image/x-icon">
     </head>
     <body>
         <noscript>This page require JS to work</noscript>
         <div id="app">
             <span id="nav__toggle">&#9776;</span>
+            <div id="popUpContainer"></div>
             <nav style="left: 0px">
                 Selected:
                     <br /> 
@@ -22,138 +23,27 @@
                     <span id="selected-table"></span>
                     <br />
                 <br /> 
-                <button onclick="addServerDiv.fadeIn()">Add Server</button>
+                <button onclick="popupFunc.showMgmtServers()">Mengage Server</button>
                 <ul id="database-server-list"></ul>
             </nav>
-            <main>
-                <div id="query-div">
-                    <h2>Query</h2>
-                    <div id="query-div-db" style="display: none;">
-                        <label>
-                            <span>Query:</span>
-                            <input type="text" id="query">
-                        </label>
-                        <label>
-                            <span>type:</span>
-                            <select id="query-type">
-                                <option value="json5">json5</option>
-                                <option value="json">json</option>
-                                <option value="js-function">js-function</option>
-                            </select>
-                        </label>
-                        <label id="query-context-label" style="display: none;">
-                            <span>context:</span>
-                            <input type="text" id="query-context">
-                        </label>
-                        <label>
-                            <span>Opts:</span>
-                            <input type="text" id="query-opts">
-                        </label>
-                        <button id="query-db-btn">Find</button>
-                        &nbsp;
-                        <button id="sortData">Sort</button>
-                    </div>
-                    <div id="query-div-graph" style="display: none;">
-                        <label>
-                            <span>Node</span>
-                            <input type="text" id="query-graph-node">
-                        </label>
-                        <label>
-                            <span>Output Method</span>
-                            <select id="query-graph-output-method">
-                                <option value="table">Table</option>
-                                <option value="graph">Graph</option>
-                            </select>
-                        <button id="query-graph-btn">Find</button>
-                        <button id="query-graph-all-btn">Find All</button>
-                    </div>
-                </div>
-                <br />
-                <div id="data-output"></div>
-            </main>
-
-            <div id="addServer">
-                <h2>Add Server</h2>
-                <label>
-                    <span>Name:</span>
-                    <input type="text" id="addServer-name">
-                </label>
-                <label>
-                    <span>Url:</span>
-                    <input type="text" id="addServer-url">
-                </label>
-                <label>
-                    <span>Login:</span>
-                    <input type="text" id="addServer-login">
-                </label>
-                <label>
-                    <span>Password:</span>
-                    <input type="password" id="addServer-pass">
-                </label>
-                <button onclick="addServer();">Login</button>
-                <button onclick="addServer(true);">Cancel</button>
-            </div>
         </div>
+        <div id="templates" style="display: none;"></div>
 
-        <script type="text/x-handlebars-template" id="databases-list-template">
-            {{#each serversList}}
-                <li>
-                    <h2>
-                        {{this.name}}
-                        {{#if this.saved}}
-                            <button onclick="removeServerStorage('{{this.id}}');renderServerList()">Remove from saved</button>
-                        {{else}}
-                            <button onclick="addServerStorage('{{this.id}}');renderServerList()">Add to saved</button>
-                        {{/if}}
-                    </h2>
-                    <ul id="database-nav-{{this.id}}" class="database-nav"></ul>
-                </li>
-            {{/each}}
-        </script>
+        <script src="libs/core.js"></script>
+        <script src="libs/handlebars.min.js"></script>
+        <script src="libs/json5.min.js"></script>
+        <script src="libs/d3.v7.min.js"></script>
 
-        <script type="text/x-handlebars-template" id="database-nav-template">
-            {{#each dbs}}
-                <li onclick="renderTables('{{this.serverId}}', '{{this.name}}')">
-                    <details>
-                        <summary class="selectMeta">{{this.name}}</summary>
-                        <ul id="database-nav-{{this.serverId}}-{{this.name}}" class="database-nav-meta"></ul>
-                    </details>
-                </li>
-            {{/each}}
-        </script>
-
-        <script type="text/x-handlebars-template" id="databases-tables-template">
-            {{#each tables}}
-                <li class="selectMeta" onclick="event.stopPropagation();selectTable('{{this}}')">{{this}}</li>
-            {{/each}}
-        </script>
-
-        <script id="data-template" type="text/x-handlebars-template">
-            {{#each data}}
-                <div>
-                    <ul>
-                        {{#each this}}
-                        {{#if (isObject this)}}
-                            <li><strong>{{@key}}:</strong> <pre>{{json5 this}}</pre></li>
-                        {{else}}
-                            <li><strong>{{@key}}:</strong> {{this}}</li>
-                        {{/if}}
-                        {{/each}}
-                    </ul>
-                </div>
-            {{/each}}
-        </script>
-
-        <script src="core.js"></script>
-        <script src="handlebars.min.js"></script>
-        <script src="json5.min.js"></script>
-        <script src="d3.v7.min.js"></script>
-        <script src="utils.js"></script>
-        <script src="templates.js"></script>
-        <script src="api.js"></script>
-        <script src="db.js"></script>
-        <script src="queryDb.js"></script>
-        <script src="queryGraph.js"></script>
-        <script src="index.js"></script>
+        <script src="js/loadHTML.js"></script>
+        <script src="js/vars.js"></script>
+        <script src="js/utils.js"></script>
+        <script src="js/templates.js"></script>
+        <script src="js/api.js"></script>
+        <script src="js/popUp.js"></script>
+        <script src="js/render.js"></script>
+        <script src="js/queryApi.js"></script>
+        <script src="js/queryDb.js"></script>
+        <script src="js/queryGraph.js"></script>
+        <script src="js/index.js"></script>
     </body>
 </html>
