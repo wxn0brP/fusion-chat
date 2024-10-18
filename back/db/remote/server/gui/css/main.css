@@ -5,6 +5,7 @@
 
 nav{
     width: 200px;
+    max-width: 200px;
     height: 100vh;
     background-color: var(--panel);
 }
@@ -93,7 +94,7 @@ input, select, button{
     display: none;
 }
 
-#addServer{
+#popUpContainer > div{
     display: none;
     position: absolute;
     top: 50%;
@@ -107,11 +108,7 @@ input, select, button{
     padding: 1rem;
     width: 600px;
     max-width: 90vw;
-}
-
-#addServer label{
-    margin-bottom: 5px;
-    display: block;
+    max-height: 90vh;
 }
 
 @media only screen and (max-width: 600px){

@@ -26,7 +26,7 @@ const queryGraphFunc = {
                     data_output.innerHTML = "<p>No data</p>";
                     return;
                 }
-                data_output.innerHTML = dataTemplate({ data: db_data });
+                data_output.innerHTML = templates.tableData({ data: db_data });
             break;
             case "graph":
                 queryGraphFunc.displayEdgesGraph();
