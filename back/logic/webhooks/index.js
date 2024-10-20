@@ -1,4 +1,4 @@
-import genId from "../../db/gen.js";
+import genId from "@wxn0brp/db/gen.js";
 import * as customWebhookUtils from "./custom.js"; 
 import sendMessage from "../sendMessage.js";
 import { decode, create } from "../../logic/auth.js";

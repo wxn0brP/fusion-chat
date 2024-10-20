@@ -1,7 +1,5 @@
 import config from "../config/database.js";
-import local_db from "./db/database.js";
-import local_graph from "./db/graph.js";
-import { DataBase as DataBaseRemote, Graph as GraphRemote } from "./db/remote/client/index.js";
+import { DataBase, Graph, DataBaseRemote, GraphRemote } from "@wxn0brp/db";
 
 global.db = {};
 const databases = [
@@ -35,7 +33,7 @@ function getRemoteConfig(name, path){
 async function initDataBase(name){
     const cfg = config[name];
     if(cfg.type === "local"){
-        return new local_db(cfg.path);
+        return new DataBase(cfg.path);
     }else if(cfg.type === "remote"){
         const remoteCfg = getRemoteConfig(name, cfg.path);
         return await DataBaseRemote(remoteCfg);
@@ -47,7 +45,7 @@ async function initDataBase(name){
 async function initGraph(name){
     const cfg = config[name];
     if(cfg.type === "local"){
-        return new local_graph(cfg.path);
+        return new Graph(cfg.path);
     }else if(cfg.type === "remote"){
         const remoteCfg = getRemoteConfig(name, cfg.path);
         return await GraphRemote(remoteCfg);

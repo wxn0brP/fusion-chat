@@ -1,4 +1,4 @@
-import genId from "../../db/gen.js";
+import genId from "@wxn0brp/db/gen.js";
 import sortRolesByHierarchy from "./sortRolesByHierarchy.js";
 import sortUserRolesByHierarchy from "./sortUserRolesByHierarchy.js";
 

@@ -3,7 +3,7 @@ import permissionSystem from "../../../logic/permission-system/index.js";
 import processDbChanges from "../../../logic/processDbChanges.js";
 import { addCustom } from "../../../logic/webhooks/index.js";
 import setServerSettingsData from "../valid/setServerSettings.js";
-import genId from "../../../db/gen.js";
+import genId from "@wxn0brp/db/gen.js";
 import * as emojiMgmt from "../../../logic/emojiMgmt.js";
 const setServerSettingsShema = valid.objAjv(setServerSettingsData);
 import ValidError from "../../../logic/validError.js";

@@ -1,6 +1,6 @@
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
-import genId from "../../../db/gen.js";
+import genId from "@wxn0brp/db/gen.js";
 
 export async function bots_get(suser){
     const botsData = await global.db.userDatas.find(suser._id, (b) => b.botID);

@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer, { diskStorage, MulterError } from "multer";
 import { existsSync, readdirSync, mkdirSync } from "fs";
 import { join } from "path";
-import genId from "../../db/gen.js";
+import genId from "@wxn0brp/db/gen.js";
 
 const { maxUserFiles, maxFileSize } = (await import("../../../config/file.js")).default;
 const router = Router();
