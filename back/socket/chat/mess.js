@@ -8,6 +8,7 @@ import {
     message_pin,
     message_react,
     message_search,
+    message_fetch_id,
 } from "./logic/mess.js";
 
 export default (socket) => {
@@ -44,6 +45,17 @@ export default (socket) => {
             if(err) return socket.emit(...err);
             if(cb) cb(res);
             else socket.emit("message.fetch", res);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("message.fetch.id", 300, async (to, chnl, _id, cb) => {
+        try{
+            const { err, res } = await message_fetch_id(socket.user, to, chnl, _id);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("message.fetch.id", res);
         }catch(e){
             socket.logError(e);
         }
