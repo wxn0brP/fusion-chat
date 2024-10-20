@@ -102,6 +102,28 @@ export async function message_fetch(suser, to, chnl, start, end){
     return { err: false, res };
 }
 
+export async function message_fetch_id(suser, to, chnl, mess_id){
+    const validE = new ValidError("message.fetch.id");
+    if(!valid.id(to))       return validE.valid("to");
+    if(!valid.id(mess_id))  return validE.valid("mess_id");
+    if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
+
+    let privChat = to.startsWith("$");
+    if(privChat){
+        const p1 = suser._id;
+        const p2 = to.replace("$", "");
+        to = combinateId(p1, p2);
+    }
+
+    if(!privChat){
+        const perm = await getChnlPerm(suser._id, to, chnl);
+        if(!perm.visable) return validE.err("channel is not exist");
+    }
+
+    const res = await global.db.mess.findOne(to, { _id: mess_id });
+    return { err: false, res };
+}
+
 export async function message_markAsRead(suser, to, chnl, mess_id){
     const validE = new ValidError("message.markAsRead");
     if(!valid.id(to)) return validE.valid("to");
