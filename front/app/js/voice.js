@@ -28,7 +28,7 @@ const voiceFunc = {
         await this.initCall();
         this.joined = to;
         socket.emit("voice.join", to);
-        socket.emit("voice.getUsers");
+        socket.emit("voice.get.users");
     },
 
     send(){
@@ -186,7 +186,7 @@ socket.on("connect", () => {
     voiceFunc.joinToVoiceChannel(voiceFunc.joined);
 });
 
-socket.on("voice.getUsers", (users) => {
+socket.on("voice.get.users", (users) => {
     voiceHTML.users.innerHTML = "";
     users.forEach((user) => {
         const li = document.createElement("li");

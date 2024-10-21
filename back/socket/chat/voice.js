@@ -43,12 +43,12 @@ export default (socket) => {
         }
     })
 
-    socket.ontimeout("voice.getUsers", 100, (cb) => {
+    socket.ontimeout("voice.get.users", 100, (cb) => {
         try{
-            const { err, res } = voice_getUsers(socket.user);
+            const { err, res } = voice_getUsers(socket);
             if(err) return socket.emit(...err);
             if(cb) cb(res);
-            else socket.emit("voice.getUsers", res);
+            else socket.emit("voice.get.users", res);
         }catch(e){
             socket.logError(e);
         }
