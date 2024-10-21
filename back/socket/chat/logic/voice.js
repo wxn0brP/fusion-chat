@@ -8,7 +8,7 @@ export async function voice_join(socket, to){
     if(!valid.str(to, 0, 30)) return validE.valid("to");
 
     emitToRoom(to, "voice.join", socket.user._id);
-    emitToRoom(to, "refreshData", "voice.getUsers", to);
+    emitToRoom(to, "refreshData", "voice.get.users");
     socket.join(roomPrefix + to);
     socket.voiceRoom = to;
     return { err: false };
@@ -25,7 +25,7 @@ export function leaveVoiceChannel(socket){
 
     socket.leave(roomPrefix + room);
     socket.voiceRoom = null;
-    emitToRoom(room, "refreshData", "voice.getUsers");
+    emitToRoom(room, "refreshData", "voice.get.users");
     emitToRoom(room, "voice.leave", socket.user._id);
 }
 
