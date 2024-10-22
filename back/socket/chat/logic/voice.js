@@ -14,7 +14,7 @@ export async function voice_join(socket, to){
     return { err: false };
 }
 
-export async function voice_sendData(suser, voiceRoom, data){
+export function voice_sendData(suser, voiceRoom, data){
     if(!voiceRoom) return;
     emitToRoom(voiceRoom, "voice.sendData", suser._id, data);
 }

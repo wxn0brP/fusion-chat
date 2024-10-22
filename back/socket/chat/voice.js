@@ -20,8 +20,7 @@ export default (socket) => {
 
     socket.ontimeout("voice.sendData", 50, async (data) => {
         try{
-            const { err } = await voice_sendData(socket.user, socket.voiceRoom, data);
-            if(err) return socket.emit(...err);
+            voice_sendData(socket.user, socket.voiceRoom, data);
         }catch(e){
             socket.logError(e);
         }
