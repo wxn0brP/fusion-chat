@@ -43,7 +43,7 @@ export async function group_exit(suser, id){
     const validE = new ValidError("group.exit");
     if(!valid.id(id)) return validE.valid("id");
 
-    exitChat(id, suser._id);
+    await exitChat(id, suser._id);
     global.sendToSocket(suser._id, "refreshData", "group.get");
     return { err: false };
 }
