@@ -61,6 +61,8 @@ class permissionSystem{
             parent,
         };
         this.dbS.add(this.id, role, false);
+
+        return rid;
     }
 
     /* permission */

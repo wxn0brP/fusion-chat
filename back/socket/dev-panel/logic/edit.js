@@ -8,7 +8,10 @@ export async function bot_edit(suser, id, data){
     if(!valid.id(id)) return validE.valid("id");
     if(!editShema(data)) return validE.valid("data");
 
-    await global.db.userDatas.updateOne(suser._id, { botID: id }, { name: data.info.name });
+    const perm = await global.db.userDatas.findOne(suser._id, { botID: id });
+    if(!perm) return validE.err("bot not found");
+
+    await global.db.botData.updateOne(id, { _id: "name" }, { name: data.info.name });
     await global.db.botData.updateOne(id, { _id: "perm" }, { perm: data.data.perm });
 
     return { err: false };
