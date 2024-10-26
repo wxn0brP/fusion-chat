@@ -92,10 +92,11 @@ const renderFunc = {
     userProfile(data){
         if(!data) return;
         const targetIsMe = data._id == vars.user._id;
+        const imgLink = "/api/profileImg?id=" + data._id;
 
         userProfileDiv.innerHTML = `
             <div id="userProfileInfo">
-                <img src="/api/profileImg?id=${data._id}" alt="User logo">
+                <img src="${imgLink}" onclick="createMediaPopup('${imgLink}')" alt="User logo">
                 <div>
                     <h1>${data.name}</h1>
                     <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>

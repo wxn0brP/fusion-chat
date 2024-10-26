@@ -98,15 +98,19 @@ const format = {
             ele.style.maxWidth = "65%";
             ele.style.height = "auto"; 
             ele.style.borderRadius = "2rem";
+            ele.style.cursor = "zoom-in";
+            ele.onclick = () => createMediaPopup(link, { isVideo: true });
             return ele;
         }
 
-        if(/\.(png|jpg|gif|ico|jpeg|webp)$/i.test(link)){
+        if(/\.(png|jpg|gif|ico|jpeg|webp|svg)$/i.test(link)){
             if(!chcek(link)) return;
             const ele = document.createElement("img");
             ele.src = link;
             ele.style.maxWidth = "100%";
             ele.style.height = "auto";
+            ele.style.cursor = "zoom-in";
+            ele.onclick = () => createMediaPopup(link, { isVideo: false });
             return ele;
         }
 
