@@ -71,11 +71,11 @@ export async function friend_requestRemove(suser, id){
 }
 
 export async function friend_remove(suser, id){
-    const valid = new ValidError("friend.remove");
-    if(!valid.id(id)) return valid.valid("id");
+    const validE = new ValidError("friend.remove");
+    if(!valid.id(id)) return validE.valid("id");
 
     const friendExists = await global.db.dataGraph.find("friends", suser._id, id);
-    if(friendExists.length == 0) return valid.err("friend does not exist");
+    if(friendExists.length == 0) return validE.err("friend does not exist");
 
     await global.db.dataGraph.remove("friends", suser._id, id);
 
@@ -118,11 +118,11 @@ export async function friend_getRequests(suser){
 }
 
 export async function friend_user_profile(suser, id){
-    const valid = new ValidError("user.profile");
-    if(!valid.id(id)) return valid.valid("id");
+    const validE = new ValidError("user.profile");
+    if(!valid.id(id)) return validE.valid("id");
 
     const userN = await global.db.data.findOne("user", { _id: id });
-    if(!userN) return valid.err("user not found");
+    if(!userN) return validE.err("user not found");
 
     let userStatus = await global.db.userDatas.findOne(id, { _id: "status" });
     const userOnline = global.getSocket(id).length > 0;
