@@ -54,6 +54,7 @@ class MediaPopup{
         const controls = document.createElement("div");
         controls.className = "media-popup-controls";
 
+        this.controlsResets = [];
         this.addControlGroup(controls, [
             { icon: translateFunc.get("Zoom")+"+", action: () => this.zoom(1 + this.options.scaleStep), title: "Zoom In" },
             { icon: translateFunc.get("Zoom")+"-", action: () => this.zoom(1 - this.options.scaleStep), title: "Zoom Out" },
@@ -112,7 +113,9 @@ class MediaPopup{
         slider.className = "media-popup-slider";
         slider.min = min;
         slider.max = max;
-        slider.value = this.state[property] ?? 100;
+        const defaultValue = this.state[property] ?? 100;
+        slider.value = defaultValue;
+        this.controlsResets.push(() => slider.value = defaultValue);
 
         const value = document.createElement("span");
         value.className = "media-popup-value";
@@ -322,6 +325,7 @@ class MediaPopup{
         };
         this.updateFilters();
         this.updateTransform();
+        this.controlsResets.forEach(r => r());
     }
 
     updateTransform(){
