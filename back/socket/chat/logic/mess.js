@@ -7,11 +7,16 @@ import ValidError from "../../../logic/validError.js";
 
 const messageSearchShema = valid.objAjv(messageSearchData);
 
-export async function message_edit(suser, toM, _id, msg){
+export async function message_edit(suser, toM, _id, msg, options={}){
+    options = {
+        minMsg: 0,
+        maxMsg: 2000,
+        ...options,
+    }
     const validE = new ValidError("message.edit");
     if(!valid.id(toM)) return validE.valid("toM");
     if(!valid.id(_id)) return validE.valid("_id");
-    if(!valid.str(msg, 0, 500)) return validE.valid("msg");
+    if(!valid.str(msg, options.minMsg, options.maxMsg)) return validE.valid("msg");
 
     const privChat = toM.startsWith("$");
     let to = toM;
