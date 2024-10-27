@@ -75,6 +75,7 @@ const contextFunc = {
             case "reply":
                 vars.temp.replyId = id;
                 replyCloseDiv.style.display = "block";
+                document.querySelector("#mess__"+id).style.backgroundColor = "var(--panel)";
             break;
             case "copy_id":
                 navigator.clipboard.writeText(id);

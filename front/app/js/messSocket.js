@@ -1,11 +1,40 @@
 messInput.addEventListener("keydown", (e) => {
-    //if shift + enter - new line
-    if(e.key == "Enter" && e.shiftKey) return;
+    if(e.key != "Enter") return;
+    if(e.shiftKey) return; //if shift + enter - new line
 
-    if(e.key == "Enter"){
-        e.preventDefault();
-        messFunc.sendMess();
-    }
+    e.preventDefault();
+    messFunc.sendMess();
+});
+
+messInput.addEventListener("keydown", (e) => {
+    if(e.key != "ArrowUp" || messInput.value.length > 0) return;
+    e.preventDefault();
+
+    const messages = document.querySelectorAll(".mess_message");
+    const lastUserMessage = Array.from(messages).reverse().find(message => 
+        message.querySelector(".mess_meta").getAttribute("_author") === vars.user._id
+    );
+    if(!lastUserMessage) return;
+
+    const id = lastUserMessage.id.split("mess__")[1];
+    if(!id) return;
+
+    uiFunc.editMess(id);
+});
+
+messInput.addEventListener("keydown", (e) => {
+    if(e.key != "ArrowDown" || messInput.value.length > 0) return;
+    e.preventDefault();
+
+    const lastMessage = document.querySelector(".mess_message:last-child");
+    if(!lastMessage) return;
+
+    const id = lastMessage.id.split("mess__")[1];
+    if(!id) return;
+
+    vars.temp.replyId = id;
+    replyCloseDiv.style.display = "block";
+    lastMessage.style.backgroundColor = "var(--panel)";
 });
 
 messInput.addEventListener("input", messStyle.sendBtnStyle);
