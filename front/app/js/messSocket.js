@@ -9,6 +9,7 @@ messInput.addEventListener("keydown", (e) => {
 });
 
 messInput.addEventListener("input", messStyle.sendBtnStyle);
+messInput.addEventListener("input", messStyle.messageHeight);
 
 socket.on("mess", (data) => {
     const tom = data.toM.replace("$", "");

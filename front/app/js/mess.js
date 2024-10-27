@@ -37,6 +37,7 @@ const messFunc = {
         messFunc.replyClose();
         coreFunc.focusInp();
         messStyle.sendBtnStyle();
+        messStyle.messageHeight();
     },
 
     addMess(data, socroll=true, up=false){

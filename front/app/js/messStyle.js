@@ -14,6 +14,12 @@ const messStyle = {
         sendBtn.disabled = len == 0 || len > maxMessLen;
     },
 
+    messageHeight(){
+        let len = messInput.value.split("\n").length-1;
+        len = len >= 2 ? Math.min(len, 20) : 0;
+        messInput.style.setProperty("--messHeight", len+"rem");
+    },
+
     hideFromMessageInfo(){
         function getTimeFromMess(mess){
             const id = mess.id.replace("mess__", "");
@@ -93,3 +99,8 @@ const messStyle = {
         });
     }
 }
+
+setTimeout(() => {
+    messStyle.sendBtnStyle();
+    messStyle.messageHeight();
+}, 100); // Delay of 100ms to accommodate any cached input values in the browser
