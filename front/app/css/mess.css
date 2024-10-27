@@ -123,6 +123,39 @@ main{
     margin-left: 35px;
 }
 
+.mess_message .mess_content li{
+    margin-left: 1rem;
+}
+
+.mess_message .mess_content .table_wrap{
+    overflow-x: auto;
+    width: 100%;
+}
+
+.mess_message .mess_content table{
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--back);
+}
+
+.mess_message .mess_content table thead th{
+    font-weight: bold;
+    padding: 5px;
+    border-bottom: 1px solid var(--accent);
+}
+
+.mess_message .mess_content table tbody td{
+    padding: 5px;
+}
+
+.mess_message .mess_content table tbody tr:nth-child(even){
+    background-color: var(--panel)
+}
+
+.mess_message .mess_content table tbody tr:hover{
+    background-color: var(--menu);
+}
+
 .mess_message .mess_reacts span{
     margin-right: 5px;
     cursor: pointer;
