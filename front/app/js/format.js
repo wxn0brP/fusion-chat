@@ -26,19 +26,27 @@ const format = {
             }
         }
 
-        text = text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-        text = text.replace(/\/\/\/(.*?)\/\/\//g, "<i>$1</i>");
-        text = text.replace(/--(.*?)--/g, "<strike>$1</strike>");
-        text = text.replace(/__(.*?)__/g, "<u>$1</u>");
+        text = text.replace(/((?:^- .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ul", "-"));
+        text = text.replace(/((?:^[0-9]+\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "1"));
+        text = text.replace(/((?:^i{1,3}\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "i"));
+        text = text.replace(/((?:^[a-zA-Z]\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "a"));
+        text = text.replace(/((?:^\|.*\|$\n?)+)/gm, match => format.wrapTable(match));
+
+        text = text.replace(/\*\*([^\s].*?[^\s])\*\*/g, "<b>$1</b>");
+        text = text.replace(/\/\/\/([^\s].*?[^\s])\/\/\//g, "<i>$1</i>");
+        text = text.replace(/--([^\s].*?[^\s])--/g, "<strike>$1</strike>");
+        text = text.replace(/__([^\s].*?[^\s])__/g, "<u>$1</u>");
 
         text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" onclick="messFunc.linkClick(event)">$1</a>');
         text = text.replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>');
 
         text = text.replace(/##([0-9A-Fa-f]{3,6})\s(.*?)\s#c/g, '<span style="color:#$1">$2</span>');
-        text = text.replace(/#(red|green|blue|yellow|orange|purple|pink|gold|grey)\s(.*?)\s#c/gi, '<span style="color:$1">$2</span>');
+        text = text.replace(/#([a-zA-Z]+)\s(.*?)\s#c/g, '<span style="color:$1">$2</span>');
         text = text.replace(/#(fc)\s(.*?)\s#c/gi, '<span style="color:var(--accent)">$2</span>');
         
         text = text.replaceAll("\n", "<br />");
+        text = text.replaceAll("\\n", "<br />");
+        text = text.replaceAll("---", "<hr />");
 
         for(let i=0; i<exclusions.length; i++){
             const exclusion = exclusions[i];
@@ -47,6 +55,41 @@ const format = {
         }
 
         return text;
+    },
+
+    wrapList(text, listType, marker){
+        const listItems = text
+            .trim()
+            .split("\n")
+            .map(line => line.replace(/^[\-\d\w]+\.?\s/, ""))
+            .map(item => `<li>${item}</li>`)
+            .join("");
+        return `<${listType} type="${marker}">${listItems}</${listType}>`;
+    },
+
+    wrapTable(tableText) {
+        const rows = tableText.trim().split("\n");
+        let htmlTable = `<div class="table_wrap"><table>`;
+    
+        rows.forEach((row, index) => {
+            const columns = row.split("|").map(cell => cell.trim()).filter(cell => cell);
+    
+            if(index === 0){
+                htmlTable += "<thead><tr>";
+                columns.forEach(column => {
+                    htmlTable += `<th>${column}</th>`;
+                });
+                htmlTable += "</tr></thead><tbody>";
+            }else{
+                htmlTable += "<tr>";
+                columns.forEach(column => {
+                    htmlTable += `<td>${column}</td>`;
+                });
+                htmlTable += "</tr>";
+            }
+        });
+        htmlTable += "</tbody></table></div>";
+        return htmlTable;
     },
 
     responeMess(mess_id, div){
@@ -200,7 +243,7 @@ const format = {
                 ${embedData.image ? `<div style="width: 35%;">
                     <img src="${embedData.image}" style="width: 90%;" />
                 </div>` : ""}
-                <div ${embedData.image ? "style='width: 65%;'" : ""}>
+                <div ${embedData.image ? 'style="width: 65%;"' : ""}>
                     ${embedData.title ? `<h1>${embedData.title}</h1><br />` : ""}
                     ${embedData.description ? `<p>${embedData.description}</p><br />` : ""}
                     ${embedData.url ? `
