@@ -49,14 +49,16 @@ main{
 }
 
 #mess-input{
+    --messHeight: 0px;
     width: calc(100% - 120px);
-    height: 40px;
+    height: calc(40px + var(--messHeight));
     border: none;
     border-radius: 10px;
     padding: 10px;
     background-color: var(--menu);
     color: var(--txt);
     resize: none;
+    margin-bottom: var(--messHeight);
 }
 
 #mess-input:focus{
