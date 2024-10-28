@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from "fs";
 
 class CommandEngine{
     constructor(enabled=true){
@@ -11,11 +11,12 @@ class CommandEngine{
         this.prefix = prefix;
     }
 
-    loadCommands(commandPath){
+    async loadCommands(commandPath){
         const commandFiles = fs.readdirSync(commandPath);
         
         for(const file of commandFiles){
-            const command = require(commandPath + "/" + file);
+            const command = await import(commandPath + "/" + file);
+            console.log(command.name)
             this.commands.set(command.name, command);
         }
     }
@@ -56,4 +57,4 @@ class CommandEngine{
     }
 }
 
-module.exports = CommandEngine;
+export default CommandEngine;

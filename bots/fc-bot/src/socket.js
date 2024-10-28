@@ -1,10 +1,12 @@
-const link = process.env.socketLink || "http://fusion.ct8.pl";
-const socket = require("socket.io-client")(link, {
+import { io } from "socket.io-client";
+const link = process.env.socketLink || "https://fusion.ct8.pl/bot";
+
+const socket = io(link, {
     transports: ["websocket"],
     auth: {
         token: null
     },
-    autoconnect: true
+    autoconnect: false
 });
 
-module.exports = socket;
+export default socket;

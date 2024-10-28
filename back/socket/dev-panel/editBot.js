@@ -1,6 +1,7 @@
 import {
     bot_get,
-    bot_edit
+    bot_edit,
+    bot_generateToken
 } from "./logic/edit.js"
 
 export default (socket) => {
@@ -20,6 +21,17 @@ export default (socket) => {
             const { err } = await bot_edit(socket.user, id, data);
             if(err) return socket.emit(...err);
             if(cb) cb();
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.ontimeout("bot.generateToken", 1_000, async (id, cb) => {
+        try{
+            const { err, res } = await bot_generateToken(socket.user, id);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("bot.generateToken", res);
         }catch(e){
             socket.logError(e);
         }

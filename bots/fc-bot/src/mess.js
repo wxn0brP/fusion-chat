@@ -10,8 +10,8 @@ class Mess{
             msg: txt,
             chnl: this.chnl,
             res: this._id
-        })
+        });
     }
 }
 
-module.exports = Mess;
+export default Mess;

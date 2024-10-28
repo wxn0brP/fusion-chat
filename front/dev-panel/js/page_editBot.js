@@ -56,6 +56,15 @@ const editBot = {
             listBot.getBots();
         });
         this.exit();
+    },
+
+    generateToken(){
+        if(!this.botInfo) return;
+        const c1 = confirm("Are you sure?");
+        if(!c1) return;
+        socket.emit("bot.generateToken", this.botInfo.id, (token) => {
+            alert(token);
+        });
     }
 }
 
