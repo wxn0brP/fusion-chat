@@ -4,7 +4,7 @@ import {
 } from "../chat/logic/serversSettings.js";
 
 export default (socket) => {
-    socket.ontimeout("server.settings.get", 5_000, async (id, sections, cb) => {
+    socket.onLimit("server.settings.get", 5_000, async (id, sections, cb) => {
         try{
             if(typeof sections == "function" && !cb){
                 cb = sections;
@@ -19,7 +19,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("server.settings.set", 5_000, async (id, data) => {
+    socket.onLimit("server.settings.set", 5_000, async (id, data) => {
         try{
             const { err } = await server_settings_set(socket.user, id, data);
             if(err) return socket.emit(...err);

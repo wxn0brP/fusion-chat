@@ -5,7 +5,7 @@ import {
 } from "./logic/edit.js"
 
 export default (socket) => {
-    socket.ontimeout("bot.get", 1_000, async (id, cb) => {
+    socket.onLimit("bot.get", 1_000, async (id, cb) => {
         try{
             const { err, res } = await bot_get(socket.user, id);
             if(err) return socket.emit(...err);
@@ -16,7 +16,7 @@ export default (socket) => {
         }
     });
     
-    socket.ontimeout("bot.edit", 1_000, async (id, data, cb) => {
+    socket.onLimit("bot.edit", 1_000, async (id, data, cb) => {
         try{
             const { err } = await bot_edit(socket.user, id, data);
             if(err) return socket.emit(...err);
@@ -26,7 +26,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("bot.generateToken", 1_000, async (id, cb) => {
+    socket.onLimit("bot.generateToken", 1_000, async (id, cb) => {
         try{
             const { err, res } = await bot_generateToken(socket.user, id);
             if(err) return socket.emit(...err);

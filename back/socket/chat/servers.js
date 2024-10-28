@@ -8,7 +8,7 @@ import {
 } from "./logic/servers.js";
 
 export default (socket) => {
-    socket.ontimeout("server.setup", 100, async (id, cb) => {
+    socket.onLimit("server.setup", 100, async (id, cb) => {
         try{
             const { err, res } = await server_setup(socket.user, id);
             if(err) return socket.emit(...err);
@@ -19,7 +19,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("server.roles.sync", 1000, async (id, cb) => {
+    socket.onLimit("server.roles.sync", 1000, async (id, cb) => {
         try{
             const { err, res } = await server_roles_sync(id);
             if(err) return socket.emit(...err);
@@ -30,7 +30,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("server.delete", 10_000, async (id, name) => {
+    socket.onLimit("server.delete", 10_000, async (id, name) => {
         try{
             const { err } = await server_delete(socket.user, id, name);
             if(err) return socket.emit(...err);
@@ -39,7 +39,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("server.user.kick", 1000, async (serverId, uid, ban=false) => {
+    socket.onLimit("server.user.kick", 1000, async (serverId, uid, ban=false) => {
         try{
             const { err } = await server_user_kick(socket.user, serverId, uid, ban);
             if(err) return socket.emit(...err);
@@ -48,7 +48,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("server.user.unban", 1000, async (serverId, uid) => {
+    socket.onLimit("server.user.unban", 1000, async (serverId, uid) => {
         try{
             const { err } = await server_user_unban(socket.user, serverId, uid);
             if(err) return socket.emit(...err);
@@ -57,7 +57,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("server.emojis.sync", 1000, async (serverId, cb) => {
+    socket.onLimit("server.emojis.sync", 1000, async (serverId, cb) => {
         try{
             const { err, res } = await server_emojis_sync(serverId);
             if(err) return socket.emit(...err);

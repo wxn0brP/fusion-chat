@@ -5,7 +5,7 @@ import {
 } from "./logic/other.js";
 
 export default (socket) => {
-    socket.ontimeout("get.ogs", 1_000, async (link, cb) => {
+    socket.onLimit("get.ogs", 1_000, async (link, cb) => {
         try{
             const { err, res } = await get_ogs(link);
             if(err) return socket.emit(...err);
@@ -16,7 +16,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("send.embed.og", 1_000, async (to, chnl, link) => {
+    socket.onLimit("send.embed.og", 1_000, async (to, chnl, link) => {
         try{
             const { err } = await send_embed_og(socket.user, to, chnl, link);
             if(err) return socket.emit(...err);
@@ -25,7 +25,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("send.embed.data", 1_000, async (to, chnl, embed) => {
+    socket.onLimit("send.embed.data", 1_000, async (to, chnl, embed) => {
         try{
             const { err } = await send_embed_data(socket.user, to, chnl, embed);
             if(err) return socket.emit(...err);

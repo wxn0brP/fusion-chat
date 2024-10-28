@@ -5,7 +5,7 @@ import {
 } from "./logic/mgmt.js";
 
 export default (socket) => {
-    socket.ontimeout("bots.get", 1_000, async (cb) => {
+    socket.onLimit("bots.get", 1_000, async (cb) => {
         try{
             if(typeof cb !== "function") return socket.emit("error.valid", "bots.get", "cb");
             const bots = await bots_get(socket.user);
@@ -16,7 +16,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("bot.delete", 1_000, async (id, cb) => {
+    socket.onLimit("bot.delete", 1_000, async (id, cb) => {
         try{
             const { err } = await bots_delete(socket.user, id);
             if(err) return socket.emit(...err);
@@ -26,7 +26,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("bot.create", 1_000, async (name, cb) => {
+    socket.onLimit("bot.create", 1_000, async (name, cb) => {
         try{
             const { err, res } = await bots_create(socket.user, name);
             if(err) return socket.emit(...err);
