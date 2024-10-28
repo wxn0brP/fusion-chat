@@ -50,7 +50,7 @@ io.of("/bot").on("connection", (socket) => {
     }
 
     socket.timeOutMap = new Map();
-    socket.ontimeout = (evt, timeout, cb) => {
+    socket.onLimit = (evt, timeout, cb) => {
         socket.on(evt, (...data) => {
             if(!socket.user) return socket.emit("error", "not auth");
             const currentTime = new Date().getTime();

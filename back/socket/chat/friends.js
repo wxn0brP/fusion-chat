@@ -9,7 +9,7 @@ import {
 } from "./logic/friends.js"
 
 export default (socket) => {
-    socket.ontimeout("friend.request", 1_000, async (nameOrId) => {
+    socket.onLimit("friend.request", 1_000, async (nameOrId) => {
         try{
             const { err } = await friend_request(socket.user, nameOrId);
             if(err) return socket.emit(...err);
@@ -18,7 +18,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("friend.response", 1_000, async (id, accept) => {
+    socket.onLimit("friend.response", 1_000, async (id, accept) => {
         try{
             const { err } = await friend_response(socket.user, id, accept);
             if(err) return socket.emit(...err);
@@ -27,7 +27,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("friend.requestRemove", 1_000, async (id) => {
+    socket.onLimit("friend.requestRemove", 1_000, async (id) => {
         try{
             const { err } = await friend_requestRemove(socket.user, id);
             if(err) return socket.emit(...err);
@@ -36,7 +36,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("friend.remove", 1_000, async (id) => {
+    socket.onLimit("friend.remove", 1_000, async (id) => {
         try{
             const { err } = await friend_remove(socket.user, id);
             if(err) return socket.emit(...err);
@@ -45,7 +45,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("friend.getAll", 1_000, async (cb) => {
+    socket.onLimit("friend.getAll", 1_000, async (cb) => {
         try{
             const { err, res } = await friend_getAll(socket.user);
             if(err) return socket.emit(...err);
@@ -56,7 +56,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("friend.getRequests", 1_000, async (cb) => {
+    socket.onLimit("friend.getRequests", 1_000, async (cb) => {
         try{
             const { err, res } = await friend_getRequests(socket.user);
             if(err) return socket.emit(...err);
@@ -67,7 +67,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("user.profile", 1000, async (id, cb) => {
+    socket.onLimit("user.profile", 1000, async (id, cb) => {
         try{
             const { err, res } = await friend_user_profile(socket.user, id);
             if(err) return socket.emit(...err);

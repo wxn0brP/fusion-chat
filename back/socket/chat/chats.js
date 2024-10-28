@@ -10,7 +10,7 @@ import {
 } from "./logic/chats.js";
 
 export default (socket) => {
-    socket.ontimeout("group.get", 100, async (cb) => {
+    socket.onLimit("group.get", 100, async (cb) => {
         try{
             const { err, res } = await group_get(socket.user);
             if(err) return socket.emit(...err);
@@ -21,7 +21,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("private.get", 100, async (cb) => {
+    socket.onLimit("private.get", 100, async (cb) => {
         try{
             const { err, res } = await private_get(socket.user);
             if(err) return socket.emit(...err);
@@ -32,7 +32,7 @@ export default (socket) => {
         } 
     });
 
-    socket.ontimeout("group.create", 1000, async (name, cb) => {
+    socket.onLimit("group.create", 1000, async (name, cb) => {
         try{
             const { err, res } = await group_create(socket.user, name);
             if(err) return socket.emit(...err);
@@ -43,7 +43,7 @@ export default (socket) => {
         } 
     });
 
-    socket.ontimeout("group.exit", 1000, async (id) => {
+    socket.onLimit("group.exit", 1000, async (id) => {
         try{
             const { err } = await group_exit(socket.user, id);
             if(err) return socket.emit(...err);
@@ -52,7 +52,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("private.create", 1000, async (name) => {
+    socket.onLimit("private.create", 1000, async (name) => {
         try{
             const { err } = await private_create(socket.user, name);
             if(err) return socket.emit(...err);
@@ -61,7 +61,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("group.join", 1000, async (id) => {
+    socket.onLimit("group.join", 1000, async (id) => {
         try{
             const { err } = await group_join(socket.user, id);
             if(err) return socket.emit(...err);
@@ -70,7 +70,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("group.mute", 1000, async (id, time) => {
+    socket.onLimit("group.mute", 1000, async (id, time) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
             const { err } = await group_mute(socket.user, id, time);
@@ -80,7 +80,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("private.block", 1000, async (id, blocked) => {
+    socket.onLimit("private.block", 1000, async (id, blocked) => {
         try{
             const { err } = await private_block(socket.user, id, blocked);
             if(err) return socket.emit(...err);

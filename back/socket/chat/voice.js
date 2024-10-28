@@ -9,7 +9,7 @@ import {
 
 export default (socket) => {
     socket.voiceRoom = null;
-    socket.ontimeout("voice.join", 100, async (to) => {
+    socket.onLimit("voice.join", 100, async (to) => {
         try{
             const { err } = await voice_join(socket, to);
             if(err) return socket.emit(...err);
@@ -18,7 +18,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("voice.sendData", 50, async (data) => {
+    socket.onLimit("voice.sendData", 50, async (data) => {
         try{
             voice_sendData(socket.user, socket.voiceRoom, data);
         }catch(e){
@@ -26,7 +26,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("voice.leave", 100, async () => {
+    socket.onLimit("voice.leave", 100, async () => {
         try{
             leaveVoiceChannel(socket);
         }catch(e){
@@ -42,7 +42,7 @@ export default (socket) => {
         }
     })
 
-    socket.ontimeout("voice.get.users", 100, (cb) => {
+    socket.onLimit("voice.get.users", 100, (cb) => {
         try{
             const { err, res } = voice_getUsers(socket);
             if(err) return socket.emit(...err);
@@ -53,7 +53,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("call.private.init", 100, async (id, cb) => {
+    socket.onLimit("call.private.init", 100, async (id, cb) => {
         try{
             const { err, res } = await call_private_init(socket.user, id);
             if(err) return socket.emit(...err);
@@ -66,7 +66,7 @@ export default (socket) => {
         }
     });
 
-    socket.ontimeout("call.private.answer", 100, async (id, answer) => {
+    socket.onLimit("call.private.answer", 100, async (id, answer) => {
         try{
             const { err } = await call_private_answer(socket.user, id, answer);
             if(err) return socket.emit(...err);
