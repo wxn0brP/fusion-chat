@@ -1,21 +1,23 @@
-const EventEmitter = new (require("events"))();
-const socket = require("./socket");
-const Mess = require("./mess");
-const cmdEngine = require("./cmd");
+import { EventEmitter } from "events";
+import socket from "./socket.js";
+import Mess from "./mess.js";
+import cmdEngine from "./cmd.js";
+
+const eventEmitter = new EventEmitter();
 
 const client = {
     socket,
-    on: EventEmitter.on,
-    emitEvent: EventEmitter.emit,
+    on: eventEmitter.on,
+    emitEvent: eventEmitter.emit,
     cmd: new cmdEngine(),
 
     login(token){
         this.socket.auth.token = token;
         this.socket.connect();
     },
-    enableCmd(prefix, dirPath){
+    async enableCmd(prefix, dirPath){
         this.cmd.setPrefix(prefix);
-        this.cmd.loadCommands(dirPath);
+        await this.cmd.loadCommands(dirPath);
         this.cmd.enabled = true;
     }
 }
@@ -38,4 +40,9 @@ client.socket.on("mess", async (req) => {
     client.emitEvent("mess", mess);
 });
 
-module.exports = client;
+export default client;
+export {
+    Mess,
+    socket,
+    eventEmitter,
+}

@@ -1,6 +1,8 @@
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
 import editShemaData from "../valid/edit.js";
+import { create } from "../../../logic/auth.js";
+import genId from "@wxn0brp/db/gen.js";
 const editShema = valid.objAjv(editShemaData);
 
 export async function bot_edit(suser, id, data){
@@ -27,4 +29,20 @@ export async function bot_get(suser, id){
     };
 
     return { err: false, res };
+}
+
+export async function bot_generateToken(suser, id){
+    const validE = new ValidError("bot.generateToken");
+    if(!valid.id(id)) return validE.valid("id");
+
+    const perm = await global.db.userDatas.findOne(suser._id, { botID: id });
+    if(!perm) return validE.err("bot not found");
+
+    const payload = {
+        rand: genId(),
+        _id: id
+    }
+    const token = create(payload);
+    await global.db.botData.updateOneOrAdd(id, { _id: "token" }, { token });
+    return { err: false, res: token };
 }

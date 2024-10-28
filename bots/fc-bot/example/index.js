@@ -1,4 +1,4 @@
-const client = require("../src");
+import client from "../src/index.js";
 
 client.on("connect", () => {
     console.log("connected to socket.io server");
@@ -6,7 +6,8 @@ client.on("connect", () => {
 
 client.on("mess", (msg) => {
     console.log(msg.msg);
+
 });
 
 client.login("token");
-client.enableCmd("!", __dirname+"/cmd");
+await client.enableCmd("!", import.meta.dirname+"/cmd")
