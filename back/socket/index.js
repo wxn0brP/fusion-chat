@@ -20,10 +20,23 @@ global.sendToSocket = (id, channel, ...args) => {
 }
 
 global.sendToChatUsers = async (to, channel, ...args) => {
-    const chatUsers = await global.db.usersPerms.find(to, (r) => r.uid);
-    chatUsers.forEach(user => {
-        sendToSocket(user.uid, channel, ...args);
-    });
+    const chatUsersPromise = global.db.usersPerms.find(to, (r) => r.uid)
+        .then(chatUsers => {
+            chatUsers.forEach(user => {
+                sendToSocket(user.uid, channel, ...args);
+            });
+        });
+
+    const botUsersPromise = global.db.usersPerms.find(to, (r) => r.bot)
+        .then(botUsers => {
+            botUsers.forEach(user => {
+                getSocket(user.bot, "bot").forEach(conn => {
+                    conn.emit(channel, ...args);
+                });
+            });
+        });
+
+    await Promise.all([chatUsersPromise, botUsersPromise]);
 }
 
 await import("./chat/index.js");

@@ -13,7 +13,7 @@ import {
 export default (socket) => {
     socket.onLimit("mess", 200, async (req) => {
         try{
-            const { err } = await sendMessage(req, socket.user);
+            const { err } = await sendMessage(req, socket.user, { frPrefix: "^" });
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
