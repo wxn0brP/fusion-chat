@@ -15,17 +15,23 @@ const client = {
         this.socket.auth.token = token;
         this.socket.connect();
     },
-    async enableCmd(prefix, dirPath){
+    async enableCmd(prefix, dirPath, opts={}){
+        opts = {
+            webhook: false,
+            bot: false,
+            ...opts
+        }
         this.cmd.setPrefix(prefix);
         await this.cmd.loadCommands(dirPath);
         this.cmd.enabled = true;
+        this.cmd.opts = opts;
     }
 }
 
 client.socket.on("connect", () => client.emitEvent("connect"));
 client.socket.on("disconnect", () => client.emitEvent("disconnect"));
-client.socket.on("connect_error", (data) => client.emitEvent("connect_error", data));
-client.socket.on("error", (data) => client.emitEvent("error", data));
+client.socket.on("connect_error", (...data) => client.emitEvent("connect_error", ...data));
+client.socket.on("error", (...data) => client.emitEvent("error", ...data));
 client.socket.on("mess", async (req) => {
     if(req.to == "@") return;
     const mess = new Mess(client, req);

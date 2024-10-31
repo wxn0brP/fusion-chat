@@ -34,6 +34,7 @@ export default async function sendMessage(req, user, options={}){
         system: false,
         minMsg: 0,
         maxMsg: 2000,
+        frPrefix: "",
         ...options
     }
 
@@ -72,7 +73,7 @@ export default async function sendMessage(req, user, options={}){
     }
 
     let data = {
-        fr: user._id,
+        fr: options.frPrefix+user._id,
         msg: msg.trim(),
         chnl,
         ...(options.customFields || {}),
@@ -80,45 +81,50 @@ export default async function sendMessage(req, user, options={}){
     if(req.enc) data.enc = req.enc;
     if(req.res) data.res = req.res;
 
-    let _id = await global.db.mess.add(to, data);
+    const message = await global.db.mess.add(to, data);
+    data._id = message._id;
 
     if(!privChat) data.to = to;
     else data.to = "$"+user._id;
     
-    data._id = _id._id;
     if(req.silent) data.silent = req.silent || false;
-    sendToSocket(user._id, "mess", {
-        fr: user._id,
-        msg: data.msg,
-        chnl,
+    
+    sendToSocket(user._id, "mess", Object.assign({}, data, {
         to: "@",
-        toM: req.to,
-        _id: _id._id,
-        enc: data.enc || undefined,
-        res: data.res || undefined,
-        ...(options.customFields || {}),
-    });
+        toM: to
+    }));
 
     if(!privChat){
         data.toM = to;
-        const chat = await global.db.usersPerms.find(to, r => r.uid);
-        const server = (await global.db.groupSettings.findOne(to, { _id: "set"}));
+        const server = await global.db.groupSettings.findOne(to, { _id: "set"});
         const fromMsg = `${server.name} @${user.name}`;
-
-        chat.forEach(async u => {
-            u = u.uid;
-            if(u == user._id) return;
-
-            const group = await global.db.userDatas.findOne(u, { group: data.to });
-            if(group.muted && group.muted != -1){
-                const muted = group.muted;
-                if(muted == 0) return;
-                if(muted > new Date().getTime()) return;
-            }
-
-            sendToSocket(u, "mess", data);
-            if(!data.silent) global.fireBaseMessage.send(u, "New message from " + fromMsg, data.msg);
+        
+        global.db.usersPerms.find(to, r => r.uid)
+        .then(chat => {
+            chat.forEach(async u => {
+                u = u.uid;
+                if(u == user._id) return;
+    
+                const group = await global.db.userDatas.findOne(u, { group: data.to });
+                if(group.muted && group.muted != -1){
+                    const muted = group.muted;
+                    if(muted == 0) return;
+                    if(muted > new Date().getTime()) return;
+                }
+    
+                sendToSocket(u, "mess", data);
+                if(!data.silent) global.fireBaseMessage.send(u, "New message from " + fromMsg, data.msg);
+            });
         })
+
+        global.db.usersPerms.find(to, (r) => r.bot)
+        .then(botUsers => {
+            botUsers.forEach(user => {
+                getSocket(user.bot, "bot").forEach(conn => {
+                    conn.emit("mess", data);
+                });
+            });
+        });
     }else{
         const toSend = req.to.replace("$","");
 

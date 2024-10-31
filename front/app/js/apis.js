@@ -3,27 +3,36 @@ const apis = {
         changeUserID(id){
             const chat = vars.chat.to;
             const temp = vars.apisTemp.user;
-            if(chat.startsWith("$") || chat == "main"){
+
+            if(chat.startsWith("$") || chat == "main"){ // if dm or main
                 if(temp.main[id]) return temp.main[id];
-                const data = apis.www.getInServer("/api/userId?user="+id).name;
+                const data = apis.www.getInServer("/api/userId?id="+id).name;
                 temp.main[id] = data;
                 return data;
             }
+
+            // if group
             if(!temp[chat]) temp[chat] = {};
 
             const issetData = temp[chat][id];
             if(issetData) return issetData;
             if(issetData == 0) return temp.main[id];
 
-            const data = apis.www.getInServer("/api/userId?user="+id+"&chat="+chat);
-            if(data.isServer){
-                temp[chat][id] = data.name;
-            }else{
+            if(id.startsWith("%")){ // if webhook
+                const data = apis.www.getInServer("/api/webhookId?id="+id.replace("%","")+"&chat="+chat).name + " (APP)";
+                temp[chat][id] = data;
+                return data;
+            }else
+            if(id.startsWith("^")){ // if bot
+                const data = apis.www.getInServer("/api/botId?id="+id.replace("^","")+"&chat="+chat).name + " (BOT)";
+                temp[chat][id] = data;
+                return data;
+            }else{ // if user in chat
+                const data = apis.www.getInServer("/api/userId?id="+id+"&chat="+chat);
                 temp.main[id] = data.name;
                 temp[chat][id] = 0;
+                return data.name;
             }
-            
-            return data.name;
         },
 
         changeChat(id){

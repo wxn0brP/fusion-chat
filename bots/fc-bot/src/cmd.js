@@ -5,6 +5,7 @@ class CommandEngine{
         this.prefix = "";
         this.enabled = enabled;
         this.commands = new Map();
+        this.opts = {};
     }
 
     setPrefix(prefix){
@@ -16,7 +17,6 @@ class CommandEngine{
         
         for(const file of commandFiles){
             const command = await import(commandPath + "/" + file);
-            console.log(command.name)
             this.commands.set(command.name, command);
         }
     }
@@ -33,6 +33,8 @@ class CommandEngine{
 
     async handleInput(mess){
         if(!this.enabled) return { c: 1 };
+        if(!this.opts.bot && mess.frMeta == "bot") return { c: 1 };
+        if(!this.opts.webhook && mess.frMeta == "webhook") return { c: 1 };
 
         const input = mess.msg;
         if(!input.startsWith(this.prefix)) return { c: 1 };
@@ -50,9 +52,9 @@ class CommandEngine{
         
         try{
             const res = await command.execute(mess, args);
-            return { ok: 0, msg: res };
+            return res ? { c: 2, msg: res } : { c: 0 };
         }catch(error){
-            return { ok: 1 };
+            return { c: 1 };
         }
     }
 }

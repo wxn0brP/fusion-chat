@@ -27,6 +27,7 @@ export async function addCustom(webhookInfo){
 
 export async function handleCustom(query, body){
     const token = decode(query.token);
+    //TODO add recover token btn in front
     if(!token) return { code: 400, msg: "Invalid token" };
 
     const wh = await global.db.groupSettings.findOne(token.chat, { whid: token.id });
@@ -71,7 +72,8 @@ export async function handleCustom(query, body){
             system: true,
             customFields: {
                 embed: embed ? embed : undefined
-            }
+            },
+            frPrefix: "%",
         }
     );
 

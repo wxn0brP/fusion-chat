@@ -4,10 +4,14 @@ client.on("connect", () => {
     console.log("connected to socket.io server");
 });
 
+client.on("connect_error", (err) => {
+    console.error(err);
+});
+
 client.on("mess", (msg) => {
-    console.log(msg.msg);
+    console.log("mess: ", msg.msg);
 
 });
 
 client.login("token");
-await client.enableCmd("!", import.meta.dirname+"/cmd")
+await client.enableCmd("!", import.meta.dirname+"/cmd");
