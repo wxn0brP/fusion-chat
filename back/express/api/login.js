@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { timingSafeEqual, createHash } from 'crypto';
-import { createUser as createJWT } from "../../logic/auth.js";
+import { createUser } from "../../logic/auth.js";
 import mailer from "../../logic/mail.js";
 const router = Router();
 
@@ -23,7 +23,7 @@ router.post("/login", async (req, res) => {
         return res.json({ err: true, msg: "Invalid credentials" });
     }
 
-    const token = createJWT(user);
+    const token = await createUser(user);
     await delay(randomDelay(500, 1500));
     res.json({ err: false, msg: "Login successful", token, from: user.name, user_id: user._id });
     await global.db.data.add("token", { token }, false);

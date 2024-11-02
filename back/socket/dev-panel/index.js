@@ -1,4 +1,4 @@
-import { auth } from "../../logic/auth.js";
+import { authUser } from "../../logic/auth.js";
 import botsMgmt from "./botsMgmt.js";
 import editBot from "./editBot.js";
 
@@ -11,7 +11,7 @@ io.of("/dev-panel").use(async (socket, next) => {
     const token = authData.token;
     if(!token) return next(new Error("Authentication error: Missing authentication data."));
 
-    const user = await auth(token);
+    const user = await authUser(token);
     if(!user) return next(new Error("Authentication error: Missing authentication data."));
 
     if(tmpBan.has(user._id)){

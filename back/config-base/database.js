@@ -39,4 +39,8 @@ export default {
         type: "local",
         path: "data/botData",
     },
+    system: {
+        type: "local",
+        path: "data/systemData",
+    },
 }

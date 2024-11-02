@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
-import { auth } from '../logic/auth.js';
+import { authUser } from '../logic/auth.js';
 import cors from 'cors';
 
 const app = express();
@@ -60,7 +60,7 @@ global.authenticateMiddleware = async (req, res, next) => {
     }
 
     try{
-        const user = await auth(token);
+        const user = await authUser(token);
         if(!user){
             return res.status(401).json({ err: true, msg: 'Invalid token.' });
         }

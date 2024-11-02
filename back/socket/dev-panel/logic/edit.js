@@ -1,7 +1,7 @@
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
 import editShemaData from "../valid/edit.js";
-import { create } from "../../../logic/auth.js";
+import { create, KeyIndex } from "../../../logic/token/index.js";
 import genId from "@wxn0brp/db/gen.js";
 const editShema = valid.objAjv(editShemaData);
 
@@ -42,7 +42,7 @@ export async function bot_generateToken(suser, id){
         rand: genId(),
         _id: id
     }
-    const token = create(payload);
+    const token = await create(payload, false, KeyIndex.BOT_TOKEN);
     await global.db.botData.updateOneOrAdd(id, { _id: "token" }, { token });
     return { err: false, res: token };
 }

@@ -1,4 +1,4 @@
-import { auth as _auth, create } from "../logic/auth.js";
+import { authUser, createUser } from "../logic/auth.js";
 
 io.of("/qrCodeLogin", async (socket) => {
     const auth = socket.handshake.auth;
@@ -16,10 +16,10 @@ io.of("/qrCodeLogin", async (socket) => {
     if(!auth.user_id) return;
     if(!auth.from) return;
 
-    const user = await _auth(auth.token);
+    const user = await authUser(auth.token);
     if(!user) return;
 
-    const newToken = create(user);
+    const newToken = await createUser(user);
     const namespace = io.of("/qrCodeLogin");
     const sockets = Array.from(namespace.sockets.values());
     const filtered = sockets.filter(socket => socket._idK === auth.to);

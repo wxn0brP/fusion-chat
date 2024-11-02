@@ -1,6 +1,7 @@
 await import("./setUp.js");
-import dotenv from "dotenv";
-dotenv.config();
+import { configDotenv } from "dotenv";
+configDotenv();
+await import("./env.js");
 
 global.dir = "file://" + process.cwd() + "/";
 await import("./global.js");
@@ -40,6 +41,7 @@ await import("./socket/index.js");
 lo("__________________"+(new Date()+"").split(" ").slice(1,5).join(" "));
 server.listen(process.env.PORT, function(){
     if(process.env.status == "dev"){
+        lo("Server started by developer mode");
         lo("http://localhost:"+process.env.PORT+"/app")
     }
 });
