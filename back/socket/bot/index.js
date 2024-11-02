@@ -101,6 +101,19 @@ io.of("/bot").on("connection", (socket) => {
         });
     }
 
+    socket.onLimit("get.bot.info", 1_000, async (cb) => {
+        try{
+            const data = {
+                _id: socket.user._id,
+                name: socket.user.name,
+            }
+            if(cb) cb(data);
+            else socket.emit("get.bot.info", data);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
     mess(socket);
     servers(socket);
     serverSettings(socket);
