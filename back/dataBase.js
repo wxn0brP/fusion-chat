@@ -12,6 +12,7 @@ const databases = [
     { name: "dataGraph", type: "graph" },           //all types data graph
     { name: "groupData", type: "database" },        //group data
     { name: "botData", type: "database" },          //bot data
+    { name: "system", type: "database" },           //system config and data
 ];
 
 function getRemoteConfig(name, path){

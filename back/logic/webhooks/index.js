@@ -1,7 +1,7 @@
 import genId from "@wxn0brp/db/gen.js";
 import * as customWebhookUtils from "./custom.js"; 
 import sendMessage from "../sendMessage.js";
-import { decode, create } from "../../logic/auth.js";
+import { decode, create, KeyIndex } from "../../logic/token/index.js";
 
 export async function addCustom(webhookInfo){
     const { chat, chnl, name, template, ajv, required } = webhookInfo;
@@ -15,10 +15,10 @@ export async function addCustom(webhookInfo){
         required: required || [],
     }
 
-    const token = create({
+    const token = await create({
         id: webhook.whid,
         chat,
-    }, false);
+    }, false, KeyIndex.WEBHOOK_TOKEN);
 
     webhook.token = token;
 
@@ -26,7 +26,7 @@ export async function addCustom(webhookInfo){
 }
 
 export async function handleCustom(query, body){
-    const token = decode(query.token);
+    const token = await decode(query.token, KeyIndex.WEBHOOK_TOKEN);
     
     if(!token) return { code: 400, msg: "Invalid token" };
 

@@ -1,4 +1,4 @@
-import { decode } from "../../logic/auth.js";
+import { decode, KeyIndex } from "../../logic/token/index.js";
 import mess from "./mess.js";
 import other from "./other.js";
 import servers from "./servers.js";
@@ -14,9 +14,8 @@ io.of("/bot").use(async (socket, next) => {
     const token = authData.token;
     if(!token) return next(new Error("Authentication error: Missing authentication data."));
 
-    const tokenData = await decode(token);
+    const tokenData = await decode(token, KeyIndex.BOT_TOKEN);
     const _id = tokenData._id;
-
 
     const isValid = await global.db.botData.findOne(_id, { token });
     if(!isValid) return next(new Error("Authentication error: Missing authentication data."));
