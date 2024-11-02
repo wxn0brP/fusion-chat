@@ -47,10 +47,21 @@ socket.on("mess", (data) => {
     if(!vars.lastMess[tom][vars.chat.chnl]) vars.lastMess[tom][vars.chat.chnl] = { read: null, mess: null };
     vars.lastMess[tom][vars.chat.chnl].mess = data._id;
 
+    lo(data)
     if(data.to != "@"){
         if(vars.chat.to !== data.to){
             if(data.to.startsWith("$")){
                 uiFunc.uiMsg("Recive message from "+apis.www.changeUserID(data.fr));
+                if(vars.settings.notifications && Notification.permission === "granted"){
+                    const title = "Recive message from "+apis.www.changeUserID(data.fr)
+                    const notif = new Notification(title, {
+                        body: data.msg,
+                        icon: "/favicon.ico",
+                    });
+                    notif.onclick = () => {
+                        window.focus();
+                    }
+                }
             }
         }
         if(vars.chat.to !== data.to || vars.chat.chnl !== data.chnl){
