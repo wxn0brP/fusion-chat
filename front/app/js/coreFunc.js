@@ -5,9 +5,8 @@ const emojiStyleDiv = document.querySelector("#emoji-style");
 const messages_nav__server__description = document.querySelector("#messages_nav__server__description");
 
 const coreFunc = {
-    changeChat(id, div=null){
+    changeChat(id){
         messagesDiv.innerHTML = "";
-        coreFunc.markSelectedChat(id);
         emojiStyleDiv.innerHTML = "";
         emojiFunc.customEmojisCat = [];
         emojiFunc.customEmojis = {};
@@ -24,6 +23,7 @@ const coreFunc = {
             mainViewDiv.style.display = "";
             messagesDiv.style.display = "none";
             mainView.show();
+            coreFunc.markSelectedChat();
 
             return;
         }
@@ -66,8 +66,7 @@ const coreFunc = {
             socket.emit("server.setup", id);
             socket.emit("server.roles.sync", id);
         }
-
-        if(div) div.classList.add((id.startsWith("$") ? "priv" : "group") + "_chatActive");
+        coreFunc.markSelectedChat();
     },
 
     changeChnl(id){
@@ -136,6 +135,11 @@ const coreFunc = {
         document.querySelectorAll(".group").forEach((ele) => {
             ele.classList.remove("group_chatActive")
         });
+
+        const to = vars.chat.to;
+        if(to == "main"){}
+        else if(to.startsWith("$")) document.querySelector("#priv_chat_"+to.substring(1)).classList.add("priv_chatActive");
+        else document.querySelector("#group_chat_"+to).classList.add("group_chatActive");
     },
 
 }

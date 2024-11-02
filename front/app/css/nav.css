@@ -84,7 +84,7 @@ nav{
 }
 
 #navs button:hover{
-    --borderColor: var(--accent);
+    text-decoration: underline;
 }
 
 #navs__main, #navs__groups{

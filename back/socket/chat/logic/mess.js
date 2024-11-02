@@ -141,6 +141,8 @@ export async function message_markAsRead(suser, to, chnl, mess_id){
     if(firendChat) search.priv = to.replace("$", "");
     else search.group = to;
 
+    let res;
+
     if(mess_id == "last"){
         let toM = to;
         if(firendChat){
@@ -152,7 +154,7 @@ export async function message_markAsRead(suser, to, chnl, mess_id){
         if(lastIdMess.length == 0) return { err: false, res: "no messages in this channel" };
 
         mess_id = lastIdMess[0]._id;
-        return { err: false, res: [to, chnl, mess_id] };
+        res = mess_id;
     }
 
     await global.db.userDatas.updateOne(suser._id, search, (data, context) => {
@@ -161,7 +163,7 @@ export async function message_markAsRead(suser, to, chnl, mess_id){
         return data;
     }, { chnl, mess_id });
 
-    return { err: false };
+    return { err: false, res };
 }
 
 export async function message_react(suser, server, msgId, react){

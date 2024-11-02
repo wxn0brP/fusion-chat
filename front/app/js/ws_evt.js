@@ -26,25 +26,15 @@ socket.on("status.get", (status, text) => {
     renderFunc.localUserProfile();
 });
 
-socket.on("message.markAsRead", (toR, chnl, id) => {
-    if(!toR || !chnl || !id) return;
+socket.on("message.markAsRead", (to, chnl, id) => {
+    if(!to || !chnl || !id) return;
     try{
-        const to = toR.replace("$", "");
-        const friendChat = toR.startsWith("$");
-        if(!vars.lastMess[to]){
-            vars.lastMess[to] = {};
-            if(friendChat) renderFunc.privs();
-        }
-        if(!vars.lastMess[to][chnl]){
-            vars.lastMess[to][chnl] = {
-                read: null,
-                mess: null
-            }
-            if(friendChat) renderFunc.privs();
-        }
+        // generate last message storage if needed
+        vars.lastMess[to] = vars.lastMess[to] || {};
+        vars.lastMess[to][chnl] = vars.lastMess[to][chnl] || { read: null, mess: null };
 
-        vars.lastMess[to.replace("$", "")][chnl].read = id;
-        if(friendChat) renderFunc.privsRead();
+        vars.lastMess[to][chnl].read = id;
+        if(to.startsWith("$")) renderFunc.privs();
     }catch{}
 });
 

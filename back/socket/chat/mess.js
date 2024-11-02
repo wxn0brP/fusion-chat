@@ -66,8 +66,8 @@ export default (socket) => {
             const { err, res } = await message_markAsRead(socket.user, to, chnl, mess_id);
             if(err) return socket.emit(...err);
             if(!res) return;
-            if(cb) cb(res);
-            else socket.emit("message.markAsRead", res);
+            if(cb) cb(to, chnl, res);
+            else socket.emit("message.markAsRead", to, chnl, res);
         }catch(e){
             socket.logError(e);
         }
