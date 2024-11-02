@@ -41,52 +41,50 @@ messInput.addEventListener("input", messStyle.sendBtnStyle);
 messInput.addEventListener("input", messStyle.messageHeight);
 
 socket.on("mess", (data) => {
-    const tom = data.toM.replace("$", "");
-
-    if(!vars.lastMess[tom]) vars.lastMess[tom] = {};
-    if(!vars.lastMess[tom][vars.chat.chnl]) vars.lastMess[tom][vars.chat.chnl] = { read: null, mess: null };
-    vars.lastMess[tom][vars.chat.chnl].mess = data._id;
-
     lo(data)
-    if(data.to != "@"){
-        if(vars.chat.to !== data.to){
-            if(data.to.startsWith("$")){
-                uiFunc.uiMsg("Recive message from "+apis.www.changeUserID(data.fr));
-                if(vars.settings.notifications && Notification.permission === "granted"){
-                    const title = "Recive message from "+apis.www.changeUserID(data.fr)
-                    const notif = new Notification(title, {
-                        body: data.msg,
-                        icon: "/favicon.ico",
-                    });
-                    notif.onclick = () => {
-                        window.focus();
-                    }
-                }
-            }
-        }
-        if(vars.chat.to !== data.to || vars.chat.chnl !== data.chnl){
-            renderFunc.privs();
-            return;
-        }
-    }else{
-        if(vars.chat.to !== data.toM || vars.chat.chnl !== data.chnl){
-            renderFunc.privs();
-            return;
+    // generate last message storage if needed
+    vars.lastMess[data.to] = vars.lastMess[data.to] || {};
+    vars.lastMess[data.to][data.chnl] = vars.lastMess[data.to][data.chnl] || { read: null, mess: null };
+
+    // update last message
+    vars.lastMess[data.to][data.chnl].mess = data._id;
+
+    const isPrivateChat = data.to.startsWith("$");
+    const currentChatIsDM = vars.chat.to.startsWith("$");
+    const isSenderCurrentUser = data.fr === vars.user._id;
+
+    if(isPrivateChat && !currentChatIsDM && !isSenderCurrentUser){
+        const title = translateFunc.get("Received message from $", apis.www.changeUserID(data.fr));
+        uiFunc.uiMsg(title);
+
+        if(vars.settings.notifications && Notification.permission === "granted"){
+            const notification = new Notification(title, { body: data.msg });
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
         }
     }
+    if(isPrivateChat) renderFunc.privs();
 
+    // end if not in chat
+    if(vars.chat.to !== data.to || vars.chat.chnl !== data.chnl) return;
+
+    // update last message read
+    vars.lastMess[data.to][data.chnl].read = data._id;
+    if(isPrivateChat) renderFunc.privsRead();
+
+    // add message to chat
     messFunc.addMess(data);
-    vars.temp.makeIsRead = data._id;
-    setTimeout(() => {
-        if(vars.temp.makeIsRead != data._id) return;
-        vars.temp.makeIsRead = null;
-        socket.emit("message.markAsRead", vars.chat.to, vars.chat.chnl, data._id);
-    }, 1000);
-    
-    vars.lastMess[tom][vars.chat.chnl].read = data._id;
-    renderFunc.privs();
     messStyle.hideFromMessageInfo();
     messStyle.colorRole();
+
+    setTimeout(() => {
+        const lastMessageId = vars.lastMess[data.to][data.chnl].mess;
+        if(lastMessageId === data._id){
+            socket.emit("message.markAsRead", data.to, data.chnl, data._id);
+        }
+    }, 1000);
 });
 
 socket.on("message.fetch", (data) => {

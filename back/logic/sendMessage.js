@@ -83,21 +83,15 @@ export default async function sendMessage(req, user, options={}){
 
     const message = await global.db.mess.add(to, data);
     data._id = message._id;
-
-    if(!privChat) data.to = to;
-    else data.to = "$"+user._id;
     
     if(req.silent) data.silent = req.silent || false;
     
-    sendToSocket(user._id, "mess", Object.assign({}, data, {
-        to: "@",
-        toM: to
-    }));
+    sendToSocket(user._id, "mess", Object.assign({ to: req.to }, data));
 
     if(!privChat){
-        data.toM = to;
         const server = await global.db.groupSettings.findOne(to, { _id: "set"});
         const fromMsg = `${server.name} @${user.name}`;
+        data.to = to;
         
         global.db.usersPerms.find(to, r => r.uid)
         .then(chat => {
@@ -127,8 +121,7 @@ export default async function sendMessage(req, user, options={}){
         });
     }else{
         const toSend = req.to.replace("$","");
-
-        data.toM = user._id;
+        data.to = "$"+user._id;
         sendToSocket(toSend, "mess", data);
         if(!data.silent) global.fireBaseMessage.send(toSend, "New message from " + user.name, data.msg);
     }

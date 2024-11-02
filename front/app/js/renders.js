@@ -35,11 +35,14 @@ const renderFunc = {
             navs__priv.appendChild(privDiv);
 
             privDiv.addEventListener("click", () => {
-                coreFunc.changeChat("$"+id, privDiv);
-                renderFunc.privsRead();
+                coreFunc.changeChat("$"+id);
+                setTimeout(() => {
+                    renderFunc.privsRead();
+                }, 100);
             });
         });
         renderFunc.privsRead();
+        coreFunc.markSelectedChat();
     },
 
     privsRead(){
@@ -47,7 +50,8 @@ const renderFunc = {
             const cl = document.querySelector("#priv_chat_"+id)?.classList;
             if(!cl) return;
 
-            const l = vars.lastMess[id]["main"];
+            const l = vars.lastMess["$"+id]?.main;
+            if(!l) return;
             if(
                 l.read != null && l.mess != null &&
                 utils.extractTimeFromId(l.read) < utils.extractTimeFromId(l.mess)
@@ -82,6 +86,7 @@ const renderFunc = {
                 contextMenu.server(e, id);
             });
         });
+        coreFunc.markSelectedChat();
     },
 
     localUserProfile(){
@@ -362,18 +367,12 @@ const renderUtils = {
 
 socket.on("private.get", (data) => {
     data.forEach((priv) => {
-        const id = priv.priv;
+        const id = "$"+priv.priv;
 
-        if(!vars.lastMess[id]) vars.lastMess[id] = {};
-        if(!priv.last){
-            priv.last = { main: null }
-        }
-        if(!priv.lastMessId){
-            priv.lastMessId = null;
-        }
-        vars.lastMess[id]["main"] = {
-            read: priv.last.main,
-            mess: priv.lastMessId
+        vars.lastMess[id] = vars.lastMess[id] || {};
+        vars.lastMess[id].main = {
+            read: priv.last.main ?? null,
+            mess: priv.lastMessId ?? null,
         }
     })
     vars.privs = data.map(d => d.priv);

@@ -16,16 +16,15 @@ export async function group_get(suser){
 }
 
 export async function private_get(suser){
-    const privs = await global.db.userDatas.find(suser._id, r => !!r.priv);
+    const privs = await global.db.userDatas.find(suser._id, { $exists: { priv: true } });
     if(privs.length == 0) return { err: false, res: [] };
 
-    for(let i = 0; i < privs.length; i++){
+    for(let i=0; i<privs.length; i++){
         const priv = privs[i];
         const id = combinateId(suser._id, priv.priv);
         const lastMess = await global.db.mess.find(id, {}, {}, { reverse: true, max: 1 });
         if(lastMess.length == 0) continue;
-
-        privs.find(p => p.priv == priv.priv).lastMessId = lastMess[0]._id;
+        priv.lastMessId = lastMess[0]._id;
     }
 
     return { err: false, res: privs };
