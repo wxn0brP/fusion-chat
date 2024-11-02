@@ -3,7 +3,7 @@ import ValidError from "../../../logic/validError.js";
 import genId from "@wxn0brp/db/gen.js";
 
 export async function bots_get(suser){
-    const botsData = await global.db.userDatas.find(suser._id, (b) => b.botID);
+    const botsData = await global.db.userDatas.find(suser._id, { $exists: { botID: true } });
     const botsID = botsData.map(b => b.botID);
     const botsPromises = botsID.map(async id => {
         const bot = await global.db.botData.findOne(id, { _id: "name" });
@@ -22,7 +22,7 @@ export async function bots_delete(suser, id){
     if(!botExists) return validE.err("bot does not exist");
 
     await global.db.userDatas.removeOne(suser._id, { botID: id });
-    await global.db.botData.removeDb(id);
+    await global.db.botData.removeCollection(id);
     
     return { err: false };
 }

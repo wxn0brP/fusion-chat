@@ -23,6 +23,6 @@ export async function profile_set_nickname(suser, nickname){
     const validE = new ValidError("profile.set_nickname");
     if(!valid.str(nickname, 0, 30)) return validE.valid("nickname");
 
-    await global.db.userDatas.updateOneOrAdd(suser._id, (d) => !!d.nick, { nick: nickname }, {}, {}, false);
+    await global.db.userDatas.updateOneOrAdd(suser._id, { $exists: { nick: true }}, { nick: nickname }, {}, {}, false);
     return { err: false };
 }
