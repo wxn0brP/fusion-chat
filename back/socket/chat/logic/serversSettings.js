@@ -101,7 +101,7 @@ export async function server_settings_set(suser, id, data){
         const old_users = await global.db.usersPerms.find(id, d => !!d.uid);
         const usersChanges = processDbChanges(old_users, data.users, ["uid", "roles"], "uid");
         for(const item of usersChanges.itemsToUpdate)
-            await global.db.usersPerms.update(id, (u, item) => u.uid == item.uid, item, item);
+            await global.db.usersPerms.update(id, { uid: item.uid }, item);
     }
 
     if(data.emojis){
@@ -175,7 +175,7 @@ async function processEmojis(id, emojisChanges){
         emojisChanges.itemsToAdd.length > 0 || emojisChanges.itemsToRemove.length > 0 || emojisChanges.itemsToUpdate.length > 0;
 
     if(isEmojisChanged){
-        const emojis = await global.db.groupSettings.find(id, (e) => !!e.unicode);
+        const emojis = await global.db.groupSettings.find(id, { $exists: { unicode: true }});
         await emojiMgmt.createFont(emojis, id);
     }
 

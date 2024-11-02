@@ -16,8 +16,8 @@ export async function server_setup(suser, id){
     const admin = await permission.userPermison(suser._id, "all");
 
     const buildChannels = [];
-    const categories = await global.db.groupSettings.find(id, (r) => !!r.cid);
-    const channels = await global.db.groupSettings.find(id, (r) => !!r.chid);
+    const categories = await global.db.groupSettings.find(id, { $exists: { cid: true }});
+    const channels = await global.db.groupSettings.find(id, { $exists: { chid: true }});
     const sortedCategories = categories.sort((a, b) => a.i - b.i);
 
     for(let i=0; i<sortedCategories.length; i++){
@@ -72,7 +72,7 @@ export async function server_roles_sync(id){
     const rolesMap = new Map();
     for(const role of roles) rolesMap.set(role.rid, role.name);
 
-    const users = await global.db.usersPerms.find(id, (r) => !!r.uid);
+    const users = await global.db.usersPerms.find(id, { $exists: { uid: true } });
     const usersData = users.map(u => {
         return {
             uid: u.uid,
@@ -95,13 +95,13 @@ export async function server_delete(suser, id, name){
     const userPerm = await perm.userPermison(suser._id, "manage server");
     if(!userPerm) return validE.err("You don't have permission to edit this server");
 
-    const users = (await global.db.usersPerms.find(id, {})).map(u => u.uid);
+    const users = await global.db.usersPerms.find(id, {}).then(users => users.map(u => u.uid));
     for(const user of users) await global.db.userDatas.removeOne(user, { group: id });
 
-    global.db.groupSettings.removeDb(id);
-    global.db.usersPerms.removeDb(id);
-    global.db.mess.removeDb(id);
-    global.db.groupData.removeDb(id);
+    global.db.groupSettings.removeCollection(id);
+    global.db.usersPerms.removeCollection(id);
+    global.db.mess.removeCollection(id);
+    global.db.groupData.removeCollection(id);
 
     for(const user of users) global.sendToSocket(user, "refreshData", "group.get");
 
@@ -147,6 +147,6 @@ export async function server_emojis_sync(serverId){
     const validE = new ValidError("server.emojis.sync");
     if(!valid.id(serverId)) return validE.valid("serverId");
 
-    const emojis = await global.db.groupSettings.find(serverId, (e) => !!e.unicode);
+    const emojis = await global.db.groupSettings.find(serverId, { $exists: { unicode: true }});
     return { err: false, res: emojis };
 }

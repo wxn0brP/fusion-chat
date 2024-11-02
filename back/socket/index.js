@@ -20,14 +20,14 @@ global.sendToSocket = (id, channel, ...args) => {
 }
 
 global.sendToChatUsers = async (to, channel, ...args) => {
-    const chatUsersPromise = global.db.usersPerms.find(to, (r) => r.uid)
+    const chatUsersPromise = global.db.usersPerms.find(to, { $exists: { uid: true }})
         .then(chatUsers => {
             chatUsers.forEach(user => {
                 sendToSocket(user.uid, channel, ...args);
             });
         });
 
-    const botUsersPromise = global.db.usersPerms.find(to, (r) => r.bot)
+    const botUsersPromise = global.db.usersPerms.find(to, { $exists: { bot: true }})
         .then(botUsers => {
             botUsers.forEach(user => {
                 getSocket(user.bot, "bot").forEach(conn => {

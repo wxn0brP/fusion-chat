@@ -117,7 +117,7 @@ export default async function sendMessage(req, user, options={}){
             });
         })
 
-        global.db.usersPerms.find(to, (r) => r.bot)
+        global.db.usersPerms.find(to, { $exists: { bot: true }})
         .then(botUsers => {
             botUsers.forEach(user => {
                 getSocket(user.bot, "bot").forEach(conn => {

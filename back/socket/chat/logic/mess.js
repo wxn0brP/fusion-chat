@@ -278,7 +278,7 @@ export async function message_fetch_pinned(suser, server, chnl){
 
 global.getChnlPerm = async function(user, server, chnl){
     const permission = new permissionSystem(server);
-    const channel = await global.db.groupSettings.findOne(server, (c, context) => c.chid == context.chnl, { chnl });
+    const channel = await global.db.groupSettings.findOne(server, { chid: chnl });
     if(!channel) return {
         visable: false,
         text: false
