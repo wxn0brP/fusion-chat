@@ -41,13 +41,6 @@ const settingsData = {
                         color: "red"
                     }
                 },
-                {
-                    "name": "Language",
-                    "txt": translateFunc.get("Language"),
-                    "type": "select",
-                    "defaultValue": localStorage.getItem("lang") || "en",
-                    "options": translateFunc.localesList
-                }
             ]
         },
         {
@@ -85,6 +78,37 @@ const settingsData = {
                 
                 return {}
             }
+        },
+        {
+            name: "Client settings",
+            txt: translateFunc.get("Client settings"),
+            type: "obj",
+            settings: [
+                {
+                    name: "Language",
+                    txt: translateFunc.get("Language"),
+                    type: "select",
+                    defaultValue: localStorage.getItem("lang") || "en",
+                    options: translateFunc.localesList
+                },
+                {
+                    name: "Notifications",
+                    txt: translateFunc.get("Notifications"),
+                    type: "checkbox",
+                    defaultValue: localStorage.getItem("notifications") == "true" ?? false,
+                },
+                {
+                    name: "Notifications permissions",
+                    txt: translateFunc.get("Check notifications permissions"),
+                    type: "button",
+                    onclick: () => {
+                        window.Notification.requestPermission((result) => {
+                            if(result == "granted") uiFunc.uiMsg(translateFunc.get("OK"));
+                            else uiFunc.uiMsg(translateFunc.get("Notification permission denied") + ".");
+                        });
+                    }
+                }
+            ]
         }
     ],
 
@@ -106,8 +130,22 @@ const settingsData = {
             renderFunc.localUserProfile();
         }
 
-        if(settings["Language"] != undefined){
-            if(settings["Language"] != localStorage.getItem("lang")) translateFunc.load(settings["Language"]);
+        const lang = settings["Language"];
+        if(lang != undefined){
+            if(lang != localStorage.getItem("lang")) translateFunc.load(lang);
+        }
+
+        const notifications = settings["Notifications"];
+        if(notifications != undefined){
+            localStorage.setItem("notifications", notifications);
+            vars.settings.notifications = notifications;
+            if(notifications){
+                // check permissions
+                window.Notification.requestPermission((result) => {
+                    if(result == "granted") return;
+                    uiFunc.uiMsg(translateFunc.get("Notification permission denied") + ".");
+                });
+            }
         }
     },
 }

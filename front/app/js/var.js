@@ -33,4 +33,7 @@ const vars = {
         page: "online"
     },
     uploadImgTypes: ["image/png", "image/jpeg", "image/jpg", "image/gif"],
+    settings: {
+        notifications: localStorage.getItem("notifications") == "true" ?? false,
+    }
 }
