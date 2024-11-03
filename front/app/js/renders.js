@@ -52,14 +52,15 @@ const renderFunc = {
 
             const l = vars.lastMess["$"+id]?.main;
             if(!l) return;
-            if(
-                l.read != null && l.mess != null &&
-                utils.extractTimeFromId(l.read) < utils.extractTimeFromId(l.mess)
-            ){
-                cl.add("unreadPriv");
-            }else{
-                cl.remove("unreadPriv");
+            let unreadPriv = false;
+
+            if(l.read != null && l.mess != null){
+                unreadPriv = utils.extractTimeFromId(l.read) < utils.extractTimeFromId(l.mess);
+            }else if(l.read == null && l.mess != null){
+                unreadPriv = true;
             }
+
+            unreadPriv ? cl.add("unreadPriv") : cl.remove("unreadPriv");
         });
     },
 
@@ -323,8 +324,9 @@ const renderUtils = {
     sortPrivs(data){
         const sortedData = [...data];
         sortedData.sort((a, b) => {
-            const la = vars.lastMess[a]["main"];
-            const lb = vars.lastMess[b]["main"];
+            const la = vars.lastMess["$"+a]?.main;
+            const lb = vars.lastMess["$"+b]?.main;
+            if(!la || !lb) return 0;
 
             return utils.extractTimeFromId(lb.mess) - utils.extractTimeFromId(la.mess);
         });
@@ -371,7 +373,7 @@ socket.on("private.get", (data) => {
 
         vars.lastMess[id] = vars.lastMess[id] || {};
         vars.lastMess[id].main = {
-            read: priv.last.main ?? null,
+            read: priv.last?.main ?? null,
             mess: priv.lastMessId ?? null,
         }
     })
