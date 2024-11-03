@@ -14,7 +14,7 @@ function loginW(){
     const urlParam = new URLSearchParams(location.search);
     if(urlParam.get("err")) return;
     if(
-        localStorage.getItem("rToken") &&
+        localStorage.getItem("token") &&
         localStorage.getItem("from") &&
         localStorage.getItem("user_id")
     ){
@@ -33,7 +33,7 @@ const socket = io("/qrCodeLogin", {
 });
 socket.connect();
 socket.on("get", (token, from, user_id) => {
-    localStorage.setItem("rToken", token);
+    localStorage.setItem("token", token);
     localStorage.setItem("from", from);
     localStorage.setItem("user_id", user_id);
     locationNext();

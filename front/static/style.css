@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,300&display=swap");
+@import url("fonts/import.css");
 @import url("scrool.css");
 
 :root{
@@ -18,7 +18,7 @@
     padding: 0;
     box-sizing: border-box;
     user-select: text;
-    font-family: 'Ubuntu', sans-serif;
+    font-family: "Ubuntu", Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 400;
 }
 
@@ -27,7 +27,7 @@ b{
 }
 
 i, em{
-    font-weight: 300;
+    font-weight: 400;
     font-style: italic;
 }
 

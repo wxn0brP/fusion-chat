@@ -1,7 +1,5 @@
-module.exports = {
-    name: "goodbye",
-    alias: ["bye"],
-    async execute(mess){
-        mess.reply("Goodbye!");
-    }
+export const name = "goodbye";
+export const alias = ["bye"];
+export async function execute(mess){
+    mess.reply("Goodbye!");
 }

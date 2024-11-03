@@ -164,7 +164,8 @@ SettingsServerManager.prototype.renderEditChannel = function(channel){
     this.addSeparator(containerElement, 15);
     this.initButton(containerElement, translateFunc.get("Save"), () => {
         channel.name = nameInp.value;
-        channel.desc = descInp.value || "";
+        const desc = descInp.value;
+        channel.desc = desc.trim() === "" ? undefined : desc;
         channel.rp = [];
 
         containerElement.querySelectorAll("input[type=checkbox][data-role][data-perm]").forEach(checkbox => {

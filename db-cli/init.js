@@ -1,5 +1,5 @@
-const DataBase = require("./database");
-const ext = require("./ext");
+import DataBase from "./database.js";
+import ext from "./ext.js";
 
 global.selected = {
     db: null,
@@ -16,7 +16,7 @@ function loadDatabases(){
     }
 }
 
-module.exports = {
+export default {
     init(){
         loadDatabases();
         ext.load();

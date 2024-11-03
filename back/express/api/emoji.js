@@ -31,7 +31,7 @@ async function checkUserPermission(userId, server){
 }
 
 async function getServerEmoji(serverId){
-    const emoji = await global.db.groupSettings.find(serverId, (e) => !!e.unicode);
+    const emoji = await global.db.groupSettings.find(serverId, { $exists: { unicode: true }});
     return emoji;
 }
 

@@ -8,6 +8,6 @@ userFiles
 serverDB
 
 # files
-.env
+*.env
 yarn.lock
 package-lock.json

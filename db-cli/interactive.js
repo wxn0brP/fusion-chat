@@ -1,8 +1,8 @@
-const inquirer = require("inquirer").default;
-const chalk = require("chalk");
-const ext = require("./ext");
-const dbFunc = require("./dbFunc");
-const init = require("./init");
+import inquirer from "inquirer";
+import chalk from "chalk";
+import ext from "./ext.js";
+import { add, find, findOne, update, updateOne, remove, removeOne, updateOneOrAdd } from "./dbFunc.js";
+import init from "./init.js";
 
 async function selectDatabase(){
     const dbNames = Object.keys(dbConfig);
@@ -105,7 +105,7 @@ async function mainMenuWindow(){
             console.log(chalk.red("Please select a database first."));
             return;
         }
-        const choicesRaw = await selected.db.getDBs();
+        const choicesRaw = await selected.db.getCollections();
         const choices = await ext.process("list_table", selected.dbName, null, choicesRaw);
 
         const { table } = await inquirer.prompt([
@@ -123,7 +123,7 @@ async function mainMenuWindow(){
 
     if(operation === "Display tables"){
         if(!selected.db) return;
-        const tables = await selected.db.getDBs();
+        const tables = await selected.db.getCollections();
         const extTables = await ext.process("display_table", selected.dbName, null, tables);
         console.log("\n", chalk.green("Tables:"), extTables, "\n");
         await waitEnter();
@@ -136,13 +136,13 @@ async function mainMenuWindow(){
 
     if(operation === "add"){
         const data = await promptForKeyValuePairs();
-        const extData = await dbFunc.add(selected, data);
+        const extData = await add(selected, data);
         console.log(chalk.green("Data added:"), extData);
     }
 
     if(operation === "find"){
         const search = await promptForKeyValuePairs();
-        const results = await dbFunc.find(selected, search);
+        const results = await find(selected, search);
 
         console.log("\n", chalk.green("Found data:"), "\n", results, "\n");
         await waitEnter();
@@ -150,7 +150,7 @@ async function mainMenuWindow(){
     
     if(operation === "findOne"){
         const search = await promptForKeyValuePairs();
-        const result = await dbFunc.findOne(selected, search);
+        const result = await findOne(selected, search);
 
         console.log("\n", chalk.green("Found data:"), "\n", result, "\n");
         await waitEnter();
@@ -161,7 +161,7 @@ async function mainMenuWindow(){
         console.log(chalk.yellow("Now enter the new values:"));
         const data = await promptForKeyValuePairs();
         
-        const updated = await dbFunc.update(selected, search, data);
+        const updated = await update(selected, search, data);
         console.log(chalk.green(updated ? "Data updated." : "Nothing to update."));
     }
 
@@ -170,21 +170,21 @@ async function mainMenuWindow(){
         console.log(chalk.yellow("Now enter the new values:"));
         const data = await promptForKeyValuePairs();
         
-        const updated = await dbFunc.updateOne(selected, search, data);
-        console.log(chalk.green(updated ? "Data updated." : "Nothing to update."));
+        const updated = updateOne(selected, search, data);
+        console.log(green(updated ? "Data updated." : "Nothing to update."));
     }
 
     if(operation === "remove"){
         const search = await promptForKeyValuePairs();
         
-        await dbFunc.remove(selected, search);
+        await remove(selected, search);
         console.log(chalk.green("Data removed."));
     }
 
     if(operation === "removeOne"){
         const search = await promptForKeyValuePairs();
         
-        const removed = await dbFunc.removeOne(selected, search);
+        const removed = await removeOne(selected, search);
         console.log(chalk.green(removed ? "Data removed." : "Nothing to remove."));
     }
 
@@ -198,7 +198,7 @@ async function mainMenuWindow(){
         console.log(chalk.yellow("Now enter the new values (for add only):"));
         const addData = await promptForKeyValuePairs();
         
-        const updated = await dbFunc.updateOneOrAdd(selected, search, updateData, addData);
+        const updated = await updateOneOrAdd(selected, search, updateData, addData);
         console.log(chalk.green(updated ? "Data updated." : "Data added."));
     }
 }
@@ -217,4 +217,4 @@ async function mainMenu(){
     }
 }
 
-module.exports = mainMenu;
+export default mainMenu;

@@ -1,4 +1,4 @@
-import { auth } from "../../logic/auth.js";
+import { authUser } from "../../logic/auth.js";
 import mess from "./mess.js";
 import servers from "./servers.js";
 import serverSettings from "./serversSettings.js";
@@ -18,7 +18,7 @@ io.of("/").use(async (socket, next) => {
     const token = authData.token;
     if(!token) return next(new Error("Authentication error: Missing authentication data."));
 
-    const user = await auth(token);
+    const user = await authUser(token);
     if(!user) return next(new Error("Authentication error: Missing authentication data."));
 
     if(tmpBan.has(user._id)){
@@ -45,8 +45,9 @@ io.of("/").on("connection", (socket) => {
     }
 
     socket.timeOutMap = new Map();
-    socket.ontimeout = (evt, timeout, cb) => {
+    socket.onLimit = (evt, timeout, cb) => {
         socket.on(evt, (...data) => {
+            if(!socket.user) return socket.emit("error", "not auth");
             const currentTime = new Date().getTime();
             const lastTime = socket.timeOutMap.get(evt);
             const penalty = 20;

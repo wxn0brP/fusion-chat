@@ -1,5 +1,5 @@
 import fs from "fs";
-import genId from "../db/gen.js";
+import genId from "@wxn0brp/db/gen.js";
 
 /**
  * A function to combine two user ids into a new chat id.

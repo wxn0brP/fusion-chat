@@ -37,6 +37,7 @@ const messFunc = {
         messFunc.replyClose();
         coreFunc.focusInp();
         messStyle.sendBtnStyle();
+        messStyle.messageHeight();
     },
 
     addMess(data, socroll=true, up=false){
@@ -137,6 +138,7 @@ const messFunc = {
 
     replyClose(){
         replyCloseDiv.style.display = "none";
+        if(vars.temp.replyId) document.querySelector("#mess__"+vars.temp.replyId).style.backgroundColor = "";
         vars.temp.replyId = null;
     },
 

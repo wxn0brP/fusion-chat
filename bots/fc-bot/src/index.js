@@ -1,31 +1,45 @@
-const EventEmitter = new (require("events"))();
-const socket = require("./socket");
-const Mess = require("./mess");
-const cmdEngine = require("./cmd");
+import { EventEmitter } from "events";
+import socket from "./socket.js";
+import Mess from "./mess.js";
+import cmdEngine from "./cmd.js";
+
+const eventEmitter = new EventEmitter();
 
 const client = {
     socket,
-    on: EventEmitter.on,
-    emitEvent: EventEmitter.emit,
+    botInfo: {
+        _id: null,
+        name: null,
+    },
+    on: eventEmitter.on,
+    emitEvent: eventEmitter.emit,
     cmd: new cmdEngine(),
 
     login(token){
         this.socket.auth.token = token;
         this.socket.connect();
+        const _this = this;
+        this.socket.emit("get.bot.info", data => _this.botInfo = data);
     },
-    enableCmd(prefix, dirPath){
+    async enableCmd(prefix, dirPath, opts={}){
+        opts = {
+            webhook: false,
+            bot: false,
+            ...opts
+        }
         this.cmd.setPrefix(prefix);
-        this.cmd.loadCommands(dirPath);
+        await this.cmd.loadCommands(dirPath);
         this.cmd.enabled = true;
+        this.cmd.opts = opts;
     }
 }
 
 client.socket.on("connect", () => client.emitEvent("connect"));
 client.socket.on("disconnect", () => client.emitEvent("disconnect"));
-client.socket.on("connect_error", (data) => client.emitEvent("connect_error", data));
-client.socket.on("error", (data) => client.emitEvent("error", data));
+client.socket.on("connect_error", (...data) => client.emitEvent("connect_error", ...data));
+client.socket.on("error", (...data) => client.emitEvent("error", ...data));
 client.socket.on("mess", async (req) => {
-    if(req.to == "@") return;
+    if(req.fr === client.botInfo._id) return;
     const mess = new Mess(client, req);
 
     const cmd = await client.cmd.handleInput(mess);
@@ -38,4 +52,9 @@ client.socket.on("mess", async (req) => {
     client.emitEvent("mess", mess);
 });
 
-module.exports = client;
+export default client;
+export {
+    Mess,
+    socket,
+    eventEmitter,
+}

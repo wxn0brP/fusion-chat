@@ -1,4 +1,5 @@
 const errMessesDiv = document.querySelector("#errMesses");
+const promptDiv = document.querySelector("#prompt");
 
 const uiFunc = {
     async uiMessage(message, backgroundColor="", displayTime=6000, className=""){
@@ -94,7 +95,7 @@ const uiFunc = {
             div.appendChild(btn);
             btn.addEventListener("click", end);
 
-            document.querySelector("#prompt").appendChild(div);
+            promptDiv.appendChild(div);
             div.fadeIn();
         });
     },
@@ -130,7 +131,7 @@ const uiFunc = {
             div.appendChild(btn);
             btn.addEventListener("click", end);
 
-            document.querySelector("#prompt").appendChild(div);
+            promptDiv.appendChild(div);
             div.fadeIn();
         });
     }
