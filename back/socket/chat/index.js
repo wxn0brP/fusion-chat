@@ -1,4 +1,4 @@
-import { authUser } from "../../logic/auth.js";
+import { authUser, createUser } from "../../logic/auth.js";
 import mess from "./mess.js";
 import servers from "./servers.js";
 import serverSettings from "./serversSettings.js";
@@ -18,7 +18,8 @@ io.of("/").use(async (socket, next) => {
     const token = authData.token;
     if(!token) return next(new Error("Authentication error: Missing authentication data."));
 
-    const user = await authUser(token);
+    const tokenData = {};
+    const user = await authUser(token, tokenData);
     if(!user) return next(new Error("Authentication error: Missing authentication data."));
 
     if(tmpBan.has(user._id)){
@@ -32,6 +33,7 @@ io.of("/").use(async (socket, next) => {
     }
 
     socket.user = user;
+    socket.isShouldRefresh = shouldRefreshToken(tokenData.data);
     next();
 });
 
@@ -106,4 +108,25 @@ io.of("/").on("connection", (socket) => {
     friends(socket);
     evt(socket);
     other(socket);
+
+    setTimeout(async () => {
+        if(socket.isShouldRefresh){
+            const oldToken = socket.handshake.auth.token;
+            const newToken = await createUser({ _id: socket.user._id });
+            socket.emit("system.refreshToken", newToken, function confirm(confirm){
+                if(!confirm) return;
+                global.db.data.updateOne("token", { token: oldToken }, { token: newToken });
+            });
+        }
+        delete socket.isShouldRefresh;
+    }, 2_000);
 });
+
+function shouldRefreshToken({ iat, exp } ){
+    const now = Math.floor(Date.now() / 1000);
+
+    const lifespan = exp - iat;
+    const elapsedTime = now - iat;
+
+    return elapsedTime >= lifespan * 0.75; // if 75% of the lifespan has passed, refresh the token
+}
