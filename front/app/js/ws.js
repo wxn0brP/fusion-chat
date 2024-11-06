@@ -71,3 +71,9 @@ socket.on("connect_error", (data) => {
 
     uiFunc.uiMsg(data.toString(), 10);
 });
+
+socket.on("system.refreshToken", (newToken, cb) => {
+    localStorage.setItem("token", newToken);
+    socket.auth.token = newToken;
+    cb(true);
+});
