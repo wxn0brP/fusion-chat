@@ -1,20 +1,18 @@
-import React, { useEffect, useRef } from 'react';
-import { AppState } from 'react-native';
-import { WebView } from 'react-native-webview';
-import notificationModule from './notificationModule';
+import React, { useEffect, useRef, useState } from "react";
+import { AppState } from "react-native";
+import { WebView } from "react-native-webview";
+import notificationModule from "./notificationModule";
 import updateFunc from "./update";
 import config from "./config";
 import firebase from "./firebase";
 import permission from "./permission";
 
-import AudioRecorder from './AudioRecorder';
-import Distribution from "./Distribution";
-
-const lo = console.log;
+import AudioRecorder from "./AudioRecorder";
+// import Distribution from "./Distribution";
 
 const ReactNativeApp = () => {
-    const webViewRef = React.useRef(null);
-    const [webviewUrl, setWebviewUrl] = React.useState("");
+    const webViewRef = useRef(null);
+    const [webviewUrl, setWebviewUrl] = useState("");
 
     const handleReceiveMessage = (event) => {
         let data = JSON.parse(event.nativeEvent.data);
@@ -42,7 +40,7 @@ const ReactNativeApp = () => {
     const sendToFront = (data) => {
         try{
             if(!webViewRef.current) return;
-            webViewRef.current.injectJavaScript(`apis.api.receiveMessage('${JSON.stringify(data)}')`)
+            webViewRef.current.injectJavaScript(`apis.api.receiveMessage("${JSON.stringify(data)}")`)
         }catch(e){
             console.error(e);
         }
@@ -54,25 +52,28 @@ const ReactNativeApp = () => {
 
     useEffect(() => {
         const handleAppStateChange = (nextAppState) => {
-            if(nextAppState !== 'background'){
+            if(nextAppState !== "background"){
                 sendToFront({ type: "unclose" });
                 return;
             }
-            if(webviewUrl.endsWith('/app/')){
+            if(webviewUrl.endsWith("/app/")){
                 sendToFront({ type: "close" });
             }
         };
-        AppState.addEventListener('change', handleAppStateChange);
+        AppState.addEventListener("change", handleAppStateChange);
         
         const initApp = async () => {
-            await notificationModule.checkApplicationPermission();
-            notificationModule.initNotifications();
+            await notificationModule.initNotifications();
             
             console.log("Checking for updates...");
             const update = await updateFunc();
             if(update){
                 console.log("Update available");
-                notificationModule.showNotification("Update Required", "Please update the app", "updateCall");
+                notificationModule.showNotification(
+                    "Update Required",
+                    "Please update the app",
+                    { id: "updateCall" }
+                );
             }
         }
 
@@ -86,30 +87,30 @@ const ReactNativeApp = () => {
         };
     }, []);
 
-    useEffect(() => {
-        const logDist = async () => {
-            const distro = await Distribution.getInstallSource();
-            const distroName = Distribution.getInstallSourceName(distro);
-            setTimeout(() => {
-                if(!webViewRef.current) return;
-                // webViewRef.current.injectJavaScript(`apis.api.distribution('${distro}', '${distroName}')`)
-            }, 3000);
-        }
+    // useEffect(() => {
+    //     const logDist = async () => {
+    //         const distro = await Distribution.getInstallSource();
+    //         const distroName = Distribution.getInstallSourceName(distro);
+    //         setTimeout(() => {
+    //             if(!webViewRef.current) return;
+    //             webViewRef.current.injectJavaScript(`apis.api.distribution("${distro}", "${distroName}")`)
+    //         }, 3000);
+    //     }
 
-        logDist();
-    }, []);
+    //     logDist();
+    // }, []);
 
     const startRecording = async () => {
         await permission.requestMicrophonePermission();
         AudioRecorder.start((data) => {
             if(!webViewRef.current) return;
-            webViewRef.current.injectJavaScript(`apis.api.receiveAudio('${data}')`)
+            webViewRef.current.injectJavaScript(`apis.api.receiveAudio("${data}")`)
         });
     }
 
     return (
         <WebView
-            source={{ uri: config.link+'/app' }}
+            source={{ uri: config.link+"/app" }}
             onMessage={e => handleReceiveMessage(e)}
             onNavigationStateChange={handleNavigationStateChange}
             ref={webViewRef}

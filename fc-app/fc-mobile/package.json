@@ -1,6 +1,6 @@
 {
   "name": "fusion-chat",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": false,
   "license": "MIT",
   "scripts": {
@@ -13,15 +13,13 @@
     "mvar": "mv android/app/build/outputs/apk/release/app-release.apk fc.apk"
   },
   "dependencies": {
+    "@notifee/react-native": "^9.1.2",
     "@react-native-firebase/app": "^18.7.3",
     "@react-native-firebase/messaging": "^18.7.3",
     "axios": "^1.6.3",
     "react": "18.2.0",
     "react-native": "0.73.0",
     "react-native-exit-app": "^2.0.0",
-    "react-native-fs": "^2.20.0",
-    "react-native-notifications": "^5.1.0",
-    "react-native-permissions": "^4.0.1",
     "react-native-webview": "^13.6.3"
   },
   "devDependencies": {
