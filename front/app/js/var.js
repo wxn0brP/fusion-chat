@@ -24,6 +24,7 @@ const vars = {
     servers: {
         users: [],
         roles: [],
+        permission: [],
         text: [],
         desc: {},
     },

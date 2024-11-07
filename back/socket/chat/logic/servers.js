@@ -57,8 +57,9 @@ export async function server_setup(suser, id){
     }
 
     const isOwnEmoji = existsSync("userFiles/emoji/" + id + ".ttf");
+    const userPermissions = await permission.getUserRolesPerms(suser._id);
 
-    return { err: false, res: [id, name, buildChannels, isOwnEmoji] };
+    return { err: false, res: [id, name, buildChannels, isOwnEmoji, userPermissions] };
 }
 
 export async function server_roles_sync(id){
