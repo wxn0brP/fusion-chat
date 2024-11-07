@@ -1,96 +1,49 @@
-import { Notifications } from 'react-native-notifications';
-import { PermissionsAndroid } from 'react-native';
+import notifee, { EventType } from '@notifee/react-native';
 import callbacks from './notifCallbacks';
 
-const initNotifications = () => {
-    const channelId = 'channel_fc';
-    const channelName = 'fc channel';
-    const channelDescription = 'fc mobile channel';
+let channelId = null;
 
-    Notifications.registerRemoteNotifications();
+const initNotifications = async () => {
+    // Request permissions (required for iOS)
+    await notifee.requestPermission();
 
-    Notifications.getInitialNotification([
-        {
+    // Create a channel (required for Android)
+    channelId = await notifee.createChannel({
+        id: 'fc-channel',
+        name: 'FusionChat',
+    });
+
+    function callbacksFn(type, detail){
+        if(type !== EventType.PRESS || !detail.pressAction.id) return;
+        const cb = callbacks[detail.pressAction.id];
+        if(cb) cb();
+    }
+
+    notifee.onForegroundEvent(data => {
+        callbacksFn(data.type, data.detail);
+    });
+
+    notifee.onBackgroundEvent(data => {
+        callbacksFn(data.type, data.detail);
+    })
+}
+
+const showNotification = async (title, body, pressOpts={}, opts={}) => {
+    await notifee.displayNotification({
+        title,
+        body,
+        android: {
             channelId,
-            channelName,
-            channelDescription,
-            soundName: 'default',
-            importance: 4, // IMPORTANCE_HIGH
-            vibrate: true,
-        },
-    ]);
-
-    // Notifications.events().registerNotificationReceivedForeground(
-    //     (notification, completion) => {
-    //         console.log('Notification Received - Foreground', notification.payload);
-    //         completion({ alert: true, sound: true, badge: false });
-    //     }
-    // );
-    // Notifications.events().registerNotificationReceivedBackground(
-    //     (notification, completion) => {
-    //         console.log('Notification Received - Background', notification.payload);
-    //         completion({ alert: true, sound: true, badge: false });
-    //     }
-    // );
-
-    Notifications.events().registerNotificationReceivedForeground((notification, completion) => {
-      console.log(`Notification received in foreground: ${notification.title} : ${notification.body}`);
-      completion({alert: false, sound: false, badge: false});
-    });
-
-    Notifications.events().registerNotificationOpened(
-        (notification, completion) => {
-            const notif = notification.payload;
-            console.log('Notification opened', notif);
-
-            if(notif.userInfo){
-                const id = notif.userInfo;
-                if(callbacks[id]) callbacks[id](notif);
-            }
-            completion();
+            pressAction: {
+                id: 'default',
+                ...pressOpts
+            },
+            ...opts
         }
-    );
-
-    Notifications.events().registerRemoteNotificationsRegistered((event) => {
-        console.log("Device Token Received");
     });
-
-    Notifications.events().registerRemoteNotificationsRegistrationFailed((event) => {
-        console.log("err", event);
-    });
-}
-
-const showNotification = async (title, body, callbackId=null) => {
-    const notification = {
-        title, body,
-        category: "FC_CATEGORY",
-        userInfo: callbackId,
-        link: 'localNotificationLink',
-        fireDate: new Date().getTime(),
-    }
-
-    try{
-        const id = Notifications.postLocalNotification(notification);
-        console.log("notif res:", id);
-    }catch(e){
-        console.log("ee", e)
-    }
-}
-
-const checkApplicationPermission = async () => {
-    if(Platform.OS === 'android'){
-        try{
-            await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-            );
-        }catch(error){
-            console.log(e)
-        }
-    }
 }
 
 export default {
     initNotifications,
     showNotification,
-    checkApplicationPermission
 };
