@@ -35,7 +35,9 @@ const settingsData = {
                         localStorage.removeItem("user_id");
                         localStorage.removeItem("from");
                         localStorage.removeItem("token");
-                        location.href = "/login";
+                        socket.emit("logout", () => {
+                            location.href = "/login";
+                        });
                     },
                     css: {
                         color: "red"

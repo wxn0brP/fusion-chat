@@ -63,11 +63,6 @@ apis.api.receiveAudio = async (base64WavData) => {
 };
 
 setTimeout(() => {
-    apis.api.send({
-        type: "firebase",
-        _id: vars.user._id,
-        user: vars.user.fr,
-    });
     try{
         processMediaRN.init();
     }catch(error){
@@ -75,10 +70,11 @@ setTimeout(() => {
     }
 }, 1000);
 
-// setTimeout(() => {
-//     apis.api.send({
-//         type: "notif",
-//         msg: "test",
-//         title: "test",
-//     });
-// }, 5000);
+setTimeout(() => {
+    socket.emit("fireToken.get", (token) => {
+        apis.api.send({
+            type: "fireToken",
+            fireToken: token,
+        });
+    })
+}, 5000);

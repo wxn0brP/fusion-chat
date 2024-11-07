@@ -22,8 +22,8 @@ const ReactNativeApp = () => {
             case "notif":
                 notificationModule.showNotification(data.title, data.msg);
             break;
-            case "firebase":
-                firebase.registerApp(data._id, data.user);
+            case "fireToken":
+                firebase.registerApp(data.fireToken);
             break;
             case "debug":
                 console.log(data.msg);

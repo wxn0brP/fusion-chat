@@ -4,6 +4,7 @@ import ogsToEmbed from "../../../logic/ogToEmbed.js";
 import sendMessage from "../../../logic/sendMessage.js";
 import embedData from "../valid/embedData.js";
 import ValidError from "../../../logic/validError.js";
+import { createTokenPointer } from "../../../logic/mobileNotif.js";
 
 const embedDataShema = valid.objAjv(embedData);
 
@@ -61,4 +62,9 @@ export async function send_embed_data(suser, to, chnl, embed){
     );
     if(result.err) return validE.err(result.err);
     return { err: false };
+}
+
+export async function fireToken_get(suser, userToken){
+    const pointer = await createTokenPointer(suser._id, userToken);
+    return pointer;
 }

@@ -24,6 +24,7 @@
         "image-js": "^0.35.6",
         "jose": "^5.9.6",
         "multer": "^1.4.5-lts.1",
+        "node-cache": "^5.1.2",
         "nodemailer": "^6.9.9",
         "open-graph-scraper": "^6.8.1",
         "potrace": "^2.1.8",
