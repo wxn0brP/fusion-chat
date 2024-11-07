@@ -112,7 +112,12 @@ export async function server_settings_set(suser, id, data){
 
     if(data.webhooks){
         const old_webhooks = dbData.filter(d => !!d.whid);
-        const webhooksChanges = processDbChanges(old_webhooks, data.webhooks, ["name", "url"], "whid");
+        const webhooksChanges = processDbChanges(
+            old_webhooks,
+            data.webhooks,
+            ["name", "template", "chnl", "require", "ajv", "embed"],
+            "whid"
+        );
         await proccessWebhooks(id, webhooksChanges);
     }
 
