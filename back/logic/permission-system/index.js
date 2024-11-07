@@ -126,6 +126,36 @@ class permissionSystem{
         const bigger = userRoles[0];
         return await this.roleIsBigger(roles, bigger, role);
     }
+
+    /**
+     * Retrieve permissions associated with a specific role.
+     * @param {string} role - The role identifier.
+     * @returns {Promise<Array>} A Promise that resolves with an array of permissions for the role, or an empty array if the role is not found.
+     */
+    async getRolePerms(role){
+        const roles = await this.getRoles();
+        const roleDb = roles.find(r => r.rid == role);
+        if(!roleDb) return [];
+        return roleDb.p;
+    }
+
+    /**
+     * Get all permissions associated with a user.
+     * @param {string} user - The user identifier.
+     * @returns {Promise<Array>} A Promise that resolves with an array of all permissions for the user, or an empty array if the user is not found.
+     */
+    async getUserRolesPerms(user){
+        const roles = await this.getUserRoles(user);
+        let userPerms = [];
+        for(const role of roles){
+            const perms = await this.getRolePerms(role);
+            if(perms.length == 0) continue;
+            if(typeof perms == "string") userPerms.push(perms);
+            else userPerms.push(...perms);
+        }
+        userPerms = [...new Set(userPerms)];
+        return userPerms;
+    }
 }
 
 export default permissionSystem;

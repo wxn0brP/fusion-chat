@@ -153,14 +153,19 @@ const renderFunc = {
         renderUtils.initPopup(userProfileDiv);
     },
 
-    serverInit(sid, name, categories, isOwnEmoji){
+    serverInit(sid, name, categories, isOwnEmoji, permission){
+        vars.servers.permission = permission;
         navs__groups__name.innerHTML = name;
-        const settingsBtn = document.createElement("span");
-        settingsBtn.innerHTML = "⚙️";
-        settingsBtn.addEventListener("click", () => {
-            socket.emit("server.settings.get", sid);
-        })
-        navs__groups__name.appendChild(settingsBtn);
+
+        if(permission.includes("manage server") || permission.includes("all")){
+            const settingsBtn = document.createElement("span");
+            settingsBtn.innerHTML = "⚙️";
+            settingsBtn.addEventListener("click", () => {
+                socket.emit("server.settings.get", sid);
+            });
+            settingsBtn.id = "serverSettingsBtn";
+            navs__groups__name.appendChild(settingsBtn);
+        }
 
         const usersDisplayBtn = document.createElement("span");
         usersDisplayBtn.innerHTML = "👥";
