@@ -3,8 +3,6 @@ import {
     voice_join,
     voice_sendData,
     leaveVoiceChannel,
-    call_private_answer,
-    call_private_init,
 } from "../chat/logic/voice.js";
 
 export default (socket) => {
@@ -48,28 +46,6 @@ export default (socket) => {
             if(err) return socket.emit(...err);
             if(cb) cb(res);
             else socket.emit("voice.get.users", res);
-        }catch(e){
-            socket.logError(e);
-        }
-    });
-
-    socket.onLimit("call.private.init", 100, async (id, cb) => {
-        try{
-            const { err, res } = await call_private_init(socket.user, id);
-            if(err) return socket.emit(...err);
-
-            if(!res) return;
-            if(cb) cb(id, false);
-            else socket.emit("call.private.init", id, false);
-        }catch(e){
-            socket.logError(e);
-        }
-    });
-
-    socket.onLimit("call.private.answer", 100, async (id, answer) => {
-        try{
-            const { err } = await call_private_answer(socket.user, id, answer);
-            if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }

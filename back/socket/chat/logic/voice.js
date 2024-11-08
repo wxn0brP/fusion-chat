@@ -49,7 +49,17 @@ export async function call_private_init(suser, id){
     if(!valid.id(id)) return validE.valid("id");
 
     const sockets = global.getSocket(id);
-    if(sockets.length == 0) return { err: false, res: true }
+    if(sockets.length == 0){
+        const targetName = await global.db.data.findOne("user", { _id: id }).then(u => u.name);
+        
+        global.fireBaseMessage.send({
+            to: id,
+            title: targetName+" is calling you",
+            body: "Join to the call",
+            checkSocket: false
+        });
+        return { err: false, res: true };
+    }
 
     global.sendToSocket(id, "call.private.init", suser._id);
     return { err: false };

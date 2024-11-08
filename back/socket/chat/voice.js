@@ -59,8 +59,8 @@ export default (socket) => {
             if(err) return socket.emit(...err);
 
             if(!res) return;
-            if(cb) cb(id, false);
-            else socket.emit("call.private.init", id, false);
+            if(cb) cb(id, true);
+            else socket.emit("call.private.init", id, true);
         }catch(e){
             socket.logError(e);
         }

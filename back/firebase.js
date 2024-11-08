@@ -11,9 +11,25 @@ try{
 global.firebaseAdmin = admin;
 
 global.fireBaseMessage = {
-    async send(to, title, body){
-        const socket = global.getSocket(to);
-        if(socket.length > 0) return;
+    async send(options){
+        if(!options) return false;
+
+        const {
+            to,
+            title,
+            body,
+            checkSocket=false,
+            action=null,
+        } = options;
+
+        if(!to) return false;
+        if(!title) return false;
+        if(!body) return false;
+
+        if(checkSocket){
+            const socket = global.getSocket(to);
+            if(socket.length > 0) return;
+        }
     
         let tokens = await global.db.data.find("fireToken", { user: to });
         if(tokens.length == 0) return;
@@ -43,6 +59,7 @@ global.fireBaseMessage = {
                     global.firebaseAdmin.messaging().send({
                         notification: { title, body },
                         token,
+                        data: action ? { action } : undefined
                     });
                 }catch(e){
                     if(process.env.status == "dev") lo("Firebase error: ", e.message);

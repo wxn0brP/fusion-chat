@@ -107,7 +107,11 @@ export default async function sendMessage(req, user, options={}){
                 }
     
                 sendToSocket(u, "mess", data);
-                if(!data.silent) global.fireBaseMessage.send(u, "New message from " + fromMsg, data.msg);
+                if(!data.silent) global.fireBaseMessage.send({
+                    to: u,
+                    title: "New message from " + fromMsg,
+                    body: data.msg
+                });
             });
         })
 
@@ -123,7 +127,11 @@ export default async function sendMessage(req, user, options={}){
         const toSend = req.to.replace("$","");
         data.to = "$"+user._id;
         sendToSocket(toSend, "mess", data);
-        if(!data.silent) global.fireBaseMessage.send(toSend, "New message from " + user.name, data.msg);
+        if(!data.silent) global.fireBaseMessage.send({
+            to: toSend,
+            title: "New message from " + user.name,
+            body: data.msg
+        });
     }
 
     return { err: false };

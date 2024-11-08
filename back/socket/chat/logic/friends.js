@@ -34,7 +34,11 @@ export async function friend_request(suser, nameOrId){
 
     await global.db.data.add("friendRequests", { from: suser._id, to: id });
     global.sendToSocket(id, "friend.request", suser._id);
-    await global.fireBaseMessage.send(id, "Friend request", suser.name + " wants to be your friend");
+    await global.fireBaseMessage.send({
+        to: id,
+        title: "Friend request",
+        body: suser.name + " wants to be your friend"
+    });
     return { err: false };
 }
 
@@ -52,11 +56,11 @@ export async function friend_response(suser, id, accept){
 
     global.sendToSocket(id, "friend.response", suser._id, accept);
     if(accept) global.sendToSocket(suser._id, "refreshData", "friend.getAll");
-    global.fireBaseMessage.send(
-        id,
-        "Friend request",
-        suser.name + (accept ? " accepted your friend request" : " rejected your friend request")
-    );
+    global.fireBaseMessage.send({
+        to: id,
+        title: "Friend request",
+        body: suser.name + (accept ? " accepted your friend request" : " rejected your friend request")
+    });
     return { err: false };
 }
 

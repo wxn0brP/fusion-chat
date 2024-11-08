@@ -202,11 +202,17 @@ socket.on("voice.get.users", (users) => {
     }
 });
 
-socket.on("call.private.init", (id) => {
-    const isConfirm = confirm(translateFunc.get("$ is calling you. Accept", apis.www.changeUserID(id)) + "?");
-    socket.emit("call.private.answer", id, isConfirm);
-
-    if(!isConfirm) return;
+socket.on("call.private.init", (id, userOffline=false) => {
+    if(userOffline){
+        alert(translateFunc.get("$ is offline", apis.www.changeUserID(id)));
+        const join = confirm(translateFunc.get("Do you want join to call and wait") + "?");
+        if(!join) return;
+    }else{ // if user is online
+        const isConfirm = confirm(translateFunc.get("$ is calling you. Accept", apis.www.changeUserID(id)) + "?");
+        socket.emit("call.private.answer", id, isConfirm);
+    
+        if(!isConfirm) return;
+    }
 
     const room = "user_" + [id, vars.user._id].sort().join("=");
     voiceFunc.joinToVoiceChannel(room);
