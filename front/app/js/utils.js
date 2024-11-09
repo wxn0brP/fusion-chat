@@ -31,4 +31,11 @@ const utils = {
         const formattedDate = `${day}.${month}.${year} ${hours}:${(minutes < 10 ? '0' : '')}${minutes}`;
         return formattedDate;
     },
+
+    validId(id){
+        if(!id) return false;
+        if(typeof id !== "string") return false;
+        if(id.split("-").length != 3) return false;
+        return true;
+    }
 }
