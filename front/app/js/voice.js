@@ -171,6 +171,11 @@ const voiceFunc = {
             return stream;
         }
     },
+
+    isInUserCall(id){
+        const room = "user_" + [id, vars.user._id].sort().join("=");
+        return room == voiceFunc.joined;
+    }
 }
 
 socket.on("voice.sendData", (from, data) => {
@@ -208,6 +213,9 @@ socket.on("call.private.init", (id, userOffline=false) => {
         const join = confirm(translateFunc.get("Do you want join to call and wait") + "?");
         if(!join) return;
     }else{ // if user is online
+        if(voiceFunc.isInUserCall(id))
+            return socket.emit("call.private.answer", id, true);
+        
         const isConfirm = confirm(translateFunc.get("$ is calling you. Accept", apis.www.changeUserID(id)) + "?");
         socket.emit("call.private.answer", id, isConfirm);
     
@@ -219,10 +227,8 @@ socket.on("call.private.init", (id, userOffline=false) => {
 });
 
 socket.on("call.private.answer", (id, answer) => {
-    if(!answer){
-        alert(translateFunc.get("Call rejected"));
-        return;
-    }
+    if(!answer)
+        return alert(translateFunc.get("Call rejected"));
 
     const isConfirm = confirm(translateFunc.get("$ accepted your call. Join in this device", apis.www.changeUserID(id)) + "?");
     if(!isConfirm) return;
