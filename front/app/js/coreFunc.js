@@ -5,7 +5,7 @@ const emojiStyleDiv = document.querySelector("#emoji-style");
 const messages_nav__server__description = document.querySelector("#messages_nav__server__description");
 
 const coreFunc = {
-    changeChat(id){
+    changeChat(id, chnl=null){
         messagesDiv.innerHTML = "";
         emojiStyleDiv.innerHTML = "";
         emojiFunc.customEmojisCat = [];
@@ -62,7 +62,7 @@ const coreFunc = {
             navs__groups.style.display = "block";
             messages_nav_priv.style.display = "none";
             messages_nav_server.style.display = "";
-            vars.chat.chnl = null;
+            vars.chat.chnl = chnl;
             socket.emit("server.setup", id);
             socket.emit("server.roles.sync", id);
         }

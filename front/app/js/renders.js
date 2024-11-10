@@ -80,7 +80,7 @@ const renderFunc = {
             groups__content.appendChild(groupDiv);
 
             groupDiv.addEventListener("click", () => {
-                coreFunc.changeChat(id, groupDiv);
+                coreFunc.changeChat(id);
             });
 
             contextMenu.menuClickEvent(groupDiv, (e) => {
@@ -234,11 +234,13 @@ const renderFunc = {
             buildCategory(category.name, category.chnls, navs__groups__channels);
         });
     
-        catLoop: for(let cat of categories){
-            for(let chnl of cat.chnls){
-                if(chnl.type == "text"){
-                    vars.chat.chnl = chnl.id;
-                    break catLoop;
+        if(vars.chat.chnl == null){
+            catLoop: for(let cat of categories){
+                for(let chnl of cat.chnls){
+                    if(chnl.type == "text"){
+                        vars.chat.chnl = chnl.id;
+                        break catLoop;
+                    }
                 }
             }
         }

@@ -56,7 +56,11 @@ export async function call_private_init(suser, id){
             to: id,
             title: targetName+" is calling you",
             body: "Join to the call",
-            checkSocket: false
+            checkSocket: false,
+            action: {
+                type: "ctrl",
+                data: [["call", suser._id]]
+            }
         });
         return { err: false, res: true };
     }

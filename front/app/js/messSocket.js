@@ -41,7 +41,6 @@ messInput.addEventListener("input", messStyle.sendBtnStyle);
 messInput.addEventListener("input", messStyle.messageHeight);
 
 socket.on("mess", (data) => {
-    lo(data)
     // generate last message storage if needed
     vars.lastMess[data.to] = vars.lastMess[data.to] || {};
     vars.lastMess[data.to][data.chnl] = vars.lastMess[data.to][data.chnl] || { read: null, mess: null };

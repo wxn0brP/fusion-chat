@@ -5,6 +5,14 @@ const stateManager = {
         return fn(...data) || true;
     },
 
+    async handleArray(arr){
+        for(const data of arr){
+            const val = Array.isArray(data.value) ? data.value : [data.value];
+            await stateManager.handle(data.type, ...val);
+            await delay(100);
+        }
+    },
+
     async handleGetParam(){
         const params = new URLSearchParams(window.location.search);
         const ctrls = [];
@@ -22,11 +30,7 @@ const stateManager = {
         }
 
         ctrls.sort((a, b) => a.num - b.num);
-
-        for(const ctrl of ctrls){
-            stateManager.handle(ctrl.type, ctrl.value);
-            await delay(100);
-        }
+        await stateManager.handleArray(ctrls);
     },
 
     removeControlParams(){
@@ -44,13 +48,20 @@ const stateManager = {
     extractUrl(){
         const path = window.location.origin + window.location.pathname;
         const params = new URLSearchParams(window.location.search);
-        params.set("ctrl_1_chat", vars.chat.to);
-        if(!vars.chat.to.startsWith("$")) params.set("ctrl_2_chnl", vars.chat.chnl);
-        if(voiceFunc.joined) params.set("ctrl_3_voice", voiceFunc.joined);
+        if(vars.chat.to.startsWith("$")){
+            params.set("ctrl_1_chat", vars.chat.to);
+        }else{
+            params.set("ctrl_1_cc", vars.chat.to + "_" + vars.chat.chnl);
+        }
 
         const url = path + "?" + params.toString();
-        navigator.clipboard.writeText(url);
-        uiFunc.uiMsg(translateFunc.get("Copied to clipboard") + "!");
+        setTimeout(() => {
+            navigator.clipboard.writeText(url).then(() => {
+                uiFunc.uiMsg(translateFunc.get("Copied to clipboard") + "!");
+            }).catch(() => {
+                uiFunc.uiMsg(translateFunc.get("Failed to copy to clipboard") + ".");
+            });
+        }, 2000)
     }
 }
 
@@ -59,11 +70,20 @@ const stateManagerFunc = {
         if(!utils.validId(id)) return;
         coreFunc.changeChat(id);
     },
+
     chnl(id){
         if(!utils.validId(id)) return;
         coreFunc.changeChnl(id);
     },
-    voice(id){
+
+    cc(ids){
+        const [chat, chnl] = ids.split("_");
+        if(!utils.validId(chat)) return;
+        if(!utils.validId(chnl)) return;
+        coreFunc.changeChat(chat, chnl);
+    },
+
+    call(id){
         if(!utils.validId(id)) return;
         const conf = confirm(translateFunc.get("Are you sure you want to call $?", apis.www.changeUserID(id)));
         if(!conf) return;

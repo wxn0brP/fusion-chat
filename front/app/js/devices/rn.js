@@ -14,6 +14,11 @@ apis.api.receiveMessage = (data) => {
         case "unclose":
             socket.connect();
         break;
+        case "ctrl":
+            if(typeof data.ctrl == "object" && !Array.isArray(data.ctrl)) data.ctrl = [data.ctrl];
+            const ctrl = data.ctrl.map(c => ({ type: c[0], value: c.slice(1) }));
+            stateManager.handleArray(ctrl);
+        break;
     }
 }
 

@@ -52,15 +52,16 @@ global.fireBaseMessage = {
 
             workedTokens.push(data.fire);
         }
-        
+
         try{
             workedTokens.forEach(token => {
                 try{
-                    global.firebaseAdmin.messaging().send({
+                    const message = {
                         notification: { title, body },
                         token,
-                        data: action ? { action } : undefined
-                    });
+                        data: action ? { action: JSON.stringify(action)} : undefined
+                    }
+                    global.firebaseAdmin.messaging().send(message);
                 }catch(e){
                     if(process.env.status == "dev") lo("Firebase error: ", e.message);
                 }

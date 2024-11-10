@@ -110,7 +110,8 @@ export default async function sendMessage(req, user, options={}){
                 if(!data.silent) global.fireBaseMessage.send({
                     to: u,
                     title: "New message from " + fromMsg,
-                    body: data.msg
+                    body: data.msg,
+                    action: { type: "ctrl", data: [["cc", data.to+"_"+data.chnl]] }
                 });
             });
         })
@@ -130,7 +131,8 @@ export default async function sendMessage(req, user, options={}){
         if(!data.silent) global.fireBaseMessage.send({
             to: toSend,
             title: "New message from " + user.name,
-            body: data.msg
+            body: data.msg,
+            action: { type: "ctrl", data: [["chat", "$"+user._id]] }
         });
     }
 

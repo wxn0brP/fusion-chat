@@ -15,6 +15,45 @@ const registerApp = async (pointerToken) => {
     }
 }
 
+const initFbCallbacks = (handleNotificationAction) => {
+    let notificationHandled = false;
+
+    const handleNotification = (remoteMessage) => {
+        if(notificationHandled) return;
+        notificationHandled = true;
+
+        if(remoteMessage?.data?.action){
+            handleNotificationAction(JSON.parse(remoteMessage.data.action));
+        }
+
+        setTimeout(() => (notificationHandled = false), 5000);
+    };
+
+    const unsubscribeOnMessage = messaging().onMessage(async (remoteMessage) => {
+        handleNotification(remoteMessage);
+    });
+
+    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+        handleNotification(remoteMessage);
+    });
+
+    const unsubscribeNotificationOpenedApp = messaging().onNotificationOpenedApp((remoteMessage) => {
+        handleNotification(remoteMessage);
+    });
+
+    messaging().getInitialNotification().then((remoteMessage) => {
+        if(remoteMessage){
+            handleNotification(remoteMessage);
+        }
+    });
+
+    return () => {
+        unsubscribeOnMessage();
+        unsubscribeNotificationOpenedApp();
+    };
+}
+
 export default {
-    registerApp
+    registerApp,
+    initFbCallbacks
 }

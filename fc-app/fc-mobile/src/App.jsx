@@ -39,8 +39,10 @@ const ReactNativeApp = () => {
 
     const sendToFront = (data) => {
         try{
-            if(!webViewRef.current) return;
-            webViewRef.current.injectJavaScript(`apis.api.receiveMessage("${JSON.stringify(data)}")`)
+            if(!webViewRef.current) return console.error("no webview");
+            data = JSON.stringify(data);
+            data = "apis.api.receiveMessage(`" + data + "`)"
+            webViewRef.current.injectJavaScript(data);
         }catch(e){
             console.error(e);
         }
@@ -79,6 +81,16 @@ const ReactNativeApp = () => {
 
         permission.requestUserPermission();
         initApp();
+        const initFbCallbacks = firebase.initFbCallbacks(async (notif) => {
+            await new Promise((resolve) => setTimeout(resolve, 3000)); // error less
+            if(notif.type == "ctrl"){
+                sendToFront({ type: "ctrl", ctrl: notif.data });
+            }
+        });
+
+        return () => {
+            initFbCallbacks();
+        }
     }, []);
 
     useEffect(() => {
