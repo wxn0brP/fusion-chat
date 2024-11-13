@@ -91,48 +91,6 @@
     object-fit: cover;
 }
 
-#usersInChat{
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    background-color: var(--back);
-    color: var(--txt);
-    border: 2px solid var(--accent);
-    border-radius: 1rem;
-    padding: 1rem;
-
-    text-align: left;
-    width: 600px;
-    max-height: 60vh;
-    overflow-y: scroll;
-}
-
-#usersInChat > div{
-    margin-block: 0.3rem;
-    padding: 1rem;
-    border-radius: 1rem;
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-
-    cursor: pointer;
-}
-
-#usersInChat > div:hover{
-    background-color: rgba(var(--accentRGB), .4);
-}
-
-#usersInChat img{
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
 #linkClick{
     position: absolute;
     top: 40%;
@@ -262,10 +220,6 @@
     }
 
     #linkClick{
-        width: 90vw;
-    }
-
-    #usersInChat{
         width: 90vw;
     }
 

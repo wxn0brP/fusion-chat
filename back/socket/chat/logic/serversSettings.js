@@ -121,7 +121,7 @@ export async function server_settings_set(suser, id, data){
         await proccessWebhooks(id, webhooksChanges);
     }
 
-    global.sendToChatUsers(id, "refreshData", { server: id, evt: ["server.setup", "server.roles.sync"] }, id);
+    global.sendToChatUsers(id, "refreshData", { server: id, evt: ["server.setup", "server.users.sync"] }, id);
 
     return { err: false };
 }

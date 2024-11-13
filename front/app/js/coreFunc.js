@@ -63,8 +63,11 @@ const coreFunc = {
             messages_nav_priv.style.display = "none";
             messages_nav_server.style.display = "";
             vars.chat.chnl = chnl;
+            renderFunc.state.chnl_user = false;
+            navs__groups__channels.style.display = "";
+            navs__groups__users.style.display = "none";
             socket.emit("server.setup", id);
-            socket.emit("server.roles.sync", id);
+            socket.emit("server.users.sync", id);
         }
         coreFunc.markSelectedChat();
     },

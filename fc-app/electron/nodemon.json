@@ -1,7 +1,8 @@
 {
-    "exec": "electron . -dev http://localhost:1478",
+    "exec": "electron . --link http://localhost:1478 -d",
     "events": {
         "restart": "clear"
     },
-    "ext": "js html css"
+    "ext": "js html css",
+    "ignore": "*"
 }

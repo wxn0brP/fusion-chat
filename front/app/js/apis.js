@@ -57,10 +57,9 @@ const apis = {
         init(){
             return new Promise((resolve) => {
                 const dev = {
-                    isElectron: navigator.userAgent.toLowerCase().includes('electron'),
+                    isElectron: navigator.userAgent.toLowerCase().includes("electron"),
                     isInIframe: window.self !== window.top,
                     isReactNative: !!window.ReactNativeWebView,
-                    // isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
                 };
                 
                 const script = document.createElement("script");

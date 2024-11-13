@@ -14,7 +14,7 @@ const socket = io("/", {
 socket.on("connect", () => {
     debugFunc.msg("connected to socket");
     socket.emit("group.get");
-    socket.emit("status.get");
+    socket.emit("self.status.get");
     socket.emit("private.get");
 });
 

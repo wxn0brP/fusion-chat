@@ -2,7 +2,11 @@ import {
     get_ogs,
     send_embed_og,
     send_embed_data,
-    fireToken_get
+    fireToken_get,
+    status_activity_set,
+    status_activity_get,
+    status_activity_gets,
+    status_activity_remove
 } from "./logic/other.js";
 
 export default (socket) => {
@@ -54,5 +58,45 @@ export default (socket) => {
         setTimeout(() => {
             if(socket.connected) socket.disconnect();
         }, 100);
+    });
+
+    socket.onLimit("status.activity.set", 1_000, async (state) => {
+        try{
+            const { err } = await status_activity_set(socket.user, state);
+            if(err) return socket.emit(...err);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("status.activity.get", 1_000, async (id, cb) => {
+        try{
+            const { err, res } = await status_activity_get(id);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("status.activity.get", res);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("status.activity.gets", 1_000, async (ids, cb) => {
+        try{
+            const { err, res } = await status_activity_gets(ids);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("status.activity.gets", res);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("status.activity.remove", 1_000, async () => {
+        try{
+            const { err } = await status_activity_remove(socket.user);
+            if(err) return socket.emit(...err);
+        }catch(e){
+            socket.logError(e);
+        }
     });
 }

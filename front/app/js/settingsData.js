@@ -97,7 +97,7 @@ const settingsData = {
                     name: "Notifications",
                     txt: translateFunc.get("Notifications"),
                     type: "checkbox",
-                    defaultValue: localStorage.getItem("notifications") == "true" ?? false,
+                    defaultValue: localStorage.getItem("notifications") == "true" || false,
                 },
                 {
                     name: "Notifications permissions",
@@ -109,6 +109,12 @@ const settingsData = {
                             else uiFunc.uiMsg(translateFunc.get("Notification permission denied") + ".");
                         });
                     }
+                },
+                {
+                    name: "desktopHandling",
+                    txt: translateFunc.get("Desktop app handling fullscreen and set activity (alpha feature, not recommended for always on)"),
+                    type: "checkbox",
+                    defaultValue: localStorage.getItem("desktopHandling") == "true" || false
                 }
             ]
         }
@@ -148,6 +154,14 @@ const settingsData = {
                     uiFunc.uiMsg(translateFunc.get("Notification permission denied") + ".");
                 });
             }
+        }
+
+        const desktopHandling = settings["desktopHandling"];
+        if(desktopHandling != undefined){
+            localStorage.setItem("desktopHandling", desktopHandling);
+            vars.settings.desktopHandling = desktopHandling;
+            if(!desktopHandling) socket.emit("status.activity.remove");
+            if(apis.app.apiType == "ele") apis.api.send({type: "desktopHandling", data: desktopHandling});
         }
     },
 }

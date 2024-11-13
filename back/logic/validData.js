@@ -65,6 +65,21 @@ const valid = {
     },
 
     /**
+     * Check if an array contains only valid IDs.
+     *
+     * @function
+     * @param {Array} arr - The array of IDs to validate.
+     * @returns {boolean} True if the array contains only valid IDs, false otherwise.
+     */
+    arrayId(arr){
+        if(!Array.isArray(arr)) return false;
+        for(const value of arr){
+            if(!this.id(value)) return false;
+        }
+        return true;
+    },
+
+    /**
      * Validate an object against a provided schema or check if it's a plain object.
      *
      * @function

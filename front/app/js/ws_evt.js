@@ -20,7 +20,7 @@ socket.on("refreshData", (settings, ...moreData) => {
     });
 });
 
-socket.on("status.get", (status, text) => {
+socket.on("self.status.get", (status, text) => {
     vars.user.status = status;
     vars.user.statusText = text;
     renderFunc.localUserProfile();
@@ -38,7 +38,12 @@ socket.on("message.markAsRead", (to, chnl, id) => {
     }catch{}
 });
 
-socket.on("server.roles.sync", (users, roles) => {
+socket.on("server.users.sync", (users, roles) => {
     vars.servers.users = users;
     vars.servers.roles = roles;
+    renderFunc.usersInChat();
+    users.forEach(user => {
+        renderFunc.serverUserStatus(user.uid, { activity: Object.assign({}, user.activity) });
+        delete user.activity;
+    })
 });

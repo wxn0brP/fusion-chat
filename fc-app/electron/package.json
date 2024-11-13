@@ -1,7 +1,7 @@
 {
     "name": "fc",
     "version": "0.0.1",
-    "main": "index.js",
+    "main": "src/index.js",
     "author": {
         "name": "wxn0brP",
         "email": "fusion@fusion.ct8.pl"
@@ -14,8 +14,12 @@
         "electron-packager": "^17.1.2"
     },
     "dependencies": {
+        "@waiting/shared-core": "^23.23.0",
         "axios": "^1.7.2",
-        "opn": "^6.0.0"
+        "opn": "^6.0.0",
+        "win32-api": "^26.0.3",
+        "ws": "^8.18.0",
+        "yargs": "^17.7.2"
     },
     "homepage": "https://fusion.ct8.pl",
     "scripts": {
@@ -36,7 +40,7 @@
             "repo": "fc-desktop"
         },
         "win": {
-            "icon": "favicon.ico",
+            "icon": "icon.ico",
             "target": [
                 "nsis",
                 "zip"
@@ -50,9 +54,13 @@
             "icon": "favicon.png"
         },
         "files": [
-            "index.js",
-            "preload.js",
-            "favicon.png"
+            "src/**/*",
+            "favicon.png",
+            "icon.ico",
+            "package.json"
         ]
+    },
+    "engines": {
+        "node": "==16.x"
     }
 }

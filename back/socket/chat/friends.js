@@ -5,7 +5,7 @@ import {
     friend_request,
     friend_response,
     friend_requestRemove,
-    friend_user_profile
+    user_profile
 } from "./logic/friends.js"
 
 export default (socket) => {
@@ -69,7 +69,7 @@ export default (socket) => {
 
     socket.onLimit("user.profile", 1000, async (id, cb) => {
         try{
-            const { err, res } = await friend_user_profile(socket.user, id);
+            const { err, res } = await user_profile(socket.user, id);
             if(err) return socket.emit(...err);
             if(cb) cb(res);
             else socket.emit("user.profile", res);

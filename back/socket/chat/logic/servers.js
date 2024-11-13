@@ -2,6 +2,7 @@ import valid from "../../../logic/validData.js";
 import permissionSystem from "../../../logic/permission-system/index.js";
 import { existsSync } from "fs";
 import ValidError from "../../../logic/validError.js";
+import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
 
 export async function server_setup(suser, id){
     const validE = new ValidError("server.setup");
@@ -62,8 +63,8 @@ export async function server_setup(suser, id){
     return { err: false, res: [id, name, buildChannels, isOwnEmoji, userPermissions] };
 }
 
-export async function server_roles_sync(id){
-    const validE = new ValidError("server.roles.sync");
+export async function server_users_sync(id){
+    const validE = new ValidError("server.users.sync");
     if(!valid.id(id)) return validE.valid("id");
 
     const perm = new permissionSystem(id);
@@ -78,6 +79,7 @@ export async function server_roles_sync(id){
         return {
             uid: u.uid,
             roles: u.roles.map(r => rolesMap.get(r)),
+            activity: statusMgmtGetCache(u.uid)
         }
     });
 

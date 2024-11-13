@@ -1,5 +1,4 @@
 const axios = require("axios");
-const config = require("./config");
 
 async function update(appVersion){
     const serverVersion = await getServerVersion();
@@ -37,7 +36,7 @@ function versionEngine(versionA, versionB){
 
 async function getServerVersion(){
     try{
-        const req = await axios.get(config.link+"/meta/ele-version");
+        const req = await axios.get(confArg.link+"/meta/ele-version");
         return req.data;
     }catch{
         return "0.0.1";

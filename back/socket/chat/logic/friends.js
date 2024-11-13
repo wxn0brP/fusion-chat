@@ -1,5 +1,6 @@
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
+import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
 const friendStatusEnum = {
     NOT_FRIEND: 0,
     IS_FRIEND: 1,
@@ -121,7 +122,7 @@ export async function friend_getRequests(suser){
     return { err: false, res: friendRequests };
 }
 
-export async function friend_user_profile(suser, id){
+export async function user_profile(suser, id){
     const validE = new ValidError("user.profile");
     if(!valid.id(id)) return validE.valid("id");
 
@@ -164,7 +165,8 @@ export async function friend_user_profile(suser, id){
         statusText: userStatusText,
         _id: id,
         friendStatus,
-        isBlocked: userIsBlocked ? userIsBlocked.blocked : false
+        isBlocked: userIsBlocked ? userIsBlocked.blocked : false,
+        activity: statusMgmtGetCache(id) || {},
     }
 
     return { err: false, res: userData };

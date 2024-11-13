@@ -1,25 +1,25 @@
 import {
-    status_get,
-    status_update,
+    self_status_get,
+    self_status_update,
     profile_set_nickname,
 } from "./logic/settings.js";
 
 export default (socket) => {
-    socket.onLimit("status.update", 1000, async (status, text) => {
+    socket.onLimit("self.status.update", 1000, async (status, text) => {
         try{
-            const { err } = await status_update(socket.user, status, text);
+            const { err } = await self_status_update(socket.user, status, text);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.onLimit("status.get", 100, async (cb) => {
+    socket.onLimit("self.status.get", 100, async (cb) => {
         try{
-            const { err, res } = await status_get(socket.user);
+            const { err, res } = await self_status_get(socket.user);
             if(err) return socket.emit(...err);
             if(cb) cb(...res);
-            else socket.emit("status.get", ...res);
+            else socket.emit("self.status.get", ...res);
         }catch(e){
             socket.logError(e);
         }

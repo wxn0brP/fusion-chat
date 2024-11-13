@@ -17,6 +17,7 @@ const vars = {
             main: {},
         },
         chat: {},
+        user_status: {},
     },
     lastMess: {},
     privs: [],
@@ -35,6 +36,7 @@ const vars = {
     },
     uploadImgTypes: ["image/png", "image/jpeg", "image/jpg", "image/gif"],
     settings: {
-        notifications: localStorage.getItem("notifications") == "true" ?? false,
+        notifications: localStorage.getItem("notifications") == "true" || false,
+        desktopHandling: localStorage.getItem("desktopHandling") == "true" || false
     }
 }

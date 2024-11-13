@@ -1,7 +1,7 @@
 import {
     server_delete,
     server_emojis_sync,
-    server_roles_sync,
+    server_users_sync,
     server_setup,
     server_user_kick,
     server_user_unban,
@@ -19,12 +19,12 @@ export default (socket) => {
         }
     });
 
-    socket.onLimit("server.roles.sync", 1000, async (id, cb) => {
+    socket.onLimit("server.users.sync", 1000, async (id, cb) => {
         try{
-            const { err, res } = await server_roles_sync(id);
+            const { err, res } = await server_users_sync(id);
             if(err) return socket.emit(...err);
             if(cb) cb(...res);
-            else socket.emit("server.roles.sync", ...res);
+            else socket.emit("server.users.sync", ...res);
         }catch(e){
             socket.logError(e);
         }

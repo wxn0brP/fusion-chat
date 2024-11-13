@@ -5,7 +5,7 @@ const navs__user__status = document.querySelector("#navs__user__status");
 const userProfileDiv = document.querySelector("#userProfile");
 const navs__groups__name = document.querySelector("#navs__groups__name");
 const navs__groups__channels = document.querySelector("#navs__groups__channels");
-const usersInChatDiv = document.querySelector("#usersInChat");
+const navs__groups__users = document.querySelector("#navs__groups__users");
 
 const friendStatusEnum = {
     NOT_FRIEND: 0,
@@ -15,6 +15,9 @@ const friendStatusEnum = {
 };
 
 const renderFunc = {
+    state: {
+        chnl_user: false,
+    },
     privs(){
         navs__priv.innerHTML = "";
 
@@ -109,6 +112,8 @@ const renderFunc = {
                     <div id="userProfileBtns" style="margin-top: 10px;"></div>
                 </div>
             </div>
+            <div id="userProfileActivity"></div>
+            <div id="userProfileAbout"></div>
         `.trim();
 
         if(!targetIsMe){
@@ -150,15 +155,67 @@ const renderFunc = {
             userProfileDiv.querySelector("#userProfileBtns").appendChild(blockBtn);
         }
 
+        const activityDiv = userProfileDiv.querySelector("#userProfileActivity");
+        if(data.activity?.state){
+            const act = data.activity;
+            activityDiv.innerHTML = `
+                <h2>Activity</h2>
+                <p>${act.state} | ${act.name}</p>
+                ${act.details ? "<p>" + act.details + "</p>" : ""}
+                ${act.startTime ? '<p>Time: <span id="userProfileActivityTime"></span></p>' : ""}
+                ${
+                    act.party ?
+                        "<p>Party: "+
+                            act.party.id + " | " +
+                            act.party.state +
+                            (act.party.max ? " / " + act.party.max : "") +
+                        "</p>"
+                    : ""}
+            `.trim();
+            renderFunc.serverUserStatus(data._id, Object.assign({}, data.activity));
+            if(act.startTime){
+                const timeP = activityDiv.querySelector("#userProfileActivityTime");
+                function update(){
+                    const time = new Date() - new Date(act.startTime);
+                    const hours = Math.floor(time / 1000 / 60 / 60);
+                    const minutes = Math.floor(time / 1000 / 60) - (hours * 60);
+                    const seconds = Math.floor(time / 1000) - (hours * 60 * 60) - (minutes * 60);
+                    timeP.innerHTML = `${hours}:${minutes}:${seconds}`;
+                }
+                let interval = setInterval(() => {
+                    if(!timeP) return clearInterval(interval);
+                    update();    
+                }, 1000);
+                update();
+            }
+        }
+
         renderUtils.initPopup(userProfileDiv);
     },
 
     serverInit(sid, name, categories, isOwnEmoji, permission){
         vars.servers.permission = permission;
-        navs__groups__name.innerHTML = name;
+        navs__groups__name.innerHTML = "";
+
+        const nameText = document.createElement("div");
+        nameText.innerHTML = name;
+        nameText.title = name;
+        nameText.id = "navs__groups__name__text";
+        navs__groups__name.appendChild(nameText);
+
+        const usersDisplayBtn = document.createElement("span");
+        usersDisplayBtn.innerHTML = "👥";
+        usersDisplayBtn.classList.add("group_nav_btn");
+        usersDisplayBtn.addEventListener("click", () => {
+            renderFunc.state.chnl_user = !renderFunc.state.chnl_user;
+            navs__groups__channels.style.display = renderFunc.state.chnl_user ? "none" : "";
+            navs__groups__users.style.display = renderFunc.state.chnl_user ? "" : "none";
+        })
+        navs__groups__name.appendChild(usersDisplayBtn);
 
         if(permission.includes("manage server") || permission.includes("all")){
             const settingsBtn = document.createElement("span");
+            settingsBtn.classList.add("group_nav_btn");
             settingsBtn.innerHTML = "⚙️";
             settingsBtn.addEventListener("click", () => {
                 socket.emit("server.settings.get", sid);
@@ -166,13 +223,6 @@ const renderFunc = {
             settingsBtn.id = "serverSettingsBtn";
             navs__groups__name.appendChild(settingsBtn);
         }
-
-        const usersDisplayBtn = document.createElement("span");
-        usersDisplayBtn.innerHTML = "👥";
-        usersDisplayBtn.addEventListener("click", () => {
-            renderFunc.usersInChat(vars.servers.users.map(u => u.uid));
-        })
-        navs__groups__name.appendChild(usersDisplayBtn);
 
         function buildChannel(channel, root){
             const { name, type, desc, id: cid } = channel;
@@ -263,10 +313,12 @@ const renderFunc = {
             `;
             emojiStyleDiv.appendChild(emojiStyle);
         }
+
+        vars.servers.users.forEach(u => renderFunc.usersInChat(u.uid));
     },
 
-    usersInChat(data){
-        usersInChatDiv.innerHTML = "";
+    usersInChat(){
+        navs__groups__users.innerHTML = "";
         const roles = vars.servers.roles;
         const users = vars.servers.users;
         const userColor = new Map();
@@ -290,8 +342,9 @@ const renderFunc = {
             return "";
         }
 
-        data.forEach((userID) => {
+        users.map(u => u.uid).forEach((userID) => {
             const userDiv = document.createElement("div");
+            userDiv.classList.add("group_user_div");
 
             userDiv.addEventListener("click", () => {
                 socket.emit("user.profile", userID);
@@ -301,16 +354,52 @@ const renderFunc = {
             userImg.src = "/api/profileImg?id="+userID;
             userDiv.appendChild(userImg);
 
+            const textContainer = document.createElement("div");
+
             const nameDiv = document.createElement("div");
             nameDiv.innerHTML = apis.www.changeUserID(userID);
             nameDiv.style.color = getColor(userID);
-            userDiv.appendChild(nameDiv);
+            nameDiv.classList.add("group_user_name");
+            textContainer.appendChild(nameDiv);
 
-            usersInChatDiv.appendChild(userDiv);
+            const activityDiv = document.createElement("div");
+            activityDiv.innerHTML = "";
+            activityDiv.id = "user_status_"+userID;
+            activityDiv.classList.add("group_user_status");
+            textContainer.appendChild(activityDiv);
+
+            userDiv.appendChild(textContainer);
+            navs__groups__users.appendChild(userDiv);
+            renderFunc._serverUserStatus(userID);
         });
-
-        renderUtils.initPopup(usersInChatDiv);
     },
+
+    _serverUserStatus(id){
+        const ele = document.querySelector("#user_status_"+id);
+        if(!ele) return;
+        const data = vars.apisTemp.user_status[id];
+        if(!data) return;
+
+        const act = data.activity.get();
+        if(!act?.state){
+            ele.innerHTML = data.text.get() || "";
+            return;
+        }
+        ele.innerHTML = act.state + " | " + act.name;
+    },
+
+    serverUserStatus(id, state){
+        let { text, activity } = state;
+        const temp = vars.apisTemp.user_status;
+        if(!temp[id]){
+            const userStatus = temp[id] = {};
+            userStatus.text = renderUtils.createUpdater(() => renderFunc._serverUserStatus(id), text ?? "");
+            userStatus.activity = renderUtils.createUpdater(() => renderFunc._serverUserStatus(id), activity ?? {});
+        }
+
+        if(text) temp[id].text.set(text);
+        if(activity) temp[id].activity.set(activity);
+    }
 }
 
 const renderUtils = {
@@ -371,6 +460,19 @@ const renderUtils = {
         setTimeout(() => {
             document.body.addEventListener("click", closePopup);
         }, 100);
+    },
+
+    createUpdater(cb, initialValue){
+        return {
+            _value: initialValue,
+            get(){
+                return this._value;
+            },
+            set(newValue){
+                this._value = newValue;
+                cb(newValue);
+            }
+        }
     },
 }
 

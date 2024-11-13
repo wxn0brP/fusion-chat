@@ -72,9 +72,11 @@ const messFunc = {
         const fromDivTextName = document.createElement("span");
         fromDivTextName.innerHTML = apis.www.changeUserID(data.fr);
         fromDivTextName.classList.add("mess_author_name");
-        fromDivTextName.addEventListener("click", () => {
-            socket.emit("user.profile", data.fr);
-        });
+        if(!["%","^"].includes(data.fr[0])){ // if not system/api
+            fromDivTextName.addEventListener("click", () => {
+                socket.emit("user.profile", data.fr);
+            });
+        }
         fromDivText.appendChild(fromDivTextName);
 
         const timeDiv = document.createElement("span");

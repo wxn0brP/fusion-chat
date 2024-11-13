@@ -8,6 +8,15 @@ apis.api.receiveMessage = (data) => {
         case "debug":
             debugFunc.msg(data.msg);
         break;
+        case "status":
+            if(!vars.settings.desktopHandling) return;
+            const state = data.data;
+            if(state === "clear"){
+                socket.emit("status.activity.remove");
+            }else if(typeof state == "object" && !Array.isArray(state)){
+                socket.emit("status.activity.set", data.data);
+            }
+        break;
     }
 }
 
@@ -19,4 +28,12 @@ apis.api.receiveMessage = (data) => {
         apis.api.receiveMessage(e.detail);
     });
     document.querySelector("#assets").appendChild(div);
+
 })();
+
+setTimeout(() => {
+    apis.api.send({
+        type: "status",
+        data: vars.settings.desktopHandling
+    })
+}, 5_000);

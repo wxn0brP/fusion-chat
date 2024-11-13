@@ -1,7 +1,8 @@
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
+import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
 
-export async function status_update(suser, status, text){
+export async function self_status_update(suser, status, text){
     const validE = new ValidError("status.update");
     if(status && !valid.str(status, 0, 15)) return validE.valid("status", "status");
     if(text && !valid.str(text, 0, 150)) return validE.valid("text");
@@ -13,10 +14,12 @@ export async function status_update(suser, status, text){
     return { err: false };
 }
 
-export async function status_get(suser){
+export async function self_status_get(suser){
     const status = await global.db.userDatas.findOne(suser._id, { _id: "status" });
-    if(!status) return { err: false, res: ["online", ""] };
-    return { err: false, res: [status.status, status.text] };
+    const activity = await statusMgmtGetCache(suser._id);
+
+    if(!status) return { err: false, res: ["online", "", activity] };
+    return { err: false, res: [status.status, status.text, activity] };
 }
 
 export async function profile_set_nickname(suser, nickname){

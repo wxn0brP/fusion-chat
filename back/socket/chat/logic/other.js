@@ -5,8 +5,11 @@ import sendMessage from "../../../logic/sendMessage.js";
 import embedData from "../valid/embedData.js";
 import ValidError from "../../../logic/validError.js";
 import { createTokenPointer } from "../../../logic/mobileNotif.js";
+import * as statusMgmt from "../../../logic/status.js";
+import statusData from "../valid/status.js";
 
 const embedDataShema = valid.objAjv(embedData);
+const statusDataShema = valid.objAjv(statusData);
 
 export async function get_ogs(link){
     const validE = new ValidError("get.ogs");
@@ -67,4 +70,34 @@ export async function send_embed_data(suser, to, chnl, embed){
 export async function fireToken_get(suser, userToken){
     const pointer = await createTokenPointer(suser._id, userToken);
     return pointer;
+}
+
+export async function status_activity_set(suser, status){
+    const validE = new ValidError("status.activity.set");
+    if(!statusDataShema(status)) return validE.valid("status", statusDataShema.errors);
+    
+    const endCode = statusMgmt.setCache(suser._id, status);
+    if(endCode) return validE.err(endCode);
+    return { err: false };
+}
+
+export async function status_activity_get(id){
+    const validE = new ValidError("status.activity.get");
+    if(!valid.id(id)) return validE.valid("id");
+
+    const status = statusMgmt.getCache(id);
+    return { err: false, res: status };
+}
+
+export async function status_activity_gets(ids){
+    const validE = new ValidError("status.activity.gets");
+    if(!valid.arrayId(ids)) return validE.valid("ids");
+
+    const states = ids.map(id => statusMgmt.getCache(id));
+    return { err: false, res: states };
+}
+
+export async function status_activity_remove(suser){
+    statusMgmt.rmCache(suser._id);
+    return { err: false };    
 }
