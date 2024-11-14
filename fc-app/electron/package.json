@@ -14,10 +14,9 @@
         "electron-packager": "^17.1.2"
     },
     "dependencies": {
-        "@waiting/shared-core": "^23.23.0",
         "axios": "^1.7.2",
+        "koffi": "^2.9.2",
         "opn": "^6.0.0",
-        "win32-api": "^26.0.3",
         "ws": "^8.18.0",
         "yargs": "^17.7.2"
     },

@@ -1,43 +1,50 @@
 const os = require("os");
 const TOLERANCE = 10;
 
-if(os.platform() === "linux"){
-    const { api } = require("win32-api");
+if(os.platform() === "win32"){
+    const koffi = require("koffi");
 
-    const user32 = api.user32;
+    const user32 = koffi.load("user32.dll");
 
     const SM_CXSCREEN = 0;
     const SM_CYSCREEN = 1;
 
+    const GetForegroundWindow = user32.func("void* GetForegroundWindow()");
+    const GetWindowRect = user32.func("bool GetWindowRect(void*, void*)");
+    const GetSystemMetrics = user32.func("int GetSystemMetrics(int)");
+    const GetWindowTextW = user32.func("int GetWindowTextW(void*, void*, int)");
+
     module.exports = () => {
-        const hWnd = user32.GetForegroundWindow();
-        const rect = Buffer.alloc(16);
-        user32.GetWindowRect(hWnd, rect);
+        const hWnd = GetForegroundWindow();
+        const rectBuffer = Buffer.alloc(16);
 
-        const left = rect.readInt32LE(0);
-        const top = rect.readInt32LE(4);
-        const right = rect.readInt32LE(8);
-        const bottom = rect.readInt32LE(12);
+        if(!GetWindowRect(hWnd, rectBuffer)){
+            throw new Error("Failed to get window rectangle");
+        }
 
-        const screenWidth = user32.GetSystemMetrics(SM_CXSCREEN);
-        const screenHeight = user32.GetSystemMetrics(SM_CYSCREEN);
+        const left = rectBuffer.readInt32LE(0);
+        const top = rectBuffer.readInt32LE(4);
+        const right = rectBuffer.readInt32LE(8);
+        const bottom = rectBuffer.readInt32LE(12);
+
+        const screenWidth = GetSystemMetrics(SM_CXSCREEN);
+        const screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
         const windowWidth = right - left;
         const windowHeight = bottom - top;
 
-        const isFullscreen = 
+        const isFullscreen =
             Math.abs(windowWidth - screenWidth) <= TOLERANCE &&
             Math.abs(windowHeight - screenHeight) <= TOLERANCE;
 
+        let windowTitle = "";
         if(isFullscreen){
             const titleBuffer = Buffer.alloc(512);
-            user32.GetWindowTextW(hWnd, titleBuffer, 512);
-            const windowTitle = titleBuffer.toString("ucs2").replace(/\0/g, "");
-            console.log("windowTitle", windowTitle);
-            return windowTitle || "";
-        }else{
-            return "";
+            GetWindowTextW(hWnd, titleBuffer, 512);
+            windowTitle = titleBuffer.toString("ucs2").replace(/\0/g, "") || "";
         }
+
+        return new Promise(resolve => resolve(windowTitle));
     }
 }else if(os.platform() === "linux"){
     const { exec } = require("child_process");
@@ -143,5 +150,5 @@ if(os.platform() === "linux"){
         dataNext.resolve(isFullscreen ? dataNext.windowTitle : "");
     }
 }else{
-    module.exports = () => "";
+    module.exports = () => new Promise(resolve => resolve(""));
 }
