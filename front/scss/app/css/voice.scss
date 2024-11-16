@@ -15,14 +15,13 @@
     border-radius: 1rem;
     padding: 1rem;
     max-width: 90vw;
-}
 
-#voice_call button{
-    margin-right: 10px;
-}
-
-#voice_call button:hover{
-    border-color: red;
+    button{
+        margin-right: 10px;
+        &:hover{
+            border-color: red;
+        }
+    }
 }
 
 #voice_call_users_container{
@@ -33,3 +32,4 @@
 #voice_call_users{
     padding-left: 1rem;
 }
+

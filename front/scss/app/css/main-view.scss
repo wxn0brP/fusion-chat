@@ -50,29 +50,31 @@
 
 .friend__status{
     color: lightgreen;
+    &::before{
+        content: "(";
+    }
+    
+    &::after{
+        content: ")";
+    }
 }
 
-.friend__status::before{
-    content: "(";
-}
 
-.friend__status::after{
-    content: ")";
-}
+.main__view__friend{
+    .request__btn{
+        background-color: transparent;
+        border: 2px solid var(--accent);
+        color: var(--txt);
+        padding: 7px;
+        border-radius: 7px;
+        cursor: pointer;
+        margin-right: 5px;
+        margin-top: 5px;
+    }
 
-.main__view__friend .request__btn{
-    background-color: transparent;
-    border: 2px solid var(--accent);
-    color: var(--txt);
-    padding: 7px;
-    border-radius: 7px;
-    cursor: pointer;
-    margin-right: 5px;
-    margin-top: 5px;
-}
-
-.main__view__friend .request__btn:hover{
-    background-color: var(--accent);
+    .request__btn:hover{
+        background-color: var(--accent);
+    }
 }
 
 @media screen and (max-width: 800px){

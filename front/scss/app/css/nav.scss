@@ -43,6 +43,14 @@ nav{
     margin-bottom: 5px;
     cursor: pointer;
     position: relative;
+    
+    img{
+        height: 50px;
+        object-fit: cover;
+        border-radius: 50%;
+        aspect-ratio: 1/1;
+        margin-left: -5px;
+    }
 }
 
 .group_chatActive::after{
@@ -55,14 +63,6 @@ nav{
     background-color: var(--accent);
 }
 
-.group img{
-    height: 50px;
-    object-fit: cover;
-    border-radius: 50%;
-    aspect-ratio: 1/1;
-    margin-left: -5px;
-}
-
 #groups__main__img{
     object-fit: fill;
 }
@@ -71,20 +71,19 @@ nav{
     float: left;
     width: 230px;
     height: 100vh;
-}
 
-#navs button{
-    --pad_radius: 7px;
-    --borderColor: transparent;
-    --bg: var(--panel);
-
-    width: 90%;
-    transition: border-color 0.5s;
-    margin-block: 3px;
-}
-
-#navs button:hover{
-    text-decoration: underline;
+    button{
+        --pad_radius: 7px;
+        --borderColor: transparent;
+        --bg: var(--panel);
+    
+        width: 90%;
+        transition: border-color 0.5s;
+        margin-block: 3px;
+    }
+    button:hover{
+        text-decoration: underline;
+    }
 }
 
 #navs__main, #navs__groups{
@@ -117,39 +116,50 @@ nav{
     float: left;
 }
 
-#navs__groups__name .group_nav_btn{
-    font-size: 1.4rem;
-    cursor: pointer;
-    float: right;
+#navs__groups__name{
+    .group_nav_btn{
+        font-size: 1.4rem;
+        cursor: pointer;
+        float: right;
+    }
+
+    .group_nav_btn:not(:first-of-type){
+        margin-right: 5px;
+    }
 }
 
-#navs__groups__name .group_nav_btn:not(:first-of-type){
-    margin-right: 5px;
-}
+#navs__groups__channels details{
+    summary{
+        text-align: left;
+        padding-left: 1rem;
+        font-size: 1.2rem;
+    }
 
-#navs__groups__channels details summary{
-    text-align: left;
-    padding-left: 1rem;
-    font-size: 1.2rem;
-}
+    div{
+        text-align: left;
+        padding-left: 1rem;
+        cursor: pointer;
+        margin-block: 0.5rem;
+        font-size: 1.1rem;
+        transition: margin-left 0.5s;
 
-#navs__groups__channels details div{
-    text-align: left;
-    padding-left: 1rem;
-    cursor: pointer;
-    margin-block: 0.5rem;
-    font-size: 1.1rem;
-    transition: margin-left 0.5s;
-}
-
-#navs__groups__channels details div:hover{
-    margin-left: 0.5rem;
+        &:hover{
+            margin-left: 0.5rem;
+        }
+    }
 }
 
 #navs__groups__users{
     text-align: left;
     overflow-y: scroll;
     max-height: calc(100vh - 60px - 50px);
+    
+    img{
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
 }
 
 #navs__groups__users > div{
@@ -174,12 +184,6 @@ nav{
     font-size: 0.8rem;
 }
 
-#navs__groups__users img{
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-}
 
 #navs .unreadPriv{
     border-color: var(--accent);

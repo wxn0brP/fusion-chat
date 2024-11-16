@@ -13,13 +13,14 @@
 
     animation: init-anim 1s;
     animation-delay: 3.1s;
+    
+    #loadingScreenAnim{
+        width: 25rem;
+        height: 25rem;
+        margin-top: -2rem;
+    }
 }
 
-#loadingScreen #loadingScreenAnim{
-    width: 25rem;
-    height: 25rem;
-    margin-top: -2rem;
-}
 
 @keyframes init-anim{
     0%{

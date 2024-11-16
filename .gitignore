@@ -6,6 +6,7 @@ config
 app-test
 userFiles
 serverDB
+front/app/css
 
 # files
 *.env

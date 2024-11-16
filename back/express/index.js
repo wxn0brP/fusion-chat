@@ -28,6 +28,8 @@ if(pageBreak == "true"){
     });
 }
 
+await import("./sass.js");
+
 app.use("/", express.static("front/public"));
 app.use("/assets", express.static("front/assets"));
 app.use("/app", express.static("front/app"));

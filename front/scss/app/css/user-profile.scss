@@ -1,17 +1,15 @@
 #navs__user{
     position: relative;
+    img{
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+    }
 }
 
-#navs__user img{
-    position: absolute;
-    left: 8px;
-    top: 8px;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    /* object-fit: cover; */
-    /* border: 2px solid var(--accent); */
-}
 
 #navs__user__name{
     position: absolute;

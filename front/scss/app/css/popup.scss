@@ -20,45 +20,47 @@
     box-shadow: 0 0 10px 5px rgba(var(--accentRGB), .5);
 }
 
-#prompt div{
-    position: absolute;
-    min-width: 200px;
-    max-width: 70%;
-    top: 50%;
-    left: 50%;
-    border-radius: 1rem;
-    padding: 12px;
-    transform: translate(-50%, -50%);
-    z-index: 99;
-    border: 2px solid var(--accent);
-    backdrop-filter: blur(4px);
-}
+#prompt{
+    div{
+        position: absolute;
+        min-width: 200px;
+        max-width: 70%;
+        top: 50%;
+        left: 50%;
+        border-radius: 1rem;
+        padding: 12px;
+        transform: translate(-50%, -50%);
+        z-index: 99;
+        border: 2px solid var(--accent);
+        backdrop-filter: blur(4px);
+    }
 
-#prompt p{
-    font-size: 1.2rem;
-}
+    p{
+        font-size: 1.2rem;
+    }
 
-#prompt input, #prompt button, #prompt select{
-    border-radius: 1rem;
-    padding: 7px 12px;
-    border: 2px solid var(--accent);
-    background-color: var(--back);
-    color: var(--txt);
-    margin-top: 5px;
-}
+    input, button, select{
+        border-radius: 1rem;
+        padding: 7px 12px;
+        border: 2px solid var(--accent);
+        background-color: var(--back);
+        color: var(--txt);
+        margin-top: 5px;
+    }
 
-#prompt option{
-    background-color: var(--back);
-    color: var(--txt);
-}
+    option{
+        background-color: var(--back);
+        color: var(--txt);
+    }
 
-#prompt button{
-    transition: background-color .3s;
-    cursor: pointer;
-}
+    button{
+        transition: background-color 0.3s;
+        cursor: pointer;
 
-#prompt button:hover{
-    background-color: rgba(var(--accentRGB), .5);
+        &:hover{
+            background-color: rgba(var(--accentRGB), 0.5);
+        }
+    }
 }
 
 #userProfile{
@@ -77,18 +79,18 @@
     height: 500px;
 
     text-align: left;
-}
 
-#userProfile #userProfileInfo{
-    display: flex;
-    gap: 1rem;
-}
+    #userProfileInfo{
+        display: flex;
+        gap: 1rem;
+    }
 
-#userProfile img{
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
+    img{
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
 }
 
 #linkClick{
@@ -103,27 +105,27 @@
     border-radius: 1rem;
     padding: 1rem;
     width: 600px;
-}
 
-#linkClick #linkClick_btns{
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-}
+    #linkClick_btns{
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+    }
 
-#linkClick button{
-    width: 35%;
-    border-radius: 1rem;
-    padding: 7px 12px;
-    border: 2px solid var(--accent);
-    background-color: var(--back);
-    color: var(--txt);
-    margin-top: 5px;
-    cursor: pointer;
-}
+    button{
+        width: 35%;
+        border-radius: 1rem;
+        padding: 7px 12px;
+        border: 2px solid var(--accent);
+        background-color: var(--back);
+        color: var(--txt);
+        margin-top: 5px;
+        cursor: pointer;
+    }
 
-#linkClick span{
-    color: red;
+    span{
+        color: red;
+    }
 }
 
 #makeGroup{
@@ -176,15 +178,15 @@
     justify-content: center;
     align-items: center;
     gap: 5px;
-}
 
-#emoji__search label{
-    font-size: 1.5rem;
-    cursor: pointer;
-}
+    label{
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
 
-#emoji__search input:where(:active, :focus){
-    outline: none;
+    input:where(:active, :focus){
+        outline: none;
+    }
 }
 
 #emoji__nav{

@@ -37,11 +37,10 @@
     margin: 5px;
     font-size: 18px;
     transition: all 0.3s ease;
-}
-
-.media-popup-btn:hover{
-    transform: scale(1.1);
-    color: var(--accent);
+    &:hover{
+        transform: scale(1.1);
+        color: var(--accent);
+    }
 }
 
 .media-popup-media{
