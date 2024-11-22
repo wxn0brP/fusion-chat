@@ -23,12 +23,17 @@
     "homepage": "https://fusion.ct8.pl",
     "scripts": {
         "start": "electron .",
+
         "build": "electron-builder build --publish never",
         "build-win": "electron-builder build --win --publish never",
-        "package": "electron-packager . FusionChat --platform=win32 --arch=x64 --out=release/",
+        "build-linux": "electron-builder build --linux --publish never",
+
         "deploy": "electron-builder build -wl --publish always",
         "deploy-win": "electron-builder build --win --publish always",
-        "deploy-linux": "electron-builder build --linux --publish always"
+        "deploy-linux": "electron-builder build --linux --publish always",
+
+        "build-pack": "electron-packager . --overwrite --out=dist",
+        "build-pack-asar": "electron-packager . --overwrite --out=dist --asar"
     },
     "build": {
         "productName": "FusionChat",
