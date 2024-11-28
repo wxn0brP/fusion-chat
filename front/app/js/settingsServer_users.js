@@ -4,19 +4,20 @@ SettingsServerManager.prototype.renderUserRoleManager = function(){
     const _this = this;
 
     function renderUser(user){
-        const details = document.createElement('details');
-        const summary = document.createElement('summary');
-        summary.innerHTML = apis.www.changeUserID(user.uid);
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.innerHTML = apis.www.changeUserID(user.u);
         details.appendChild(summary);
-        const div = document.createElement('div');
+        const div = document.createElement("div");
         
         const roles = _this.settings.roles;
-        const userRoles = user.roles;
+        const userRoles = user.r;
         const checkboxs = [];
         
         roles.forEach(role => {
-            const checkbox = _this.initCheckbox(div, role.name, userRoles.includes(role.rid));
-            checkboxs.push({ id: role.rid, checkbox });
+            if(!role._id) return;
+            const checkbox = _this.initCheckbox(div, role.name, userRoles.includes(role._id));
+            checkboxs.push({ id: role._id, checkbox });
         });
 
         _this.addSeparator(div, 10);
@@ -26,27 +27,27 @@ SettingsServerManager.prototype.renderUserRoleManager = function(){
                 const { id, checkbox } = c;
                 if(checkbox.checked) newRoles.push(id);
             })
-            _this.settings.users.find(u => u === user).roles = newRoles;
+            _this.settings.users.find(u => u === user).r = newRoles;
             _this.renderUserRoleManager();
         });
 
-        if(user.uid != vars.user._id){
+        if(user.u != vars.user._id){
             _this.addSeparator(div, 10);
             _this.initButton(div, translateFunc.get("Kick user"), () => {
-                const result = confirm(translateFunc.get("Are you sure you want to kick this user$($)", "? ", apis.www.changeUserID(user.uid)));
+                const result = confirm(translateFunc.get("Are you sure you want to kick this user$($)", "? ", apis.www.changeUserID(user.u)));
                 if(!result) return;
 
-                _this.settings.users = _this.settings.users.filter(u => u.uid !== user.uid);
-                socket.emit("server.user.kick", _this.serverId, user.uid);
+                _this.settings.users = _this.settings.users.filter(u => u.u !== user.u);
+                socket.emit("realm.user.kick", _this.realmId, user.u);
                 _this.renderUserRoleManager();
             });
 
             _this.initButton(div, translateFunc.get("Ban user"), () => {
-                const result = confirm(translateFunc.get("Are you sure you want to kick and ban this user$($)", "? ", apis.www.changeUserID(user.uid)));
+                const result = confirm(translateFunc.get("Are you sure you want to kick and ban this user$($)", "? ", apis.www.changeUserID(user.u)));
                 if(!result) return;
 
-                _this.settings.users = _this.settings.users.filter(u => u.uid !== user.uid);
-                socket.emit("server.user.kick", _this.serverId, user.uid, true);
+                _this.settings.users = _this.settings.users.filter(u => u.u !== user.u);
+                socket.emit("realm.user.kick", _this.realmId, user.u, true);
                 _this.renderUserRoleManager();
             });
         }
@@ -62,23 +63,23 @@ SettingsServerManager.prototype.renderUserRoleManager = function(){
     });
 
     if(this.settings.banUsers.length > 0){
-        const banUsersDetails = document.createElement('details');
+        const banUsersDetails = document.createElement("details");
 
-        const banUsersSummary = document.createElement('summary');
+        const banUsersSummary = document.createElement("summary");
         banUsersSummary.innerHTML = translateFunc.get("Ban users");
         banUsersDetails.appendChild(banUsersSummary);
 
-        this.settings.banUsers.forEach(uid => {
-            const userName = document.createElement('span');
-            userName.innerHTML = apis.www.changeUserID(uid);
+        this.settings.banUsers.forEach(u => {
+            const userName = document.createElement("span");
+            userName.innerHTML = apis.www.changeUserID(u);
             banUsersDetails.appendChild(userName);
 
             this.initButton(banUsersDetails, translateFunc.get("unban user"), () => {
-                const result = confirm(translateFunc.get("Are you sure you want to un ban this user? ($)", apis.www.changeUserID(uid)));
+                const result = confirm(translateFunc.get("Are you sure you want to un ban this user? ($)", apis.www.changeUserID(u)));
                 if(!result) return;
 
-                _this.settings.banUsers = _this.settings.banUsers.filter(u => u !== uid);
-                socket.emit("server.user.unban", _this.serverId, uid);
+                _this.settings.banUsers = _this.settings.banUsers.filter(u => u !== u);
+                socket.emit("realm.user.unban", _this.realmId, u);
                 _this.renderUserRoleManager();
             });
         });

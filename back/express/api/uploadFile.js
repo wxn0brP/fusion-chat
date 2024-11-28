@@ -2,9 +2,9 @@ import { Router } from "express";
 import multer, { diskStorage, MulterError } from "multer";
 import { existsSync, readdirSync, mkdirSync } from "fs";
 import { join } from "path";
-import genId from "@wxn0brp/db/gen.js";
+import { genId } from "@wxn0brp/db";
 
-const { maxUserFiles, maxFileSize } = (await import("../../../config/file.js")).default;
+const { maxUserFiles, maxUserFileSize } = global.fileConfig;
 const router = Router();
 const uploadDir = "userFiles/users";
 
@@ -40,14 +40,14 @@ const storage = diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: maxFileSize }
+    limits: { fileSize: maxUserFileSize }
 }).single("file");
 
 router.post("/uploadFile", global.authenticateMiddleware, limitUploads, (req, res) => {
     upload(req, res, (err) => {
         if(err){
             if(err instanceof MulterError && err.code === "LIMIT_FILE_SIZE"){
-                return res.status(400).json({ err: true, msg: "File size exceeds " + maxFileSize/1024/1024 + "MB limit." });
+                return res.status(400).json({ err: true, msg: "File size exceeds " + maxUserFileSize/1024/1024 + "MB limit." });
             }
             return res.status(500).json({ err: true, msg: "An error occurred during the file upload." });
         }

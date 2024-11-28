@@ -1,161 +1,259 @@
-import genId from "@wxn0brp/db/gen.js";
-import sortRolesByHierarchy from "./sortRolesByHierarchy.js";
-import sortUserRolesByHierarchy from "./sortUserRolesByHierarchy.js";
+import {
+    hasPermission,
+    combinePermissions,
+    resetPermissions,
+    canChangePermissions,
+    hasAllPermissionsNumber,
+} from "./permBD.js";
 
-/**
- * Represents a permission system for managing roles and permissions.
- * @class
- */
-class permissionSystem{
-    /**
-     * Create a new permission system instance.
-     * @constructor
-     * @param {string} id - The unique identifier for the permission system.
-     */
-    constructor(id){
-        this.id = id;
-        this.dbUP = global.db.usersPerms;
-        this.dbS = global.db.groupSettings;
-    }
-    /**
-     * Get roles from the database and sort them by hierarchy.
-     * @returns {Promise} A Promise that resolves with an array of sorted role objects or an empty array if not found.
-     */
-    async getRoles(){
-        let roles = await this.dbS.find(this.id, (r) => !!r.rid);
-        if(roles.length == 0) throw new Error("db obj is not exsists");
+export default class PermissionSystem{
+    constructor(workspaceCollection){
+        if(!workspaceCollection)
+            throw new Error("Missing required parameter workspaceCollection");
 
-        roles = sortRolesByHierarchy(roles);
-        return roles;
+        this.realmRoles = global.db.realmRoles.c(workspaceCollection);
+        this.realmUser = global.db.realmUser.c(workspaceCollection);
     }
 
-    /**
-     * Get roles associated with a user.
-     * @param {string} user - The user identifier.
-     * @returns {Promise} A Promise that resolves with an array of user roles or an empty array if not found.
-     */
-    async getUserRoles(user){
-        const roles = await this.getRoles();
-        const uroles = await this.dbUP.findOne(this.id, { uid: user });
-        if(!uroles) return [];
-
-        return sortUserRolesByHierarchy(roles, uroles.roles);
+    async initialize(){
+        await this.validateHierarchy();
     }
 
-    async printRoles(){
-        let roles = await this.getRoles();
-        roles = sortRolesByHierarchy(roles);
-        console.table(roles);
-    }
+    async validateHierarchy(){
+        const roles = await this.getAllRolesSorted();
+        if(roles.length === 0)
+            return; // System can operate without defined roles
 
-    async createRole(name, perm=[], parent=null){
-        const rid = genId();
-        if(!parent){
-            const roles = await this.getRoles();
-            parent = roles[roles.length - 1].rid;
+        const rootRoles = roles.filter(r => r.lvl === 0);
+        if(rootRoles.length > 1)
+            throw new Error("System cannot have multiple root roles (lvl 0)");
+
+        for(let i=1; i<roles.length; i++){
+            if(roles[i].lvl <= roles[i - 1].lvl){
+                throw new Error("Role lvls must form a strict ascending chain");
+            }
         }
-        const role = {
-            rid,
-            name,
-            p: perm,
-            parent,
+    }
+
+    async createRole(name, opts){
+        opts = {
+            lvl: 0,
+            p: 0,
+            c: "#fff",
+            managerId: false,
+            ...opts
         };
-        this.dbS.add(this.id, role, false);
 
-        return rid;
-    }
+        let { lvl, p, c, managerId } = opts;
+        
+        if(Array.isArray(p)) p = combinePermissions(0, ...p);
 
-    /* permission */
+        if(typeof p !== "number")
+            throw new Error("p must be a number or array of permissions bitflags");
 
-    /**
-     * Check if a set of roles has a specific permission.
-     * @param {Array} roles - An array of role identifiers.
-     * @param {string} perm - The permission to check for.
-     * @returns {Promise} A Promise that resolves to true if any role has the permission, or false if none do.
-     */
-    async hasPermison(roles, perm){
-        const rolesDb = await this.getRoles();
-        for(let i=0; i<roles.length; i++){
-            let role = rolesDb.find(r => r.rid == roles[i]);
-            if(!role) continue;
-            if(role.p == "all") return true;
-            if(role.p.includes(perm)) return true;
+        if(managerId){
+            const userHighestRole = await this.getUserHighestRole(managerId);
+            if(userHighestRole.lvl <= lvl)
+                throw new Error("Invalid lvl - would break chain with user's highest role");
+            
+            const userPerms = await this.getUserPermissions(managerId);
+            if(!hasAllPermissionsNumber(userPerms, p))
+                throw new Error("Cannot assign permissions you do not have");
         }
-        return false;
-    }
 
-    /**
-     * Check if a user has a specific permission.
-     * @param {string} user - The user identifier.
-     * @param {string} perm - The permission to check for.
-     * @returns {Promise} A Promise that resolves to true if the user has the permission, or false if not.
-     */
-    async userPermison(user, perm){
-        user = await this.dbUP.findOne(this.id, { uid: user });
-        if(!user) return false;
-        return await this.hasPermison(user.roles, perm);
-    }
+        const roles = await this.getAllRolesSorted();
 
-    /* role menager */
+        if(lvl === null){
+            lvl = roles.length > 0 ? roles[roles.length - 1].lvl + 1 : 0;
+        }else{
+            if(roles.some(r => r.lvl === lvl)){
+                throw new Error(`lvl ${lvl} is already occupied`);
+            }
 
-    /**
-     * Check if one role is higher in hierarchy than another.
-     * @param {string} role1 - The first role identifier.
-     * @param {string} role2 - The second role identifier.
-     * @returns {Promise} A Promise that resolves to true if role1 is higher in hierarchy than role2, or false otherwise.
-     */
-    async roleIsBigger(roles, role1, role2){
-        role1 = roles.findIndex(r => r.rid == role1);
-        role2 = roles.findIndex(r => r.rid == role2);
-        return role1 < role2; //true if role1 is important
-    }
+            const insertIndex = roles.findIndex(r => r.lvl > lvl);
 
-    /**
-     * Check if a user has the permission to edit a role.
-     * @param {string} user - The user identifier.
-     * @param {string} roleId - The role identifier to edit.
-     * @returns {Promise} A Promise that resolves to true if the user has permission to edit the role, or false if not.
-     */
-    async userHasEditRole(user, roleId){
-        const roles = await this.getRoles();
-        const role = roles.find(r => r.rid == roleId);
-        if(!role) return false;
+            if(insertIndex !== -1){
+                if(insertIndex > 0 && lvl <= roles[insertIndex - 1].lvl)
+                    throw new Error("Invalid lvl - would break chain with previous role");
 
-        const userRoles = await this.getUserRoles(user);
-        if(userRoles.length == 0) return false;
-        const bigger = userRoles[0];
-        return await this.roleIsBigger(roles, bigger, role);
-    }
-
-    /**
-     * Retrieve permissions associated with a specific role.
-     * @param {string} role - The role identifier.
-     * @returns {Promise<Array>} A Promise that resolves with an array of permissions for the role, or an empty array if the role is not found.
-     */
-    async getRolePerms(role){
-        const roles = await this.getRoles();
-        const roleDb = roles.find(r => r.rid == role);
-        if(!roleDb) return [];
-        return roleDb.p;
-    }
-
-    /**
-     * Get all permissions associated with a user.
-     * @param {string} user - The user identifier.
-     * @returns {Promise<Array>} A Promise that resolves with an array of all permissions for the user, or an empty array if the user is not found.
-     */
-    async getUserRolesPerms(user){
-        const roles = await this.getUserRoles(user);
-        let userPerms = [];
-        for(const role of roles){
-            const perms = await this.getRolePerms(role);
-            if(perms.length == 0) continue;
-            if(typeof perms == "string") userPerms.push(perms);
-            else userPerms.push(...perms);
+                if(insertIndex < roles.length && lvl >= roles[insertIndex].lvl)
+                    throw new Error("Invalid lvl - would break chain with next role");
+            }else{
+                lvl = roles.length > 0 ? roles[roles.length - 1].lvl + 1 : 0;
+            }
         }
-        userPerms = [...new Set(userPerms)];
-        return userPerms;
+
+        return await this.realmRoles.add({
+            name,
+            lvl,
+            p,
+            c
+        });
+    }
+
+    async updateRole(roleId, updates, managerId=null){
+        const role = await this.getRole(roleId);
+        if(!role) throw new Error("Role not found");
+
+        if(managerId){
+            const managerRoles = await this.getUserRolesSorted(managerId);
+            if(!this.hasHigherRole(managerRoles, role.lvl))
+                throw new Error("Insufficient permissions to edit this role");
+    
+            if(updates.p !== undefined){
+                const managerPerms = this.calculateCombinedPermissions(managerRoles);
+
+                if(!canChangePermissions(updates.p, role.p, managerPerms))
+                    throw new Error("Cannot assign permissions you do not have");
+            }
+        }
+
+        return await this.realmRoles.updateOne({ _id: roleId }, updates);
+    }
+
+    async deleteRole(roleId, managerId){
+        let roles = await this.getAllRolesSorted();
+
+        if(managerId){
+            const managerHighestRole = await this.getUserHighestRole(managerId);
+            if(managerHighestRole.lvl >= roles.find(r => r._id === roleId).lvl){
+                throw new Error("Insufficient permissions to delete this role");
+            }
+        }
+
+        roles = roles.filter(r => r._id !== roleId);
+        const _this = this;
+
+        roles.forEach((role, i) => {
+            role.lvl = i;
+            _this.realmRoles.updateOne({ _id: role._id }, { lvl: i });
+        });
+
+        await this.realmUser.update({}, (user, ctx) => {
+            user.r = user.r.filter(r => r !== ctx.roleId);
+            user.r = [...new Set(user.r)];
+        }, { roleId });
+    }
+
+    async assignRoleToUser(userId, roleId, managerId){
+        const role = await this.getRole(roleId);
+
+        if(!role) throw new Error("Role not found");
+
+        if(managerId !== false){
+            const managerRoles = await this.getUserRolesSorted(managerId);
+            if(!this.hasHigherRole(managerRoles, role.lvl))
+                throw new Error("Insufficient permissions to assign this role");
+        }
+
+        return await this.realmUser.updateOneOrAdd(
+            { u: userId },
+            (data, ctx) => {
+                data.r.push(ctx.roleId);
+                data.r = [...new Set(data.r)];
+            },
+            { r: [] },
+            { roleId },
+            false
+        );
+    }
+
+    async removeRoleFromUser(userId, roleId, managerId){
+        const [role, managerRoles] = await Promise.all([
+            this.getRole(roleId),
+            this.getUserRolesSorted(managerId)
+        ]);
+
+        if(!role) throw new Error("Role not found");
+
+        if(!this.hasHigherRole(managerRoles, role.lvl))
+            throw new Error("Insufficient permissions to remove this role");
+
+        return await this.realmUser.updateOne({ u: userId }, (data, ctx) => {
+            data.r = data.r.filter(r => r !== ctx.roleId);
+        }, { roleId });
+    }
+
+    hasHigherRole(userRoles, targetlvl){
+        return userRoles && userRoles.some(role => role.lvl < targetlvl);
+    }
+
+    calculateCombinedPermissions(roles){
+        if(!roles || roles.length === 0) return resetPermissions();
+        return roles.reduce((perms, role) => combinePermissions(perms, role.p), 0);
+    }
+
+    async getRole(roleId){
+        return await this.realmRoles.findOne({ _id: roleId });
+    }
+
+    async getAllRolesSorted(){
+        const roles = await this.realmRoles.find({});
+        return roles.sort((a, b) => a.lvl - b.lvl);
+    }
+
+    async getUserRolesSorted(userId){
+        const userData = await this.realmUser.findOne({ u: userId });
+        if(!userData) return [];
+
+        const userRoles = userData.r;
+        if(userRoles.length === 0) return [];
+
+        const rolesMap = new Map();
+        const roles = await this.realmRoles.find({
+            $or: userRoles.map(a => ({ _id: a }))
+        });
+
+        roles.forEach(role => rolesMap.set(role._id, role));
+
+        return userRoles
+            .map(role => rolesMap.get(role))
+            .filter(Boolean)
+            .sort((a, b) => a.lvl - b.lvl);
+    }
+
+    async getUserHighestRole(userId){
+        const roles = await this.getUserRolesSorted(userId);
+        return roles.length > 0 ? roles[0] : null;
+    }
+
+    async canUserPerformAction(userId, requiredPermission){
+        const roles = await this.getUserRolesSorted(userId);
+        const combinedPermissions = this.calculateCombinedPermissions(roles);
+        return hasPermission(combinedPermissions, requiredPermission);
+    }
+
+    async canUserPerformAllActions(userId, requiredPermissions){
+        const roles = await this.getUserRolesSorted(userId);
+        const combinedPermissions = this.calculateCombinedPermissions(roles);
+    
+        return requiredPermissions.every(permission => 
+            hasPermission(combinedPermissions, permission)
+        );
+    }
+
+    async canUserPerformAnyAction(userId, permissions){
+        const roles = await this.getUserRolesSorted(userId);
+        const combinedPermissions = this.calculateCombinedPermissions(roles);
+    
+        return permissions.some(permission => 
+            hasPermission(combinedPermissions, permission)
+        );
+    }    
+
+    async canManageUser(managerId, targetUserId){
+        const [managerHighestRole, targetHighestRole] = await Promise.all([
+            this.getUserHighestRole(managerId),
+            this.getUserHighestRole(targetUserId)
+        ]);
+
+        if(!managerHighestRole) return false;
+        if(!targetHighestRole) return true; // User without roles can be managed
+        return managerHighestRole.lvl < targetHighestRole.lvl;
+    }
+
+    async getUserPermissions(userId){
+        const roles = await this.getUserRolesSorted(userId);
+        return this.calculateCombinedPermissions(roles);
     }
 }
-
-export default permissionSystem;

@@ -8,7 +8,7 @@ router.get("/botId", async (req, res) => {
     if(chat && !valid.id(chat)) return res.json({ err: true, msg: "chat is not valid" });
 
     if(chat){
-        const botNick = await global.db.groupData.findOne(chat, { bid: id });
+        const botNick = await global.db.realmData.findOne(chat, { bid: id });
         if(botNick) return res.json({ err: false, name: botNick.name });
     }
 

@@ -20,23 +20,16 @@ global.sendToSocket = (id, channel, ...args) => {
 }
 
 global.sendToChatUsers = async (to, channel, ...args) => {
-    const chatUsersPromise = global.db.usersPerms.find(to, { $exists: { uid: true }})
-        .then(chatUsers => {
-            chatUsers.forEach(user => {
-                sendToSocket(user.uid, channel, ...args);
+    const users = await global.db.realmUser.find(to, {});
+    for(const user of users){
+        if(user.bot){
+            getSocket(user.bot, "bot").forEach(conn => {
+                conn.emit(channel, ...args);
             });
-        });
-
-    const botUsersPromise = global.db.usersPerms.find(to, { $exists: { bot: true }})
-        .then(botUsers => {
-            botUsers.forEach(user => {
-                getSocket(user.bot, "bot").forEach(conn => {
-                    conn.emit(channel, ...args);
-                });
-            });
-        });
-
-    await Promise.all([chatUsersPromise, botUsersPromise]);
+        }else{
+            sendToSocket(user.u, channel, ...args);
+        }
+    }
 }
 
 await import("./chat/index.js");

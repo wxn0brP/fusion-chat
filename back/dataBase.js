@@ -4,15 +4,19 @@ import { DataBase, Graph, DataBaseRemote, GraphRemote } from "@wxn0brp/db";
 global.db = {};
 const databases = [
     { name: "data", type: "database" },             //all types data
-    { name: "mess", type: "database" },             //messages
-    { name: "groupSettings", type: "database" },    //groups/servers settings
-    { name: "usersPerms", type: "database" },       // users permissions on servers
-    { name: "logs", type: "database" },             //logs
-    { name: "userDatas", type: "database" },        //user datas
     { name: "dataGraph", type: "graph" },           //all types data graph
-    { name: "groupData", type: "database" },        //group data
-    { name: "botData", type: "database" },          //bot data
     { name: "system", type: "database" },           //system config and data
+    { name: "logs", type: "database" },             //logs
+
+    { name: "mess", type: "database" },             //messages
+    { name: "userData", type: "database" },         //user data
+    { name: "botData", type: "database" },          //bot data
+
+    { name: "realmConf", type: "database" },        //realm settings
+    { name: "realmRoles", type: "database" },       //realm roles
+    { name: "realmUser", type: "database" },        //realm users
+    { name: "realmData", type: "database" },        //realm all types data
+
 ];
 
 function getRemoteConfig(name, path){

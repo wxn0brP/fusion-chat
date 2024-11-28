@@ -1,88 +1,88 @@
 import {
-    group_create, 
-    group_exit, 
-    group_get, 
-    group_join, 
-    group_mute, 
-    private_block, 
-    private_create, 
-    private_get,
+    realm_create, 
+    realm_exit, 
+    realm_get, 
+    realm_join, 
+    realm_mute, 
+    dm_block, 
+    dm_create, 
+    dm_get,
 } from "./logic/chats.js";
 
 export default (socket) => {
-    socket.onLimit("group.get", 100, async (cb) => {
+    socket.onLimit("realm.get", 100, async (cb) => {
         try{
-            const { err, res } = await group_get(socket.user);
+            const { err, res } = await realm_get(socket.user);
             if(err) return socket.emit(...err);
             if(cb) cb(res);
-            else socket.emit("group.get", res);
+            else socket.emit("realm.get", res);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.onLimit("private.get", 100, async (cb) => {
+    socket.onLimit("dm.get", 100, async (cb) => {
         try{
-            const { err, res } = await private_get(socket.user);
+            const { err, res } = await dm_get(socket.user);
             if(err) return socket.emit(...err);
             if(cb) cb(res);
-            else socket.emit("private.get", res);
+            else socket.emit("dm.get", res);
         }catch(e){
             socket.logError(e);
         } 
     });
 
-    socket.onLimit("group.create", 1000, async (name, cb) => {
+    socket.onLimit("realm.create", 1000, async (name, cb) => {
         try{
-            const { err, res } = await group_create(socket.user, name);
+            const { err, res } = await realm_create(socket.user, name);
             if(err) return socket.emit(...err);
             if(cb) cb(res);
-            else socket.emit("group.create", res);
+            else socket.emit("realm.create", res);
         }catch(e){
             socket.logError(e);
         } 
     });
 
-    socket.onLimit("group.exit", 1000, async (id) => {
+    socket.onLimit("realm.exit", 1000, async (id) => {
         try{
-            const { err } = await group_exit(socket.user, id);
+            const { err } = await realm_exit(socket.user, id);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.onLimit("private.create", 1000, async (name) => {
+    socket.onLimit("dm.create", 1000, async (name) => {
         try{
-            const { err } = await private_create(socket.user, name);
+            const { err } = await dm_create(socket.user, name);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.onLimit("group.join", 1000, async (id) => {
+    socket.onLimit("realm.join", 1000, async (id) => {
         try{
-            const { err } = await group_join(socket.user, id);
+            const { err } = await realm_join(socket.user, id);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.onLimit("group.mute", 1000, async (id, time) => {
+    socket.onLimit("realm.mute", 1000, async (id, time) => {
         try{
             if(!socket.user) return socket.emit("error", "not auth");
-            const { err } = await group_mute(socket.user, id, time);
+            const { err } = await realm_mute(socket.user, id, time);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.onLimit("private.block", 1000, async (id, blocked) => {
+    socket.onLimit("dm.block", 1000, async (id, blocked) => {
         try{
-            const { err } = await private_block(socket.user, id, blocked);
+            const { err } = await dm_block(socket.user, id, blocked);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);

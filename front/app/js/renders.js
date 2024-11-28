@@ -1,11 +1,11 @@
 const navs__priv = document.querySelector("#navs__priv");
-const groups__content = document.querySelector("#groups__content");
+const realms__content = document.querySelector("#realms__content");
 const navs__user__name = document.querySelector("#navs__user__name");
 const navs__user__status = document.querySelector("#navs__user__status");
 const userProfileDiv = document.querySelector("#userProfile");
-const navs__groups__name = document.querySelector("#navs__groups__name");
-const navs__groups__channels = document.querySelector("#navs__groups__channels");
-const navs__groups__users = document.querySelector("#navs__groups__users");
+const navs__realms__name = document.querySelector("#navs__realms__name");
+const navs__realms__channels = document.querySelector("#navs__realms__channels");
+const navs__realms__users = document.querySelector("#navs__realms__users");
 
 const friendStatusEnum = {
     NOT_FRIEND: 0,
@@ -67,26 +67,26 @@ const renderFunc = {
         });
     },
 
-    groups(data){ 
-        groups__content.innerHTML = "";
-        vars.groups = data;
-        data.forEach((group) => {
-            const id = group.group;
-            const groupDiv = document.createElement("div");
-            groupDiv.classList.add("group");
-            groupDiv.id = "group_chat_"+id;
-            if(group.img){
-                groupDiv.innerHTML = `<img src="/userFiles/servers/${id}.png?time=${Date.now()}" alt="${apis.www.changeChat(id)}">`;
+    realms(data){
+        realms__content.innerHTML = "";
+        vars.realms = data;
+        data.forEach((realm) => {
+            const id = realm.realm;
+            const realmDiv = document.createElement("div");
+            realmDiv.classList.add("realm");
+            realmDiv.id = "realm_chat_"+id;
+            if(realm.img){
+                realmDiv.innerHTML = `<img src="/userFiles/realms/${id}.png?time=${Date.now()}" alt="${apis.www.changeChat(id)}">`;
             }else{
-                groupDiv.innerHTML = apis.www.changeChat(id);
+                realmDiv.innerHTML = apis.www.changeChat(id);
             }
-            groups__content.appendChild(groupDiv);
+            realms__content.appendChild(realmDiv);
 
-            groupDiv.addEventListener("click", () => {
+            realmDiv.addEventListener("click", () => {
                 coreFunc.changeChat(id);
             });
 
-            contextMenu.menuClickEvent(groupDiv, (e) => {
+            contextMenu.menuClickEvent(realmDiv, (e) => {
                 contextMenu.server(e, id);
             });
         });
@@ -150,7 +150,7 @@ const renderFunc = {
             blockBtn.innerHTML = translateFunc.get(data.isBlocked ? "Unblock" : "Block");
             blockBtn.onclick = () => {
                 data.isBlocked = !data.isBlocked;
-                socket.emit("private.block", data._id, data.isBlocked);
+                socket.emit("dm.block", data._id, data.isBlocked);
             }
             userProfileDiv.querySelector("#userProfileBtns").appendChild(blockBtn);
         }
@@ -193,35 +193,51 @@ const renderFunc = {
         renderUtils.initPopup(userProfileDiv);
     },
 
-    serverInit(sid, name, categories, isOwnEmoji, permission){
-        vars.servers.permission = permission;
-        navs__groups__name.innerHTML = "";
+    realmInit(sid, name, categories, isOwnEmoji, permission){
+        vars.realm = {
+            users: [],
+            roles: [],
+            permission: [],
+            text: [],
+            desc: {},
+        };
+
+        vars.realm.permission = permission;
+        navs__realms__name.innerHTML = "";
 
         const nameText = document.createElement("div");
         nameText.innerHTML = name;
         nameText.title = name;
-        nameText.id = "navs__groups__name__text";
-        navs__groups__name.appendChild(nameText);
+        nameText.id = "navs__realms__name__text";
+        navs__realms__name.appendChild(nameText);
 
         const usersDisplayBtn = document.createElement("span");
         usersDisplayBtn.innerHTML = "👥";
-        usersDisplayBtn.classList.add("group_nav_btn");
+        usersDisplayBtn.classList.add("realm_nav_btn");
         usersDisplayBtn.addEventListener("click", () => {
             renderFunc.state.chnl_user = !renderFunc.state.chnl_user;
-            navs__groups__channels.style.display = renderFunc.state.chnl_user ? "none" : "";
-            navs__groups__users.style.display = renderFunc.state.chnl_user ? "" : "none";
+            navs__realms__channels.style.display = renderFunc.state.chnl_user ? "none" : "";
+            navs__realms__users.style.display = renderFunc.state.chnl_user ? "" : "none";
         })
-        navs__groups__name.appendChild(usersDisplayBtn);
+        navs__realms__name.appendChild(usersDisplayBtn);
 
-        if(permission.includes("manage server") || permission.includes("all")){
+        const canUserEditRealm = permissionFunc.hasAnyPermission(permission, [
+            permissionFlags.admin,
+            permissionFlags.manageChannels,
+            permissionFlags.manageRoles,
+            permissionFlags.manageWebhooks,
+            permissionFlags.manageEmojis,
+        ])
+        if(canUserEditRealm){
             const settingsBtn = document.createElement("span");
-            settingsBtn.classList.add("group_nav_btn");
+            settingsBtn.classList.add("realm_nav_btn");
             settingsBtn.innerHTML = "⚙️";
             settingsBtn.addEventListener("click", () => {
-                socket.emit("server.settings.get", sid);
+                socket.emit("realm.settings.get", sid);
+                // settingsFunc.showrealmSettings({}, sid);
             });
             settingsBtn.id = "serverSettingsBtn";
-            navs__groups__name.appendChild(settingsBtn);
+            navs__realms__name.appendChild(settingsBtn);
         }
 
         function buildChannel(channel, root){
@@ -231,7 +247,7 @@ const renderFunc = {
                 if(type == "text"){
                     coreFunc.changeChnl(cid);
                 }else if(type == "voice"){
-                    if(!vars.servers.text.includes(cid)){
+                    if(!vars.realm.text.includes(cid)){
                         uiFunc.uiMsg(translateFunc.get("You can't have permission to join this voice channel") + "!");
                         return;
                     }
@@ -253,7 +269,7 @@ const renderFunc = {
 
             btn.innerHTML = typeEmoticon + " | " +name;
             root.appendChild(btn);
-            vars.servers.desc[cid] = desc;
+            vars.realm.desc[cid] = desc;
         }
     
         function buildCategory(name, channels, root){
@@ -266,22 +282,22 @@ const renderFunc = {
     
             channels.forEach(channel => {
                 buildChannel(channel, detail);
-                if(channel.text) vars.servers.text.push(channel.id);
+                if(channel.text) vars.realm.text.push(channel.id);
             });
             root.appendChild(detail);
         }
     
-        navs__groups__channels.innerHTML = "";
+        navs__realms__channels.innerHTML = "";
         if(categories.length === 0 || categories.every(category => category.chnls.length === 0)){
-            navs__groups__channels.innerHTML = "No channels in this server";
+            navs__realms__channels.innerHTML = "No channels in this server";
             vars.chat.chnl = null;
             return;
         }
 
-        vars.servers.text = [];
-        vars.servers.desc = {};
+        vars.realm.text = [];
+        vars.realm.desc = {};
         categories.forEach(category => {
-            buildCategory(category.name, category.chnls, navs__groups__channels);
+            buildCategory(category.name, category.chnls, navs__realms__channels);
         });
     
         if(vars.chat.chnl == null){
@@ -314,13 +330,13 @@ const renderFunc = {
             emojiStyleDiv.appendChild(emojiStyle);
         }
 
-        vars.servers.users.forEach(u => renderFunc.usersInChat(u.uid));
+        vars.realm.users.forEach(u => renderFunc.usersInChat(u.uid));
     },
 
     usersInChat(){
-        navs__groups__users.innerHTML = "";
-        const roles = vars.servers.roles;
-        const users = vars.servers.users;
+        navs__realms__users.innerHTML = "";
+        const roles = vars.realm.roles;
+        const users = vars.realm.users;
         const userColor = new Map();
 
         function getColor(id){
@@ -334,7 +350,7 @@ const renderFunc = {
 
             for(let i=0; i<roles.length; i++){
                 if(user.roles.includes(roles[i].name)){
-                    const color = roles[i].color;
+                    const color = roles[i].c;
                     userColor.set(id, color);
                     return color;
                 }
@@ -344,7 +360,7 @@ const renderFunc = {
 
         users.map(u => u.uid).forEach((userID) => {
             const userDiv = document.createElement("div");
-            userDiv.classList.add("group_user_div");
+            userDiv.classList.add("realm_user_div");
 
             userDiv.addEventListener("click", () => {
                 socket.emit("user.profile", userID);
@@ -359,17 +375,17 @@ const renderFunc = {
             const nameDiv = document.createElement("div");
             nameDiv.innerHTML = apis.www.changeUserID(userID);
             nameDiv.style.color = getColor(userID);
-            nameDiv.classList.add("group_user_name");
+            nameDiv.classList.add("realm_user_name");
             textContainer.appendChild(nameDiv);
 
             const activityDiv = document.createElement("div");
             activityDiv.innerHTML = "";
             activityDiv.id = "user_status_"+userID;
-            activityDiv.classList.add("group_user_status");
+            activityDiv.classList.add("realm_user_status");
             textContainer.appendChild(activityDiv);
 
             userDiv.appendChild(textContainer);
-            navs__groups__users.appendChild(userDiv);
+            navs__realms__users.appendChild(userDiv);
             renderFunc._serverUserStatus(userID);
         });
     },
@@ -476,7 +492,7 @@ const renderUtils = {
     },
 }
 
-socket.on("private.get", (data) => {
+socket.on("dm.get", (data) => {
     data.forEach((priv) => {
         const id = "$"+priv.priv;
 
@@ -490,6 +506,6 @@ socket.on("private.get", (data) => {
     renderFunc.privs();
 });
 
-socket.on("group.get", renderFunc.groups);
-socket.on("server.setup", renderFunc.serverInit);
+socket.on("realm.get", renderFunc.realms);
+socket.on("realm.setup", renderFunc.realmInit);
 socket.on("user.profile", renderFunc.userProfile);

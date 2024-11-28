@@ -10,12 +10,12 @@ export async function self_status_update(suser, status, text){
     if(!status) status = "online";
     if(!text) text = "";
 
-    await global.db.userDatas.updateOneOrAdd(suser._id, { _id: "status" }, { status, text });
+    await global.db.userData.updateOneOrAdd(suser._id, { _id: "status" }, { status, text });
     return { err: false };
 }
 
 export async function self_status_get(suser){
-    const status = await global.db.userDatas.findOne(suser._id, { _id: "status" });
+    const status = await global.db.userData.findOne(suser._id, { _id: "status" });
     const activity = await statusMgmtGetCache(suser._id);
 
     if(!status) return { err: false, res: ["online", "", activity] };
@@ -26,6 +26,7 @@ export async function profile_set_nickname(suser, nickname){
     const validE = new ValidError("profile.set_nickname");
     if(!valid.str(nickname, 0, 30)) return validE.valid("nickname");
 
-    await global.db.userDatas.updateOneOrAdd(suser._id, { $exists: { nick: true }}, { nick: nickname }, {}, {}, false);
+    const updated = await global.db.userData.updateOne(suser._id, { $exists: { nick: true }}, { nick: nickname });
+    if(!updated) await global.db.userData.add(suser._id, { nick: nickname }, false);
     return { err: false };
 }

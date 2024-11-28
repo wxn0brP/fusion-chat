@@ -6,10 +6,11 @@ import { join } from "path";
 import { trace } from "potrace";
 import valid from "../../logic/validData.js";
 import permissionSystem from "../../logic/permission-system/index.js";
+import Permissions from "../../logic/permission-system/permBD.js";
 
 const router = Router();
 
-const baseServerPath = "userFiles/servers";
+const baseServerPath = "userFiles/realms";
 const formats = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
 
 const storage = memoryStorage();
@@ -25,13 +26,16 @@ const upload = multer({
 }).single("file");
 
 async function checkUserPermission(userId, server){
-    const perm = new permissionSystem(server);
-    const userPerm = await perm.userPermison(userId, "manage server");
+    const permSys = new permissionSystem(server);
+    const userPerm = await permSys.canUserPerformAnyAction(
+        userId,
+        [Permissions.admin, Permissions.manageEmojis]
+    );
     return userPerm;
 }
 
-async function getServerEmoji(serverId){
-    const emoji = await global.db.groupSettings.find(serverId, { $exists: { unicode: true }});
+async function getServerEmoji(realmId){
+    const emoji = await global.db.realmConf.find(realmId, { $exists: { unicode: true }});
     return emoji;
 }
 
@@ -116,7 +120,7 @@ router.post("/uploadEmoji", global.authenticateMiddleware, async (req, res) => {
         name: "new emoji",
     };
 
-    await global.db.groupSettings.add(server, newEmoji, false);    
+    await global.db.realmConf.add(server, newEmoji, false);    
 
     res.json({ err: false, msg: "Emoji uploaded successfully." });
 });

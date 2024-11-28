@@ -21,8 +21,8 @@ const vars = {
     },
     lastMess: {},
     privs: [],
-    groups: [],
-    servers: {
+    realms: [],
+    realm: {
         users: [],
         roles: [],
         permission: [],

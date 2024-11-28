@@ -1,6 +1,6 @@
-export const req = ["data", "userDatas"];
+export const req = ["data", "userData"];
 export const type = "list_table";
-export const onDb = "userDatas";
+export const onDb = "userData";
 export async function run(data){
     const maped = data.map(async (userId) => {
         const user = await global.databases.data.findOne("user", { _id: userId });

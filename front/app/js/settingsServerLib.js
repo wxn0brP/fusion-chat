@@ -1,10 +1,10 @@
 class SettingsServerManager{
-    constructor(settings, serverId, container, saveCallback, exitCallback){
+    constructor(settings, realmId, container, saveCallback, exitCallback){
         this.settings = settings;
         this.saveCallback = saveCallback;
         this.exitCallback = exitCallback;
         this.container = container;
-        this.serverId = serverId;
+        this.realmId = realmId;
         this.init();
     }
 
@@ -14,6 +14,7 @@ class SettingsServerManager{
         this.container.innerHTML = "";
 
         this.renderCategorySwitcher();
+
         this.metaDiv = this.initCategoryElement();
         this.categoryDiv = this.initCategoryElement();
         this.editChannelDiv = this.initCategoryElement();

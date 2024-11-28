@@ -3,8 +3,8 @@ import {
     voice_join,
     voice_sendData,
     leaveVoiceChannel,
-    call_private_answer,
-    call_private_init,
+    call_dm_answer,
+    call_dm_init,
 } from "./logic/voice.js";
 
 export default (socket) => {
@@ -53,22 +53,22 @@ export default (socket) => {
         }
     });
 
-    socket.onLimit("call.private.init", 100, async (id, cb) => {
+    socket.onLimit("call.dm.init", 100, async (id, cb) => {
         try{
-            const { err, res } = await call_private_init(socket.user, id);
+            const { err, res } = await call_dm_init(socket.user, id);
             if(err) return socket.emit(...err);
 
             if(!res) return;
             if(cb) cb(id, true);
-            else socket.emit("call.private.init", id, true);
+            else socket.emit("call.dm.init", id, true);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.onLimit("call.private.answer", 100, async (id, answer) => {
+    socket.onLimit("call.dm.answer", 100, async (id, answer) => {
         try{
-            const { err } = await call_private_answer(socket.user, id, answer);
+            const { err } = await call_dm_answer(socket.user, id, answer);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);

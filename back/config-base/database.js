@@ -3,44 +3,51 @@ export default {
         url: "",
         auth: "",
     },
+    
     data: {
         type: "local",
         path: "data/data",
     },
-    mess: {
+    dataGraph: {
         type: "local",
-        path: "data/mess",
+        path: "data/dataGraph",
     },
-    groupSettings: {
+    system: {
         type: "local",
-        path: "data/groupSettings",
-    },
-    usersPerms: {
-        type: "local",
-        path: "data/perm",
+        path: "data/system",
     },
     logs: {
         type: "local",
         path: "data/logs",
     },
-    userDatas: {
+
+    mess: {
         type: "local",
-        path: "data/userDatas",
+        path: "data/mess",
     },
-    dataGraph: {
+    userData: {
         type: "local",
-        path: "data/graph",
-    },
-    groupData: {
-        type: "local",
-        path: "data/groupData",
+        path: "data/userData",
     },
     botData: {
         type: "local",
         path: "data/botData",
     },
-    system: {
+
+    realmConf: {
         type: "local",
-        path: "data/systemData",
+        path: "data/realmConf",
+    },
+    realmRoles: {
+        type: "local",
+        path: "data/realmRoles",
+    },
+    realmUser: {
+        type: "local",
+        path: "data/realmUser",
+    },
+    realmData: {
+        type: "local",
+        path: "data/realmData",
     },
 }

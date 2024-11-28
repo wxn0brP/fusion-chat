@@ -49,28 +49,13 @@ export default {
             items: {
                 type: "object",
                 properties: {
-                    rid: {
-                        anyOf: [
-                            { type: "string", validId: true },
-                            { type: "integer", minimum: 0 }
-                        ]
-                    },
+                    _id: { type: "string", validId: true },
                     name: { type: "string" },
-                    parent: {
-                        anyOf: [
-                            { type: "string", enum: ["all"] },
-                            { type: "string", validId: true }
-                        ]
-                    },
-                    p: {
-                        anyOf: [
-                            { type: "string", enum: ["all"] },
-                            { type: "array", items: { type: "string", enum: ["text", "voice", "manage text", "manage server"] } }
-                        ]
-                    },
-                    color: { type: "string" }
+                    lvl: { type: "integer", minimum: 0 },
+                    p: { type: "integer", minimum: 0 },
+                    c: { type: "string" }
                 },
-                required: ["rid", "name", "parent", "p"],
+                required: ["_id", "p"],
                 additionalProperties: false
             }
         },
@@ -79,13 +64,13 @@ export default {
             items: {
                 type: "object",
                 properties: {
-                    uid: { type: "string", validId: true },
-                    roles: {
+                    u: { type: "string", validId: true },
+                    r: {
                         type: "array",
                         items: { type: "string" }
                     }
                 },
-                required: ["uid", "roles"],
+                required: ["u", "r"],
                 additionalProperties: false
             }
         },

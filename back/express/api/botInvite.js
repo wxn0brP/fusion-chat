@@ -12,10 +12,10 @@ router.get("/botInviteMeta", global.authenticateMiddleware, async (req, res) => 
     const botRes = {};
     botRes.name = await global.db.botData.findOne(id, { _id: "name" }).then(b => b.name);
 
-    const userServers = await global.db.userDatas.find(req.user, (g) => !!g.group);
-    const botServers = await global.db.botData.find(id, { $exists: { server: true }}).then(b => b.map(s => s.server));
-    const availableServers = userServers.filter(s => !botServers.includes(s.group)).map(s => s.group);
-    botRes.servers = availableServers;
+    const userRealms = await global.db.userData.find(req.user, { $exists: { realm: true }});
+    const botRealms = await global.db.botData.find(id, { $exists: { server: true }}).then(b => b.map(s => s.server));
+    const availableServers = userRealms.filter(s => !botRealms.includes(s.realm)).map(s => s.realm);
+    botRes.realms = availableServers;
 
     res.json({ err: false, state: 0, data: botRes });
 });

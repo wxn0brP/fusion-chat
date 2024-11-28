@@ -26,31 +26,31 @@ function changeState(stateName){
 async function main(){
     if(!gid){
         changeState("error");
-        state.error.innerHTML = "Group not found";
+        state.error.innerHTML = "realm not found";
         return;
     }
     checkLogin();
-    const group = await fetch("/api/joinGrupMeta?id="+gid, {
+    const realm = await fetch("/api/joinGrupMeta?id="+gid, {
         headers: {
             "Content-Type": "application/json",
             "Authorization": localStorage.getItem("token"),
         },
     }).then(res => res.json());
 
-    if(group.err){
+    if(realm.err){
         changeState("error");
-        state.error.innerHTML = group.msg;
+        state.error.innerHTML = realm.msg;
         return;
     }
 
-    switch(group.state){
+    switch(realm.state){
         case 0:
             changeState("join");
-            const data = group.data;
-            document.querySelector("#groupName").innerHTML = data.name;
+            const data = realm.data;
+            document.querySelector("#realmName").innerHTML = data.name;
             if(data.img){
-                const img = document.querySelector("#groupImg");
-                img.src = "/userFiles/servers/" + gid + ".png";
+                const img = document.querySelector("#realmImg");
+                img.src = "/userFiles/realms/" + gid + ".png";
                 img.style.display = "block";
             }
         break;

@@ -6,7 +6,7 @@ import { readFileSync, existsSync } from "fs";
 import cropAndResizeProfile from "../../logic/cropAndResizeProfile.js";
 
 const router = Router();
-const MAX_FILE_SIZE = 1 * 1024 * 1024;
+const MAX_FILE_SIZE = global.fileConfig.maxUserProfileFileSize;
 const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
 const UPLOAD_DIR = "userFiles/profiles";
 

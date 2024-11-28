@@ -1,8 +1,8 @@
 import { decode, KeyIndex } from "../../logic/token/index.js";
 import mess from "./mess.js";
 import other from "./other.js";
-import servers from "./servers.js";
-import serverSettings from "./serversSettings.js";
+import realms from "./realms.js";
+import realmSettings from "./realmSettings.js";
 import voice from "./voice.js";
 
 const tmpBan = new Map();
@@ -115,8 +115,8 @@ io.of("/bot").on("connection", (socket) => {
     });
 
     mess(socket);
-    servers(socket);
-    serverSettings(socket);
+    realms(socket);
+    realmSettings(socket);
     voice(socket);
     other(socket);
 });

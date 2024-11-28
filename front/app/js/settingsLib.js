@@ -8,7 +8,7 @@ class SettingsManager{
     }
 
     init(){
-        this.container.innerHTML = '';
+        this.container.innerHTML = "";
         const saveFns = [];
         const fns = {
             createButton: this.createButton,
@@ -18,37 +18,42 @@ class SettingsManager{
         }
 
         this.settings.forEach(category => {
-            const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'settings__category';
+            const categoryDiv = document.createElement("div");
+            categoryDiv.className = "settings__category";
             categoryDiv.innerHTML = `<h1>${category.txt || category.name}</h1>`;
             
             if(category.type == "obj"){
                 category.settings.forEach(setting => {
-                    const settingElement = document.createElement('div');
-                    settingElement.className = 'settings__setting';
+                    const settingElement = document.createElement("div");
+                    settingElement.className = "settings__setting";
 
-                    const label = document.createElement('label');
-                    label.textContent = setting.txt || setting.name;
-                    label.setAttribute("data-txt", setting.name);
-                    settingElement.appendChild(label);
+                    function createLabel(){
+                        const label = document.createElement("label");
+                        label.textContent = setting.txt || setting.name;
+                        label.setAttribute("data-txt", setting.name);
+                        settingElement.appendChild(label);
+                    }
 
                     let inputElement;
 
                     switch(setting.type){
-                        case 'checkbox':
+                        case "checkbox":
+                            createLabel();
                             inputElement = this.createCheckbox(setting);
                         break;
-                        case 'text':
+                        case "text":
+                            createLabel();
                             inputElement = this.createTextInput(setting);
                         break;
-                        case 'select':
+                        case "select":
+                            createLabel();
                             inputElement = this.createSelectInput(setting);
                         break;
-                        case 'button':
+                        case "button":
                             inputElement = this.createButton(setting);
                         break;
                         default:
-                        break;
+                            createLabel();
                     }
 
                     if(inputElement){
@@ -73,40 +78,41 @@ class SettingsManager{
             this.container.appendChild(categoryDiv);
         });
 
-        const saveButton = document.createElement('button');
-        saveButton.textContent = translateFunc.get('Save');
-        saveButton.className = 'settings__exitButton';
+        const saveButton = document.createElement("button");
+        saveButton.textContent = translateFunc.get("Save");
+        saveButton.className = "settings__exitButton";
         saveButton.onclick = () => this.saveSettings(saveFns);
 
-        const exitButton = document.createElement('button');
-        exitButton.textContent = translateFunc.get('Exit without save');
-        exitButton.className = 'settings__exitButton';
+        const exitButton = document.createElement("button");
+        exitButton.textContent = translateFunc.get("Exit without save");
+        exitButton.className = "settings__exitButton";
         exitButton.onclick = () => this.exitWithoutSaving();
 
-        this.container.appendChild(document.createElement('br'));
+        this.container.appendChild(document.createElement("br"));
         this.container.appendChild(saveButton);
         this.container.appendChild(exitButton);
         this.container.fadeIn();
     }
 
     createCheckbox(setting){
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
         checkbox.checked = setting.defaultValue;
+        checkbox.classList.add("checkbox_switch");
         return checkbox;
     }
 
     createTextInput(setting){
-        const input = document.createElement('input');
-        input.type = 'text';
+        const input = document.createElement("input");
+        input.type = "text";
         input.value = setting.defaultValue;
         return input;
     }
 
     createSelectInput(setting){
-        const select = document.createElement('select');
+        const select = document.createElement("select");
         setting.options.forEach(option => {
-            const optionElement = document.createElement('option');
+            const optionElement = document.createElement("option");
             optionElement.value = option;
             optionElement.textContent = option;
             if(option === setting.defaultValue){
@@ -118,39 +124,39 @@ class SettingsManager{
     }
 
     createButton(setting){
-        const button = document.createElement('button');
+        const button = document.createElement("button");
         button.textContent = setting.txt || setting.name;
         button.onclick = setting.onclick;
         return button;
     }
 
     saveSettings(saveFns){
-        if(this.saveCallback && typeof this.saveCallback === 'function'){
+        if(this.saveCallback && typeof this.saveCallback === "function"){
             const dataStatic = this.getCurrentSettings();
             const datasFn = saveFns.map(saveFn => saveFn.save(saveFn.div));
 
             const data = Object.assign({}, dataStatic, ...datasFn);
             this.saveCallback(data);
         }
-        this.container.innerHTML = '';
+        this.container.innerHTML = "";
         this.container.fadeOut();
     }
 
     exitWithoutSaving(){
-        if(this.exitCallback && typeof this.exitCallback === 'function'){
+        if(this.exitCallback && typeof this.exitCallback === "function"){
             this.exitCallback();
         }
-        this.container.innerHTML = '';
+        this.container.innerHTML = "";
         this.container.fadeOut();
     }
 
     getCurrentSettings(){
         const currentSettings = {};
-        this.container.querySelectorAll('.settings__setting').forEach(settingElement => {
-            const label = settingElement.querySelector('label');
-            const input = settingElement.querySelector('input, select, ul');
+        this.container.querySelectorAll(".settings__setting").forEach(settingElement => {
+            const label = settingElement.querySelector("label");
+            const input = settingElement.querySelector("input, select, ul");
             if(label && input){
-                currentSettings[label.getAttribute('data-txt')] = input.type === 'checkbox' ? input.checked : input.value;
+                currentSettings[label.getAttribute("data-txt")] = input.type === "checkbox" ? input.checked : input.value;
             }
         });
         return currentSettings;

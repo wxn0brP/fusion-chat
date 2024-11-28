@@ -1,6 +1,7 @@
 import { combinateId } from "../../../logic/chatMgmt.js";
 import valid from "../../../logic/validData.js";
 import permissionSystem from "../../../logic/permission-system/index.js";
+import Permissions from "../../../logic/permission-system/permBD.js";
 import { extractTimeFromId } from "../../../logic/utils.js";
 import messageSearchData from "../valid/messageSearch.js";
 import ValidError from "../../../logic/validError.js";
@@ -65,10 +66,10 @@ export async function message_delete(suser, toM, _id){
         return validE.err("message does not exist");
     }
     if(mess.fr !== suser._id){
-        const perm = new permissionSystem(to);
-        if(!perm.userPermison(suser._id, "manage text")){
+        const permSys = new permissionSystem(to);
+        const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.manageMessages);
+        if(!userPerm)
             return validE.err("not authorized");
-        }
     }
 
     await global.db.mess.removeOne(to, { _id });
@@ -139,7 +140,7 @@ export async function message_markAsRead(suser, to, chnl, mess_id){
     
     const search = {};
     if(firendChat) search.priv = to.replace("$", "");
-    else search.group = to;
+    else search.realm = to;
 
     let res;
 
@@ -157,7 +158,7 @@ export async function message_markAsRead(suser, to, chnl, mess_id){
         res = mess_id;
     }
 
-    await global.db.userDatas.updateOne(suser._id, search, (data, context) => {
+    await global.db.userData.updateOne(suser._id, search, (data, context) => {
         if(!data.last) data.last = {};
         data.last[context.chnl] = context.mess_id;
         return data;
@@ -166,16 +167,16 @@ export async function message_markAsRead(suser, to, chnl, mess_id){
     return { err: false, res };
 }
 
-export async function message_react(suser, server, msgId, react){
+export async function message_react(suser, realm, msgId, react){
     const validE = new ValidError("message.react");
-    if(!valid.id(server.replace("$", ""))) return validE.valid("server");
+    if(!valid.id(realm.replace("$", ""))) return validE.valid("realm");
     if(!valid.id(msgId)) return validE.valid("msgId");
     if(!valid.str(react, 0, 30)) return validE.valid("react");
 
-    let toM = server;
-    if(server.startsWith("$")){
+    let toM = realm;
+    if(realm.startsWith("$")){
         const p1 = suser._id;
-        const p2 = server.replace("$", "");
+        const p2 = realm.replace("$", "");
         toM = combinateId(p1, p2);
     }
     const msg = await global.db.mess.findOne(toM, { _id: msgId });
@@ -193,31 +194,31 @@ export async function message_react(suser, server, msgId, react){
 
     await global.db.mess.updateOne(toM, { _id: msgId }, { reacts });
 
-    if(server.startsWith("$")){
-        global.sendToSocket(suser._id, "message.react", suser._id, server, msgId, react);
-        global.sendToSocket(server.replace("$", ""), "message.react", suser._id, "$"+suser._id, msgId, react);
+    if(realm.startsWith("$")){
+        global.sendToSocket(suser._id, "message.react", suser._id, realm, msgId, react);
+        global.sendToSocket(realm.replace("$", ""), "message.react", suser._id, "$"+suser._id, msgId, react);
     }else{
-        global.sendToChatUsers(server, "message.react", suser._id, server, msgId, react);
+        global.sendToChatUsers(realm, "message.react", suser._id, realm, msgId, react);
     }
 
     return { err: false };
 }
 
-export async function message_search(suser, server, chnl, query){
+export async function message_search(suser, realm, chnl, query){
     const validE = new ValidError("message.search");
-    if(!valid.id(server)) return validE.valid("server");
+    if(!valid.id(realm)) return validE.valid("realm");
     if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
     if(!messageSearchShema(query))
         return validE.valid("search", messageSearchShema.errors);
 
-    const priv = server.startsWith("$");
+    const priv = realm.startsWith("$");
     if(priv){
         const p1 = suser._id;
-        const p2 = server.replace("$", "");
-        server = combinateId(p1, p2);
+        const p2 = realm.replace("$", "");
+        realm = combinateId(p1, p2);
     }
 
-    const res = await global.db.mess.find(server, (data, context) => {
+    const res = await global.db.mess.find(realm, (data, context) => {
         if(data.chnl != chnl) return false;
         return filterMessages(context.query, data);
     }, { query });
@@ -225,52 +226,52 @@ export async function message_search(suser, server, chnl, query){
     return { err: false, res };
 }
 
-export async function message_pin(suser, server, chnl, msgId, pin){
+export async function message_pin(suser, realm, chnl, msgId, pin){
     const validE = new ValidError("message.pin");
-    if(!valid.id(server)) return validE.valid("server");
+    if(!valid.id(realm)) return validE.valid("realm");
     if(!valid.idOrSpecyficvalid(chnl, ["main"])) return validE.valid("chnl");
     if(!valid.id(msgId)) return validE.valid("msgId");
     if(!valid.bool(pin)) return validE.valid("pin");
     
-    const priv = server.startsWith("$");
-    let chat = server;
+    const priv = realm.startsWith("$");
+    let chat = realm;
     if(priv){
         const p1 = suser._id;
-        const p2 = server.replace("$", "");
+        const p2 = realm.replace("$", "");
         chat = combinateId(p1, p2);
     }
 
     await global.db.mess.updateOne(chat, { _id: msgId }, { pinned: pin });
     const refreshData = {
         evt: "message.fetch.pinned",
-        server,
+        realm,
         chnl,
     }
 
     if(priv){
-        global.sendToSocket(suser._id, "refreshData", refreshData, server, chnl);
-        refreshData.server = "$"+suser._id;
-        global.sendToSocket(server.replace("$", ""), "refreshData", refreshData, "$"+suser._id, chnl);
+        global.sendToSocket(suser._id, "refreshData", refreshData, realm, chnl);
+        refreshData.realm = "$"+suser._id;
+        global.sendToSocket(realm.replace("$", ""), "refreshData", refreshData, "$"+suser._id, chnl);
     }else{
-        global.sendToChatUsers(server, "refreshData", refreshData, server, chnl);
+        global.sendToChatUsers(realm, "refreshData", refreshData, realm, chnl);
     }
 
     return { err: false };
 }
 
-export async function message_fetch_pinned(suser, server, chnl){
+export async function message_fetch_pinned(suser, realm, chnl){
     const validE = new ValidError("message.get.pinned");
-    if(!valid.id(server)) return validE.valid("server");
+    if(!valid.id(realm)) return validE.valid("realm");
     if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
     
-    const priv = server.startsWith("$");
+    const priv = realm.startsWith("$");
     if(priv){
         const p1 = suser._id;
-        const p2 = server.replace("$", "");
-        server = combinateId(p1, p2);
+        const p2 = realm.replace("$", "");
+        realm = combinateId(p1, p2);
     }
 
-    const res = await global.db.mess.find(server, (data, context) => {
+    const res = await global.db.mess.find(realm, (data, context) => {
         if(data.chnl != context.chnl) return false;
         return data.pinned === true;
     }, { chnl });
@@ -278,16 +279,18 @@ export async function message_fetch_pinned(suser, server, chnl){
     return { err: false, res };
 }
 
-global.getChnlPerm = async function(user, server, chnl){
-    const permission = new permissionSystem(server);
-    const channel = await global.db.groupSettings.findOne(server, { chid: chnl });
+global.getChnlPerm = async function(user, realm, chnl){
+    const permsSys = new permissionSystem(realm);
+    const channel = await global.db.realmConf.findOne(realm, { chid: chnl });
     if(!channel) return {
         visable: false,
         text: false
     };
 
-    const userRoles = await permission.getUserRoles(user);
-    const alt = channel.rp.length == 0 || await permission.userPermison(user, "all");
+    const userRoles = await permsSys.getUserRolesSorted(user);
+    const alt =
+        channel.rp.length == 0 ||
+        await permsSys.canUserPerformAction(user, Permissions.admin);
 
     const visables = [];
     const texts = [];

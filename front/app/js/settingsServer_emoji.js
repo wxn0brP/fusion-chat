@@ -11,9 +11,9 @@ SettingsServerManager.prototype.renderEmojis = function(){
         fileInput.onchange = async () => {
             const file = fileInput.files[0];
             if(!file) return;
-            fileFunc.emocji(file, this.serverId);
+            fileFunc.emocji(file, this.realmId);
             setTimeout(() => {
-                socket.emit("server.emojis.sync", this.serverId, (emojis) => {
+                socket.emit("realm.emojis.sync", this.realmId, (emojis) => {
                     _this.settings.emojis = emojis;
                     _this.renderEmojis();
                 });
@@ -29,7 +29,7 @@ SettingsServerManager.prototype.renderEmojis = function(){
         emojiDiv.classList.add("emoji__container");
         
         const img = document.createElement("img");
-        img.src = "/userFiles/servers/" + _this.serverId + "/emojis/" + emoji.unicode.toString(16) + ".svg";
+        img.src = "/userFiles/realms/" + _this.realmId + "/emojis/" + emoji.unicode.toString(16) + ".svg";
         img.style.width = "64px";
         emojiDiv.appendChild(img);
 
@@ -38,7 +38,7 @@ SettingsServerManager.prototype.renderEmojis = function(){
             emoji.name = emojiName.value;
         });
 
-        const deleteButton = _this.initButton(emojiDiv, translateFunc.get("Delete"), () => {
+        _this.initButton(emojiDiv, translateFunc.get("Delete"), () => {
             const emojis = _this.settings.emojis;
            emojis.splice(emojis.indexOf(emoji), 1);
             _this.renderEmojis();

@@ -87,6 +87,6 @@ const stateManagerFunc = {
         if(!utils.validId(id)) return;
         const conf = confirm(translateFunc.get("Are you sure you want to call $?", apis.www.changeUserID(id)));
         if(!conf) return;
-        socket.emit("call.private.init", id);
+        socket.emit("call.dm.init", id);
     }
 }

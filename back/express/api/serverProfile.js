@@ -4,11 +4,12 @@ import { Image } from "image-js";
 import { join } from "path";
 import cropAndResizeProfile from "../../logic/cropAndResizeProfile.js";
 import permissionSystem from "../../logic/permission-system/index.js";
+import Permissions from "../../logic/permission-system/permBD.js";
 
 const router = Router();
-const MAX_FILE_SIZE = 1 * 1024 * 1024;
+const MAX_FILE_SIZE = global.fileConfig.maxRealmProfileFileSize;
 const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
-const UPLOAD_DIR = "userFiles/servers";
+const UPLOAD_DIR = "userFiles/realms";
 
 const storage = memoryStorage();
 
@@ -26,13 +27,13 @@ const upload = multer({
 }).single("file");
 
 router.post("/serverProfileUpload", global.authenticateMiddleware, async (req, res) => {
-    const serverId = req.headers.serverid;
-    if(!serverId) return res.status(400).json({ err: true, msg: "No server id provided." });
+    const realmId = req.headers.serverid;
+    if(!realmId) return res.status(400).json({ err: true, msg: "No server id provided." });
 
-    const permission = new permissionSystem(serverId);
+    const permSys = new permissionSystem(realmId);
     const userId = req.user;
 
-    const userPerm = await permission.userPermison(userId, "admin");
+    const userPerm = await permSys.canUserPerformAction(userId, Permissions.admin);
     if(!userPerm) return res.status(403).json({ err: true, msg: "You do not have permission to do that." });
 
     upload(req, res, async (err) => {
@@ -44,17 +45,17 @@ router.post("/serverProfileUpload", global.authenticateMiddleware, async (req, r
             return res.status(400).json({ err: true, msg: "No file uploaded." });
         }
 
-        const filePath = join(UPLOAD_DIR, `${serverId}.png`);
+        const filePath = join(UPLOAD_DIR, `${realmId}.png`);
 
         try{
             const image = await Image.load(req.file.buffer);
             const processedImage = cropAndResizeProfile(image);
             await processedImage.save(filePath, { format: "png", compressionLevel: 0 });
 
-            await global.db.groupSettings.updateOne(serverId, { _id: "set"}, { img: true });
+            await global.db.realmConf.updateOne(realmId, { _id: "set"}, { img: true });
 
             res.json({ err: false, msg: "Profile picture uploaded successfully.", path: filePath });
-            global.sendToChatUsers(serverId, "refreshData", "group.get");
+            global.sendToChatUsers(realmId, "refreshData", "realm.get");
         }catch(error){
             res.status(500).json({ err: true, msg: "An error occurred while processing the image." });
         }

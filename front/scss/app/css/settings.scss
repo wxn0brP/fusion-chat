@@ -66,7 +66,7 @@
             cursor: pointer;
         }
 
-        :where(input[type="text"], input[type="checkbox"], select, button){
+        :where(input[type="text"], select, button){
             background-color: var(--back);
             color: var(--txt);
             border: 1px solid var(--border);
@@ -79,8 +79,8 @@
         }
 
         input[type="checkbox"]{
-            margin-right: 0.5rem;
-            cursor: pointer;
+            margin: 0 3px -2px 0;
+            --h: 1.1rem;
         }
     }
 

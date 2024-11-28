@@ -6,7 +6,7 @@ const sendBtn = document.querySelector("#barc__sendBtn");
 const linkClickDiv = document.querySelector("#linkClick");
 const messages_nav = document.querySelector("#messages_nav");
 const messages_nav_priv = document.querySelector("#messages_nav__priv");
-const messages_nav_server = document.querySelector("#messages_nav__server");
+const messages_nav_realm = document.querySelector("#messages_nav__realm");
 
 const maxMessLen = 2000; 
 const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
@@ -194,7 +194,7 @@ const messFunc = {
 
             const to = vars.chat.to;
             if(to == "main" || to.startsWith("$")) return;
-            socket.emit("server.emojis.sync", to, (emojis) => {
+            socket.emit("realm.emojis.sync", to, (emojis) => {
                 emojiFunc.customEmojisCat = [{
                     id: "Custom",
                     emojis: [

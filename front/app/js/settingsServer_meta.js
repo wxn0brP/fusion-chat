@@ -9,15 +9,15 @@ SettingsServerManager.prototype.renderMeta = function(){
 
     this.addSeparator(metaDiv, 10);
 
-    const serverImg = document.createElement('img');
-    serverImg.id = 'settings__serverImg';
-    if(meta.img) serverImg.src = "/userFiles/servers/" + this.serverId + ".png";
-    else serverImg.style.display = 'none';
+    const serverImg = document.createElement("img");
+    serverImg.id = "settings__serverImg";
+    if(meta.img) serverImg.src = "/userFiles/realms/" + this.realmId + ".png";
+    else serverImg.style.display = "none";
     metaDiv.appendChild(serverImg);
 
-    const serverImgFile = document.createElement('input');
-    serverImgFile.type = 'file';
-    serverImgFile.accept = vars.uploadImgTypes.join(', ');
+    const serverImgFile = document.createElement("input");
+    serverImgFile.type = "file";
+    serverImgFile.accept = vars.uploadImgTypes.join(", ");
     serverImgFile.addEventListener("change", e => {
         meta.tmpData.img = e.target.files[0];
         serverImg.src = URL.createObjectURL(e.target.files[0]);
@@ -25,8 +25,14 @@ SettingsServerManager.prototype.renderMeta = function(){
     });
 
     metaDiv.appendChild(serverImgFile);
+    this.addSeparator(metaDiv, 5);
+    this.initButton(metaDiv, translateFunc.get("Remove image"), () => {
+        serverImg.style.display = "none";
+        delete meta.tmpData.img;
+        meta.img = false;
+    });
 
-    this.addSeparator(metaDiv, 10);
+    this.addSeparator(metaDiv, 15);
     
     this.initButton(metaDiv, translateFunc.get("Delete server"), async () => {
         const result = confirm(translateFunc.get("Are you sure you want to delete this server? ($)", meta.name));
@@ -42,15 +48,15 @@ SettingsServerManager.prototype.renderMeta = function(){
         this.exitWithoutSaving();
         coreFunc.changeChat("main");
         setTimeout(() => {
-            socket.emit("server.delete", this.serverId, name);
+            socket.emit("realm.delete", this.realmId, name);
         }, 1000);
-    });
+    }).style.color = "red";
 
     this.saveMetaSettings = () => {
         this.settings.meta.name = nameInput.value;
 
         if(meta.tmpData.img){
-            fileFunc.server(meta.tmpData.img, this.serverId);
+            fileFunc.server(meta.tmpData.img, this.realmId);
         }
 
         delete meta.tmpData;

@@ -1,7 +1,7 @@
 import { authUser, createUser } from "../../logic/auth.js";
 import mess from "./mess.js";
-import servers from "./servers.js";
-import serverSettings from "./serversSettings.js";
+import realms from "./realms.js";
+import realmSettings from "./realmSettings.js";
 import voice from "./voice.js";
 import settings from "./settings.js";
 import chats from "./chats.js";
@@ -100,8 +100,8 @@ io.of("/").on("connection", (socket) => {
     }
 
     mess(socket);
-    servers(socket);
-    serverSettings(socket);
+    realms(socket);
+    realmSettings(socket);
     voice(socket);
     settings(socket);
     chats(socket);

@@ -1,23 +1,23 @@
-const makeGroupDiv = document.querySelector("#makeGroup");
+const makeRealmDiv = document.querySelector("#makeRealm");
 
 const buttonFunc = {
     async addPriv(){
         const to = await uiFunc.prompt("Name of the 2 people");
         if(!to) return;
-        socket.emit("private.create", to);
+        socket.emit("dm.create", to);
     },
 
-    async createGroup(){
-        const name = await uiFunc.prompt("Name of the group");
+    async createrealm(){
+        const name = await uiFunc.prompt("Name of the realm");
         if(!name) return;
-        socket.emit("group.create", name);
+        socket.emit("realm.create", name);
         setTimeout(() => {
-            socket.emit("group.get");
+            socket.emit("realm.get");
         }, 1500);
     },
 
-    async joinGroup(){
-        let id = await uiFunc.prompt("Invite link of the group");
+    async joinrealm(){
+        let id = await uiFunc.prompt("Invite link of the realm");
         if(!id) return;
 
         id = id
@@ -25,7 +25,7 @@ const buttonFunc = {
             .replace(location.host, "")
             .replace("/serverInvite?id=", "");
 
-        socket.emit("group.join", id);
+        socket.emit("realm.join", id);
     },
 
     userSettings(){

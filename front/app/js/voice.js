@@ -3,7 +3,7 @@ const voiceHTML = {
     mediaContainer: document.querySelector("#voice_call_media"),
     users: document.querySelector("#voice_call_users"),
     muteMic: document.querySelector("#voice_call_mute_mic"),
-    voiceShow: document.querySelector("#groups__voice_show"),
+    voiceShow: document.querySelector("#realms__voice_show"),
 }
 
 const voiceFunc = {
@@ -102,7 +102,7 @@ const voiceFunc = {
         const isConfirm = confirm(translateFunc.get("Are you sure you want to call $", apis.www.changeUserID(id)) + "?");
         if(!isConfirm) return;
 
-        socket.emit("call.private.init", id);
+        socket.emit("call.dm.init", id);
     },
 
     toggleMute(){
@@ -207,17 +207,17 @@ socket.on("voice.get.users", (users) => {
     }
 });
 
-socket.on("call.private.init", (id, userOffline=false) => {
+socket.on("call.dm.init", (id, userOffline=false) => {
     if(userOffline){
         alert(translateFunc.get("$ is offline", apis.www.changeUserID(id)));
         const join = confirm(translateFunc.get("Do you want join to call and wait") + "?");
         if(!join) return;
     }else{ // if user is online
         if(voiceFunc.isInUserCall(id))
-            return socket.emit("call.private.answer", id, true);
+            return socket.emit("call.dm.answer", id, true);
         
         const isConfirm = confirm(translateFunc.get("$ is calling you. Accept", apis.www.changeUserID(id)) + "?");
-        socket.emit("call.private.answer", id, isConfirm);
+        socket.emit("call.dm.answer", id, isConfirm);
     
         if(!isConfirm) return;
     }
@@ -226,7 +226,7 @@ socket.on("call.private.init", (id, userOffline=false) => {
     voiceFunc.joinToVoiceChannel(room);
 });
 
-socket.on("call.private.answer", (id, answer) => {
+socket.on("call.dm.answer", (id, answer) => {
     if(!answer)
         return alert(translateFunc.get("Call rejected"));
 

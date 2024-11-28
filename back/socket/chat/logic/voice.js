@@ -44,8 +44,8 @@ export function voice_getUsers(socket){
     return { err: false, res: [...new Set(users)] };
 }
 
-export async function call_private_init(suser, id){
-    const validE = new ValidError("call.private.init");
+export async function call_dm_init(suser, id){
+    const validE = new ValidError("call.dm.init");
     if(!valid.id(id)) return validE.valid("id");
 
     const sockets = global.getSocket(id);
@@ -65,16 +65,16 @@ export async function call_private_init(suser, id){
         return { err: false, res: true };
     }
 
-    global.sendToSocket(id, "call.private.init", suser._id);
+    global.sendToSocket(id, "call.dm.init", suser._id);
     return { err: false };
 }
 
-export async function call_private_answer(suser, id, answer){
-    const validE = new ValidError("call.private.answer");
+export async function call_dm_answer(suser, id, answer){
+    const validE = new ValidError("call.dm.answer");
     if(!valid.id(id)) return validE.valid("id");
     if(!valid.bool(answer)) return validE.valid("answer");
 
-    global.sendToSocket(id, "call.private.answer", suser._id, answer);
+    global.sendToSocket(id, "call.dm.answer", suser._id, answer);
     return { err: false };
 }
 

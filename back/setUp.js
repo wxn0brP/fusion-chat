@@ -15,7 +15,7 @@ dir("config");
 dir("userFiles");
 dir("userFiles/users");
 dir("userFiles/profiles");
-dir("userFiles/servers");
+dir("userFiles/realms");
 file("banedIP.json", "[]");
 file("mailConfig.json", "{}");
 preFile("file.js", "file");

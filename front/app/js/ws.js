@@ -13,9 +13,9 @@ const socket = io("/", {
 
 socket.on("connect", () => {
     debugFunc.msg("connected to socket");
-    socket.emit("group.get");
+    socket.emit("realm.get");
     socket.emit("self.status.get");
-    socket.emit("private.get");
+    socket.emit("dm.get");
 });
 
 socket.on("error", (text, ...data) => {

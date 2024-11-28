@@ -49,11 +49,11 @@ export default async function sendMessage(req, user, options={}){
     
     const privChat = to.startsWith("$");
     if(privChat){
-        const priv = await global.db.userDatas.findOne(user._id, { priv: to.replace("$", "") });
+        const priv = await global.db.userData.findOne(user._id, { priv: to.replace("$", "") });
         if(!priv) return validE.err("priv not found");
         if(priv.blocked) return validE.err("blocked");
 
-        const toPriv = await global.db.userDatas.findOne(to.replace("$", ""), { priv: user._id });
+        const toPriv = await global.db.userData.findOne(to.replace("$", ""), { priv: user._id });
         if(!toPriv) return validE.err("priv not found");
         if(toPriv.blocked) return validE.err("blocked");
 
@@ -89,19 +89,19 @@ export default async function sendMessage(req, user, options={}){
     sendToSocket(user._id, "mess", Object.assign({ to: req.to }, data));
 
     if(!privChat){
-        const server = await global.db.groupSettings.findOne(to, { _id: "set"});
-        const fromMsg = `${server.name} @${user.name}`;
+        const server = await global.db.realmConf.findOne(to, { _id: "set"});
+        const fromMsg = `${realm.name} @${user.name}`;
         data.to = to;
         
-        global.db.usersPerms.find(to, r => r.uid)
+        global.db.realmUser.find(to, u => u.u)
         .then(chat => {
             chat.forEach(async u => {
                 u = u.uid;
                 if(u == user._id) return;
     
-                const group = await global.db.userDatas.findOne(u, { group: data.to });
-                if(group.muted && group.muted != -1){
-                    const muted = group.muted;
+                const realm = await global.db.userData.findOne(u, { realm: data.to });
+                if(realm.muted && realm.muted != -1){
+                    const muted = realm.muted;
                     if(muted == 0) return;
                     if(muted > new Date().getTime()) return;
                 }
@@ -116,7 +116,7 @@ export default async function sendMessage(req, user, options={}){
             });
         })
 
-        global.db.usersPerms.find(to, { $exists: { bot: true }})
+        global.db.realmUser.find(to, { $exists: { bot: true }})
         .then(botUsers => {
             botUsers.forEach(user => {
                 getSocket(user.bot, "bot").forEach(conn => {

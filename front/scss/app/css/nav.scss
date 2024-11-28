@@ -24,7 +24,7 @@ nav{
     font-size: 1.6rem;
 }
 
-#groups{
+#realms{
     width: 60px;
     height: 100vh;
     float: left;
@@ -32,7 +32,7 @@ nav{
     padding-inline: 6px;
 }
 
-.group{
+.realm{
     width: 48px;
     height: 48px;
     margin: 2px;
@@ -53,7 +53,7 @@ nav{
     }
 }
 
-.group_chatActive::after{
+.realm_chatActive::after{
     content: "";
     position: absolute;
     width: 3px;
@@ -63,7 +63,7 @@ nav{
     background-color: var(--accent);
 }
 
-#groups__main__img{
+#realms__main__img{
     object-fit: fill;
 }
 
@@ -86,7 +86,7 @@ nav{
     }
 }
 
-#navs__main, #navs__groups{
+#navs__main, #navs__realms{
     width: 100%;
     height: calc(100vh - 60px);
 }
@@ -97,7 +97,7 @@ nav{
     background-color: var(--userProfile);
 }
 
-#navs__groups__name{
+#navs__realms__name{
     padding: 10px;
     width: 100%;
     height: 3.4rem;
@@ -106,7 +106,7 @@ nav{
     font-weight: bold;
 }
 
-#navs__groups__name__text{
+#navs__realms__name__text{
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -116,19 +116,19 @@ nav{
     float: left;
 }
 
-#navs__groups__name{
-    .group_nav_btn{
+#navs__realms__name{
+    .realm_nav_btn{
         font-size: 1.4rem;
         cursor: pointer;
         float: right;
     }
 
-    .group_nav_btn:not(:first-of-type){
+    .realm_nav_btn:not(:first-of-type){
         margin-right: 5px;
     }
 }
 
-#navs__groups__channels details{
+#navs__realms__channels details{
     summary{
         text-align: left;
         padding-left: 1rem;
@@ -149,7 +149,7 @@ nav{
     }
 }
 
-#navs__groups__users{
+#navs__realms__users{
     text-align: left;
     overflow-y: scroll;
     max-height: calc(100vh - 60px - 50px);
@@ -162,7 +162,7 @@ nav{
     }
 }
 
-#navs__groups__users > div{
+#navs__realms__users > div{
     margin-block: 0.1rem;
     padding: 0.3rem;
     padding-left: 1rem;
@@ -175,12 +175,12 @@ nav{
     cursor: pointer;
 }
 
-.group_user_div:hover .group_user_name{
+.realm_user_div:hover .realm_user_name{
     text-decoration: underline;
     font-style: italic;
 }
 
-.group_user_status{
+.realm_user_status{
     font-size: 0.8rem;
 }
 
@@ -210,7 +210,7 @@ nav{
     color: var(--accent);
 }
 
-#groups__create{
+#realms__create{
     font-size: 2.5rem;
     color: green;
 }

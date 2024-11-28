@@ -1,4 +1,4 @@
-socket.on("refreshData", (settings, ...moreData) => {
+socket.on("refreshData", async (settings, ...moreData) => {
     let events = [];
 
     if(Array.isArray(settings)){
@@ -8,12 +8,14 @@ socket.on("refreshData", (settings, ...moreData) => {
         events = [settings];
     }else
     if(typeof settings == "object"){
-        const { server, chnl, evt } = settings;
+        const { server, chnl, evt, wait } = settings;
         events = typeof evt == "string" ? [evt] : Array.isArray(evt) ? evt : [];
 
         if(server && server != vars.chat.to && server !== "*") return;
         if(chnl && chnl != vars.chat.chnl && chnl !== "*") return;
-    }else return;
+        if(wait) await delay(wait);
+    }
+    else return;
 
     events.forEach(evt => {
         socket.emit(evt, ...moreData);
@@ -38,9 +40,9 @@ socket.on("message.markAsRead", (to, chnl, id) => {
     }catch{}
 });
 
-socket.on("server.users.sync", (users, roles) => {
-    vars.servers.users = users;
-    vars.servers.roles = roles;
+socket.on("realm.users.sync", (users, roles) => {
+    vars.realm.users = users;
+    vars.realm.roles = roles;
     renderFunc.usersInChat();
     users.forEach(user => {
         renderFunc.serverUserStatus(user.uid, { activity: Object.assign({}, user.activity) });

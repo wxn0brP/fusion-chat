@@ -10,7 +10,7 @@ const contextMenu = {
     },
 
     server(e, id){
-        const ele = document.querySelector("#server_context_menu");
+        const ele = document.querySelector("#realm_context_menu");
         this._ClassAtrib(e, ele, id);
     },
 
@@ -97,7 +97,7 @@ const contextFunc = {
     },
 
     server(type){
-        const id = document.querySelector("#server_context_menu").getAttribute("_id");
+        const id = document.querySelector("#realm_context_menu").getAttribute("_id");
         switch(type){
             case "copy_id":
                 navigator.clipboard.writeText(id);
@@ -112,23 +112,23 @@ const contextFunc = {
             case "exit":
                 const conf = confirm(translateFunc.get("Are you sure you want to exit server$($)", "? ", apis.www.changeChat(id)));
                 if(conf){
-                    socket.emit("group.exit", id);
+                    socket.emit("realm.exit", id);
                     coreFunc.changeChat("main");
                 }
             break;
             case "mute":
-                const group = vars.groups.find(g => g.group == id);
-                if(!group) return;
+                const realm = vars.realms.find(g => g.realm == id);
+                if(!realm) return;
 
                 let muted = false;
-                if(group.muted != undefined){
-                    if(group.muted == -1){
+                if(realm.muted != undefined){
+                    if(realm.muted == -1){
                         muted = false;
-                    }else if(group.muted == 0){
+                    }else if(realm.muted == 0){
                         muted = true;
-                    }else if(group.muted > new Date().getTime()){
+                    }else if(realm.muted > new Date().getTime()){
                         muted = true;
-                        endTime = new Date(group.muted).toLocaleString();
+                        endTime = new Date(realm.muted).toLocaleString();
                     }else{
                         muted = false;
                     }
@@ -138,10 +138,10 @@ const contextFunc = {
                 let endTimeText = '';
 
                 if(muted){
-                    if(group.muted === 0){
+                    if(realm.muted === 0){
                         endTimeText = translateFunc.get("Mute is permanent");
-                    }else if(group.muted > new Date().getTime()){
-                        const endTime = new Date(group.muted).toLocaleString();
+                    }else if(realm.muted > new Date().getTime()){
+                        const endTime = new Date(realm.muted).toLocaleString();
                         endTimeText = translateFunc.get("Mute ends at $", endTime);
                     }
                 }
@@ -192,8 +192,8 @@ const contextFunc = {
                             return;
                     }
 
-                    socket.emit("group.mute", id, targetTime);
-                    group.muted = targetTime;
+                    socket.emit("realm.mute", id, targetTime);
+                    realm.muted = targetTime;
                 });
             break;
         }

@@ -1,4 +1,8 @@
 export default {
-    maxFileSize: 10 * 1024 * 1024, //10 MB
+    maxUserProfileFileSize: 2 * 1024 * 1024,
+    maxUserFileSize: 10 * 1024 * 1024,
     maxUserFiles: 10,
+
+    maxRealmProfileFileSize: 2 * 1024 * 1024,
+
 }

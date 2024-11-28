@@ -11,7 +11,7 @@ const apis = {
                 return data;
             }
 
-            // if group
+            // if realm
             if(!temp[chat]) temp[chat] = {};
 
             const issetData = temp[chat][id];

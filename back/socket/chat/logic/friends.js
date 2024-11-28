@@ -103,7 +103,7 @@ export async function friend_getAll(suser){
             status: "offline"
         }
 
-        const status = await global.db.userDatas.findOne(f, { _id: "status" });
+        const status = await global.db.userData.findOne(f, { _id: "status" });
         return {
             _id: f,
             status: status.status || "online",
@@ -129,7 +129,7 @@ export async function user_profile(suser, id){
     const userN = await global.db.data.findOne("user", { _id: id });
     if(!userN) return validE.err("user not found");
 
-    let userStatus = await global.db.userDatas.findOne(id, { _id: "status" });
+    let userStatus = await global.db.userData.findOne(id, { _id: "status" });
     const userOnline = global.getSocket(id).length > 0;
     if(!userStatus) userStatus = {};
 
@@ -157,7 +157,7 @@ export async function user_profile(suser, id){
         }
     }
 
-    const userIsBlocked = await global.db.userDatas.findOne(suser._id, { priv: id })
+    const userIsBlocked = await global.db.userData.findOne(suser._id, { priv: id })
 
     const userData = {
         name: userN.name,

@@ -2,21 +2,21 @@ import { combinateId, createChat, exitChat, createPriv, addUserToChat } from "..
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
 
-export async function group_get(suser){
-    const groups = await global.db.userDatas.find(suser._id, r => !!r.group);
-    if(groups.length == 0) return { err: false, res: [] };
+export async function realm_get(suser){
+    const realms = await global.db.userData.find(suser._id, r => !!r.realm);
+    if(realms.length == 0) return { err: false, res: [] };
 
-    for(let i = 0; i < groups.length; i++){
-        const group = groups[i];
-        const serverSet = await global.db.groupSettings.findOne(group.group, { _id: 'set' });
-        group.img = serverSet.img || false;
+    for(let i = 0; i < realms.length; i++){
+        const realm = realms[i];
+        const serverSet = await global.db.realmConf.findOne(realm.realm, { _id: 'set' });
+        realm.img = serverSet.img || false;
     }
 
-    return { err: false, res: groups };
+    return { err: false, res: realms };
 }
 
-export async function private_get(suser){
-    const privs = await global.db.userDatas.find(suser._id, { $exists: { priv: true } });
+export async function dm_get(suser){
+    const privs = await global.db.userData.find(suser._id, { $exists: { priv: true } });
     if(privs.length == 0) return { err: false, res: [] };
 
     for(let i=0; i<privs.length; i++){
@@ -30,25 +30,25 @@ export async function private_get(suser){
     return { err: false, res: privs };
 }
 
-export async function group_create(suser, name){
-    const validE = new ValidError("group.create");
+export async function realm_create(suser, name){
+    const validE = new ValidError("realm.create");
     if(!valid.str(name, 0, 30)) return validE.valid("name");
 
     createChat(name, suser._id);
     return { err: false };
 }
 
-export async function group_exit(suser, id){
-    const validE = new ValidError("group.exit");
+export async function realm_exit(suser, id){
+    const validE = new ValidError("realm.exit");
     if(!valid.id(id)) return validE.valid("id");
 
     await exitChat(id, suser._id);
-    global.sendToSocket(suser._id, "refreshData", "group.get");
+    global.sendToSocket(suser._id, "refreshData", "realm.get");
     return { err: false };
 }
 
-export async function private_create(suser, name){
-    const validE = new ValidError("private.create");
+export async function dm_create(suser, name){
+    const validE = new ValidError("dm.create");
     if(!valid.str(name, 0, 30)) return validE.valid("name");
 
     const user = await global.db.data.findOne("user", { name });
@@ -56,7 +56,7 @@ export async function private_create(suser, name){
 
     const toId = user._id;
 
-    const priv = await global.db.userDatas.findOne(suser._id, (r) => {
+    const priv = await global.db.userData.findOne(suser._id, (r) => {
         if(!r.priv) return false;
         if(r.priv == toId) return true;
     });
@@ -64,44 +64,44 @@ export async function private_create(suser, name){
 
     await createPriv(toId, suser._id);
 
-    global.sendToSocket(suser._id, "refreshData", "private.get");
-    global.sendToSocket(toId, "refreshData", "private.get");
+    global.sendToSocket(suser._id, "refreshData", "dm.get");
+    global.sendToSocket(toId, "refreshData", "dm.get");
 
     return { err: false };
 }
 
-export async function group_join(suser, id){
-    const validE = new ValidError("group.join");
+export async function realm_join(suser, id){
+    const validE = new ValidError("realm.join");
     if(!valid.id(id)) return validE.valid("id");
 
-    const exists = await global.db.userDatas.findOne(suser._id, { group: id });
-    if(exists) return validE.err("already in group");
+    const exists = await global.db.userData.findOne(suser._id, { realm: id });
+    if(exists) return validE.err("already in realm");
 
-    const isBaned = await global.db.usersPerms.findOne(id, { ban: suser._id });
+    const isBaned = await global.db.realmData.findOne(id, { ban: suser._id });
     if(isBaned) return validE.err("user is baned");
     
     await addUserToChat(id, suser._id);
-    global.sendToSocket(suser._id, "refreshData", "group.get");
+    global.sendToSocket(suser._id, "refreshData", "realm.get");
     return { err: false };
 }
 
-export async function group_mute(suser, id, time){
-    const validE = new ValidError("group.mute");
+export async function realm_mute(suser, id, time){
+    const validE = new ValidError("realm.mute");
     if(!valid.id(id)) return validE.valid("id");
     if(!valid.num(time, -1)) return validE.valid("time");
 
-    const exists = await global.db.userDatas.findOne(suser._id, { group: id });
-    if(!exists) return validE.err("not in group");
+    const exists = await global.db.userData.findOne(suser._id, { realm: id });
+    if(!exists) return validE.err("not in realm");
 
-    await global.db.userDatas.updateOne(suser._id, { group: id }, { muted: time });
+    await global.db.userData.updateOne(suser._id, { realm: id }, { muted: time });
     return { err: false };
 }
 
-export async function private_block(suser, id, blocked){
-    const valid = new ValidError("private.block");
+export async function dm_block(suser, id, blocked){
+    const valid = new ValidError("dm.block");
     if(!valid.id(id)) return valid.valid("id"); 
     if(!valid.bool(blocked)) return valid.valid("blocked");
 
-    await global.db.userDatas.updateOneOrAdd(suser._id, { priv: id }, { blocked });
+    await global.db.userData.updateOneOrAdd(suser._id, { priv: id }, { blocked });
     return { err: false };
 }

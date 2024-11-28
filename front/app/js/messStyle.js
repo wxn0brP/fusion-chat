@@ -46,8 +46,8 @@ const messStyle = {
 
     colorRole(){
         const messages = document.querySelectorAll(".mess_message");
-        const roles = vars.servers.roles;
-        const users = vars.servers.users;
+        const roles = vars.realm.roles;
+        const users = vars.realm.users;
         const userColor = new Map();
 
         messages.forEach(mess => {
@@ -65,7 +65,7 @@ const messStyle = {
 
             for(let i=0; i<roles.length; i++){
                 if(user.roles.includes(roles[i].name)){
-                    color = roles[i].color;
+                    color = roles[i].c;
                     userColor.set(author, color);
                     messStyle.colorRoleMess(mess, color);
                     return;

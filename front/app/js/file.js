@@ -81,7 +81,7 @@ const fileFunc = {
         fileFunc.read(opt);
     },
 
-    emocji(file, serverId){
+    emocji(file, realmId){
         const opts = {
             file: file,
             callback: (xhr) => {
@@ -91,7 +91,7 @@ const fileFunc = {
             maxName: 100,
             endpoint: "/api/uploadEmoji",
             addionalFields: (xhr, formData) => {
-                xhr.setRequestHeader("server", serverId);
+                xhr.setRequestHeader("server", realmId);
             }
         };
 

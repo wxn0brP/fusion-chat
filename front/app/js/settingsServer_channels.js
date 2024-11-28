@@ -18,7 +18,7 @@ SettingsServerManager.prototype.renderChannels = function(){
 
     sortedCategories.forEach(category => {
         this.addSeparator(categoriesContainer, 15);
-        const categoryDiv = document.createElement('div');
+        const categoryDiv = document.createElement("div");
         categoryDiv.innerHTML = `<span style="font-size: 1.5rem" class="settings__nameSpan">- ${category.name}</span>`;
 
         this.initButton(categoryDiv, translateFunc.get("Move up"), () => {
@@ -40,7 +40,7 @@ SettingsServerManager.prototype.renderChannels = function(){
         });
 
         this.initButton(categoryDiv, translateFunc.get("Edit"), () => {
-            categoriesContainer.querySelectorAll('div').forEach(div => div.style.border = "");
+            categoriesContainer.querySelectorAll("div").forEach(div => div.style.border = "");
             categoryDiv.style.border = "3px dotted var(--accent)";
             this.renderEditCategory(category);
         });
@@ -70,7 +70,7 @@ SettingsServerManager.prototype.renderChannels = function(){
 
         const categoryChannels = channels.filter(channel => channel.category === category.cid).sort((a, b) => a.i - b.i);
         categoryChannels.forEach(channel => {
-            const channelElement = document.createElement('div');
+            const channelElement = document.createElement("div");
             channelElement.innerHTML =
                 `<span style="font-size: 1.2rem" class="settings__nameSpan">${"&nbsp;".repeat(3)}+ ${channel.name} (${channel.type})</span>`;
 
@@ -117,7 +117,7 @@ SettingsServerManager.prototype.renderChannels = function(){
             });
 
             this.initButton(channelElement, translateFunc.get("Edit"), () => {
-                categoriesContainer.querySelectorAll('div').forEach(div => div.style.border = "");
+                categoriesContainer.querySelectorAll("div").forEach(div => div.style.border = "");
                 channelElement.style.border = "3px dotted var(--accent)";
                 this.renderEditChannel(channel); 
             });
@@ -144,16 +144,16 @@ SettingsServerManager.prototype.renderEditChannel = function(channel){
     ];
 
     function renderRole(role){
-        const details = document.createElement('details');
-        const summary = document.createElement('summary');
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
         summary.innerHTML = role.name;
         details.appendChild(summary);
 
         allPerm.forEach(perm => {
             const checkbox = _this.initCheckbox(details, perm.name, false);
-            checkbox.checked = channel.rp.includes(role.rid + "/" + perm.id);
-            checkbox.setAttribute('data-role', role.rid);
-            checkbox.setAttribute('data-perm', perm.id);
+            checkbox.checked = channel.rp.includes(role._id + "/" + perm.id);
+            checkbox.setAttribute("data-role", role._id);
+            checkbox.setAttribute("data-perm", perm.id);
         });
         containerElement.appendChild(details);
         _this.addSeparator(details, 5);
@@ -170,18 +170,20 @@ SettingsServerManager.prototype.renderEditChannel = function(channel){
 
         containerElement.querySelectorAll("input[type=checkbox][data-role][data-perm]").forEach(checkbox => {
             if(!checkbox.checked) return;
-            const role = checkbox.getAttribute('data-role');
-            const perm = checkbox.getAttribute('data-perm');
+            const role = checkbox.getAttribute("data-role");
+            const perm = checkbox.getAttribute("data-perm");
             channel.rp.push(role + "/" + perm);
         });
 
         this.renderChannels();
         containerElement.fadeOut();
     });
+
     this.initButton(containerElement, translateFunc.get("Cancel"), () => {
         this.renderChannels();
         containerElement.fadeOut();
     });
+
     this.initButton(containerElement, translateFunc.get("Delete"), () => {
         const index = this.settings.channels.findIndex(ch => ch === channel);
         if(index !== -1){

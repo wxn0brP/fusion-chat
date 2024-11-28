@@ -37,8 +37,8 @@ function createTTF(inputSvgFontPath, outputTTFPath){
     writeFileSync(outputTTFPath, ttf.buffer);
 }
 
-export async function createFont(emojis, serverId){
-    const basePath = join("userFiles", "servers", serverId);
+export async function createFont(emojis, realmId){
+    const basePath = join("userFiles", "realms", realmId);
     const emojiPath = join(basePath, "emojis");
 
     emojis = emojis.map(emoji => {
@@ -52,10 +52,10 @@ export async function createFont(emojis, serverId){
     }).filter(emoji => !!emoji);
 
     const svgFontPath = join(basePath, "emojiFont.svg");
-    const ttfPath = join("userFiles", "emoji", serverId + ".ttf");
+    const ttfPath = join("userFiles", "emoji", realmId + ".ttf");
 
     await createSVGFont(emojis, svgFontPath, {
-        fontName: "FusionChatEmojiFont-" + serverId,
+        fontName: "FusionChatEmojiFont-" + realmId,
     });
 
     createTTF(svgFontPath, ttfPath);

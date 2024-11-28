@@ -1,8 +1,8 @@
 const navs__main = document.querySelector("#navs__main");
-const navs__groups = document.querySelector("#navs__groups");
+const navs__realms = document.querySelector("#navs__realms");
 const navs__main__call = document.querySelector("#navs__main__call");
 const emojiStyleDiv = document.querySelector("#emoji-style");
-const messages_nav__server__description = document.querySelector("#messages_nav__server__description");
+const messages_nav__realm__description = document.querySelector("#messages_nav__realm__description");
 
 const coreFunc = {
     changeChat(id, chnl=null){
@@ -17,7 +17,7 @@ const coreFunc = {
             document.querySelector("title").innerHTML = vars.baseTitle;
 
             navs__main.style.display = "block";
-            navs__groups.style.display = "none";
+            navs__realms.style.display = "none";
             navs__main__call.style.display = "none";
             messages_nav.style.display = "none";
             mainViewDiv.style.display = "";
@@ -44,30 +44,30 @@ const coreFunc = {
         if(id.startsWith("$")){
             document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeUserID(id.substring(1));
             navs__main.style.display = "block";
-            navs__groups.style.display = "none";
+            navs__realms.style.display = "none";
             vars.chat.chnl = "main";
             coreFunc.loadChat();
             socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
-            vars.servers.users = [];
-            vars.servers.roles = [];
-            vars.servers.text = [];
+            vars.realm.users = [];
+            vars.realm.roles = [];
+            vars.realm.text = [];
             messInput.placeholder = translateFunc.get("Write message here") + "...";
             messInput.disabled = false;
             navs__main__call.style.display = "";
             messages_nav_priv.style.display = "";
-            messages_nav_server.style.display = "none";
+            messages_nav_realm.style.display = "none";
         }else{
             document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeChat(id);
             navs__main.style.display = "none";
-            navs__groups.style.display = "block";
+            navs__realms.style.display = "block";
             messages_nav_priv.style.display = "none";
-            messages_nav_server.style.display = "";
+            messages_nav_realm.style.display = "";
             vars.chat.chnl = chnl;
             renderFunc.state.chnl_user = false;
-            navs__groups__channels.style.display = "";
-            navs__groups__users.style.display = "none";
-            socket.emit("server.setup", id);
-            socket.emit("server.users.sync", id);
+            navs__realms__channels.style.display = "";
+            navs__realms__users.style.display = "none";
+            socket.emit("realm.setup", id);
+            socket.emit("realm.users.sync", id);
         }
         coreFunc.markSelectedChat();
     },
@@ -78,12 +78,12 @@ const coreFunc = {
 
         document.querySelectorAll(".channel_text").forEach(e => e.classList.remove("channel_textActive"));
         document.querySelector("#channel_"+id).classList.add("channel_textActive");
-        messages_nav__server__description.innerHTML = vars.servers.desc[id] || "";
+        messages_nav__realm__description.innerHTML = vars.realm.desc[id] || "";
         
         coreFunc.loadChat();
         socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
 
-        const isText = vars.servers.text.includes(id);
+        const isText = vars.realm.text.includes(id);
         if(isText){
             messInput.placeholder = translateFunc.get("Write message here") + "...";
             messInput.disabled = false;
@@ -135,14 +135,14 @@ const coreFunc = {
         document.querySelectorAll(".priv_chat").forEach((ele) => {
             ele.classList.remove("priv_chatActive")
         });
-        document.querySelectorAll(".group").forEach((ele) => {
-            ele.classList.remove("group_chatActive")
+        document.querySelectorAll(".realm").forEach((ele) => {
+            ele.classList.remove("realm_chatActive")
         });
 
         const to = vars.chat.to;
         if(to == "main"){}
         else if(to.startsWith("$")) document.querySelector("#priv_chat_"+to.substring(1)).classList.add("priv_chatActive");
-        else document.querySelector("#group_chat_"+to).classList.add("group_chatActive");
+        else document.querySelector("#realm_chat_"+to).classList.add("realm_chatActive");
     },
 
 }

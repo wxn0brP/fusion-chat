@@ -1,13 +1,13 @@
 <nav>
-    <div id="groups">
-        <div class="group" onclick="coreFunc.changeChat('main')">
-            <img src="/favicon.svg" alt="MAIN" id="groups__main__img">
+    <div id="realms">
+        <div class="realm" onclick="coreFunc.changeChat('main')">
+            <img src="/favicon.svg" alt="MAIN" id="realms__main__img">
         </div>
         <hr>
-        <div id="groups__content"></div>
+        <div id="realms__content"></div>
         <hr>
-        <div class="group" onclick="makeGroupDiv.fadeIn()" id="groups__create">+</div>
-        <div class="group" onclick="voiceHTML.div.fadeIn()" translate id="groups__voice_show" style="display: none;">Voice Show</div>
+        <div class="realm" onclick="makeRealmDiv.fadeIn()" id="realms__create">+</div>
+        <div class="realm" onclick="voiceHTML.div.fadeIn()" translate id="realms__voice_show" style="display: none;">Voice Show</div>
     </div>
     <div id="navs">
         <div id="navs__main">
@@ -17,12 +17,12 @@
             <br />
             <div id="navs__priv"></div>
         </div>
-        <div id="navs__groups" style="display: none;">
-            <div id="navs__groups__name"></div>
+        <div id="navs__realms" style="display: none;">
+            <div id="navs__realms__name"></div>
             <hr>
             <br />
-            <div id="navs__groups__channels"></div>
-            <div id="navs__groups__users"></div>
+            <div id="navs__realms__channels"></div>
+            <div id="navs__realms__users"></div>
         </div>
         <div id="navs__user">
             <img src="/assets/hatwoo.svg" alt="">

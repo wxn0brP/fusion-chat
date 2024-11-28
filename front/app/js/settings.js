@@ -10,17 +10,17 @@ const settingsFunc = {
         );
     },
 
-    showServerSettings(dataI, id){
+    showRealmSettings(dataI, id){
         new SettingsServerManager(
             dataI,
             id,
             settingDiv,
             (data) => {
-                socket.emit("server.settings.set", id, data);
+                socket.emit("realm.settings.set", id, data);
             },
             () => {}
         );
     },
 }
 
-socket.on("server.settings.get", settingsFunc.showServerSettings);
+socket.on("realm.settings.get", settingsFunc.showRealmSettings);

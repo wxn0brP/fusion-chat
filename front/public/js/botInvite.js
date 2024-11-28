@@ -47,7 +47,7 @@ async function main(){
             document.querySelector("#botName").innerHTML = bot.data.name;
 
             const serverSelect = document.querySelector("#serverSelect");
-            bot.data.servers.forEach(server => {
+            bot.data.realms.forEach(server => {
                 const option = document.createElement("option");
                 option.value = server;
                 fetch("/api/chatId?chat="+server).then(res => res.json()).then(res => option.innerHTML = res.name);
