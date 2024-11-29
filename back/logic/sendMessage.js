@@ -89,7 +89,7 @@ export default async function sendMessage(req, user, options={}){
     sendToSocket(user._id, "mess", Object.assign({ to: req.to }, data));
 
     if(!privChat){
-        const server = await global.db.realmConf.findOne(to, { _id: "set"});
+        const realm = await global.db.realmConf.findOne(to, { _id: "set"});
         const fromMsg = `${realm.name} @${user.name}`;
         data.to = to;
         
