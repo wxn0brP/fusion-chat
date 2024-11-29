@@ -153,6 +153,20 @@ main{
                 }
             }
         }
+
+        .spoiler{
+            cursor: pointer;
+            background-color: #333;
+            color: transparent;
+            padding: 3px;
+            border-radius: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .spoiler__show{
+            color: inherit;
+        }
     }
 
     .mess_time{

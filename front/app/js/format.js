@@ -11,8 +11,9 @@ const format = {
     },
 
     changeText(text){
-        text = text.replace(/</g, "&lt;");
-        text = text.replace(/>/g, "&gt;");
+        text = text
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
 
         const excludePattern = /```(.*?)```/g;
         const excludeMatches = text.match(excludePattern);
@@ -26,27 +27,30 @@ const format = {
             }
         }
 
-        text = text.replace(/((?:^- .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ul", "-"));
-        text = text.replace(/((?:^[0-9]+\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "1"));
-        text = text.replace(/((?:^i{1,3}\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "i"));
-        text = text.replace(/((?:^[a-zA-Z]\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "a"));
-        text = text.replace(/((?:^\|.*\|$\n?)+)/gm, match => format.wrapTable(match));
+        text = text
+        .replace(/((?:^- .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ul", "-"))
+        .replace(/((?:^[0-9]+\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "1"))
+        .replace(/((?:^i{1,3}\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "i"))
+        .replace(/((?:^[a-zA-Z]\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "a"))
+        .replace(/((?:^\|.*\|$\n?)+)/gm, match => format.wrapTable(match))
 
-        text = text.replace(/\*\*([^\s].*?[^\s])\*\*/g, "<b>$1</b>");
-        text = text.replace(/\/\/\/([^\s].*?[^\s])\/\/\//g, "<i>$1</i>");
-        text = text.replace(/--([^\s].*?[^\s])--/g, "<strike>$1</strike>");
-        text = text.replace(/__([^\s].*?[^\s])__/g, "<u>$1</u>");
+        .replace(/\*\*([^\s].*?[^\s])\*\*/g, "<b>$1</b>")
+        .replace(/\/\/\/([^\s].*?[^\s])\/\/\//g, "<i>$1</i>")
+        .replace(/--([^\s].*?[^\s])--/g, "<strike>$1</strike>")
+        .replace(/__([^\s].*?[^\s])__/g, "<u>$1</u>")
 
-        text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" onclick="messFunc.linkClick(event)">$1</a>');
-        text = text.replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>');
+        .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" onclick="messFunc.linkClick(event)">$1</a>')
+        .replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>')
 
-        text = text.replace(/##([0-9A-Fa-f]{3,6})\s(.*?)\s#c/g, '<span style="color:#$1">$2</span>');
-        text = text.replace(/#([a-zA-Z]+)\s(.*?)\s#c/g, '<span style="color:$1">$2</span>');
-        text = text.replace(/#(fc)\s(.*?)\s#c/gi, '<span style="color:var(--accent)">$2</span>');
+        .replace(/##([0-9A-Fa-f]{3,6})\s(.*?)\s#c/g, '<span style="color:#$1">$2</span>')
+        .replace(/#([a-zA-Z]+)\s(.*?)\s#c/g, '<span style="color:$1">$2</span>')
+        .replace(/#(fc)\s(.*?)\s#c/gi, '<span style="color:var(--accent)">$2</span>')
         
-        text = text.replaceAll("\n", "<br />");
-        text = text.replaceAll("\\n", "<br />");
-        text = text.replaceAll("---", "<hr />");
+        .replace(/(?:&lt;|<)\!\s*(.*?)\s*!(?:&gt;|>)/g, '<span class="spoiler" onclick="messFunc.spoiler(event)">$1</span>')
+
+        .replaceAll("\n", "<br />")
+        .replaceAll("\\n", "<br />")
+        .replaceAll("---", "<hr />")
 
         for(let i=0; i<exclusions.length; i++){
             const exclusion = exclusions[i];

@@ -292,6 +292,12 @@ const messFunc = {
             messFunc.addMess(m);
         });
     },
+
+    spoiler(e){
+        e.preventDefault();
+        const t = e.target;
+        t.classList.toggle("spoiler__show");
+    }
 }
 
 messFunc.replyClose();
