@@ -100,7 +100,7 @@ export default async function sendMessage(req, user, options={}){
                 if(u == user._id) return;
     
                 const realm = await global.db.userData.findOne(u, { realm: data.to });
-                if(realm.muted && realm.muted != -1){
+                if(realm && realm.muted && realm.muted != -1){
                     const muted = realm.muted;
                     if(muted == 0) return;
                     if(muted > new Date().getTime()) return;
