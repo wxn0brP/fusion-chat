@@ -58,7 +58,7 @@ const settingsData = {
                 const conteiner = div.querySelector('#_1');
 
                 const imgPrev = document.createElement('img');
-                imgPrev.src = "/api/profileImg?id=" + vars.user._id + "&t=" + Date.now();
+                imgPrev.src = "/api/profile/img?id=" + vars.user._id + "&t=" + Date.now();
                 imgPrev.style = "width: 128px; height: 128px; object-fit: cover;";
                 conteiner.appendChild(imgPrev);
 

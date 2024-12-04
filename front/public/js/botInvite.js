@@ -7,7 +7,7 @@ const state = {
 const bid = new URLSearchParams(location.search).get("id");
 
 function redirectToLogin(){
-    location.href = "/login?err=true&next=/botInvite?id=" + bid;
+    location.href = "/login?err=true&next=/iv/bot?id=" + bid;
 }
 
 function checkLogin(){
@@ -28,7 +28,7 @@ async function main(){
         return;
     }
     checkLogin();
-    const bot = await fetch("/api/botInviteMeta?id="+bid, {
+    const bot = await fetch("/api/iv/bot/meta?id="+bid, {
         headers: {
             "Content-Type": "application/json",
             "Authorization": localStorage.getItem("token"),
@@ -50,7 +50,7 @@ async function main(){
             bot.data.realms.forEach(server => {
                 const option = document.createElement("option");
                 option.value = server;
-                fetch("/api/chatId?chat="+server).then(res => res.json()).then(res => option.innerHTML = res.name);
+                fetch("/api/id/chat?chat="+server).then(res => res.json()).then(res => option.innerHTML = res.name);
                 serverSelect.appendChild(option);
             });
         break;
@@ -63,7 +63,7 @@ function invite(){
         alert("Select server");
         return;
     }
-    fetch("/api/botInvite?id="+bid+"&server="+server, {
+    fetch("/api/iv/bot?id="+bid+"&server="+server, {
         headers: {
             "Content-Type": "application/json",
             "Authorization": localStorage.getItem("token"),

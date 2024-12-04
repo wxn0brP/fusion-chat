@@ -26,7 +26,7 @@ const upload = multer({
     }
 }).single("file");
 
-router.post("/serverProfileUpload", global.authenticateMiddleware, async (req, res) => {
+router.post("/realm/profile/upload", global.authenticateMiddleware, async (req, res) => {
     const realmId = req.headers.serverid;
     if(!realmId) return res.status(400).json({ err: true, msg: "No server id provided." });
 

@@ -63,7 +63,7 @@ const messFunc = {
         fromDiv.setAttribute("_author", data.fr);
 
         const fromDivImg = document.createElement("img");
-        fromDivImg.src = "/api/profileImg?id=" + data.fr;
+        fromDivImg.src = "/api/profile/img?id=" + data.fr;
         fromDiv.appendChild(fromDivImg);
 
         const fromDivText = document.createElement("div");
@@ -261,7 +261,7 @@ const messFunc = {
                 },
                 maxSize: 8*1024*1024,
                 maxName: 60,
-                endpoint: "/uploadFile"
+                endpoint: "/file/upload"
             }
 
             fileFunc.read(opt);

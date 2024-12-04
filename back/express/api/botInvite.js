@@ -2,7 +2,14 @@ import { Router } from "express";
 const router = Router();
 import { invite } from "../../logic/inviteBot.js";
 
-router.get("/botInviteMeta", global.authenticateMiddleware, async (req, res) => {
+router.get("/iv/bot", global.authenticateMiddleware, async (req, res) => {
+    const { id, server } = req.query;
+    const { err, msg } = await invite(req.user, id, server);
+
+    res.json({ err, msg });
+});
+
+router.get("/iv/bot/meta", global.authenticateMiddleware, async (req, res) => {
     const { id } = req.query;
     if(!id) return res.json({ err: true, msg: "id is required" });
 
@@ -18,13 +25,6 @@ router.get("/botInviteMeta", global.authenticateMiddleware, async (req, res) => 
     botRes.realms = availableServers;
 
     res.json({ err: false, state: 0, data: botRes });
-});
-
-router.get("/botInvite", global.authenticateMiddleware, async (req, res) => {
-    const { id, server } = req.query;
-    const { err, msg } = await invite(req.user, id, server);
-
-    res.json({ err, msg });
 });
 
 export default router;

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { realm_join } from '../../socket/chat/logic/chats.js';
 const router = Router();
 
-router.get("/joinGrupMeta", global.authenticateMiddleware, async (req, res) => {
+router.get("/realm/join/meta", global.authenticateMiddleware, async (req, res) => {
     const { id } = req.query;
     if(!id) return res.json({ err: true, msg: "id is required" });
 
@@ -21,7 +21,7 @@ router.get("/joinGrupMeta", global.authenticateMiddleware, async (req, res) => {
     res.json({ err: false, state: 0, data: realmRes });
 });
 
-router.get("/joinGrup", global.authenticateMiddleware, async (req, res) => {
+router.get("/realm/join", global.authenticateMiddleware, async (req, res) => {
     const { id } = req.query;
     const { err } = await realm_join({ _id: req.user }, id);
     if(err){

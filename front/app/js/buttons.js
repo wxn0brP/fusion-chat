@@ -23,7 +23,7 @@ const buttonFunc = {
         id = id
             .replace(location.protocol + "//", "")
             .replace(location.host, "")
-            .replace("/serverInvite?id=", "");
+            .replace("/ir?id=", "");
 
         socket.emit("realm.join", id);
     },

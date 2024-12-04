@@ -8,7 +8,7 @@ const state = {
 const gid = new URLSearchParams(location.search).get("id");
 
 function redirectToLogin(){
-    location.href = "/login?err=true&next=/serverInvite?id=" + gid;
+    location.href = "/login?err=true&next=/ir?id=" + gid;
 }
 
 function checkLogin(){
@@ -30,7 +30,7 @@ async function main(){
         return;
     }
     checkLogin();
-    const realm = await fetch("/api/joinGrupMeta?id="+gid, {
+    const realm = await fetch("/api/realm/join/meta?id="+gid, {
         headers: {
             "Content-Type": "application/json",
             "Authorization": localStorage.getItem("token"),
@@ -65,7 +65,7 @@ async function main(){
 }
 
 function join(){
-    fetch("/api/joinGrup?id="+gid, {
+    fetch("/api/realm/join?id="+gid, {
         headers: {
             "Content-Type": "application/json",
             "Authorization": localStorage.getItem("token"),

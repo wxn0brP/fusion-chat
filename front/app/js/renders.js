@@ -30,7 +30,7 @@ const renderFunc = {
             const structDiv = document.createElement("div");
 
             const profileImg = document.createElement("img");
-            profileImg.src = "/api/profileImg?id=" + id;
+            profileImg.src = "/api/profile/img?id=" + id;
             structDiv.appendChild(profileImg);
 
             structDiv.innerHTML += apis.www.changeUserID(id);
@@ -101,7 +101,7 @@ const renderFunc = {
     userProfile(data){
         if(!data) return;
         const targetIsMe = data._id == vars.user._id;
-        const imgLink = "/api/profileImg?id=" + data._id;
+        const imgLink = "/api/profile/img?id=" + data._id;
 
         userProfileDiv.innerHTML = `
             <div id="userProfileInfo">
@@ -367,7 +367,7 @@ const renderFunc = {
             });
 
             const userImg = document.createElement("img");
-            userImg.src = "/api/profileImg?id="+userID;
+            userImg.src = "/api/profile/img?id="+userID;
             userDiv.appendChild(userImg);
 
             const textContainer = document.createElement("div");

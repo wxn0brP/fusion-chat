@@ -82,7 +82,7 @@ function uploadEmoji(basePath, unicode, req, res){
     })
 }
 
-router.post("/uploadEmoji", global.authenticateMiddleware, async (req, res) => {
+router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => {
     const userId = req.user;
     const server = req.headers.server;
     if(!server) return res.status(400).json({ err: true, msg: "No server id provided." });

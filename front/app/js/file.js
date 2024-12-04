@@ -58,7 +58,7 @@ const fileFunc = {
             },
             maxSize: 4*1024*1024,
             maxName: 60,
-            endpoint: "/api/profileUpload"
+            endpoint: "/api/profile/upload"
         }
 
         fileFunc.read(opt);
@@ -72,7 +72,7 @@ const fileFunc = {
             },
             maxSize: 4*1024*1024,
             maxName: 60,
-            endpoint: "/api/serverProfileUpload",
+            endpoint: "/api/realm/profile/upload",
             addionalFields: (xhr, formData) => {
                 xhr.setRequestHeader("serverid", id);
             }
@@ -98,7 +98,3 @@ const fileFunc = {
         fileFunc.read(opts);
     },
 };
-
-setTimeout(() => {
-    fileFunc.emocji();
-}, 3000)

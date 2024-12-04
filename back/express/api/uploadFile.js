@@ -43,7 +43,7 @@ const upload = multer({
     limits: { fileSize: maxUserFileSize }
 }).single("file");
 
-router.post("/uploadFile", global.authenticateMiddleware, limitUploads, (req, res) => {
+router.post("/file/upload", global.authenticateMiddleware, limitUploads, (req, res) => {
     upload(req, res, (err) => {
         if(err){
             if(err instanceof MulterError && err.code === "LIMIT_FILE_SIZE"){

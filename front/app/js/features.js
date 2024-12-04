@@ -3,7 +3,7 @@ document.querySelector("#nav__toggle").addEventListener("click", () => {
     nav.left = nav.left == "0px" ? "-360px" : "0px";
 });
 
-document.querySelector("#navs__user img").src = "/api/profileImg?id=" + vars.user._id;
+document.querySelector("#navs__user img").src = "/api/profile/img?id=" + vars.user._id;
 
 document.querySelector("#app").addEventListener("contextmenu", (e) => {
     e.preventDefault();

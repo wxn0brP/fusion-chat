@@ -2,7 +2,7 @@ import { Router } from "express";
 import valid from "../../logic/validData.js";
 const router = Router();
 
-router.get("/userId", async (req, res) => {
+router.get("/id/u", async (req, res) => {
     const { id, chat } = req.query;
     if(!valid.id(id)) return res.json({ err: true, msg: "id is not valid" });
     if(chat && !valid.id(chat)) return res.json({ err: true, msg: "chat is not valid" });

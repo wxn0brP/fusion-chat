@@ -105,7 +105,7 @@ const contextFunc = {
             break;
             case "copy_invite":
                 // socket.emit("getInviteLink", id);
-                const link = location.protocol + "//" + location.host + "/serverInvite?id=" + id;
+                const link = location.protocol + "//" + location.host + "/ir?id=" + id;
                 navigator.clipboard.writeText(link);
                 uiFunc.uiMsg(translateFunc.get("Copied invite link") + "!");
             break;

@@ -7,7 +7,7 @@ const apiRouter = Router();
 app.use("/", frontRouter);
 app.use("/api", apiRouter);
 
-function minifity(body){
+function minifyHtml(body){
     return minify(body, {
         collapseWhitespace: true,
         minifyCSS: true,
@@ -20,6 +20,21 @@ function minifity(body){
     });
 }
 
+function sendInternalError(res, err){
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+}
+
+function error500(cb){
+    return async (req, res, next) => {
+        try{
+            await cb(req, res, next);
+        }catch(err){
+            sendInternalError(res, err);
+        }
+    }
+}    
+
 const apiPath = "./back/express/api/";
 readdirSync(apiPath).filter(file => file.includes(".js")).forEach(async file => {
     const router = await import("./api/"+file);
@@ -28,14 +43,15 @@ readdirSync(apiPath).filter(file => file.includes(".js")).forEach(async file => 
 
 readdirSync("front/public").filter(file => file.includes(".html")).forEach(file => {
     frontRouter.get("/"+file.replace(".html", ""), (req, res) => {
-        let data = readFileSync("front/public/"+file, "utf-8");
-        res.send(minifity(data));
+        const data = readFileSync("front/public/"+file, "utf-8");
+        res.send(minifyHtml(data));
     })
 });
 
 async function renderLayout(res, layout, bodyPath, layoutData, bodyData){
     res.render(bodyPath, bodyData, (err, body) => {
-        if(err) throw err;
+        if(err)
+            return sendInternalError(res, err);
 
         if(body && body.startsWith("///")){
             const bs = body.split("\n");
@@ -46,46 +62,28 @@ async function renderLayout(res, layout, bodyPath, layoutData, bodyData){
         }
 
         res.render(layout, { layout: layoutData, body, }, (err, body) => {
-            if(err) throw err;
-            res.send(minifity(body));
+            if(err)
+                return sendInternalError(res, err);
+            res.send(minifyHtml(body));
         });
     });
 }
 
-frontRouter.get("/app", (req, res) => {
-    try{
-        res.render("app/app");
-    }catch(err){
-        console.error(err);
-        res.status(500).send("Internal Server Error");
-    }
-});
+frontRouter.get("/app", error500((req, res) => res.render("app/app")));
+frontRouter.get("/", error500((req, res) => renderLayout(res, "layout/main", "main/index", {}, {})));
+frontRouter.get("/dev-panel", error500((req, res) => renderLayout(res, "layout/main", "main/dev-panel", {}, {})));
 
-frontRouter.get("/", (req, res) => {
-    try{
-        renderLayout(res, "layout/main", "main/index", {}, {});
-    }catch(err){
-        console.error(err);
-        res.status(500).send("Internal Server Error");
-    }
-});
+readdirSync("front/main", { recursive: true })
+    .filter(file => file.includes(".ejs"))
+    .map(file => file.replace(".ejs", ""))
+    .forEach(site => {
+        frontRouter.get("/"+site, (req, res) => {
+            try{
+                renderLayout(res, "layout/main", "main/"+site, {}, {});
+            }catch(err){
+                sendInternalError(res, err);
+            }
+        })
+    });
 
-frontRouter.get("/dev-panel", (req, res) => {
-    try{
-        res.render("dev-panel/dev-panel");
-    }catch(err){
-        console.error(err);
-        res.status(500).send("Internal Server Error");
-    }
-});
 
-readdirSync("front/main").filter(file => file.includes(".ejs")).map(file => file.replace(".ejs", "")).forEach(site => {
-    frontRouter.get("/"+site, (req, res) => {
-        try{
-            renderLayout(res, "layout/main", "main/"+site, {}, {});
-        }catch(err){
-            console.error(err);
-            res.status(500).send("Internal Server Error");
-        }
-    })
-});

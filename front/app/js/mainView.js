@@ -31,7 +31,7 @@ const mainView = {
             friendDiv.setAttribute("user_status", friend.status);
 
             friendDiv.innerHTML = `
-                <img class="friend__avatar" src="/api/profileImg?id=${friend._id}" />
+                <img class="friend__avatar" src="/api/profile/img?id=${friend._id}" />
                 <div>
                     <span class="friend__name">${apis.www.changeUserID(friend._id)}</span>
                     <br />
@@ -113,7 +113,7 @@ const mainView = {
             requestDiv.setAttribute("user_id", request);
 
             requestDiv.innerHTML = `
-                <img class="friend__avatar" src="/api/profileImg?id=${request}" />
+                <img class="friend__avatar" src="/api/profile/img?id=${request}" />
                 <div>
                     <div class="friend__name">${apis.www.changeUserID(request)}</div>
                     <button onclick="mainView.requestFriendResponse('${request}', true)" class="request__btn">Accept</button>

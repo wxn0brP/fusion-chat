@@ -1,7 +1,7 @@
 import { Router } from "express";
 const router = Router();
 
-router.get("/chatId", async (req, res) => {
+router.get("/id/chat", async (req, res) => {
     const { chat } = req.query;
     if(!chat) return res.json({ err: true, msg: "chatId is required" });
 
