@@ -117,6 +117,13 @@ socket.on("message.delete", (id) => {
     messStyle.hideFromMessageInfo();
 });
 
+socket.on("messages.delete", (ids) => {
+    ids.forEach(id => {
+        document.querySelector("#mess__"+id)?.remove();
+    })
+    messStyle.hideFromMessageInfo();
+});
+
 socket.on("message.edit", (id, msg, time) => {
     const messageDiv = document.querySelector("#mess__"+id+" .mess_content");
     if(!messageDiv) return;

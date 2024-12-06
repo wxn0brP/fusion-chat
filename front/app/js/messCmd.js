@@ -70,6 +70,36 @@ const messCmds = {
                 socket.emit("send.embed.data", vars.chat.to, vars.chat.chnl, embed);
                 return 1;
             }
+        },
+        clear: {
+            args: [{ name: "delete", type: "number" }],
+            exe(msg, args){
+                if(args.length == 0) return 1;
+                let userIsMod = false;
+                if(vars.chat.to.startsWith("$")) userIsMod = false;
+                else if(vars.chat.to == "main") return 1;
+                else{
+                    const realm = vars.realm;
+                    if(!realm) return 1;
+                    const uPerm = realm.permission || 0;
+                    userIsMod = permissionFunc.hasAnyPermission(uPerm, [permissionFlags.admin, permissionFlags.manageMessages]);
+                }
+
+                const msgs =
+                    Array.from(document.querySelectorAll(".mess_message"))
+                    .slice(-args[0])
+                    .map(container => {
+                        const id = container.id.replace("mess__", "");
+                        const fr = container.querySelector(".mess_meta").getAttribute("_author");
+                        if(fr == vars.user._id) return id;
+                        return userIsMod ? id : null;
+                    })
+                    .filter(id => id);
+
+                socket.emit("messages.delete", vars.chat.to, msgs);
+
+                return 1;
+            }
         }
     }
 }

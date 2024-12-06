@@ -1,6 +1,7 @@
 import sendMessage from "../../logic/sendMessage.js";
 import {
     message_delete,
+    messages_delete,
     message_edit,
     message_fetch,
     message_fetch_pinned,
@@ -33,6 +34,15 @@ export default (socket) => {
     socket.onLimit("message.delete", 1000, async (toM, _id) => {
         try{
             const { err } = await message_delete(socket.user, toM, _id);
+            if(err) return socket.emit(...err);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+    
+    socket.onLimit("messages.delete", 1000, async (toM, ids) => {
+        try{
+            const { err } = await messages_delete(socket.user, toM, ids);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);

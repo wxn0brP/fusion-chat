@@ -74,10 +74,43 @@ export async function message_delete(suser, toM, _id){
 
     await global.db.mess.removeOne(to, { _id });
     if(privChat){
-        sendToSocket(suser._id,       "message.delete", _id);
+        sendToSocket(suser._id,             "message.delete", _id);
         sendToSocket(toM.replace("$", ""),  "message.delete", _id);
     }else{
         sendToChatUsers(toM, "message.delete", _id);
+    }
+
+    return { err: false };
+}
+
+export async function messages_delete(suser, toM, ids){
+    const validE = new ValidError("messages.delete");
+    if(!valid.id(toM)) return validE.valid("toM");
+    if(!valid.arrayId(ids)) return validE.valid("ids");
+
+    const privChat = toM.startsWith("$");
+    let to = toM;
+    if(privChat){
+        const p1 = suser._id;
+        const p2 = to.replace("$", "");
+        to = combinateId(p1, p2);
+    }
+
+    const messages = await global.db.mess.find(to, { $in: { _id: ids } });
+    if(messages.some(mess => mess.fr !== suser._id)){
+        if(privChat) return validE.err("not authorized");
+        const permSys = new permissionSystem(to);
+        const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.manageMessages);
+        if(!userPerm)
+            return validE.err("not authorized");
+    }
+
+    await global.db.mess.remove(to, { $in: { _id: ids } });
+    if(privChat){
+        sendToSocket(suser._id,             "messages.delete", ids);
+        sendToSocket(toM.replace("$", ""),  "messages.delete", ids);
+    }else{
+        sendToChatUsers(toM, "messages.delete", ids);
     }
 
     return { err: false };
