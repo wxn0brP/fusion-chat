@@ -244,7 +244,7 @@ const renderFunc = {
             const { name, type, desc, id: cid } = channel;
             const btn = document.createElement("div");
             btn.onclick = () => {
-                if(type == "text"){
+                if(type == "text" || type == "realm_event" || type == "open_event"){
                     coreFunc.changeChnl(cid);
                 }else if(type == "voice"){
                     if(!vars.realm.text.includes(cid)){
@@ -265,6 +265,10 @@ const renderFunc = {
                 case "voice":
                     typeEmoticon = "🎤";
                 break;
+                case "realm_event":
+                case "open_event":
+                    typeEmoticon = "🎉";
+                break
             }
 
             btn.innerHTML = typeEmoticon + " | " +name;

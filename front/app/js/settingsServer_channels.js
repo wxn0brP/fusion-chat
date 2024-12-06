@@ -49,8 +49,8 @@ SettingsServerManager.prototype.renderChannels = function(){
             const name = await uiFunc.prompt(translateFunc.get("Enter name"));
             const type = await uiFunc.selectPrompt(
                 translateFunc.get("Enter type"),
-                [ translateFunc.get("Text"), translateFunc.get("Voice")],
-                ["text", "voice"]
+                [ translateFunc.get("Text"), translateFunc.get("Voice"), translateFunc.get("Realm Event"), translateFunc.get("Open Event") ],
+                ["text", "voice", "realm_event", "open_event"]
             );
 
             const newChannel = {

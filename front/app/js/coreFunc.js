@@ -76,7 +76,7 @@ const coreFunc = {
         vars.chat.chnl = id;
         vars.chat.actMess = 0;
 
-        document.querySelectorAll(".channel_text").forEach(e => e.classList.remove("channel_textActive"));
+        document.querySelectorAll(".channel_textActive").forEach(e => e.classList.remove("channel_textActive"));
         document.querySelector("#channel_"+id).classList.add("channel_textActive");
         messages_nav__realm__description.innerHTML = vars.realm.desc[id] || "";
         
