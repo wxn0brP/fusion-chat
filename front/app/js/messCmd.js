@@ -81,8 +81,7 @@ const messCmds = {
                 else{
                     const realm = vars.realm;
                     if(!realm) return 1;
-                    const uPerm = realm.permission || 0;
-                    userIsMod = permissionFunc.hasAnyPermission(uPerm, [permissionFlags.admin, permissionFlags.manageMessages]);
+                    userIsMod = permissionFunc.canAction(permissionFlags.manageMessages);
                 }
 
                 const msgs =

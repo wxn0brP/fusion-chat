@@ -37,5 +37,16 @@ const utils = {
         if(typeof id !== "string") return false;
         if(id.split("-").length != 3) return false;
         return true;
+    },
+
+    writeToClipboard(text){
+        return new Promise((resolve) => {
+            navigator.clipboard.writeText(text).then(() => {
+                resolve(true);
+            }).catch(() => {
+                uiFunc.clipboardError(text);
+                resolve(false);
+            });
+        })
     }
 }

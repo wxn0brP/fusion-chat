@@ -63,8 +63,9 @@ SettingsServerManager.prototype.renderWebhookEdit = function(id){
         const webhookUrlCopy = document.createElement("button");
         webhookUrlCopy.innerHTML = "URL (POST) " + translateFunc.get("Copy");
         webhookUrlCopy.onclick = () => {
-            navigator.clipboard.writeText(webhookUrl);
-            uiFunc.uiMsg(translateFunc.get("Copied to clipboard"));
+            utils.writeToClipboard(webhookUrl).then(ok => {
+                if(ok) uiFunc.uiMsg(translateFunc.get("Copied to clipboard"));
+            });
         }
         container.appendChild(webhookUrlCopy);
     }else{

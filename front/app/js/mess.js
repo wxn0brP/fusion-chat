@@ -131,10 +131,12 @@ const messFunc = {
 
         contextMenu.menuClickEvent(messDiv, (e) => {
             const isMessPinned = vars.chat.pinned.findIndex((m) => m._id == data._id) != -1;
-            document.querySelector("#mesage_context_menu__unpin").style.display = isMessPinned ? "" : "none";
-            document.querySelector("#mesage_context_menu__pin").style.display = isMessPinned ? "none" : "";
-            
-            contextMenu.message(e, data._id);
+            const canDelete = data.fr == vars.user._id || permissionFunc.canAction(permissionFlags.manageMessages);
+            contextMenu.message(e, data._id, {
+                pin: !isMessPinned,
+                edit: data.fr == vars.user._id,
+                delete: canDelete
+            });
         });
     },
 

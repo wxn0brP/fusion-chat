@@ -25,7 +25,7 @@ const vars = {
     realm: {
         users: [],
         roles: [],
-        permission: [],
+        permission: 0,
         text: [],
         desc: {},
     },

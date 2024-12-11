@@ -20,6 +20,12 @@ const permissionFunc = {
         return requiredPermissions.some(permission => (userPermissions & permission) !== 0);
     },
 
+    canAction(permissions){
+        const userPermissions = vars.user.permissions || 0;
+        if(!Array.isArray(permissions)) permissions = [permissions];
+        return this.hasPermission(userPermissions, permissionFlags.admin) || this.hasAnyPermission(userPermissions, permissions);
+    },
+
     hasPermission(userPermissions, permission){
         return (userPermissions & permission) !== 0;
     },

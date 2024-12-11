@@ -1,17 +1,44 @@
 const contextMenu = {
-    _ClassAtrib(e, ele, id){
+    showMenu(e, ele, id) {
         ele.setAttribute("_id", id);
         return menuUtil.menuShower(ele, e);
     },
 
-    message(e, id){
-        const ele = document.querySelector("#mesage_context_menu");
-        this._ClassAtrib(e, ele, id);
+    getByDataIdStyle(ele, id){
+        return ele.querySelector(`[data-id='${id}']`).style;
     },
 
-    server(e, id){
+    message(e, id, opts={}){
+        opts = {
+            pin: true,
+            delete: false,
+            ...opts,
+        }
+        const ele = document.querySelector("#mesage_context_menu");
+
+        this.getByDataIdStyle(ele, "pin").display = opts.pin ? "" : "none";
+        this.getByDataIdStyle(ele, "unpin").display = opts.pin ? "none" : "";
+        this.getByDataIdStyle(ele, "delete").display = opts.delete ? "" : "none";
+        this.getByDataIdStyle(ele, "edit").display = opts.edit ? "" : "none";
+
+        this.showMenu(e, ele, id);
+    },
+
+    realm(e, id){
         const ele = document.querySelector("#realm_context_menu");
-        this._ClassAtrib(e, ele, id);
+        this.showMenu(e, ele, id);
+    },
+
+    channel(e, id, opts={}){
+        opts = {
+            type: "text",
+            ...opts,
+        }
+        const ele = document.querySelector("#channel_context_menu");
+
+        this.getByDataIdStyle(ele, "subscribe").display = ["realm_event", "open_event"].includes(opts.type) ? "" : "none";
+
+        this.showMenu(e, ele, id);
     },
 
     menuClickEvent(div, call){
@@ -62,8 +89,9 @@ const contextFunc = {
         switch(type){
             case "copy":
                 const message = document.querySelector("#mess__"+id+" .mess_content").getAttribute("_plain");
-                navigator.clipboard.writeText(message);
-                uiFunc.uiMsg("Copied message!");
+                utils.writeToClipboard(message).then(ok => {
+                    if(ok) uiFunc.uiMsg("Copied message!");
+                });
             break;
             case "edit":
                 uiFunc.editMess(id);
@@ -78,8 +106,9 @@ const contextFunc = {
                 document.querySelector("#mess__"+id).style.backgroundColor = "var(--panel)";
             break;
             case "copy_id":
-                navigator.clipboard.writeText(id);
-                uiFunc.uiMsg("Copied message ID!");
+                utils.writeToClipboard(id).then(ok => {
+                    if(ok) uiFunc.uiMsg("Copied message ID!");
+                })
             break;
             case "add_reaction":
                 messFunc.emocjiPopup((e) => {
@@ -88,29 +117,29 @@ const contextFunc = {
                 });
             break;
             case "pin":
-                socket.emit("message.pin", vars.chat.to, vars.chat.chnl, id, true);
-            break;
             case "unpin":
-                socket.emit("message.pin", vars.chat.to, vars.chat.chnl, id, false);
+                socket.emit("message.pin", vars.chat.to, vars.chat.chnl, id, type === "pin");
             break;
         }
     },
 
-    server(type){
+    realm(type){
         const id = document.querySelector("#realm_context_menu").getAttribute("_id");
         switch(type){
             case "copy_id":
-                navigator.clipboard.writeText(id);
-                uiFunc.uiMsg(translateFunc.get("Copied server ID") + "!");
+                utils.writeToClipboard(id).then(ok => {
+                    if(ok) uiFunc.uiMsg(translateFunc.get("Copied realm ID") + "!");
+                });
             break;
             case "copy_invite":
                 // socket.emit("getInviteLink", id);
                 const link = location.protocol + "//" + location.host + "/ir?id=" + id;
-                navigator.clipboard.writeText(link);
-                uiFunc.uiMsg(translateFunc.get("Copied invite link") + "!");
+                utils.writeToClipboard(link).then(ok => {
+                    if(ok) uiFunc.uiMsg(translateFunc.get("Copied invite link") + "!");
+                });
             break;
             case "exit":
-                const conf = confirm(translateFunc.get("Are you sure you want to exit server$($)", "? ", apis.www.changeChat(id)));
+                const conf = confirm(translateFunc.get("Are you sure you want to exit realm $($)", "? ", apis.www.changeChat(id)));
                 if(conf){
                     socket.emit("realm.exit", id);
                     coreFunc.changeChat("main");
@@ -147,7 +176,7 @@ const contextFunc = {
                 }
 
                 const text = `
-                    ${translateFunc.get("Mute server ($)", apis.www.changeChat(id))}
+                    ${translateFunc.get("Mute realm ($)", apis.www.changeChat(id))}
                     <br />
                     ${translateFunc.get("Status")}: ${muteStatus}
                     ${endTimeText ? "<br />" + endTimeText : ''}
@@ -195,6 +224,20 @@ const contextFunc = {
                     socket.emit("realm.mute", id, targetTime);
                     realm.muted = targetTime;
                 });
+            break;
+        }
+    },
+
+    channel(type){
+        const id = document.querySelector("#channel_context_menu").getAttribute("_id");
+        switch(type){
+            case "copy_id":
+                utils.writeToClipboard(id).then(ok => {
+                    if(ok) uiFunc.uiMsg(translateFunc.get("Copied channel ID") + "!");
+                });
+            break;
+            case "subscribe":
+                lo("subscribe", id);
             break;
         }
     }

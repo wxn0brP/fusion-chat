@@ -87,7 +87,7 @@ const renderFunc = {
             });
 
             contextMenu.menuClickEvent(realmDiv, (e) => {
-                contextMenu.server(e, id);
+                contextMenu.realm(e, id);
             });
         });
         coreFunc.markSelectedChat();
@@ -202,7 +202,7 @@ const renderFunc = {
             desc: {},
         };
 
-        vars.realm.permission = permission;
+        vars.realm.permission = permission ?? 0;
         navs__realms__name.innerHTML = "";
 
         const nameText = document.createElement("div");
@@ -255,7 +255,10 @@ const renderFunc = {
                 }
             };
             btn.id = "channel_"+cid;
-            btn.clA("channel_"+type);
+            btn.classList.add("channel_"+type);
+            contextMenu.menuClickEvent(btn, (e) => {
+                contextMenu.channel(e, cid, { type });
+            })
     
             let typeEmoticon = "";
             switch(type){

@@ -122,7 +122,7 @@ SettingsServerManager.prototype.renderRoleEdit = function(role, opts){
         { name: "Manage channels", id: "manageChannels" },
     ];
 
-    const userPerms = vars.realm.permissions;
+    const userPerms = vars.realm.permission;
 
     permsBuild.forEach(pb => {
         const isPerm = permissionFunc.hasPermission(role.p, permissionFlags[pb.id]);

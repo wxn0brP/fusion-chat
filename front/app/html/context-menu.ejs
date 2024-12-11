@@ -1,19 +1,41 @@
-<div id="mesage_context_menu" class="context-menu">
-    <div class="context-menu__item" onclick="contextFunc.message('copy')" translate>Copy Text</div>
-    <div class="context-menu__item" onclick="contextFunc.message('edit')" translate>Edit</div>
-    <div class="context-menu__item" onclick="contextFunc.message('delete')" translate style="color: red">Delete</div>
-    <div class="context-menu__item" onclick="contextFunc.message('reply')" translate>Reply</div>
-    <div class="context-menu__item" onclick="contextFunc.message('copy_id')" translate>Copy ID</div>
-    <div class="context-menu__item" onclick="contextFunc.message('add_reaction')" translate>Add Reaction</div>
-    <div class="context-menu__item">
-        <span id="mesage_context_menu__pin" onclick="contextFunc.message('pin')" translate>Pin Message</span>
-        <span id="mesage_context_menu__unpin" onclick="contextFunc.message('unpin')" translate>Unpin Message</span>
+<% const menuItems = {
+    message: [
+        { text: "Copy Text", action: "copy" },
+        { text: "Edit", action: "edit", dataId: "edit" },
+        { text: "Delete", action: "delete", style: "color: red", dataId: "delete" },
+        { text: "Reply", action: "reply" },
+        { text: "Copy ID", action: "copy_id" },
+        { text: "Add Reaction", action: "add_reaction" },
+        { text: "Pin Message", action: "pin", dataId: "pin" },
+        { text: "Unpin Message", action: "unpin", dataId: "unpin" }
+    ],
+    realm: [
+        { text: "Mute", action: "mute" },
+        { text: "Copy ID", action: "copy_id" },
+        { text: "Copy Invite", action: "copy_invite" },
+        { text: "Exit From Server", action: "exit", style: "color: red" }
+    ],
+    channel: [
+        { text: "Subscribe", action: "subscribe", dataId: "subscribe" },
+        { text: "Copy ID", action: "copy_id" }
+    ]
+}; %>
+  
+<% const renderMenu = (menuId, items, contextType) => { %>
+    <div id="<%= menuId %>" class="context-menu">
+        <% items.forEach(item => { %>
+            <div class="context-menu__item" 
+                <% if (item.dataId) { %> data-id="<%= item.dataId %>" <% } %>
+                onclick="contextFunc.<%= contextType %>('<%= item.action %>')" 
+                translate 
+                <% if (item.style) { %> style="<%= item.style %>" <% } %>
+            >
+                <%= item.text %>
+            </div>
+        <% }); %>
     </div>
-</div>
-
-<div id="realm_context_menu" class="context-menu">
-    <div class="context-menu__item" onclick="contextFunc.server('mute')" translate>Mute</div>
-    <div class="context-menu__item" onclick="contextFunc.server('copy_id')" translate>Copy ID</div>
-    <div class="context-menu__item" onclick="contextFunc.server('copy_invite')" translate>Copy Invite</div>
-    <div class="context-menu__item" onclick="contextFunc.server('exit')" translate style="color: red">Exit From Server</div>
-</div>
+<% }; %>
+  
+<%= renderMenu("mesage_context_menu", menuItems.message, "message") %>
+<%= renderMenu("realm_context_menu", menuItems.realm, "server") %>
+<%= renderMenu("channel_context_menu", menuItems.channel, "channel") %>

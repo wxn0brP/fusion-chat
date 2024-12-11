@@ -56,12 +56,10 @@ const stateManager = {
 
         const url = path + "?" + params.toString();
         setTimeout(() => {
-            navigator.clipboard.writeText(url).then(() => {
-                uiFunc.uiMsg(translateFunc.get("Copied to clipboard") + "!");
-            }).catch(() => {
-                uiFunc.uiMsg(translateFunc.get("Failed to copy to clipboard") + ".");
+            utils.writeToClipboard(url).then(ok => {
+                if(ok) uiFunc.uiMsg(translateFunc.get("Copied to clipboard"));
             });
-        }, 2000)
+        }, 2000);
     }
 }
 

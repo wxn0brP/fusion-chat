@@ -134,5 +134,36 @@ const uiFunc = {
             promptDiv.appendChild(div);
             div.fadeIn();
         });
+    },
+
+    clipboardError(text){
+        const div = document.createElement("div");
+        div.style.opacity = 0;
+        div.classList.add("prompt");
+        div.innerHTML = "<h2>" + translateFunc.get("Copy to Clipboard error.") + "</h2>";
+        div.innerHTML += "<h3>" + translateFunc.get("Please copy manually.") + "</h3>";
+
+        div.appendChild(document.createElement("br"));
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        div.appendChild(textarea);
+
+        div.appendChild(document.createElement("br"));
+
+        const btn = document.createElement("button");
+        btn.innerHTML = "OK";
+        div.appendChild(btn);
+        btn.addEventListener("click", () => {
+            div.fadeOut();
+            setTimeout(() => {
+                div.remove();
+            }, 2000);
+        });
+
+        promptDiv.appendChild(div);
+        div.fadeIn(() => {
+            textarea.select();
+        });
     }
 }
