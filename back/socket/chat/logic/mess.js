@@ -262,7 +262,7 @@ export async function message_search(suser, realm, chnl, query){
 export async function message_pin(suser, realm, chnl, msgId, pin){
     const validE = new ValidError("message.pin");
     if(!valid.id(realm)) return validE.valid("realm");
-    if(!valid.idOrSpecyficvalid(chnl, ["main"])) return validE.valid("chnl");
+    if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
     if(!valid.id(msgId)) return validE.valid("msgId");
     if(!valid.bool(pin)) return validE.valid("pin");
     
