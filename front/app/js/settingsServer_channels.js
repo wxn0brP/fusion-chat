@@ -161,6 +161,41 @@ SettingsServerManager.prototype.renderEditChannel = function(channel){
 
     this.settings.roles.forEach(renderRole);
 
+    const subscribed = this.settings.addons.subscribedChannels.filter(tc => tc.tc === channel.chid);
+    if(subscribed.length > 0){
+        this.addSeparator(containerElement, 10);
+
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.innerHTML = translateFunc.get("Subscribed channels");
+        details.appendChild(summary);
+
+        const ul = document.createElement("ul");
+        subscribed.forEach(sub => {
+            const li = document.createElement("li");
+            li.style.marginLeft = "1.2rem";
+            li.innerHTML = apis.www.changeChat(sub.sr) + " - " + sub.name;
+
+            const unsubscribe = document.createElement("button");
+            unsubscribe.style.marginLeft = "1rem";
+            unsubscribe.innerHTML = translateFunc.get("Unsubscribe");
+            unsubscribe.addEventListener("click", () => {
+                const conf = confirm(translateFunc.get("Are you sure you want to unsubscribe from $?", apis.www.changeChat(sub.sr) + " - " + sub.name));
+                if(!conf) return;
+                socket.emit("realm.event.channel.unsubscribe", sub.sr, sub.sc, _this.realmId, sub.tc);
+                this.settings.addons.subscribedChannels = this.settings.addons.subscribedChannels.filter(s => s !== sub);
+                li.remove();
+            });
+            li.appendChild(unsubscribe);
+
+            ul.appendChild(li);
+        });
+
+        details.appendChild(ul);
+        containerElement.appendChild(details);
+    }
+    
+
     this.addSeparator(containerElement, 15);
     this.initButton(containerElement, translateFunc.get("Save"), () => {
         channel.name = nameInp.value;

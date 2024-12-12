@@ -161,3 +161,98 @@ export async function realm_emojis_sync(realmId){
     const emojis = await global.db.realmConf.find(realmId, { $exists: { unicode: true }});
     return { err: false, res: emojis };
 }
+
+export async function realm_event_channel_subscribe(suser, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId){
+    const validE = new ValidError("realm.event.channel.subscribe");
+    if(!valid.id(sourceRealmId))    return validE.valid("sourceRealmId");
+    if(!valid.id(sourceChannelId))  return validE.valid("sourceChannelId");
+    if(!valid.id(targetRealmId))    return validE.valid("targetRealmId");
+    if(!valid.id(targetChannelId))  return validE.valid("targetChannelId");
+
+    const permSys = new permissionSystem(targetRealmId);
+    const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
+    if(!userPerm) return validE.err("You don't have permission to edit this server");
+
+    const data = {
+        sr: sourceRealmId,
+        sc: sourceChannelId,
+        tr: targetRealmId,
+        tc: targetChannelId
+    }
+
+    const exists = await global.db.realmData.findOne("events.channels", data);
+    if(exists) return validE.err("already exists");
+    
+    await global.db.realmData.add("events.channels", data, false);
+
+    return { err: false };
+}
+
+export async function realm_event_channel_unsubscribe(suser, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId){
+    const validE = new ValidError("realm.event.channel.unsubscribe");
+    if(!valid.id(sourceRealmId))    return validE.valid("sourceRealmId");
+    if(!valid.id(sourceChannelId))  return validE.valid("sourceChannelId");
+    if(!valid.id(targetRealmId))    return validE.valid("targetRealmId");
+    if(!valid.id(targetChannelId))  return validE.valid("targetChannelId");
+
+    const permSys = new permissionSystem(targetRealmId);
+    const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
+    if(!userPerm) return validE.err("You don't have permission to edit this server");
+
+    await global.db.realmData.removeOne("events.channels", {
+        sr: sourceRealmId,
+        sc: sourceChannelId,
+        tr: targetRealmId,
+        tc: targetChannelId
+    });
+
+    return { err: false };
+}
+
+export async function realm_event_channel_available(suser){
+    const userRealms = await global.db.userData.find(suser._id, { $exists: { realm: true }});
+    const realmsWithAdmin = [];
+    for(const userRealmId of userRealms){
+        const permSys = new permissionSystem(userRealmId.realm);
+        const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
+        if(userPerm) realmsWithAdmin.push(userRealmId.realm);
+    }
+
+    return { err: false, res: realmsWithAdmin };
+}
+
+export async function realm_event_channel_list(suser, realmId){
+    const validE = new ValidError("realm.event.channel.list");
+    if(!valid.id(realmId)) return validE.valid("realmId");
+
+    const permSys = new permissionSystem(realmId);
+    const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
+    if(!userPerm) return validE.err("You don't have permission to edit this server");
+
+    const subscribedChannels = await global.db.realmData.find("events.channels", { tr: realmId });
+    const channels = await global.db.realmConf.find(
+        realmId,
+        {
+            $exists: {
+                chid: true
+            },
+            $in: {
+                type: ["text", "realm_event", "open_event"]
+            }
+        },
+        {},
+        {},
+        {
+            select: ["chid", "name"]
+        }
+    ).then(channels => {
+        const availableChannels = [];
+        for(const channel of channels){
+            if(subscribedChannels.some(tc => tc.sc == channel.chid)) continue; // no subscription to self
+            if(subscribedChannels.some(tc => tc.tc == channel.chid)) continue; // already subscribed
+            availableChannels.push(channel);
+        }
+        return availableChannels;
+    });
+    return { err: false, res: channels };
+}

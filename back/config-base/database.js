@@ -50,4 +50,8 @@ export default {
         type: "local",
         path: "data/realmData",
     },
+    realmDataGraph: {
+        type: "local",
+        path: "data/realmDataGraph",
+    },
 }

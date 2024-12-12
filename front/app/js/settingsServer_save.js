@@ -6,6 +6,7 @@ SettingsServerManager.prototype.saveSettings = function(){
     }
     
     this.saveMetaSettings();
+    delete this.settings.addons;
     this.saveCallback(this.settings);
     
     this.container.innerHTML = "";

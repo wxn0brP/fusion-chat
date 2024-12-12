@@ -215,6 +215,30 @@
     font-size: 2rem;
 }
 
+#subscribeEventChnl{
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    background-color: var(--back);
+    color: var(--txt);
+    border: 2px solid var(--accent);
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 300px;
+
+    select{
+        width: 70%;
+        border-radius: 1rem;
+        padding: 7px 12px;
+        border: 2px solid var(--accent);
+        background-color: var(--back);
+        color: var(--txt);
+        margin-top: 5px;
+    }
+}
+
 @media screen and (max-width: 800px){
     #errMesses div{
         width: 90vw;
@@ -234,5 +258,9 @@
     #emoji__nav{
         grid-template-columns: repeat(2, 1fr);
         gap: 7px;
+    }
+
+    #subscribeEventChnl{
+        width: 90vw;
     }
 }

@@ -5,6 +5,10 @@ import {
     realm_setup,
     realm_user_kick,
     realm_user_unban,
+    realm_event_channel_subscribe,
+    realm_event_channel_unsubscribe,
+    realm_event_channel_available,
+    realm_event_channel_list,
 } from "./logic/realms.js";
 
 export default (socket) => {
@@ -63,6 +67,46 @@ export default (socket) => {
             if(err) return socket.emit(...err);
             if(cb) cb(res);
             else socket.emit("realm.emojis.sync", res);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.event.channel.subscribe", 1000, async (sourceRealmId, sourceChannelId, targetRealmId, targetChannelId) => {
+        try{
+            const { err } = await realm_event_channel_subscribe(socket.user, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId);
+            if(err) return socket.emit(...err);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.event.channel.unsubscribe", 1000, async (sourceRealmId, sourceChannelId, targetRealmId, targetChannelId) => {
+        try{
+            const { err } = await realm_event_channel_unsubscribe(socket.user, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId);
+            if(err) return socket.emit(...err);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.event.channel.available", 5000, async (cb) => {
+        try{
+            const { err, res } = await realm_event_channel_available(socket.user);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("realm.event.channel.available", res);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.event.channel.list", 5000, async (realmId, cb) => {
+        try{
+            const { err, res } = await realm_event_channel_list(socket.user, realmId);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("realm.event.channel.list", res);
         }catch(e){
             socket.logError(e);
         }

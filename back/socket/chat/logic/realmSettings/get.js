@@ -47,7 +47,9 @@ export default async function realm_settings_get(suser, id, sections=[]){
         return validator.err("You don't have permission to edit this server");
     }
 
-    const data = {};
+    const data = {
+        addons: {}
+    };
     const dbData = await fetchRequiredData(id, sections);
     
     await Promise.all(sections.map(section => 
@@ -129,6 +131,7 @@ async function processSection(section, data, dbData, userPerms, realmId, userId)
         break;
         case "channels":
             data.channels = dbData.filter(d => !!d.chid);
+            data.addons.subscribedChannels = await getSubscribedChannels(realmId);
         break;
         case "roles":
             data.roles = await getAdjustedRoles(realmId, userId);
@@ -171,4 +174,51 @@ async function getAdjustedRoles(realm, userId){
     }
 
     return adjustedData;
+}
+
+async function getSubscribedChannels(realmId){
+    const channels = await global.db.realmData.find(
+        "events.channels",
+        { tr: realmId },
+        {},
+        {},
+        { exclude: ["tr"]}
+    )
+
+    const realms = groupBySource(channels);
+    
+    for(const realm of realms){
+        const names = await global.db.realmConf.find(realm.sr, {
+            $or: realm.scs.map(sc => ({ chid: sc })),
+        }, {}, {}, {
+            select: ["chid", "name"]
+        });
+
+        channels.forEach(channel => {
+            channel.name = names.find(n => n.chid == channel.sc).name;
+        });
+    }
+
+    return channels;
+}
+
+/**
+ * Group array of objects by source realm ID.
+ * The objects should have "sr" and "sc" properties.
+ * @param {Object[]} data - Array of objects to group
+ * @returns {Object[]} Grouped array of objects
+ * @example
+ * groupBySource([{ sr: "a", sc: "b" }, { sr: "a", sc: "c" }, { sr: "d", sc: "e" }])
+ * returns [{ sr: "a", scs: ["b", "c"] }, { sr: "d", scs: ["e"] }]
+ */
+function groupBySource(data){
+    const grouped = {};
+
+    data.forEach(({ sr, sc }) => {
+        if(!grouped[sr])
+            grouped[sr] = { sr, scs: [] };
+        grouped[sr].scs.push(sc);
+    });
+
+    return Object.values(grouped);
 }

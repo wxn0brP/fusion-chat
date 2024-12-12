@@ -16,7 +16,7 @@ const databases = [
     { name: "realmRoles", type: "database" },       //realm roles
     { name: "realmUser", type: "database" },        //realm users
     { name: "realmData", type: "database" },        //realm all types data
-
+    { name: "realmDataGraph", type: "graph" },      //realm all types data graph
 ];
 
 function getRemoteConfig(name, path){

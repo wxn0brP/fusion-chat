@@ -237,7 +237,7 @@ const contextFunc = {
                 });
             break;
             case "subscribe":
-                lo("subscribe", id);
+                subscribeEventChnl.show(vars.chat.to, id);
             break;
         }
     }
