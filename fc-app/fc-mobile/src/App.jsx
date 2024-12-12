@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AppState } from "react-native";
+import { AppState, Linking, NativeModules } from "react-native";
 import { WebView } from "react-native-webview";
 import notificationModule from "./notificationModule";
 import updateFunc from "./update";
@@ -31,6 +31,9 @@ const ReactNativeApp = () => {
             break;
             case "stopAudio":
                 AudioRecorder.stop();
+            break;
+            case "openLinkSettings":
+                NativeModules.DefaultLinkSettings.openAppLinkSettings();
             break;
             default:
                 console.log("unknown message", data);
@@ -111,6 +114,26 @@ const ReactNativeApp = () => {
 
     //     logDist();
     // }, []);
+
+    useEffect(() => {
+        const handleDeepLink = (event) => {
+            const url = event.url;
+            if(!url) return;
+            setTimeout(() => {
+                sendToFront({ type: "deepLink", url });
+            }, 3000); // wait for webview to load
+        };
+    
+        Linking.getInitialURL().then((url) => {
+            if(url) handleDeepLink({ url });
+        });
+    
+        const unsubscribe = Linking.addEventListener("url", handleDeepLink);
+
+        return () => {
+            unsubscribe.remove();
+        };
+    }, []);
 
     const startRecording = async () => {
         await permission.requestMicrophonePermission();

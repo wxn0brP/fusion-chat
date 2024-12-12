@@ -1,6 +1,7 @@
 package com.fusionchat
 import com.fusionchat.AudioModule
 import com.fusionchat.InstallSourceModule
+import com.fusionchat.DefaultLinkSettingsModule
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -22,6 +23,7 @@ class MainApplication : Application(), ReactApplication {
             return PackageList(this).packages.apply {
                 add(AudioModulePackage())
                 add(InstallSourceModulePackage())
+                add(DefaultLinkSettingsPackage())
             }
         }
 
