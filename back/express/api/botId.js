@@ -13,7 +13,12 @@ router.get("/id/bot", async (req, res) => {
     }
 
     const bot = await global.db.botData.findOne(id, { _id: "name" });
-    if(!bot) return res.json({ err: true, msg: "bot is not found" });
+    if(!bot){
+        const rm = await global.db.data.findOne("rm", { _id: id });
+        if(rm)
+            return res.json({ err: false, name: "Deleted Bot "+id });
+        return res.json({ err: true, msg: "bot is not found" });
+    }
 
     res.json({ err: false, name: bot.name });
 });

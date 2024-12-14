@@ -15,7 +15,7 @@ export default async (id, data, suser, dbData) => {
     changes.itemsToAdd = [];
     await saveDbChanges(id, changes, "whid");
 
-    for (const item of itemsToAdd) {
+    for(const item of itemsToAdd){
         const webhookInfo = {
             name: item.name,
             chat: id,
@@ -25,5 +25,9 @@ export default async (id, data, suser, dbData) => {
             ajv: item.ajv || {}
         };
         await addCustom(webhookInfo);
+    }
+
+    for(const item of changes.itemsToRemove){
+        await global.db.data.add("rm", { _id: item.whid });
     }
 }

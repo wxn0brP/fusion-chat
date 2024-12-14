@@ -7,6 +7,9 @@ import ValidError from "../../../logic/validError.js";
 import { createTokenPointer } from "../../../logic/mobileNotif.js";
 import * as statusMgmt from "../../../logic/status.js";
 import statusData from "../valid/status.js";
+import sendMail from "../../../logic/mail.js";
+import * as tokenFunc from "../../../logic/token/index.js";
+import { genId } from "@wxn0brp/db";
 
 const embedDataShema = valid.objAjv(embedData);
 const statusDataShema = valid.objAjv(statusData);
@@ -100,4 +103,18 @@ export async function status_activity_gets(ids){
 export async function status_activity_remove(suser){
     statusMgmt.rmCache(suser._id);
     return { err: false };    
+}
+
+export async function user_delete(suser){
+    const domain = process.env.DOMAIN || "https://fusion.ct8.pl";
+    const id = genId();
+    const token = await tokenFunc.create({
+        _id: id,
+        user: suser._id,
+    }, "1d", tokenFunc.KeyIndex.GENERAL);
+    const confirmLink = `${domain}/rm/account-confirm?token=${token}`;
+    const cancelLink = `${domain}/rm/account-undo?token=${token}`;
+
+    sendMail("confirmDeleteAccount", suser.email, suser.name, confirmLink, cancelLink);
+    return { err: false };
 }

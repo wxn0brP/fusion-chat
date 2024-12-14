@@ -37,7 +37,7 @@ export default class PermissionSystem{
 
     async createRole(name, opts){
         opts = {
-            lvl: 0,
+            lvl: null,
             p: 0,
             c: "#fff",
             managerId: false,

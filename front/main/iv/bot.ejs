@@ -2,8 +2,11 @@
 <main>
     <section id="state-invite" style="display: none;">
         <h1 id="botName"></h1>
-        <label for="select">Select server</label>
-        <select id="serverSelect"></select>
+        <label>
+            Select server
+            <br />
+            <select id="realmSelect"></select>
+        </label>
         <br />
         <button onclick="invite()">Invite bot</button>
     </section>
@@ -14,22 +17,17 @@
     </section>
 </main>
 
-<style>
-    main{
-        width: 500px;
-        max-width: calc(100% - 2rem);
-        line-height: 1.6;
-        text-align: center;
+<link rel="stylesheet" href="/fc-mini.css">
+<script src="/js/botInvite.js"></script>
 
+<style>
+    #realmSelect{
+        background-color: var(--back);
         color: var(--txt);
+        border: 1px solid var(--accent);
+        padding: 0.5rem 1rem;
         border-radius: 1rem;
-        padding: 1rem;
-        border: 2px solid var(--accent);
-        position: absolute;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 10px 5px rgba(var(--accentRGB), .5);
+        cursor: pointer;
     }
 
     section{
@@ -40,39 +38,4 @@
     h1{
         margin-bottom: 1rem;
     }
-
-    button{
-        margin-top: 1rem;
-        color: var(--txt);
-        background-color: var(--back);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 1rem;
-        cursor: pointer;
-        transition: border-color 0.5s, box-shadow 0.5s;
-        border: 2px solid var(--accent);
-        box-shadow: 0 0 10px 5px rgba(var(--accentRGB), .5);
-    }
-
-    button:hover{
-        border-color: var(--txt);
-        box-shadow: 0 0 10px 5px var(--txt);
-    }
-
-    a{
-        text-decoration: none;
-        color: var(--accent);
-    }
-
-    a:hover{
-        text-decoration: underline;
-    }
-
-    @media screen and (max-width: 800px){
-        main{
-            width: 100%;
-        }
-    }
 </style>
-
-<script src="/js/botInvite.js"></script>

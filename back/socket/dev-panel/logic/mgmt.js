@@ -21,8 +21,14 @@ export async function bots_delete(suser, id){
     const botExists = await global.db.userData.findOne(suser._id, { botID: id });
     if(!botExists) return validE.err("bot does not exist");
 
+    const realms = await global.db.botData.find(id, { $exists: { realm: true }});
+    for(const realm of realms){
+        await global.db.realmUser.removeOne(realm.realm, { bot: id });
+    }
+
     await global.db.userData.removeOne(suser._id, { botID: id });
     await global.db.botData.removeCollection(id);
+    await global.db.data.add("rm", { _id: id });
     
     return { err: false };
 }

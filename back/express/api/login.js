@@ -32,15 +32,15 @@ router.post("/login", async (req, res) => {
     mailer("login", user.email, user.name, deviceInfo); // warning to email for login
 });
 
-function comparePasswords(hashPassword, inputPassword){
+export function comparePasswords(hashPassword, inputPassword){
     return timingSafeEqual(Buffer.from(hashPassword, 'utf-8'), Buffer.from(generateHash(inputPassword), 'utf-8'));
 }
 
-function generateHash(password){
+export function generateHash(password){
     return createHash('sha256').update(password).digest("hex");
 }
 
-function randomDelay(min, max){
+export function randomDelay(min, max){
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 

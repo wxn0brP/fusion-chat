@@ -43,6 +43,26 @@ const settingsData = {
                         color: "red"
                     }
                 },
+                {
+                    name: "Delete Account",
+                    txt: translateFunc.get("Delete Account"),
+                    type: "button",
+                    onclick: () => {
+                        if(!confirm(translateFunc.get("Are you sure you want to delete your account?"))) return;
+                        if(!confirm(translateFunc.get("Are you absolutely sure? This action is irreversible."))) return;
+                        
+                        socket.emit("user.delete", () => {
+                            localStorage.removeItem("user_id");
+                            localStorage.removeItem("from");
+                            localStorage.removeItem("token");
+                            alert(translateFunc.get("Check your email to confirm the deletion"));
+                            location.href = "/login";
+                        });
+                    },
+                    css: {
+                        color: "red"
+                    }
+                }                
             ]
         },
         {

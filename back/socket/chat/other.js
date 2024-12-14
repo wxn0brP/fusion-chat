@@ -6,7 +6,8 @@ import {
     status_activity_set,
     status_activity_get,
     status_activity_gets,
-    status_activity_remove
+    status_activity_remove,
+    user_delete
 } from "./logic/other.js";
 
 export default (socket) => {
@@ -94,6 +95,15 @@ export default (socket) => {
     socket.onLimit("status.activity.remove", 1_000, async () => {
         try{
             const { err } = await status_activity_remove(socket.user);
+            if(err) return socket.emit(...err);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("user.delete", 50_000, async () => {
+        try{
+            const { err } = await user_delete(socket.user);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);

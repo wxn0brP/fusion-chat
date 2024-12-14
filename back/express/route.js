@@ -37,8 +37,12 @@ function error500(cb){
 
 const apiPath = "./back/express/api/";
 readdirSync(apiPath).filter(file => file.includes(".js")).forEach(async file => {
-    const router = await import("./api/"+file);
-    apiRouter.use("/", router.default);
+    const routerImport = await import("./api/"+file);
+    let { path, default: router } = routerImport;
+
+    if(!path) path = "";
+    
+    apiRouter.use("/"+path, router);
 });
 
 readdirSync("front/public").filter(file => file.includes(".html")).forEach(file => {
@@ -71,7 +75,7 @@ async function renderLayout(res, layout, bodyPath, layoutData, bodyData){
 
 frontRouter.get("/app", error500((req, res) => res.render("app/app")));
 frontRouter.get("/", error500((req, res) => renderLayout(res, "layout/main", "main/index", {}, {})));
-frontRouter.get("/dev-panel", error500((req, res) => renderLayout(res, "layout/main", "main/dev-panel", {}, {})));
+frontRouter.get("/dev-panel", error500((req, res) => renderLayout(res, "layout/main", "dev-panel/dev-panel", {}, {})));
 
 readdirSync("front/main", { recursive: true })
     .filter(file => file.includes(".ejs"))

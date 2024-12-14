@@ -13,7 +13,12 @@ router.get("/id/u", async (req, res) => {
     }
 
     const user = await global.db.data.findOne("user", { _id: id });
-    if(!user) return res.json({ err: true, msg: "user is not found" });
+    if(!user){
+        const rm = await global.db.data.findOne("rm", { _id: id });
+        if(rm)
+            return res.json({ err: false, name: "Deleted User "+id });
+        return res.json({ err: true, msg: "user is not found" });
+    }
 
     const nickData = await global.db.userData.findOne(id, { $exists: { nick: true }});
     if(nickData) return res.json({ err: false, name: nickData.nick });

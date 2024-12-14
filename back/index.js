@@ -45,3 +45,4 @@ server.listen(process.env.PORT, function(){
         lo("http://localhost:"+process.env.PORT+"/app")
     }
 });
+import("./schedule/index.js");

@@ -25,7 +25,9 @@ const upload = multer({
     }
 }).single("file");
 
-router.post("/profile/upload", global.authenticateMiddleware, (req, res) => {
+export const path = "profile";
+
+router.post("/upload", global.authenticateMiddleware, (req, res) => {
     upload(req, res, async (err) => {
         if(err){
             return res.status(400).json({ err: true, msg: err.message });
@@ -50,7 +52,7 @@ router.post("/profile/upload", global.authenticateMiddleware, (req, res) => {
     });
 });
 
-router.get("/profile/img", (req, res) => {
+router.get("/img", (req, res) => {
     function def(){
         res.set("X-Content-Default", "true");
         res.send(readFileSync("front/static/defaultProfile.png"));
