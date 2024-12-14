@@ -17,9 +17,22 @@ class SettingsManager{
             createSelectInput: this.createSelectInput,
         }
 
+        this.settings = this.settings.filter(category => {
+            if(category.only){
+                let only = category.only;
+                if(typeof only == "string") only = [only];
+                const apiType = apis.apiType;
+                if(!only.includes(apiType)) return false;
+            }
+            return true;
+        })
+        
+        this.renderCategorySwitcher();
+
         this.settings.forEach(category => {
             const categoryDiv = document.createElement("div");
             categoryDiv.className = "settings__category";
+            categoryDiv.setAttribute("data-id", category.name);
             categoryDiv.innerHTML = `<h1>${category.txt || category.name}</h1>`;
             
             if(category.type == "obj"){
@@ -78,6 +91,8 @@ class SettingsManager{
             this.container.appendChild(categoryDiv);
         });
 
+        this.changeDisplay(this.settings[0]?.name);
+
         const saveButton = document.createElement("button");
         saveButton.textContent = translateFunc.get("Save");
         saveButton.className = "settings__exitButton";
@@ -92,6 +107,31 @@ class SettingsManager{
         this.container.appendChild(saveButton);
         this.container.appendChild(exitButton);
         this.container.fadeIn();
+    }
+
+    renderCategorySwitcher(){
+        const categorySwitcher = document.createElement("div");
+        categorySwitcher.className = "settings__categorySwitcher";
+
+        const displays = this.settings.map(setting => setting.name);
+        displays.forEach(display => {
+            const button = document.createElement("button");
+            button.textContent = display;
+            button.className = "btn";
+            button.onclick = () => this.changeDisplay(display);
+            categorySwitcher.appendChild(button);
+        });
+
+        this.container.appendChild(categorySwitcher);
+    }
+
+    changeDisplay(setting){
+        const container = this.container;
+        this.settings.map(setting => setting.name).forEach(display => {
+            const category = container.querySelector(`[data-id="${display}"]`);
+            if(!category) return;
+            category.style.display = display === setting ? "" : "none";
+        });
     }
 
     createCheckbox(setting){

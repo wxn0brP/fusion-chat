@@ -24,45 +24,6 @@ const settingsData = {
                     type: "text",
                     defaultValue: apis.www.changeUserID(vars.user._id) || vars.user.fr
                 },
-                {
-                    name: "Logout",
-                    txt: translateFunc.get("Logout"),
-                    type: "button",
-                    onclick: () => {
-                        if(!confirm("Are you sure you want to log out?")) return;
-                        if(!confirm("Are you sure you want to log out? (double check)")) return;
-
-                        localStorage.removeItem("user_id");
-                        localStorage.removeItem("from");
-                        localStorage.removeItem("token");
-                        socket.emit("logout", () => {
-                            location.href = "/login";
-                        });
-                    },
-                    css: {
-                        color: "red"
-                    }
-                },
-                {
-                    name: "Delete Account",
-                    txt: translateFunc.get("Delete Account"),
-                    type: "button",
-                    onclick: () => {
-                        if(!confirm(translateFunc.get("Are you sure you want to delete your account?"))) return;
-                        if(!confirm(translateFunc.get("Are you absolutely sure? This action is irreversible."))) return;
-                        
-                        socket.emit("user.delete", () => {
-                            localStorage.removeItem("user_id");
-                            localStorage.removeItem("from");
-                            localStorage.removeItem("token");
-                            alert(translateFunc.get("Check your email to confirm the deletion"));
-                            location.href = "/login";
-                        });
-                    },
-                    css: {
-                        color: "red"
-                    }
-                }                
             ]
         },
         {
@@ -135,6 +96,53 @@ const settingsData = {
                     txt: translateFunc.get("Desktop app handling fullscreen and set activity (alpha feature, not recommended for always on)"),
                     type: "checkbox",
                     defaultValue: localStorage.getItem("desktopHandling") == "true" || false
+                }
+            ]
+        },
+        {
+            name: "Account settings",
+            txt: translateFunc.get("Account settings"),
+            type: "obj",
+            settings: [
+                
+                {
+                    name: "Logout",
+                    txt: translateFunc.get("Logout"),
+                    type: "button",
+                    onclick: () => {
+                        if(!confirm("Are you sure you want to log out?")) return;
+                        if(!confirm("Are you sure you want to log out? (double check)")) return;
+
+                        localStorage.removeItem("user_id");
+                        localStorage.removeItem("from");
+                        localStorage.removeItem("token");
+                        socket.emit("logout", () => {
+                            location.href = "/login";
+                        });
+                    },
+                    css: {
+                        color: "red"
+                    }
+                },
+                {
+                    name: "Delete Account",
+                    txt: translateFunc.get("Delete Account"),
+                    type: "button",
+                    onclick: () => {
+                        if(!confirm(translateFunc.get("Are you sure you want to delete your account?"))) return;
+                        if(!confirm(translateFunc.get("Are you absolutely sure? This action is irreversible."))) return;
+                        
+                        socket.emit("user.delete", () => {
+                            localStorage.removeItem("user_id");
+                            localStorage.removeItem("from");
+                            localStorage.removeItem("token");
+                            alert(translateFunc.get("Check your email to confirm the deletion"));
+                            location.href = "/login";
+                        });
+                    },
+                    css: {
+                        color: "red"
+                    }
                 }
             ]
         }
