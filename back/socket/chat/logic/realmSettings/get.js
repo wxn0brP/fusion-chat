@@ -147,7 +147,11 @@ async function processSection(section, data, dbData, userPerms, realmId, userId)
         break;
         case "users":
             const users = await global.db.realmUser.find(realmId, {});
-            data.users = users.map(u => ({ u: u.u, r: u.r }));
+            data.users = users.map(u => {
+                let uid = u.u;
+                if(u.bot) uid = "^" + u.bot;
+                return { u: uid, r: u.r }
+            });
         break;
     }
 }

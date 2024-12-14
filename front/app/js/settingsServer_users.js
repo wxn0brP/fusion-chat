@@ -6,6 +6,7 @@ SettingsServerManager.prototype.renderUserRoleManager = function(){
     function renderUser(user){
         const details = document.createElement("details");
         const summary = document.createElement("summary");
+        lo(user)
         summary.innerHTML = apis.www.changeUserID(user.u);
         details.appendChild(summary);
         const div = document.createElement("div");
