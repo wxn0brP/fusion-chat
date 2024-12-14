@@ -366,15 +366,18 @@ const renderFunc = {
         }
 
         users.map(u => u.uid).forEach((userID) => {
+            const isBot = userID[0] == "^";
             const userDiv = document.createElement("div");
             userDiv.classList.add("realm_user_div");
 
-            userDiv.addEventListener("click", () => {
-                socket.emit("user.profile", userID);
-            });
+            if(!isBot){
+                userDiv.addEventListener("click", () => {
+                    socket.emit("user.profile", userID);
+                });
+            }
 
             const userImg = document.createElement("img");
-            userImg.src = "/api/profile/img?id="+userID;
+            userImg.src = !isBot ? "/api/profile/img?id="+userID : "/favicon.svg";
             userDiv.appendChild(userImg);
 
             const textContainer = document.createElement("div");
@@ -398,7 +401,8 @@ const renderFunc = {
     },
 
     _serverUserStatus(id){
-        const ele = document.querySelector("#user_status_"+id);
+        const escapedId = id.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        const ele = document.querySelector("#user_status_"+escapedId);
         if(!ele) return;
         const data = vars.apisTemp.user_status[id];
         if(!data) return;

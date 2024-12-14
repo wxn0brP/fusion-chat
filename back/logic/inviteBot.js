@@ -13,7 +13,7 @@ export async function invite(userID, botID, realmID){
     const role = await permSys.createRole(botName.name);
 
     await global.db.botData.add(botID, { realm: realmID }, false);
-    await global.db.realmUser.add(realmID, { bot: botID, roles: [role._id] }, false);
+    await global.db.realmUser.add(realmID, { bot: botID, r: [role._id] }, false);
 
     return { err: false, msg: "ok" };
 }

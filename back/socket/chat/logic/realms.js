@@ -77,10 +77,14 @@ export async function realm_users_sync(id){
 
     const users = await global.db.realmUser.find(id, {});
     const usersData = users.map(u => {
+        const uid = u.u || u.bot;
+        let symbolUID = uid;
+        if(u.bot) symbolUID = "^" + u.bot;
+
         return {
-            uid: u.u,
+            uid: symbolUID,
             roles: u.r.map(r => rolesMap.get(r)),
-            activity: statusMgmtGetCache(u.u)
+            activity: statusMgmtGetCache(uid),
         }
     });
 
