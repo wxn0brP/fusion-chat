@@ -28,10 +28,6 @@ const format = {
         }
 
         text = text
-        .replace(/((?:^- .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ul", "-"))
-        .replace(/((?:^[0-9]+\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "1"))
-        .replace(/((?:^i{1,3}\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "i"))
-        .replace(/((?:^[a-zA-Z]\. .*$(?:\n|$))+)/gm, match => format.wrapList(match, "ol", "a"))
         .replace(/((?:^\|.*\|$\n?)+)/gm, match => format.wrapTable(match))
 
         .replace(/\*\*([^\s].*?[^\s])\*\*/g, "<b>$1</b>")
@@ -52,6 +48,8 @@ const format = {
         .replaceAll("\\n", "<br />")
         .replaceAll("---", "<hr />")
 
+        text = formatList.cpu(text, 1, "rem");
+
         for(let i=0; i<exclusions.length; i++){
             const exclusion = exclusions[i];
             const placeholder = `@EXCLUSION${i + 1}@`;
@@ -59,16 +57,6 @@ const format = {
         }
 
         return text;
-    },
-
-    wrapList(text, listType, marker){
-        const listItems = text
-            .trim()
-            .split("\n")
-            .map(line => line.replace(/^[\-\d\w]+\.?\s/, ""))
-            .map(item => `<li>${item}</li>`)
-            .join("");
-        return `<${listType} type="${marker}">${listItems}</${listType}>`;
     },
 
     wrapTable(tableText) {
@@ -281,5 +269,111 @@ const format = {
         }
 
         messDiv.appendChild(embedContainer);
+    }
+}
+
+const formatList = {
+    calculateLevels(lines){
+        const result = [];
+        let spacePerLvl = null;
+
+        lines.forEach((line, index) => {
+            const trimmedLine = line.trim();
+            if(trimmedLine === ""){
+                result.push({ line, lvl: 0 });
+                return;
+            }
+
+            const spaces = line.length - line.trimStart().length;
+
+            if(spacePerLvl === null){
+                if(index > 0 && spaces > 0){
+                    const prevSpaces = lines[index - 1].length - lines[index - 1].trimStart().length;
+                    if(spaces > prevSpaces){
+                        spacePerLvl = spaces - prevSpaces;
+                    }
+                }
+            }
+
+            if(spacePerLvl !== null && spaces % spacePerLvl !== 0){
+                const fixedSpaces = Math.round(spaces / spacePerLvl) * spacePerLvl;
+                result.push({ line, lvl: fixedSpaces / spacePerLvl });
+            }else{
+                const lvl = spacePerLvl ? spaces / spacePerLvl : (spaces > 0 ? 1 : 0);
+                result.push({ line, lvl });
+            }
+        });
+
+        return result;
+    },
+
+    buildTree(linesWithLevels){
+        const listItemRegex = /^(?:[-*]|\d+[.)]?|[a-zA-Z][.)]?)\s/;
+        const root = [];
+        const stack = [{ children: root, lvl: -1 }];
+
+        function getBulletType(line){
+            const trimmed = line.trim();
+            if(/^[-*]\s/.test(trimmed)) return "bullet";
+            if(/^\d+[.)]\s/.test(trimmed)) return "decimal";
+            if(/^[a-z]\.?\s/.test(trimmed)) return "lower-alpha";
+            if(/^[A-Z]\.?\s/.test(trimmed)) return "upper-alpha";
+            return null;
+        }
+
+        linesWithLevels.forEach(({ line, lvl }) => {
+            const trimmedLine = line.trim();
+            const isListItem = listItemRegex.test(trimmedLine);
+            const bulletType = isListItem ? getBulletType(trimmedLine) : null;
+
+            const node = { line, children: [], bulletType };
+
+            while(stack.length > 0 && stack[stack.length - 1].lvl >= lvl){
+                stack.pop();
+            }
+
+            stack[stack.length - 1].children.push(node);
+            stack.push({ ...node, lvl });
+        });
+
+        return root;
+    },
+
+    treeToHtml(tree, marginValue, marginUnits){
+        let html = "";
+        const listMapOl = ["decimal", "lower-alpha", "upper-alpha", "lower-roman", "upper-roman"];
+
+        function processNode(node, lvl = 0){
+            if(node.bulletType === null){
+                html += node.line.trim();
+            }else{
+                const listTag = listMapOl.includes(node.bulletType) ? "ol" : "ul";
+                const [, ...content] = node.line.trim().split(/\s+/);
+                html += `<${listTag}>`;
+                html += `<li style="margin-left: ${marginValue * (lvl + 1)}${marginUnits}">${content}</li>`;
+
+                if(node.children.length > 0){
+                    node.children.forEach(child => {
+                        processNode(child, lvl + 1);
+                    });
+                }
+
+                html += `</${listTag}>`;
+            }
+        }
+
+        tree.forEach(node => {
+            processNode(node);
+        });
+
+        return html;
+    },
+
+    cpu(text, marginValue=0, marginUnits=""){
+        const lines = text.split(/\n|\<br\>|\<br\/\>|\<br \/>/);
+        const levels = this.calculateLevels(lines);
+        const tree = this.buildTree(levels);
+        const html = this.treeToHtml(tree, marginValue, marginUnits);
+        return html;
     }
 }
