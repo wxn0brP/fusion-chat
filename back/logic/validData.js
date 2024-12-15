@@ -147,9 +147,7 @@ ajv.addKeyword({
             if(parts.length !== 2) return false;
             
             const [id, perm] = parts;
-            const validPerms = ["text", "visable"];
-
-            return valid.id(id) && validPerms.includes(perm);
+            return valid.id(id) && valid.num(parseInt(perm));
         };
     },
 });

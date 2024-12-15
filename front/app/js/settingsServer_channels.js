@@ -138,22 +138,21 @@ SettingsServerManager.prototype.renderEditChannel = function(channel){
     const descInp = this.initInputText(containerElement, translateFunc.get("Description"), channel.desc || "");
     const _this = this;
 
-    const allPerm = [
-        { name: translateFunc.get("Write messages"), id: "text" },
-        { name: translateFunc.get("Show channel"), id: "visable" },
-    ];
+    const flags = this.vars_channelsFlags();
 
     function renderRole(role){
         const details = document.createElement("details");
         const summary = document.createElement("summary");
         summary.innerHTML = role.name;
         details.appendChild(summary);
+        let roleRp = channel.rp.find(rp => rp.startsWith(role._id));
+        roleRp = roleRp ? parseInt(roleRp.split("/")[1]) : 0;
 
-        allPerm.forEach(perm => {
-            const checkbox = _this.initCheckbox(details, perm.name, false);
-            checkbox.checked = channel.rp.includes(role._id + "/" + perm.id);
+        flags.forEach((perm, i) => {
+            const checked = roleRp & (1 << i);
+            const checkbox = _this.initCheckbox(details, perm, checked);
             checkbox.setAttribute("data-role", role._id);
-            checkbox.setAttribute("data-perm", perm.id);
+            checkbox.setAttribute("data-perm", i);
         });
         containerElement.appendChild(details);
         _this.addSeparator(details, 5);
@@ -201,14 +200,23 @@ SettingsServerManager.prototype.renderEditChannel = function(channel){
         channel.name = nameInp.value;
         const desc = descInp.value;
         channel.desc = desc.trim() === "" ? undefined : desc;
-        channel.rp = [];
+        const roles = this.settings.roles;
+        const rolesMap = new Map();
+        roles.forEach(role => rolesMap.set(role._id, 0));
 
         containerElement.querySelectorAll("input[type=checkbox][data-role][data-perm]").forEach(checkbox => {
             if(!checkbox.checked) return;
             const role = checkbox.getAttribute("data-role");
             const perm = checkbox.getAttribute("data-perm");
-            channel.rp.push(role + "/" + perm);
+            
+            const allPerm = rolesMap.get(role);
+            const number = 1 << parseInt(perm);
+            rolesMap.set(role, allPerm | number);
         });
+
+        channel.rp =  Array.from(rolesMap)
+            .filter(([, value]) => value !== 0)
+            .map(([key, value]) => `${key}/${value}`);
 
         this.renderChannels();
         containerElement.fadeOut();
@@ -258,3 +266,10 @@ SettingsServerManager.prototype.renderEditCategory = function(category){
 
     containerElement.fadeIn();
 }
+
+SettingsServerManager.prototype.vars_channelsFlags = () => [
+    translateFunc.get("View channel"),
+    translateFunc.get("Write messages"),
+    translateFunc.get("Send files"),
+    translateFunc.get("Add reactions"),
+]
