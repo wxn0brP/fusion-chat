@@ -143,7 +143,7 @@ ajv.addKeyword({
     type: "string",
     compile: function(){
         return function(data){
-            const parts = data.split('/');
+            const parts = data.split("/");
             if(parts.length !== 2) return false;
             
             const [id, perm] = parts;
@@ -160,4 +160,22 @@ ajv.addKeyword({
     compile: function(){
         return valid.id;
     },
+});
+
+ajv.addKeyword({
+    keyword: "validIdWithPrefix",
+    type: "string",
+    validate: function(schema, data){
+        if(typeof data !== "string") return false;
+        
+        for(let prefix of schema){
+            if(prefix === false) return valid.id(data);
+            if(data.startsWith(prefix)){
+                const remainingText = data.slice(prefix.length);
+                return valid.id(remainingText);
+            }
+        }
+        
+        return false;
+    }
 });

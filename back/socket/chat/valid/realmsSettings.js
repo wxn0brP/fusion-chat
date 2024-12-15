@@ -64,7 +64,7 @@ export default {
             items: {
                 type: "object",
                 properties: {
-                    u: { type: "string", validId: true },
+                    u: { type: "string", validIdWithPrefix: ["^", false] },
                     r: {
                         type: "array",
                         items: { type: "string" }
