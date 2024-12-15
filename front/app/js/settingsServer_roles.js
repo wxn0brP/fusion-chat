@@ -125,9 +125,8 @@ SettingsServerManager.prototype.renderRoleEdit = function(role, opts){
     const userPerms = vars.realm.permission;
 
     permsBuild.forEach(pb => {
-        const isPerm = permissionFunc.hasPermission(role.p, permissionFlags[pb.id]);
+        const isPerm = permissionFunc.hasPermission(userPerms, permissionFlags[pb.id]);
         const checkbox = this.initCheckbox(containerElement, translateFunc.get(pb.name), isPerm);
-        if(permissionFunc.hasPermission(userPerms, permissionFlags[pb.id])) checkbox.disabled = true;
         checkbox.onchange = () => role.p = caclulatePermissionsByCheckBoxs();
         checkboxs.push({ id: pb.id, checkbox });
     });
