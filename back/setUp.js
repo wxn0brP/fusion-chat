@@ -7,7 +7,7 @@ function file(path, value="", prefix="config/"){
     if(!fs.existsSync(prefix+path)) fs.writeFileSync(prefix+path, value);
 }
 function preFile(path, pre, prefix="config/"){
-    if(!fs.existsSync(prefix+path)) fs.copyFileSync("back/config-base/"+pre+".js", prefix+path);
+    if(!fs.existsSync(prefix+path+".js")) fs.copyFileSync("back/config-base/"+pre+".js", prefix+path+".js");
 }
 
 dir("data");
@@ -18,5 +18,6 @@ dir("userFiles/profiles");
 dir("userFiles/realms");
 file("banedIP.json", "[]");
 file("mailConfig.json", "{}");
-preFile("file.js", "file");
-preFile("database.js", "database");
+preFile("file", "file");
+preFile("database", "database");
+preFile("logs", "logs");

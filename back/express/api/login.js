@@ -28,8 +28,10 @@ router.post("/login", async (req, res) => {
     res.json({ err: false, msg: "Login successful", token, from: user.name, user_id: user._id });
     await global.db.data.add("token", { token }, false);
 
-    const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
-    mailer("login", user.email, user.name, deviceInfo); // warning to email for login
+    if(global.logsConfig.mail.loginWarn){
+        const deviceInfo = req.headers['user-agent'] || 'Unknown Device';
+        mailer("login", user.email, user.name, deviceInfo); // warning to email for login
+    }
 });
 
 export function comparePasswords(hashPassword, inputPassword){

@@ -11,7 +11,8 @@ export default async (data, taskId) => {
 
     await deleteAccount(uid);
     const name = user.name;
-    sendMail("deletedAccount", user.email, name);
+    if(global.logsConfig.mail.deletedAccount)
+        sendMail("deletedAccount", user.email, name);
 
     await global.db.system.removeOne("tasks", { _id: taskId });
 }

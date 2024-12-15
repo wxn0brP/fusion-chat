@@ -14,3 +14,4 @@ global.getTime = () => {
 }
 
 global.fileConfig = await import("../config/file.js").then(module => module.default);
+global.logsConfig = await import("../config/logs.js").then(module => module.default);
