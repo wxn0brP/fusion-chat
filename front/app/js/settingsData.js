@@ -27,8 +27,8 @@ const settingsData = {
             ]
         },
         {
-            name: "Profile",
-            txt: translateFunc.get("Profile"),
+            name: "Profile image",
+            txt: translateFunc.get("Profile image"),
             type: "fn",
             settings: () => {
                 const div = document.createElement("div");
@@ -79,9 +79,9 @@ const settingsData = {
                     txt: translateFunc.get("Notifications"),
                     type: "checkbox",
                     defaultValue: localStorage.getItem("notifications") == "true" || false,
+                    only: ["web", "ele"]
                 },
                 {
-                    name: "Notifications permissions",
                     txt: translateFunc.get("Check notifications permissions"),
                     type: "button",
                     onclick: () => {
@@ -89,12 +89,23 @@ const settingsData = {
                             if(result == "granted") uiFunc.uiMsg(translateFunc.get("OK"));
                             else uiFunc.uiMsg(translateFunc.get("Notification permission denied") + ".");
                         });
-                    }
+                    },
+                    only: ["web", "ele"]
+                },
+                { type: "hr" },
+                {
+                    txt: translateFunc.get("Experimental features"),
+                    type: "h2"
+                },
+                {
+                    txt: translateFunc.get("Not all features are stable and may not work as expected. Use at your own risk."),
+                    type: "h3"
                 },
                 {
                     name: "desktopHandling",
-                    txt: translateFunc.get("Desktop app handling fullscreen and set activity (alpha feature, not recommended for always on)"),
+                    txt: "Desktop app handling fullscreen and set activity",
                     type: "checkbox",
+                    only: "ele",
                     defaultValue: localStorage.getItem("desktopHandling") == "true" || false
                 }
             ]
@@ -110,8 +121,10 @@ const settingsData = {
                     txt: translateFunc.get("Logout"),
                     type: "button",
                     onclick: () => {
-                        if(!confirm("Are you sure you want to log out?")) return;
-                        if(!confirm("Are you sure you want to log out? (double check)")) return;
+                        const confText = translateFunc.get("Are you sure you want to log out") + "?";
+                        const doubleText = " (" + translateFunc.get("double check") + ")";
+                        if(!confirm(confText)) return;
+                        if(!confirm(confText+doubleText)) return;
 
                         localStorage.removeItem("user_id");
                         localStorage.removeItem("from");
@@ -129,8 +142,12 @@ const settingsData = {
                     txt: translateFunc.get("Delete Account"),
                     type: "button",
                     onclick: () => {
-                        if(!confirm(translateFunc.get("Are you sure you want to delete your account?"))) return;
-                        if(!confirm(translateFunc.get("Are you absolutely sure? This action is irreversible."))) return;
+                        const confText = translateFunc.get("Are you sure you want to delete your account") + "?";
+                        const doubleText = " (" + translateFunc.get("double check") + ")";
+                        const tripleText = " (" + translateFunc.get("triple check") + ")";
+                        if(!confirm(confText)) return;
+                        if(!confirm(confText+doubleText)) return;
+                        if(!confirm(confText+tripleText)) return;
                         
                         socket.emit("user.delete", () => {
                             localStorage.removeItem("user_id");

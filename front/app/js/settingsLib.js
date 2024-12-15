@@ -17,14 +17,23 @@ class SettingsManager{
             createSelectInput: this.createSelectInput,
         }
 
-        this.settings = this.settings.filter(category => {
-            if(category.only){
-                let only = category.only;
+        function onlyFilter(data){
+            return data.filter(setting => {
+                if(!setting.only) return true;
+
+                let only = setting.only;
                 if(typeof only == "string") only = [only];
-                const apiType = apis.apiType;
-                if(!only.includes(apiType)) return false;
-            }
-            return true;
+
+                if(!only.includes(apis.app.apiType)) return false;
+
+                return true;
+            })
+        }
+
+        this.settings = onlyFilter(this.settings);
+        this.settings.forEach(setting => {
+            if(setting.type != "obj") return;
+            setting.settings = onlyFilter(setting.settings);
         })
         
         this.renderCategorySwitcher();
@@ -64,6 +73,19 @@ class SettingsManager{
                         break;
                         case "button":
                             inputElement = this.createButton(setting);
+                        break;
+                        case "hr":
+                            inputElement = document.createElement("hr");
+                        break;
+                        case "h1":
+                        case "h2":
+                        case "h3":
+                        case "h4":
+                        case "h5":
+                        case "h6":
+                        case "p":
+                            inputElement = document.createElement(setting.type);
+                            inputElement.textContent = setting.txt || setting.name;
                         break;
                         default:
                             createLabel();
