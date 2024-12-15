@@ -26,6 +26,18 @@
    - [ ] Update the bot library to include a new channel type for the features above.
    - [ ] Create new classes or functions to handle specific behaviors and interactions.
 
+7. **Refactor frontend codebase**
+   - [ ] Reorganize files names and add directories.
+   - [ ] Organizate modules.
+   - [ ] Clean up.
+   - [ ] Might change to es6 modules.
+
+8. **Create documentation for config server**
+
+9. **permssion cache manager**
+   - [ ] send message
+   - [ ] channel view
+
 ## Additional Considerations
 - [ ] Implement permission checks for all new commands and channels.
 - [ ] Create a feedback mechanism for users to report issues or suggest improvements.
