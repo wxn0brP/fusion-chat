@@ -48,5 +48,30 @@ const utils = {
                 resolve(false);
             });
         })
+    },
+
+    sendNotification(title, body, payload={}){
+        switch(apis.app.apiType){
+            case "rn":
+            case "ele":
+                apis.api.send({
+                    type: "notif",
+                    title,
+                    msg: body,
+                    payload
+                });
+            break;
+            case "web":
+                if(Notification.permission === "granted"){
+                    const notification = new Notification(title, { body: body });
+                    notification.onclick = () => {
+                        window.focus();
+                        notification.close();
+                    }
+                }
+            break;
+            default:
+            break;
+        }
     }
 }

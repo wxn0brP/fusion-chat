@@ -1,6 +1,6 @@
 const { Notification } = require('electron');
 
-function createNotif(title, body, callback=()=>{}){
+function createNotif(title, body, callback){
     const notif = new Notification({
         title,
         body,
@@ -8,8 +8,8 @@ function createNotif(title, body, callback=()=>{}){
     });
     notif.on("click", () => {
         if(callback){
-            callback();
-            return;
+            const res = callback();
+            if(!res) return;
         }
         if(mainWin.isMinimized()){
             mainWin.restore();

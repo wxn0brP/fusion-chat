@@ -56,13 +56,7 @@ socket.on("mess", (data) => {
         const title = translateFunc.get("Received message from $", apis.www.changeUserID(data.fr));
         uiFunc.uiMsg(title);
 
-        if(vars.settings.notifications && Notification.permission === "granted"){
-            const notification = new Notification(title, { body: data.msg });
-            notification.onclick = () => {
-                window.focus();
-                notification.close();
-            };
-        }
+        if(vars.settings.notifications) utils.sendNotification(title, data.msg, { msg: data });
     }
     if(isPrivateChat) renderFunc.privs();
 

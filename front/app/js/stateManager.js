@@ -77,7 +77,7 @@ const stateManagerFunc = {
     cc(ids){
         const [chat, chnl] = ids.split("_");
         if(!utils.validId(chat)) return;
-        if(!utils.validId(chnl)) return;
+        if(!utils.validId(chnl) && chnl != "main") return;
         coreFunc.changeChat(chat, chnl);
     },
 

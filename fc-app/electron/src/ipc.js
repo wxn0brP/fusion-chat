@@ -1,5 +1,6 @@
 const { ipcMain } = require('electron');
 const createNotif = require("./notif");
+const { sendToFront } = require("./utils");
 
 ipcMain.on('electronAPI', async (event, data) => {
     data = JSON.parse(data);
@@ -9,7 +10,14 @@ ipcMain.on('electronAPI', async (event, data) => {
         break;
         case "notif":
             if(mainWin.isFocused()) return;
-            createNotif(data.title, data.msg);
+            createNotif(data.title, data.msg, () => {
+                const { to, chnl } = data.payload.msg;
+                sendToFront({
+                    type: "ctrl",
+                    ctrl: [["cc", to+"_"+chnl]]
+                });
+                return true;
+            });
         break;
         case "status":
             confArg.rpcAuto = !!data.data;

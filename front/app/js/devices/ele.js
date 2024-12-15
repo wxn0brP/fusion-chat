@@ -17,6 +17,11 @@ apis.api.receiveMessage = (data) => {
                 socket.emit("status.activity.set", data.data);
             }
         break;
+        case "ctrl":
+            if(typeof data.ctrl == "object" && !Array.isArray(data.ctrl)) data.ctrl = [data.ctrl];
+            const ctrl = data.ctrl.map(c => ({ type: c[0], value: c.slice(1) }));
+            stateManager.handleArray(ctrl);
+        break;
     }
 }
 
