@@ -39,7 +39,8 @@ export async function realm_setup(suser, id){
             const alt = c.rp.length == 0 || admin;
 
             c.rp.forEach(rp => {
-                const [id, p] = rp.split("/");
+                const [id, ps] = rp.split("/");
+                const p = parseInt(ps);
                 if(hasPermission(p, permissionFlags.view)) visables.push(id);
                 if(hasPermission(p, permissionFlags.text)) texts.push(id);
             });
