@@ -35,8 +35,8 @@
 8. **Create documentation for config server**
 
 9. **permssion cache manager**
-   - [ ] send message
-   - [ ] channel view
+   - [X] ~~*send message*~~ [2024-12-16]
+   - [X] ~~*channel view*~~ [2024-12-16]
 
 ## Additional Considerations
 - [ ] Implement permission checks for all new commands and channels.
