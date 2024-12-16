@@ -116,10 +116,11 @@ export function generatePermissions(permissionsList){
 
 /**
  * Generates a number representing all permissions
+ * @param {Object} permissions - Object of permissions
  * @returns {number} - Number representing all permissions
  */
-export function getAllPermissions(){
-    return Object.values(Permissions).reduce((acc, perm) => acc | perm, 0);
+export function getAllPermissions(permissions){
+    return Object.values(permissions).reduce((acc, perm) => acc | perm, 0);
 }
 
 /**

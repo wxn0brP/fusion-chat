@@ -50,7 +50,7 @@ const coreFunc = {
             socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
             vars.realm.users = [];
             vars.realm.roles = [];
-            vars.realm.text = [];
+            vars.realm.chnlPerms = {};
             messInput.placeholder = translateFunc.get("Write message here") + "...";
             messInput.disabled = false;
             navs__main__call.style.display = "";
@@ -83,8 +83,8 @@ const coreFunc = {
         coreFunc.loadChat();
         socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
 
-        const isText = vars.realm.text.includes(id);
-        if(isText){
+        const chnl = vars.realm.chnlPerms[id];
+        if(chnl?.write){
             messInput.placeholder = translateFunc.get("Write message here") + "...";
             messInput.disabled = false;
         }else{

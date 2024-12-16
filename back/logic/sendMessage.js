@@ -67,9 +67,9 @@ export default async function sendMessage(req, user, options={}){
     }
 
     if(!privChat && !options.system){
-        const perm = await getChnlPerm(user._id, to, chnl); 
-        if(!perm.visable) return validE.err("channel is not exists");
-        if(!perm.text) return validE.err("not perm to write");
+        const perm = await global.getChnlPerm(user._id, to, chnl); 
+        if(!perm.view) return validE.err("channel is not exists");
+        if(!perm.write) return validE.err("not perm to write");
     }
 
     let data = {

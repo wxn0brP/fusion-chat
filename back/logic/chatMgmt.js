@@ -1,6 +1,6 @@
 import { genId } from "@wxn0brp/db";
 import PermissionSystem from "./permission-system/index.js";
-import { getAllPermissions } from "./permission-system/permBD.js";
+import Permissions, { getAllPermissions } from "./permission-system/permBD.js";
 
 /**
  * A function to combine two user ids into a new chat id.
@@ -55,7 +55,7 @@ export async function createChat(name, ownerId){
     });
     
     const permSys = new PermissionSystem(chatId);
-    const rootRole = await permSys.createRole("root", getAllPermissions());
+    const rootRole = await permSys.createRole("root", getAllPermissions(Permissions));
 
     const categoryId = genId();
     await global.db.realmConf.add(chatId, {

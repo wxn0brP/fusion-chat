@@ -1,6 +1,6 @@
 import valid from "../../../logic/validData.js";
 import permissionSystem from "../../../logic/permission-system/index.js";
-import Permissions, { hasPermission } from "../../../logic/permission-system/permBD.js";
+import Permissions from "../../../logic/permission-system/permBD.js";
 import { existsSync } from "fs";
 import ValidError from "../../../logic/validError.js";
 import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
@@ -14,50 +14,31 @@ export async function realm_setup(suser, id){
     
     const name = serverMeta.name;
     const permSys = new permissionSystem(id);
-    const roles = await permSys.getUserRolesSorted(suser._id);
-    const admin = await permSys.canUserPerformAction(suser._id, Permissions.admin);
 
     const buildChannels = [];
     const categories = await global.db.realmConf.find(id, { $exists: { cid: true }});
     const channels = await global.db.realmConf.find(id, { $exists: { chid: true }});
     const sortedCategories = categories.sort((a, b) => a.i - b.i);
 
-    const permissionFlags = Object.freeze({
-        view: 1 << 0,
-        write: 1 << 1,
-        send: 1 << 2,
-        react: 1 << 3,
-    });
-
     for(let i=0; i<sortedCategories.length; i++){
         const category = sortedCategories[i];
         let chnls = channels.filter(c => c.category == category.cid);
         chnls = chnls.sort((a, b) => a.i - b.i);
-        chnls = chnls.map(c => {
-            const visables = [];
-            const texts = [];
-            const alt = c.rp.length == 0 || admin;
+        chnls = await Promise.all(chnls.map(async c => {
+            const perms = await global.getChnlPerm(suser._id, id, c.chid);
+            if(!perms) return null;
 
-            c.rp.forEach(rp => {
-                const [id, ps] = rp.split("/");
-                const p = parseInt(ps);
-                if(hasPermission(p, permissionFlags.view)) visables.push(id);
-                if(hasPermission(p, permissionFlags.text)) texts.push(id);
-            });
+            if(!perms.view) return null;
 
-            const visable = alt || visables.some(id => roles.includes(id));
-            if(!visable) return null;
-
-            // TODO (realm_setup) add more info about perm
-            const text = alt || texts.some(id => roles.includes(id));
             return {
                 id: c.chid,
                 name: c.name,
                 type: c.type,
-                text,
+                perms,
                 desc: c.desc,
             }
-        }).filter(c => !!c);
+        }))
+        chnls = chnls.filter(c => !!c);
 
         if(chnls.length == 0) continue;
         buildChannels.push({

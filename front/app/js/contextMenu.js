@@ -20,6 +20,7 @@ const contextMenu = {
         this.getByDataIdStyle(ele, "unpin").display = opts.pin ? "none" : "";
         this.getByDataIdStyle(ele, "delete").display = opts.delete ? "" : "none";
         this.getByDataIdStyle(ele, "edit").display = opts.edit ? "" : "none";
+        this.getByDataIdStyle(ele, "add_reaction").display = vars.realm.chnlPerms[vars.chat.chnl]?.react ? "" : "none";
 
         this.showMenu(e, ele, id);
     },
@@ -111,6 +112,10 @@ const contextFunc = {
                 })
             break;
             case "add_reaction":
+                const chnl = vars.chat.chnl;
+                if(chnl){
+                    if(!vars.realm.chnlPerms[chnl].react) return uiFunc.uiMsg(translateFunc.get("You can't react in this channel") + "!");
+                }
                 messFunc.emocjiPopup((e) => {
                     if(!e) return;
                     socket.emit("message.react", vars.chat.to, id, e);

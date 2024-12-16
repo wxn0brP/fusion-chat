@@ -238,6 +238,7 @@ const messFunc = {
     },
 
     sendFile(f){
+        // TODO add check permissions about sending files
         if(f){
             read(f);
         }else{

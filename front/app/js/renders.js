@@ -247,7 +247,9 @@ const renderFunc = {
                 if(type == "text" || type == "realm_event" || type == "open_event"){
                     coreFunc.changeChnl(cid);
                 }else if(type == "voice"){
-                    if(!vars.realm.text.includes(cid)){
+                    const chnl = vars.realm.chnlPerms[cid];
+                    if(!chnl) return;
+                    if(!chnl.perms.write){
                         uiFunc.uiMsg(translateFunc.get("You can't have permission to join this voice channel") + "!");
                         return;
                     }
@@ -289,7 +291,7 @@ const renderFunc = {
     
             channels.forEach(channel => {
                 buildChannel(channel, detail);
-                if(channel.text) vars.realm.text.push(channel.id);
+                vars.realm.chnlPerms[channel.id] = channel.perms;
             });
             root.appendChild(detail);
         }
@@ -301,7 +303,7 @@ const renderFunc = {
             return;
         }
 
-        vars.realm.text = [];
+        vars.realm.chnlPerms = {};
         vars.realm.desc = {};
         categories.forEach(category => {
             buildCategory(category.name, category.chnls, navs__realms__channels);

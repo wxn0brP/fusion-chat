@@ -132,7 +132,7 @@ export async function message_fetch(suser, to, chnl, start, end){
 
     if(!privChat){
         const perm = await getChnlPerm(suser._id, to, chnl);
-        if(!perm.visable) return validE.err("channel is not exist");
+        if(!perm.view) return validE.err("channel is not exist");
     }
 
     const responeAll = await global.db.mess.find(to, { chnl }, {}, { reverse: true, max: end+start });
@@ -156,7 +156,7 @@ export async function message_fetch_id(suser, to, chnl, mess_id){
 
     if(!privChat){
         const perm = await getChnlPerm(suser._id, to, chnl);
-        if(!perm.visable) return validE.err("channel is not exist");
+        if(!perm.view) return validE.err("channel is not exist");
     }
 
     const res = await global.db.mess.findOne(to, { _id: mess_id });
@@ -212,8 +212,13 @@ export async function message_react(suser, realm, msgId, react){
         const p2 = realm.replace("$", "");
         toM = combinateId(p1, p2);
     }
+
     const msg = await global.db.mess.findOne(toM, { _id: msgId });
     if(!msg) return validE.err("msg does not exist");
+
+    const chnl = msg.chnl;
+    const perm = await global.getChnlPerm(suser._id, toM, chnl);
+    if(!perm.react) return validE.err("not authorized");
 
     const reacts = msg.reacts || {};
     if(!reacts[react]) reacts[react] = [];
@@ -310,36 +315,6 @@ export async function message_fetch_pinned(suser, realm, chnl){
     }, { chnl });
 
     return { err: false, res };
-}
-
-global.getChnlPerm = async function(user, realm, chnl){
-    const permsSys = new permissionSystem(realm);
-    const channel = await global.db.realmConf.findOne(realm, { chid: chnl });
-    if(!channel) return {
-        visable: false,
-        text: false
-    };
-
-    const userRoles = await permsSys.getUserRolesSorted(user);
-    const alt =
-        channel.rp.length == 0 ||
-        await permsSys.canUserPerformAction(user, Permissions.admin);
-
-    const visables = [];
-    const texts = [];
-    channel.rp.forEach(rp => {
-        const [id, p] = rp.split("/");
-        if(p == "visable") visables.push(id);
-        if(p == "text") texts.push(id);
-    });
-
-    const visable = alt || visables.some(id => userRoles.includes(id));
-    const text = alt || texts.some(id => userRoles.includes(id));
-
-    return {
-        visable,
-        text
-    };
 }
 
 function filterMessages(query, mess){
