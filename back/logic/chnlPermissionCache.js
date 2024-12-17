@@ -150,10 +150,16 @@ export const permissionFlags = Object.freeze({
 });
 
 global.getChnlPerm = async function (user, realm, chnl){
+    const cached = cache.get(generateCacheKey(realm, chnl, user));
+    if(cached) return mapPermissionsToFlags(cached);
+
     const permSys = new PermissionSystem(realm);
     const admin = await permSys.canUserPerformAction(user, rolePermissions.admin);
     const perms = admin ? -1 : await permissionCache.getPermissions(realm, chnl, user);
+    return mapPermissionsToFlags(perms);
+}
 
+export function mapPermissionsToFlags(perms){
     const allPerms = {};
     const keys = Object.keys(permissionFlags);
     keys.forEach(k => {
