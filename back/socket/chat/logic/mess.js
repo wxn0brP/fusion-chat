@@ -5,6 +5,7 @@ import Permissions from "../../../logic/permission-system/permBD.js";
 import { extractTimeFromId } from "../../../logic/utils.js";
 import messageSearchData from "../valid/messageSearch.js";
 import ValidError from "../../../logic/validError.js";
+import { realm_thread_delete } from "./realms.js";
 
 const messageSearchShema = valid.objAjv(messageSearchData);
 
@@ -79,9 +80,8 @@ export async function message_delete(suser, toM, _id){
     }else{
         sendToChatUsers(toM, "message.delete", _id);
         const threads = await global.db.realmData.find(to, { reply: _id });
-        await global.db.realmData.removeOne(to, { reply: _id });
         for(const thread of threads){
-            sendToChatUsers(toM, "realm.thread.delete", thread._id);
+            await realm_thread_delete(suser, toM, thread._id);
         }
     }
 
@@ -110,6 +110,14 @@ export async function messages_delete(suser, toM, ids){
             return validE.err("not authorized");
     }
 
+    if(!privChat){
+        for(const mess of messages){
+            const threads = await global.db.realmData.find(to, { reply: mess._id });
+            for(const thread of threads){
+                await realm_thread_delete(suser, toM, thread._id);
+            }
+        }
+    }
     await global.db.mess.remove(to, { $in: { _id: ids } });
     if(privChat){
         sendToSocket(suser._id,             "messages.delete", ids);

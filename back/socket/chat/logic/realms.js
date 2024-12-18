@@ -297,7 +297,7 @@ export async function realm_thread_delete(suser, realmId, threadId){
 
     await global.db.realmData.removeOne(realmId, { _id: threadId });
     await global.db.realmConf.updateOne(realmId, { chid: thread.thread }, (data, ctx) => {
-        data.threads = (data.threads || []).filter(id => id != ctx._id);
+        data.threads = (data.threads || []).filter(id => id !== ctx._id).filter(Boolean);
         return data; 
     }, false);
     await global.db.mess.remove(realmId, { chnl: "&"+threadId });
