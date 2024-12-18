@@ -165,5 +165,19 @@ const uiFunc = {
         div.fadeIn(() => {
             textarea.select();
         });
+    },
+
+    async createThread(messId=null){
+        const { to, chnl } = vars.chat;
+        if(!to || !chnl) return;
+        if(to.startsWith("$")) return;
+        if(!vars.realm.chnlPerms[chnl]?.threadCreate) return;
+
+        const name = await uiFunc.prompt("Name of the thread");
+        if(!name) return;
+
+        socket.emit("realm.thread.create", to, chnl, name, messId, () => {
+            socket.emit("realm.thread.list", to, chnl);
+        });
     }
 }

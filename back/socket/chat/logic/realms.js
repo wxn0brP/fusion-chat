@@ -250,3 +250,70 @@ export async function realm_event_channel_list(suser, realmId){
     });
     return { err: false, res: channels };
 }
+
+export async function realm_thread_create(suser, realmId, channelId, name, replyMsgId=null){
+    const validE = new ValidError("realm.thread.create");
+    if(!valid.id(realmId)) return validE.valid("realmId");
+    if(!valid.id(channelId)) return validE.valid("channelId");
+    if(!valid.str(name, 0, 30)) return validE.valid("name");
+    if(replyMsgId && !valid.id(replyMsgId)) return validE.valid("replyMsgId");
+
+    const perms = await global.getChnlPerm(suser._id, realmId, channelId);
+    if(!perms.threadCreate) return validE.err("You don't have permission to edit this server");
+
+    const threadObj = {
+        thread: channelId,
+        name,
+        author: suser._id
+    }
+    if(replyMsgId) threadObj.reply = replyMsgId;
+
+    const thread = await global.db.realmData.add(realmId, threadObj, true);
+    await global.db.realmConf.updateOne(realmId, { chid: thread.thread }, (data, ctx) => {
+        data.threads = data.threads || [];
+        data.threads.push(ctx._id);
+        return data; 
+    }, false);
+
+    return { err: false, res: thread._id };
+}
+
+export async function realm_thread_delete(suser, realmId, threadId){
+    const validE = new ValidError("realm.thread.delete");
+    if(!valid.id(realmId)) return validE.valid("realmId");
+    if(!valid.id(threadId)) return validE.valid("threadId");
+
+    const perms = await global.getChnlPerm(suser._id, realmId, threadId);
+    if(!perms.threadCreate) return validE.err("You don't have permission to edit this server");
+    
+    const thread = await global.db.realmData.findOne(realmId, { _id: threadId });
+    if(!thread) return validE.err("thread does not exist");
+
+    if(thread.author != suser._id){
+        const permSys = new permissionSystem(realmId);
+        const canAdmin = await permSys.canUserPerformAction(suser._id, Permissions.admin);
+        if(!canAdmin) return validE.err("you are not the author"); // if admin, can delete any thread
+    }
+
+    await global.db.realmData.removeOne(realmId, { _id: threadId });
+    await global.db.realmConf.updateOne(realmId, { chid: thread.thread }, (data, ctx) => {
+        data.threads = (data.threads || []).filter(id => id != ctx._id);
+        return data; 
+    }, false);
+    await global.db.mess.remove(realmId, { chnl: "&"+threadId });
+    global.sendToChatUsers(realmId, "realm.thread.delete", threadId);
+
+    return { err: false };
+}
+
+export async function realm_thread_list(suser, realmId, channelId){
+    const validE = new ValidError("realm.thread.list");
+    if(!valid.id(realmId)) return validE.valid("realmId");
+    if(!valid.id(channelId)) return validE.valid("channelId");
+
+    const perms = await global.getChnlPerm(suser._id, realmId, channelId);
+    if(!perms.threadView) return validE.err("You don't have permission to edit this server");
+
+    const threads = await global.db.realmData.find(realmId, { thread: channelId });
+    return { err: false, res: threads };
+}

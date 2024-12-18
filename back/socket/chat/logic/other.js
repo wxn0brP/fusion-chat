@@ -1,4 +1,4 @@
-import valid from "../../../logic/validData.js";
+import valid, { validChannelId } from "../../../logic/validData.js";
 import ogs from "open-graph-scraper";
 import ogsToEmbed from "../../../logic/ogToEmbed.js";
 import sendMessage from "../../../logic/sendMessage.js";
@@ -26,10 +26,10 @@ export async function get_ogs(link){
 
 export async function send_embed_og(suser, to, chnl, link){
     const validE = new ValidError("send.embed.og");
-    if(!valid.id(to)) return validE.valid("to");
-    if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
-    if(!valid.str(link, 0, 300)) return validE.valid("link");
-    if(!/^https?:\/\//.test(link)) return validE.valid("link");
+    if(!valid.id(to))               return validE.valid("to");
+    if(!validChannelId(chnl))       return validE.valid("chnl");
+    if(!valid.str(link, 0, 300))    return validE.valid("link");
+    if(!/^https?:\/\//.test(link))  return validE.valid("link");
 
     const embed = await ogsToEmbed(link);
     if(!embed) return validE.err("ogToEmbed error");
@@ -51,10 +51,10 @@ export async function send_embed_og(suser, to, chnl, link){
 
 export async function send_embed_data(suser, to, chnl, embed){
     const validE = new ValidError("send.embed.data");
-    if(!valid.id(to)) return validE.valid("to");
-    if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
+    if(!valid.id(to))           return validE.valid("to");
+    if(!validChannelId(chnl))   return validE.valid("chnl");
+    if(!embedDataShema(embed))  return validE.valid("embed", embedDataShema.errors);
 
-    if(!embedDataShema(embed)) return validE.valid("embed", embedDataShema.errors);
     const result = await sendMessage(
         {
             to, chnl, msg: "Embed",

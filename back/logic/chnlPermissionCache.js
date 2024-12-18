@@ -147,6 +147,9 @@ export const permissionFlags = Object.freeze({
     write: 1 << 1,
     file: 1 << 2,
     react: 1 << 3,
+    threadCreate: 1 << 4,
+    threadView: 1 << 5,
+    threadWrite: 1 << 6,
 });
 
 global.getChnlPerm = async function (user, realm, chnl){

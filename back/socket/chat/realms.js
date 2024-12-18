@@ -9,6 +9,9 @@ import {
     realm_event_channel_unsubscribe,
     realm_event_channel_available,
     realm_event_channel_list,
+    realm_thread_create,
+    realm_thread_delete,
+    realm_thread_list,
 } from "./logic/realms.js";
 
 export default (socket) => {
@@ -107,6 +110,37 @@ export default (socket) => {
             if(err) return socket.emit(...err);
             if(cb) cb(res);
             else socket.emit("realm.event.channel.list", res);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.thread.create", 1000, async (realmId, channelId, name, replyMsgId=null, cb) => {
+        try{
+            const { err, res } = await realm_thread_create(socket.user, realmId, channelId, name, replyMsgId);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("realm.thread.create", res);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.thread.delete", 1000, async (realmId, channelId, threadId) => {
+        try{
+            const { err } = await realm_thread_delete(socket.user, realmId, channelId, threadId);
+            if(err) return socket.emit(...err);
+        }catch(e){
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.thread.list", 1000, async (realmId, channelId, cb) => {
+        try{
+            const { err, res } = await realm_thread_list(socket.user, realmId, channelId);
+            if(err) return socket.emit(...err);
+            if(cb) cb(res);
+            else socket.emit("realm.thread.list", res);
         }catch(e){
             socket.logError(e);
         }

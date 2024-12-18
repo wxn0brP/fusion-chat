@@ -68,6 +68,7 @@ const coreFunc = {
             navs__realms__users.style.display = "none";
             socket.emit("realm.setup", id);
             socket.emit("realm.users.sync", id);
+            if(chnl) socket.emit("realm.thread.list", id, chnl);
         }
         coreFunc.markSelectedChat();
     },
@@ -77,14 +78,33 @@ const coreFunc = {
         vars.chat.actMess = 0;
 
         document.querySelectorAll(".channel_textActive").forEach(e => e.classList.remove("channel_textActive"));
-        document.querySelector("#channel_"+id).classList.add("channel_textActive");
+        document.querySelector("#channel_"+utils.escape(id))?.classList?.add("channel_textActive");
         messages_nav__realm__description.innerHTML = vars.realm.desc[id] || "";
         
         coreFunc.loadChat();
         socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
+        if(!id.startsWith("&")){
+            setTimeout(() => {
+                socket.emit("realm.thread.list", vars.chat.to, vars.chat.chnl);
+            }, 100); // wait for load chat
+        }
 
-        const chnl = vars.realm.chnlPerms[id];
-        if(chnl?.write){
+        let permToWrite = false;
+        if(id.startsWith("&")){
+            const tid = id.substring(1);
+            const thread = vars.realm.threads.find(t => t._id == tid);
+            if(thread){
+                const chnl = vars.realm.chnlPerms[thread.thread];
+                permToWrite = chnl.threadWrite;
+            }
+        }else{
+            const chnl = vars.realm.chnlPerms[id];
+            if(chnl){
+                permToWrite = chnl.write;
+            }
+        }
+
+        if(permToWrite){
             messInput.placeholder = translateFunc.get("Write message here") + "...";
             messInput.disabled = false;
         }else{

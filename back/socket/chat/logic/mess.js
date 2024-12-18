@@ -1,5 +1,5 @@
 import { combinateId } from "../../../logic/chatMgmt.js";
-import valid from "../../../logic/validData.js";
+import valid, { validChannelId } from "../../../logic/validData.js";
 import permissionSystem from "../../../logic/permission-system/index.js";
 import Permissions from "../../../logic/permission-system/permBD.js";
 import { extractTimeFromId } from "../../../logic/utils.js";
@@ -78,6 +78,11 @@ export async function message_delete(suser, toM, _id){
         sendToSocket(toM.replace("$", ""),  "message.delete", _id);
     }else{
         sendToChatUsers(toM, "message.delete", _id);
+        const threads = await global.db.realmData.find(to, { reply: _id });
+        await global.db.realmData.removeOne(to, { reply: _id });
+        for(const thread of threads){
+            sendToChatUsers(toM, "realm.thread.delete", thread._id);
+        }
     }
 
     return { err: false };
@@ -118,10 +123,10 @@ export async function messages_delete(suser, toM, ids){
 
 export async function message_fetch(suser, to, chnl, start, end){
     const validE = new ValidError("message.fetch");
-    if(!valid.id(to))                           return validE.valid("to");
-    if(!valid.idOrSpecyficStr(chnl, ["main"]))  return validE.valid("chnl");
-    if(!valid.num(start, 0))                    return validE.valid("start");
-    if(!valid.num(end, 0))                      return validE.valid("end");
+    if(!valid.id(to))           return validE.valid("to");
+    if(!validChannelId(chnl))   return validE.valid("chnl");
+    if(!valid.num(start, 0))    return validE.valid("start");
+    if(!valid.num(end, 0))      return validE.valid("end");
 
     let privChat = to.startsWith("$");
     if(privChat){
@@ -143,9 +148,9 @@ export async function message_fetch(suser, to, chnl, start, end){
 
 export async function message_fetch_id(suser, to, chnl, mess_id){
     const validE = new ValidError("message.fetch.id");
-    if(!valid.id(to))       return validE.valid("to");
-    if(!valid.id(mess_id))  return validE.valid("mess_id");
-    if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
+    if(!valid.id(to))           return validE.valid("to");
+    if(!valid.id(mess_id))      return validE.valid("mess_id");
+    if(!validChannelId(chnl))   return validE.valid("chnl");
 
     let privChat = to.startsWith("$");
     if(privChat){
@@ -165,8 +170,8 @@ export async function message_fetch_id(suser, to, chnl, mess_id){
 
 export async function message_markAsRead(suser, to, chnl, mess_id){
     const validE = new ValidError("message.markAsRead");
-    if(!valid.id(to)) return validE.valid("to");
-    if(!valid.idOrSpecyficStr(chnl, ["main"]))      return validE.valid("chnl");
+    if(!valid.id(to))                               return validE.valid("to");
+    if(!validChannelId(chnl))                       return validE.valid("chnl");
     if(!valid.idOrSpecyficStr(mess_id, ["last"]))   return validE.valid("mess_id");
 
     const firendChat = to.startsWith("$");
@@ -244,10 +249,9 @@ export async function message_react(suser, realm, msgId, react){
 
 export async function message_search(suser, realm, chnl, query){
     const validE = new ValidError("message.search");
-    if(!valid.id(realm)) return validE.valid("realm");
-    if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
-    if(!messageSearchShema(query))
-        return validE.valid("search", messageSearchShema.errors);
+    if(!valid.id(realm))            return validE.valid("realm");
+    if(!validChannelId(chnl))       return validE.valid("chnl");
+    if(!messageSearchShema(query))  return validE.valid("search", messageSearchShema.errors);
 
     const priv = realm.startsWith("$");
     if(priv){
@@ -266,10 +270,10 @@ export async function message_search(suser, realm, chnl, query){
 
 export async function message_pin(suser, realm, chnl, msgId, pin){
     const validE = new ValidError("message.pin");
-    if(!valid.id(realm)) return validE.valid("realm");
-    if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
-    if(!valid.id(msgId)) return validE.valid("msgId");
-    if(!valid.bool(pin)) return validE.valid("pin");
+    if(!valid.id(realm))        return validE.valid("realm");
+    if(!validChannelId(chnl))   return validE.valid("chnl");
+    if(!valid.id(msgId))        return validE.valid("msgId");
+    if(!valid.bool(pin))        return validE.valid("pin");
     
     const priv = realm.startsWith("$");
     let chat = realm;
@@ -299,8 +303,8 @@ export async function message_pin(suser, realm, chnl, msgId, pin){
 
 export async function message_fetch_pinned(suser, realm, chnl){
     const validE = new ValidError("message.get.pinned");
-    if(!valid.id(realm)) return validE.valid("realm");
-    if(!valid.idOrSpecyficStr(chnl, ["main"])) return validE.valid("chnl");
+    if(!valid.id(realm))        return validE.valid("realm");
+    if(!validChannelId(chnl))   return validE.valid("chnl");
     
     const priv = realm.startsWith("$");
     if(priv){

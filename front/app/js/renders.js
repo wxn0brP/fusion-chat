@@ -403,8 +403,7 @@ const renderFunc = {
     },
 
     _serverUserStatus(id){
-        const escapedId = id.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-        const ele = document.querySelector("#user_status_"+escapedId);
+        const ele = document.querySelector("#user_status_"+utils.escape(id));
         if(!ele) return;
         const data = vars.apisTemp.user_status[id];
         if(!data) return;

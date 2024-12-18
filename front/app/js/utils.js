@@ -73,5 +73,9 @@ const utils = {
             default:
             break;
         }
+    },
+
+    escape(selector){
+        return selector.replace(/([.&*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
     }
 }

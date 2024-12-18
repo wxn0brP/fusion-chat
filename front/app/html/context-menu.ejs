@@ -7,7 +7,8 @@
         { text: "Copy ID", action: "copy_id" },
         { text: "Add Reaction", action: "add_reaction", dataId: "add_reaction" },
         { text: "Pin Message", action: "pin", dataId: "pin" },
-        { text: "Unpin Message", action: "unpin", dataId: "unpin" }
+        { text: "Unpin Message", action: "unpin", dataId: "unpin" },
+        { text: "Create Thread", action: "create_thread", dataId: "create_thread" }
     ],
     realm: [
         { text: "Mute", action: "mute" },
@@ -17,7 +18,12 @@
     ],
     channel: [
         { text: "Subscribe", action: "subscribe", dataId: "subscribe" },
-        { text: "Copy ID", action: "copy_id" }
+        { text: "Copy ID", action: "copy_id" },
+        { text: "Create Thread", action: "create_thread", dataId: "create_thread" },
+    ],
+    thread: [
+        { text: "Copy ID", action: "copy_id" },
+        { text: "Delete", action: "delete", style: "color: red", dataId: "delete" }
     ]
 }; %>
   
@@ -39,3 +45,4 @@
 <%= renderMenu("mesage_context_menu", menuItems.message, "message") %>
 <%= renderMenu("realm_context_menu", menuItems.realm, "realm") %>
 <%= renderMenu("channel_context_menu", menuItems.channel, "channel") %>
+<%= renderMenu("thread_context_menu", menuItems.thread, "thread") %>

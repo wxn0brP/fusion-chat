@@ -21,6 +21,7 @@ const contextMenu = {
         this.getByDataIdStyle(ele, "delete").display = opts.delete ? "" : "none";
         this.getByDataIdStyle(ele, "edit").display = opts.edit ? "" : "none";
         this.getByDataIdStyle(ele, "add_reaction").display = vars.realm.chnlPerms[vars.chat.chnl]?.react ? "" : "none";
+        this.getByDataIdStyle(ele, "create_thread").display = vars.realm.chnlPerms[vars.chat.chnl]?.threadCreate ? "" : "none";
 
         this.showMenu(e, ele, id);
     },
@@ -38,8 +39,18 @@ const contextMenu = {
         const ele = document.querySelector("#channel_context_menu");
 
         this.getByDataIdStyle(ele, "subscribe").display = ["realm_event", "open_event"].includes(opts.type) ? "" : "none";
+        this.getByDataIdStyle(ele, "create_thread").display = vars.realm.chnlPerms[vars.chat.chnl]?.threadCreate ? "" : "none";
 
         this.showMenu(e, ele, id);
+    },
+
+    thread(e, thread){
+        const ele = document.querySelector("#thread_context_menu");
+
+        const permToDelete = vars.realm.chnlPerms[thread.thread]?.threadDelete || vars.user._id === thread.author;
+        this.getByDataIdStyle(ele, "delete").display = permToDelete ? "" : "none";
+
+        this.showMenu(e, ele, thread._id);
     },
 
     menuClickEvent(div, call){
@@ -124,6 +135,9 @@ const contextFunc = {
             case "pin":
             case "unpin":
                 socket.emit("message.pin", vars.chat.to, vars.chat.chnl, id, type === "pin");
+            break;
+            case "create_thread":
+                uiFunc.createThread(id);
             break;
         }
     },
@@ -243,6 +257,37 @@ const contextFunc = {
             break;
             case "subscribe":
                 subscribeEventChnl.show(vars.chat.to, id);
+            break;
+            case "create_thread":
+                uiFunc.createThread();
+            break;
+        }
+    },
+
+    thread(type){
+        const id = document.querySelector("#thread_context_menu").getAttribute("_id");
+        switch(type){
+            case "copy_id":
+                utils.writeToClipboard(id).then(ok => {
+                    if(ok) uiFunc.uiMsg(translateFunc.get("Copied thread ID") + "!");
+                });
+            break;
+            case "delete":
+                const conf = confirm(translateFunc.get("Are you sure you want to delete this thread?"));
+                if(!conf) return;
+
+                const thread = vars.realm.threads.find(t => t._id == id);
+                if(!thread) return;
+
+                const chnl = vars.realm.chnlPerms[thread.thread];
+                if(!chnl.threadDelete && vars.user._id !== thread.author) return;
+                socket.emit("realm.thread.delete", vars.chat.to, id);
+
+                document.querySelector("#channel_\\&"+thread._id)?.remove();
+                document.querySelector("#thread__"+thread._id)?.remove();
+                if(vars.chat.chnl == "&"+thread._id){
+                    coreFunc.changeChnl(thread.thread);
+                }
             break;
         }
     }

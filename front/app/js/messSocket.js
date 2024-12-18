@@ -179,3 +179,37 @@ socket.on("message.search", (data) => {
 socket.on("message.fetch.pinned", (data) => {
     vars.chat.pinned = data;
 });
+
+socket.on("realm.thread.list", (data) => {
+    vars.realm.threads = data;
+    const chnlDiv = document.querySelector("#channel_"+vars.chat.chnl);
+    if(!chnlDiv) return;
+
+    data.forEach(t => {
+        const exitsts = document.querySelector("#channel_\\&"+t._id);
+        if(!exitsts){
+            const div = document.createElement("div");
+            div.classList.add("channel_text");
+            div.id = "channel_&"+t._id;
+            div.style.paddingLeft = "2.4rem";
+            div.innerHTML = `|- ${t.name}`;
+            div.addEventListener("click", () => {
+                coreFunc.changeChnl("&"+t._id);
+            });
+            chnlDiv.insertAdjacentElement("afterend", div);
+            contextMenu.menuClickEvent(div, (e) => {
+                contextMenu.thread(e, t);
+            })
+        }
+
+        if(t.reply){
+            const mess = document.querySelector("#mess__"+t.reply);
+            messFunc.thread(t, mess);
+        }
+    })
+});
+
+socket.on("realm.thread.delete", (id) => {
+    document.querySelector("#channel_\\&"+id)?.remove();
+    document.querySelector("#thread__"+id)?.remove();
+});

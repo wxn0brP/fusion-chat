@@ -272,4 +272,7 @@ SettingsServerManager.prototype.vars_channelsFlags = () => [
     translateFunc.get("Write messages"),
     translateFunc.get("Send files"),
     translateFunc.get("Add reactions"),
+    translateFunc.get("Thread create"),
+    translateFunc.get("Thread view"),
+    translateFunc.get("Thread write messages"),
 ]

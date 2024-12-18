@@ -125,6 +125,43 @@ const valid = {
     },
 
     /**
+     * Check if a value is a valid id, or if it starts with any of the provided prefixes
+     * followed by a valid id.
+     *
+     * @function
+     * @param {string} data - The value to validate.
+     * @param {string[]} prefixes - List of prefixes that are allowed.
+     * @returns {boolean} True if the value is a valid id or starts with a valid prefix
+     * followed by a valid id, false otherwise.
+     */
+    idWithPrefix(data, prefixes=[]){
+        for(const prefix of prefixes){
+            if(prefix === false) return this.id(data);
+            if(data.startsWith(prefix)){
+                const remainingText = data.slice(prefix.length);
+                return this.id(remainingText);   
+            }
+        }
+        return false;
+    },
+
+    /**
+     * Check if a value is a valid id, or if it starts with any of the provided prefixes
+     * followed by a valid id, or if it is included in a list of specific strings.
+     *
+     * @function
+     * @param {string} data - The value to validate.
+     * @param {string[]} prefixes - List of prefixes that are allowed.
+     * @param {string[]} strs - List of specific strings that are allowed.
+     * @returns {boolean} True if the value is a valid id, or starts with a valid prefix
+     * followed by a valid id, or is included in the list of specific strings, false otherwise.
+     */
+    idWithPrefixOrSpecyficStr(data, prefixes=[], strs=[]){
+        if(this.idWithPrefix(data, prefixes)) return true;
+        return this.idOrSpecyficStr(data, strs);
+    },
+
+    /**
      * Check if a value is a boolean.
      *
      * @function
@@ -177,3 +214,7 @@ ajv.addKeyword({
         return false;
     }
 });
+
+export function validChannelId(data){
+    return valid.idWithPrefixOrSpecyficStr(data, ["&"], ["main"]);
+}

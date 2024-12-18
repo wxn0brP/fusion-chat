@@ -193,6 +193,14 @@ main{
 
     }
     
+    .thread{
+        cursor: pointer;
+        color: var(--txt);
+        margin-left: 2.4rem;
+        &:hover{
+            color: var(--accent);
+        }
+    }
 }
 
 :where(#replyClose, #editClose){

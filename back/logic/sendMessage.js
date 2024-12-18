@@ -1,5 +1,5 @@
 import { chatExsists as _chatExsists, combinateId } from "./chatMgmt.js";
-import valid from "./validData.js";
+import valid, { validChannelId } from "./validData.js";
 import ValidError from "./validError.js";
 
 /**
@@ -39,7 +39,7 @@ export default async function sendMessage(req, user, options={}){
     }
 
     if(!valid.id(to))                                   return validE.valid("to");
-    if(!valid.idOrSpecyficStr(chnl, ["main"]))          return validE.valid("chnl");
+    if(!validChannelId(chnl))                           return validE.valid("chnl");
     if(!valid.str(msg, options.minMsg, options.maxMsg)) return validE.valid("msg");
 
     //optional
@@ -68,8 +68,9 @@ export default async function sendMessage(req, user, options={}){
 
     if(!privChat && !options.system){
         const perm = await global.getChnlPerm(user._id, to, chnl); 
-        if(!perm.view) return validE.err("channel is not exists");
-        if(!perm.write) return validE.err("not perm to write");
+        if(!perm.view)                                  return validE.err("channel is not exists");
+        if(!perm.write)                                 return validE.err("not perm to write");
+        if(chnl.startsWith("&") && !perm.threadWrite)   return validE.err("not perm to write");
     }
 
     let data = {

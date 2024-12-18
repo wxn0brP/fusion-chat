@@ -300,6 +300,22 @@ const messFunc = {
         e.preventDefault();
         const t = e.target;
         t.classList.toggle("spoiler__show");
+    },
+
+    thread(thread, messDiv){
+        if(!thread) return;
+        const { _id, name, author } = thread;
+
+        const div = document.createElement("div");
+        div.classList.add("thread");
+        div.id = "thread__"+_id;
+        div.innerHTML = `
+            |- <span class="thread__author">${apis.www.changeUserID(author)}</span> |  
+            <span class="thread__name">${name}</span>`;
+        div.addEventListener("click", () => {
+            coreFunc.changeChnl("&"+_id);
+        });
+        messDiv.add(div);
     }
 }
 
