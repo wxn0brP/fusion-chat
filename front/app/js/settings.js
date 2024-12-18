@@ -16,7 +16,13 @@ const settingsFunc = {
             id,
             settingDiv,
             (data) => {
-                socket.emit("realm.settings.set", id, data);
+                return new Promise(res => {
+                    socket.emit("realm.settings.set", id, data, (...errs) => {
+                        if(errs.length == 1 && errs[0] === false) return res(true);
+                        res(false);
+                        debugFunc.msg(...errs);
+                    });
+                })
             },
             () => {}
         );

@@ -19,10 +19,14 @@ export default (socket) => {
         }
     });
 
-    socket.onLimit("realm.settings.set", 5_000, async (id, data) => {
+    socket.onLimit("realm.settings.set", 5_000, async (id, data, cb) => {
         try{
             const { err } = await realm_settings_set(socket.user, id, data);
-            if(err) return socket.emit(...err);
+            if(cb){
+                if(!err) return cb(false);
+                return cb(...err);
+            }
+            else if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
