@@ -6,6 +6,7 @@ import { extractTimeFromId } from "../../../logic/utils.js";
 import messageSearchData from "../valid/messageSearch.js";
 import ValidError from "../../../logic/validError.js";
 import { realm_thread_delete } from "./realms.js";
+import getChnlPerm from "../../../logic/chnlPermissionCache.js";
 
 const messageSearchShema = valid.objAjv(messageSearchData);
 

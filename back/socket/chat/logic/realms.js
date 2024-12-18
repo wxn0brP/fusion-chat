@@ -4,6 +4,7 @@ import Permissions from "../../../logic/permission-system/permBD.js";
 import { existsSync } from "fs";
 import ValidError from "../../../logic/validError.js";
 import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
+import getChnlPerm from "../../../logic/chnlPermissionCache.js";
 
 export async function realm_setup(suser, id){
     const validE = new ValidError("realm.setup");
@@ -25,7 +26,7 @@ export async function realm_setup(suser, id){
         let chnls = channels.filter(c => c.category == category.cid);
         chnls = chnls.sort((a, b) => a.i - b.i);
         chnls = await Promise.all(chnls.map(async c => {
-            const perms = await global.getChnlPerm(suser._id, id, c.chid);
+            const perms = await getChnlPerm(suser._id, id, c.chid);
             if(!perms) return null;
 
             if(!perms.view) return null;
@@ -258,7 +259,7 @@ export async function realm_thread_create(suser, realmId, channelId, name, reply
     if(!valid.str(name, 0, 30)) return validE.valid("name");
     if(replyMsgId && !valid.id(replyMsgId)) return validE.valid("replyMsgId");
 
-    const perms = await global.getChnlPerm(suser._id, realmId, channelId);
+    const perms = await getChnlPerm(suser._id, realmId, channelId);
     if(!perms.threadCreate) return validE.err("You don't have permission to edit this server");
 
     const threadObj = {
@@ -283,7 +284,7 @@ export async function realm_thread_delete(suser, realmId, threadId){
     if(!valid.id(realmId)) return validE.valid("realmId");
     if(!valid.id(threadId)) return validE.valid("threadId");
 
-    const perms = await global.getChnlPerm(suser._id, realmId, threadId);
+    const perms = await getChnlPerm(suser._id, realmId, threadId);
     if(!perms.threadCreate) return validE.err("You don't have permission to edit this server");
     
     const thread = await global.db.realmData.findOne(realmId, { _id: threadId });
@@ -311,7 +312,7 @@ export async function realm_thread_list(suser, realmId, channelId){
     if(!valid.id(realmId)) return validE.valid("realmId");
     if(!valid.id(channelId)) return validE.valid("channelId");
 
-    const perms = await global.getChnlPerm(suser._id, realmId, channelId);
+    const perms = await getChnlPerm(suser._id, realmId, channelId);
     if(!perms.threadView) return validE.err("You don't have permission to edit this server");
 
     const threads = await global.db.realmData.find(realmId, { thread: channelId });

@@ -1,6 +1,7 @@
 import { chatExsists as _chatExsists, combinateId } from "./chatMgmt.js";
 import valid, { validChannelId } from "./validData.js";
 import ValidError from "./validError.js";
+import getChnlPerm from "./chnlPermissionCache.js";
 
 /**
  * @async
@@ -67,7 +68,7 @@ export default async function sendMessage(req, user, options={}){
     }
 
     if(!privChat && !options.system){
-        const perm = await global.getChnlPerm(user._id, to, chnl); 
+        const perm = await getChnlPerm(user._id, to, chnl); 
         if(!perm.view)                                  return validE.err("channel is not exists");
         if(!perm.write)                                 return validE.err("not perm to write");
         if(chnl.startsWith("&") && !perm.threadWrite)   return validE.err("not perm to write");

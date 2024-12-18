@@ -140,7 +140,7 @@ class PermissionCache{
 }
 
 const permissionCache = new PermissionCache();
-export default permissionCache;
+export { permissionCache };
 
 export const permissionFlags = Object.freeze({
     view: 1 << 0,
@@ -152,7 +152,7 @@ export const permissionFlags = Object.freeze({
     threadWrite: 1 << 6,
 });
 
-global.getChnlPerm = async function (user, realm, chnl){
+export default async function getChnlPerm(user, realm, chnl){
     const cached = cache.get(generateCacheKey(realm, chnl, user));
     if(cached) return mapPermissionsToFlags(cached);
 
