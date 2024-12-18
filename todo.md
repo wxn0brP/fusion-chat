@@ -38,6 +38,10 @@
    - [X] ~~*send message*~~ [2024-12-16]
    - [X] ~~*channel view*~~ [2024-12-16]
 
+10. **Add cache manager**
+   - [ ] permission system
+   
+
 ## Additional Considerations
 - [ ] Implement permission checks for all new commands and channels.
 - [ ] Create a feedback mechanism for users to report issues or suggest improvements.
