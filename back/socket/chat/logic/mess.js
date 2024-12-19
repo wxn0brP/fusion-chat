@@ -231,7 +231,7 @@ export async function message_react(suser, realm, msgId, react){
     if(!msg) return validE.err("msg does not exist");
 
     const chnl = msg.chnl;
-    const perm = await global.getChnlPerm(suser._id, toM, chnl);
+    const perm = await getChnlPerm(suser._id, toM, chnl);
     if(!perm.react) return validE.err("not authorized");
 
     const reacts = msg.reacts || {};
