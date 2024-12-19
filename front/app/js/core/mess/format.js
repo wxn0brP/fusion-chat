@@ -313,16 +313,16 @@ const formatList = {
     },
 
     buildTree(linesWithLevels){
-        const listItemRegex = /^(?:[-*]|\d+[.)]?|[a-zA-Z][.)]?)\s/;
+        const listItemRegex = /^(?:[-*]|\d+[.)]?|[a-zA-Z][.)])\s/;
         const root = [];
         const stack = [{ children: root, lvl: -1 }];
 
         function getBulletType(line){
             const trimmed = line.trim();
             if(/^[-*]\s/.test(trimmed)) return "bullet";
-            if(/^\d+[.)]\s/.test(trimmed)) return "decimal";
-            if(/^[a-z]\.?\s/.test(trimmed)) return "lower-alpha";
-            if(/^[A-Z]\.?\s/.test(trimmed)) return "upper-alpha";
+            if(/^\d[.)]?\s/.test(trimmed)) return "decimal";
+            if(/^[a-z][.)]?\s/.test(trimmed)) return "lower-alpha";
+            if(/^[A-Z][.)]?\s/.test(trimmed)) return "upper-alpha";
             return null;
         }
 
@@ -347,23 +347,28 @@ const formatList = {
     treeToHtml(tree, marginValue, marginUnits){
         let html = "";
         const listMapOl = ["decimal", "lower-alpha", "upper-alpha", "lower-roman", "upper-roman"];
+        let listEnd = true;
 
         function processNode(node, lvl = 0){
             if(node.bulletType === null){
                 html += node.line.trim();
+                listEnd = true;
             }else{
                 const listTag = listMapOl.includes(node.bulletType) ? "ol" : "ul";
                 const [, ...content] = node.line.trim().split(/\s+/);
-                html += `<${listTag}>`;
-                html += `<li style="margin-left: ${marginValue * (lvl + 1)}${marginUnits}">${content}</li>`;
+                if(listEnd) html += `<${listTag} style="list-style-type: ${node.bulletType};">`;
+                html += `<li style="margin-left: ${marginValue * (lvl + 1)}${marginUnits}; list-style-type: ${node.bulletType};">${content}</li>`;
 
                 if(node.children.length > 0){
+                    listEnd = true;
                     node.children.forEach(child => {
                         processNode(child, lvl + 1);
                     });
+                    listEnd = false;
                 }
 
-                html += `</${listTag}>`;
+                if(listEnd) html += `</${listTag}>`;
+                listEnd = false;
             }
         }
 
