@@ -1,18 +1,18 @@
 <nav>
     <div id="realms">
-        <div class="realm" onclick="coreFunc.changeChat('main')">
+        <div class="realm" onclick="magistral.coreFunc.changeChat('main')">
             <img src="/favicon.svg" alt="MAIN" id="realms__main__img">
         </div>
         <hr>
         <div id="realms__content"></div>
         <hr>
-        <div class="realm" onclick="makeRealmDiv.fadeIn()" id="realms__create">+</div>
-        <div class="realm" onclick="voiceHTML.div.fadeIn()" translate id="realms__voice_show" style="display: none;">Voice Show</div>
+        <div class="realm" onclick="magistral.otherHTML.makeRealm.fadeIn()" id="realms__create">+</div>
+        <div class="realm" onclick="magistral.voiceHTML.div.fadeIn()" translate id="realms__voice_show" style="display: none;">Voice Show</div>
     </div>
     <div id="navs">
         <div id="navs__main">
-            <button onclick="buttonFunc.addPriv()" translate class="btn">Add Private Channel</button>
-            <button onclick="voiceFunc.startCall()" translate id="navs__main__call" class="btn">Call</button>
+            <button onclick="magistral.buttonFunc.addPriv()" translate class="btn">Add Private Channel</button>
+            <button onclick="magistral.voiceFunc.startCall()" translate id="navs__main__call" class="btn">Call</button>
             <hr>
             <br />
             <div id="navs__priv"></div>
@@ -28,7 +28,7 @@
             <img src="/assets/hatwoo.svg" alt="">
             <div id="navs__user__name"></div>
             <div id="navs__user__status"></div>
-            <div id="navs__user__setting" onclick="buttonFunc.userSettings()">⚙️</div>
+            <div id="navs__user__setting" onclick="magistral.buttonFunc.userSettings()">⚙️</div>
         </div>
     </div>
 </nav>

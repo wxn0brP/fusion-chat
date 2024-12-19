@@ -3,66 +3,10 @@
     "socket.io",
 ] %>
 
-<% const scripts = [
-    "init",
-    
-    "var",
-    "utils",
-    "debug",
-    "ws",
-    "ws_evt",
-    "apis",
-    "coreFunc",
-    "uiFunc",
-    
-    "contextMenuLib",
-    "swipeLib",
-    "genId",
-    
-    "settingsServerLib",
-    "settingsServer_channels",
-    "settingsServer_meta",
-    "settingsServer_nav",
-    "settingsServer_roles",
-    "settingsServer_save",
-    "settingsServer_users",
-    "settingsServer_emoji",
-    "settingsServer_utils",
-    "settingsServer_webhooks",
-
-    "settingsLib",
-    "settings",
-    "settingsData",
-    
-    "translate",
-    "format",
-    "mess",
-    "messStyle",
-    "messSocket",
-    "messCmd",
-    "mainView",
-    "contextMenu",
-    "buttons",
-    "renders",
-    "voice",
-    "file",
-    "emoji",
-    "media",
-    "stateManager",
-    "perm",
-    "popup",
-    
-    "warning",
-    "start",
-    "features",
-] %>
-
 <div id="scripts" style="display: none;">
     <script src="/core.js"></script>
     <% libs.forEach(script => { %>
         <script src="/libs/<%= script %>.min.js"></script>
     <% }) %>
-    <% scripts.forEach(script => { %>
-        <script src="js/<%= script %>.js"></script>
-    <% }) %>
+    <script type="module" src="js/startApp.js"></script>
 </div>
