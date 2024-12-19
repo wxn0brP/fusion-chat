@@ -4,6 +4,7 @@ hub("messStyle");
 import { messHTML } from "../../var/html.js";
 import utils from "../../utils/utils.js";
 import vars from "../../var/var.js";
+import apis from "../../api/apis.js";
 import { maxMessLen } from "./mess.js";
 
 const messStyle = {
