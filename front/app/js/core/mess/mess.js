@@ -82,7 +82,7 @@ const messFunc = {
         const fromDivTextName = document.createElement("span");
         fromDivTextName.innerHTML = apis.www.changeUserID(data.fr);
         fromDivTextName.classList.add("mess_author_name");
-        if(!["%","^"].includes(data.fr[0])){ // if not system/api
+        if(!["%","^","("].includes(data.fr[0])){ // if not system/api let show profile
             fromDivTextName.addEventListener("click", () => {
                 socket.emit("user.profile", data.fr);
             });
