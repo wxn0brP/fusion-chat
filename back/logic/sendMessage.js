@@ -2,6 +2,8 @@ import { chatExsists as _chatExsists, combinateId } from "./chatMgmt.js";
 import valid, { validChannelId } from "./validData.js";
 import ValidError from "./validError.js";
 import getChnlPerm from "./chnlPermissionCache.js";
+import NodeCache from "node-cache";
+const eventSubscribeCache = new NodeCache();
 
 /**
  * @async
@@ -47,7 +49,7 @@ export default async function sendMessage(req, user, options={}){
     if(req.enc && !valid.str(req.enc, 0, 30))   return validE.valid("enc");
     if(req.res && !valid.id(req.res))           return validE.valid("res");
     if(req.silent && !valid.bool(req.silent))   return validE.valid("silent");
-    
+
     const privChat = to.startsWith("$");
     if(privChat){
         const priv = await global.db.userData.findOne(user._id, { priv: to.replace("$", "") });
@@ -68,7 +70,7 @@ export default async function sendMessage(req, user, options={}){
     }
 
     if(!privChat && !options.system){
-        const perm = await getChnlPerm(user._id, to, chnl); 
+        const perm = await getChnlPerm(user._id, to, chnl);
         if(!perm.view)                                  return validE.err("channel is not exists");
         if(!perm.write)                                 return validE.err("not perm to write");
         if(chnl.startsWith("&") && !perm.threadWrite)   return validE.err("not perm to write");
@@ -85,22 +87,22 @@ export default async function sendMessage(req, user, options={}){
 
     const message = await global.db.mess.add(to, data);
     data._id = message._id;
-    
+
     if(req.silent) data.silent = req.silent || false;
-    
+
     sendToSocket(user._id, "mess", Object.assign({ to: req.to }, data));
 
     if(!privChat){
         const realm = await global.db.realmConf.findOne(to, { _id: "set"});
         const fromMsg = `${realm.name} @${user.name}`;
         data.to = to;
-        
+
         global.db.realmUser.find(to, u => u.u)
         .then(chat => {
-            chat.forEach(async u => {
+                chat.forEach(async u => {
                 u = u.uid;
                 if(u == user._id) return;
-    
+
                 const realm = await global.db.userData.findOne(u, { realm: data.to });
                 if(realm && realm.muted && realm.muted != -1){
                     const muted = realm.muted;
@@ -126,6 +128,8 @@ export default async function sendMessage(req, user, options={}){
                 });
             });
         });
+
+        await eventChnl(to, data);
     }else{
         const toSend = req.to.replace("$","");
         data.to = "$"+user._id;
@@ -139,4 +143,58 @@ export default async function sendMessage(req, user, options={}){
     }
 
     return { err: false };
+}
+
+async function eventChnl(realm, data){
+    const subs = await getSubscribed(realm, data.chnl);
+    if(subs.length == 0) return;
+
+    subs.forEach(async ({ tr, tc }) => {
+        const req = {
+            to: tr,
+            msg: data.msg,
+            chnl: tc,
+        }
+        const user = {
+            _id: combinateId(tr, tc),
+            name: "Event Chnl",
+        }
+        const opts = {
+            system: true,
+            frPrefix: "("
+        }
+        sendMessage(req, user, opts);
+    });
+}
+
+/**
+ * Gets all tr, tc for given realm and chnl.
+ * @param {string} realm - Name of source realm.
+ * @param {string} chnl - Name of source channel.
+ * @returns {Promise<Array<{ tr: string, tc: string }>>} - List of tr, tc.
+ */
+async function getSubscribed(realm, chnl){
+    let realmData = eventSubscribeCache.get(realm);
+
+    if(!realmData){
+        const chnls = await global.db.realmData.find("events.channels", { sr: realm });
+
+        realmData = {};
+        chnls.forEach(({ sr, sc, tr, tc }) => {
+            const key = `${sr}:${sc}`;
+            if(!realmData[key]){
+                realmData[key] = [];
+            }
+            realmData[key].push({ tr, tc });
+        });
+
+        eventSubscribeCache.set(realm, realmData);
+    }
+
+    const key = `${realm}:${chnl}`;
+    return realmData[key] || [];
+}
+
+export function clearEventCache(realm){
+    eventSubscribeCache.del(realm);
 }

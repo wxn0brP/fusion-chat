@@ -5,6 +5,7 @@ import { existsSync } from "fs";
 import ValidError from "../../../logic/validError.js";
 import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
 import getChnlPerm from "../../../logic/chnlPermissionCache.js";
+import { clearEventCache } from "../../../logic/sendMessage.js";
 
 export async function realm_setup(suser, id){
     const validE = new ValidError("realm.setup");
@@ -179,6 +180,7 @@ export async function realm_event_channel_subscribe(suser, sourceRealmId, source
     if(exists) return validE.err("already exists");
     
     await global.db.realmData.add("events.channels", data, false);
+    clearEventCache(targetRealmId);
 
     return { err: false };
 }
@@ -200,6 +202,8 @@ export async function realm_event_channel_unsubscribe(suser, sourceRealmId, sour
         tr: targetRealmId,
         tc: targetChannelId
     });
+
+    clearEventCache(targetRealmId);
 
     return { err: false };
 }

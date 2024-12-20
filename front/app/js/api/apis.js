@@ -35,7 +35,12 @@ const apis = {
                 const data = apis.www.getInServer("/api/id/bot?id="+id.replace("^","")+"&chat="+chat).name + " (BOT)";
                 temp[chat][id] = data;
                 return data;
-            }else{ // if user in chat
+            }else if(id.startsWith("(")){ // if event chnl
+                const data = apis.www.getInServer("/api/id/event?id="+id.replace("(","")).name + " (EVENT)";
+                temp[chat][id] = data;
+                return data;
+            }else
+            { // if user in chat
                 const data = apis.www.getInServer("/api/id/u?id="+id+"&chat="+chat);
                 temp.main[id] = data.name;
                 temp[chat][id] = 0;

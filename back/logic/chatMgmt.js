@@ -9,7 +9,7 @@ import Permissions, { getAllPermissions } from "./permission-system/permBD.js";
  * @param {string} id_2 - The second user id
  * @return {string} The combined chat id
  */
-export function combinateId(id_1, id_2) {
+export function combinateId(id_1, id_2){
     const [id1, id2] = [id_1, id_2].sort();
 
     // Extract prefixes from user ids
