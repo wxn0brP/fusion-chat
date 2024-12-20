@@ -3,6 +3,10 @@ hub("voice");
 
 import { magistral, voiceHTML } from "../../var/html.js";
 import socket from "../../core/socket/ws.js";
+import apis from "../../api/apis.js";
+import uiFunc from "../helpers/uiFunc.js";
+import vars from "../../var/var.js";
+import translateFunc from "../../utils/translate.js";
 
 const voiceFunc = {
     local_stream: null,

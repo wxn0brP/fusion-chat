@@ -11,6 +11,7 @@ import contextMenu from "./contextMenu.js";
 import coreFunc from "../../core/coreFunc.js";
 import socket from "../../core/socket/ws.js";
 import permissionFunc, { permissionFlags } from "../../utils/perm.js";
+import voiceFunc from "./voice.js";
 
 export const friendStatusEnum = {
     NOT_FRIEND: 0,
@@ -255,7 +256,7 @@ const renderFunc = {
                 }else if(type == "voice"){
                     const chnl = vars.realm.chnlPerms[cid];
                     if(!chnl) return;
-                    if(!chnl.perms.write){
+                    if(!chnl.write){
                         uiFunc.uiMsg(translateFunc.get("You can't have permission to join this voice channel") + "!");
                         return;
                     }
