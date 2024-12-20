@@ -6,13 +6,13 @@
 
 2. **Create Realm Event Channel**
    - [X] ~~*Set up a dedicated channel for realm events.*~~ [2024-12-06]
-   - [ ] Include features for event notifications, updates, and discussions.
-   - [ ] Ensure the channel is moderated effectively.
+   - [X] ~~*Include features for event notifications, updates, and discussions.*~~ [2024-12-20]
+   - [X] ~~*Ensure the channel is moderated effectively.*~~ [2024-12-20]
 
 3. **Open Event Channel (Extended Event Realm Channel)**
    - [X] ~~*Create a new channel type for extended event realm channels.*~~ [2024-12-06]
-   - [ ] Provide guidelines for users on how to use the new channel.
-   - [ ] Create simple Open Event Channel Viwer without account.
+   - [X] ~~*Provide guidelines for users on how to use the new channel.*~~ [2024-12-20]
+   - [X] ~~*Create simple Open Event Channel Viwer without account.*~~ [2024-12-20]
 
 4. **Integrate TTS (Text-to-Speech) Message Feature**
    - [ ] Implement a TTS feature for sending messages that can be read aloud in voice channels.
@@ -30,7 +30,7 @@
    - [ ] Reorganize files names and add directories.
    - [ ] Organizate modules.
    - [ ] Clean up.
-   - [ ] Might change to es6 modules.
+   - [X] ~~*Might change to es6 modules.*~~ [2024-12-20]
 
 8. **Create documentation for config server**
 
