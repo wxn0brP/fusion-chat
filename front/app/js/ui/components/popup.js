@@ -1,7 +1,10 @@
 import hub from "../../hub.js";
 hub("popup");
 
-const subscribeEventChnl = {
+import socket from "../../core/socket/ws.js";
+import apis from "../../api/apis.js";
+
+export const subscribeEventChnl = {
     popup: document.querySelector("#subscribeEventChnl"),
 
     init(){
@@ -59,5 +62,3 @@ const subscribeEventChnl = {
     }
 }
 subscribeEventChnl.init();
-
-export default subscribeEventChnl;

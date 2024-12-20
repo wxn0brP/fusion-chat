@@ -12,7 +12,6 @@ await import("./core/mess/messSocket.js");
 await import("./init/features.js");
 await import("./ui/components/buttons.js");
 await import("./ui/components/media.js");
-await import("./ui/components/popup.js");
 await import("./ui/components/voice.js");
 
 // start app

@@ -10,6 +10,7 @@ import uiFunc from "../helpers/uiFunc.js";
 import translateFunc from "../../utils/translate.js";
 import coreFunc from "../../core/coreFunc.js";
 import socket from "../../core/socket/ws.js";
+import { subscribeEventChnl } from "./popup.js";
 
 const contextMenu = {
     showMenu(e, ele, id) {
