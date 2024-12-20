@@ -7,9 +7,7 @@ document.querySelectorAll("[loadInner]").forEach(e => {
     e.innerHTML = cw.get(e.getAttribute("loadInner"));
 });
 
-window.onload = () => {
-    document.querySelectorAll(".delete").forEach(e => {
-        let time = parseInt(e.getAttribute("time"));
-        setTimeout(()=>e.remove(), time);
-    });
-};
+document.querySelectorAll(".delete").forEach(e => {
+    let time = parseInt(e.getAttribute("time"));
+    setTimeout(()=>e.remove(), time);
+});

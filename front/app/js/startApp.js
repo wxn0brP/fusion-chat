@@ -18,11 +18,6 @@ await import("./ui/components/voice.js");
 await import("./init/start.js");
 await import("./common/warning.js");
 
-// const req = reqButNotReg();
-// const reg = regButNotReq();
-// console.log("Modules not registered:", req);
-// console.log("Modules not required:", reg);
-
 setTimeout(() => {
     const unexpected = regButNotReq();
     const unregistered = reqButNotReg();

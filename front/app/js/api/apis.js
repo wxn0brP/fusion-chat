@@ -5,6 +5,7 @@ import debugFunc from "../core/debug.js";
 import uiFunc from "../ui/helpers/uiFunc.js";
 import translateFunc from "../utils/translate.js";
 import vars from "../var/var.js";
+import { magistral } from "../var/html.js";
 
 const apis = {
     www: {
@@ -90,3 +91,4 @@ const apis = {
 }
 
 export default apis;
+magistral.apis = apis;

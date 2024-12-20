@@ -44,7 +44,7 @@ const ReactNativeApp = () => {
         try{
             if(!webViewRef.current) return console.error("no webview");
             data = JSON.stringify(data);
-            data = "apis.api.receiveMessage(`" + data + "`)"
+            data = "magistral.apis.api.receiveMessage(`" + data + "`)"
             webViewRef.current.injectJavaScript(data);
         }catch(e){
             console.error(e);
@@ -139,7 +139,7 @@ const ReactNativeApp = () => {
         await permission.requestMicrophonePermission();
         AudioRecorder.start((data) => {
             if(!webViewRef.current) return;
-            webViewRef.current.injectJavaScript(`apis.api.receiveAudio("${data}")`)
+            webViewRef.current.injectJavaScript(`magistral.apis.api.receiveAudio("${data}")`)
         });
     }
 

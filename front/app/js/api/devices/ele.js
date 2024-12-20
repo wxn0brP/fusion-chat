@@ -1,3 +1,8 @@
+import vars from "../../var/var.js";
+import debugFunc from "../../core/debug.js";
+import socket from "../../core/socket/ws.js";
+import stateManager from "../../ui/helpers/stateManager.js";
+
 export const send = (data) => {
     window.electronAPI.send(JSON.stringify(data));
 }
@@ -25,19 +30,16 @@ export const receiveMessage = (data) => {
     }
 }
 
-(function init(){
-    const div = document.createElement("div");
-    div.style.display = "none";
-    div.id = "electronApiDiv";
-    div.addEventListener("electronAPI", (e) => {
-        apis.api.receiveMessage(e.detail);
-    });
-    document.querySelector("#assets").appendChild(div);
-
-})();
+const electronApiDiv = document.createElement("div");
+electronApiDiv.style.display = "none";
+electronApiDiv.id = "electronApiDiv";
+electronApiDiv.addEventListener("electronAPI", (e) => {
+    receiveMessage(e.detail);
+});
+document.querySelector("#assets").appendChild(electronApiDiv);
 
 setTimeout(() => {
-    apis.api.send({
+    send({
         type: "status",
         data: vars.settings.desktopHandling
     })

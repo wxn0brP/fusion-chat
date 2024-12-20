@@ -1,3 +1,7 @@
+import socket from "../../core/socket/ws.js";
+import debugFunc from "../../core/debug.js";
+import stateManager from "../../ui/helpers/stateManager.js";
+
 export const send = (data) => {
     window.ReactNativeWebView.postMessage(JSON.stringify(data));
 }
@@ -53,7 +57,7 @@ const processMediaRN = {
     },
 
     async getStream(){
-        apis.api.send({
+        send({
             type: "startAudio",
         });
 
@@ -62,7 +66,7 @@ const processMediaRN = {
     }
 };
 
-apis.api.receiveAudio = async (base64WavData) => {
+export const receiveAudio = async (base64WavData) => {
     const wavDataBuffer = processMediaRN.base64ToArrayBuffer(base64WavData);
     processMediaRN.handleAudioData(wavDataBuffer);
 };
@@ -77,7 +81,7 @@ setTimeout(() => {
 
 setTimeout(() => {
     socket.emit("fireToken.get", (token) => {
-        apis.api.send({
+        send({
             type: "fireToken",
             fireToken: token,
         });
