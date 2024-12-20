@@ -141,15 +141,34 @@ const messCmd = {
         });
 
         const allCmds = [];
+        const allCmdsNames = [];
         Object.keys(avelibleCmds).forEach(category => {
             Object.keys(avelibleCmds[category]).forEach(key => {
                 allCmds.push(avelibleCmds[category][key]);
+                allCmdsNames.push({ c: category, name: key });
             });
         });
 
         if(allCmds.length == 0){
             barc__commads.innerHTML = "<h2>No commands</h2>";
             this.selectedCmd = null;
+            return;
+        }
+
+        if(allCmds.length == 1){
+            messCmd.selectedCmd = allCmds[0];
+            const { name } = allCmdsNames[0];
+            const args = msg.split(" ");
+            args[0] = "/" + name;
+            messHTML.input.value = args.join(" ") + " ";
+
+            messCmd.handleCommandInput(
+                barc__commads,
+                name,
+                messCmd.selectedCmd
+            );
+
+            coreFunc.focusInp();
             return;
         }
 

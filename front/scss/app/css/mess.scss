@@ -5,7 +5,7 @@ main{
 
 #messages{
     width: 100%;
-    max-width: 100%;
+    max-width: calc(100vw - 290px);
     height: calc(100vh - 60px - 2.1rem);
     overflow-y: scroll;
     padding: 10px;
@@ -52,6 +52,7 @@ main{
 #mess-input{
     --messHeight: 0px;
     width: calc(100% - 120px);
+    max-width: calc(100vw - 290px - 120px);
     height: calc(40px + var(--messHeight));
     border: none;
     border-radius: 10px;
@@ -60,6 +61,11 @@ main{
     color: var(--txt);
     resize: none;
     margin-bottom: var(--messHeight);
+    text-align: left;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 
     &:focus{
         outline: none;

@@ -351,7 +351,7 @@ const formatList = {
 
         function processNode(node, lvl = 0){
             if(node.bulletType === null){
-                html += node.line.trim();
+                html += node.line.trim() + "<br />";
                 listEnd = true;
             }else{
                 const listTag = listMapOl.includes(node.bulletType) ? "ol" : "ul";

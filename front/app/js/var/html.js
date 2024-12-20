@@ -3,7 +3,7 @@ function mess(){
 
     return {
         div: document.querySelector("#messages"),
-        input: document.querySelector("#mess-input"),
+        input: messInput,
         replyClose: document.querySelector("#replyClose"),
         editClose: document.querySelector("#editClose"),
         sendBtn: document.querySelector("#barc__sendBtn"),
@@ -86,6 +86,81 @@ function emoji(){
         nav: document.querySelector("#emoji__nav"),
     }
 }
+
+const messInput = new Proxy(document.querySelector("#mess-input"), {
+    get(target, prop){
+        if(prop === "value"){
+            const data = Array.from(target.childNodes)
+            .map((node) => {
+                if(node.nodeType === Node.TEXT_NODE) return node.textContent;
+                if(node.nodeName === "BR") return "\n";
+                if(node.nodeName === "DIV") return node.textContent + "\n";
+                return "";
+            })
+            .join("")
+            return data;
+        }else
+        if(prop === "selectionStart" || prop === "selectionEnd"){
+            const selection = window.getSelection();
+            if(selection.rangeCount === 0 || !target.contains(selection.anchorNode)){
+                return 0;
+            }
+            const range = selection.getRangeAt(0);
+            const preCaretRange = range.cloneRange();
+            preCaretRange.selectNodeContents(target);
+            preCaretRange.setEnd(range.startContainer, range.startOffset);
+            return preCaretRange.toString().length;
+        }else
+        if(prop === "focus"){
+            return () => target.focus();
+        }else
+        if(prop === "setSelectionRange"){
+            return (start, end) => {
+                const range = document.createRange();
+                const selection = window.getSelection();
+                let charIndex = 0;
+                const nodeStack = [target];
+                let node, foundStart = false, stop = false;
+
+                while((node = nodeStack.pop()) && !stop){
+                    if(node.nodeType === Node.TEXT_NODE){
+                        const nextCharIndex = charIndex + node.length;
+                        if(!foundStart && start >= charIndex && start <= nextCharIndex){
+                            range.setStart(node, start - charIndex);
+                            foundStart = true;
+                        }
+                        if(foundStart && end >= charIndex && end <= nextCharIndex){
+                            range.setEnd(node, end - charIndex);
+                            stop = true;
+                        }
+                        charIndex = nextCharIndex;
+                    }else{
+                        for(let i = node.childNodes.length - 1; i >= 0; i--){
+                            nodeStack.push(node.childNodes[i]);
+                        }
+                    }
+                }
+                selection.removeAllRanges();
+                selection.addRange(range);
+            };
+        }else
+        if(prop === "addEventListener"){
+            return (...args) => target.addEventListener(...args);
+        }
+        return target[prop];
+    },
+    set(target, prop, value){
+        if(prop === "value"){
+            target.innerHTML = value
+              .split("\n")
+              .map((line) => (line === "" ? "<br>" : line))
+              .join("");
+            return true;
+        }
+        target[prop] = value;
+        return true;
+    },
+});
 
 export const messHTML = mess();
 export const navHTML = nav();
