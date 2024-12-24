@@ -452,5 +452,5 @@ const messCmd = {
     }
 };
 
-messHTML.input.addEventListener("input", messCmd.check);
+messHTML.inputRaw.addEventListener("input", messCmd.check);
 export default messCmd;

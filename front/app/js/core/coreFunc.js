@@ -132,7 +132,7 @@ const coreFunc = {
     focusInp(end=false){
         if(utils.ss()) return;
         setTimeout(() => {
-            messHTML.input.focus();
+            messHTML.inputRaw.focus();
             // move cursor to end
             if(end) messHTML.input.selectionStart = messHTML.input.value.length;
         }, 100);

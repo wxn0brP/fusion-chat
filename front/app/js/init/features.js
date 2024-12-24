@@ -33,7 +33,7 @@ setupSwipe(
     }
 );
 
-messHTML.input.addEventListener("paste", function(e){
+messHTML.inputRaw.addEventListener("paste", function(e){
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
     
     for(const item of items){

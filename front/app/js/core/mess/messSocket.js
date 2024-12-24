@@ -14,7 +14,7 @@ import formatFunc from "./format.js";
 import translateFunc from "../../utils/translate.js";
 import utils from "../../utils/utils.js";
 
-messHTML.input.addEventListener("keydown", (e) => {
+messHTML.inputRaw.addEventListener("keydown", (e) => {
     if(e.key != "Enter") return;
     if(e.shiftKey) return; //if shift + enter - new line
 
@@ -22,7 +22,7 @@ messHTML.input.addEventListener("keydown", (e) => {
     messFunc.sendMess();
 });
 
-messHTML.input.addEventListener("keydown", (e) => {
+messHTML.inputRaw.addEventListener("keydown", (e) => {
     if(e.key != "ArrowUp" || messHTML.input.value.length > 0) return;
     e.preventDefault();
 
@@ -38,7 +38,7 @@ messHTML.input.addEventListener("keydown", (e) => {
     uiFunc.editMess(id);
 });
 
-messHTML.input.addEventListener("keydown", (e) => {
+messHTML.inputRaw.addEventListener("keydown", (e) => {
     if(e.key != "ArrowDown" || messHTML.input.value.length > 0) return;
     e.preventDefault();
 
@@ -53,8 +53,8 @@ messHTML.input.addEventListener("keydown", (e) => {
     lastMessage.style.backgroundColor = "var(--panel)";
 });
 
-messHTML.input.addEventListener("input", messStyle.sendBtnStyle);
-messHTML.input.addEventListener("input", messStyle.messageHeight);
+messHTML.inputRaw.addEventListener("input", messStyle.sendBtnStyle);
+messHTML.inputRaw.addEventListener("input", messStyle.messageHeight);
 
 socket.on("mess", (data) => {
     // generate last message storage if needed

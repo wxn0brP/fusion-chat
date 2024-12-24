@@ -4,6 +4,7 @@ function mess(){
     return {
         div: document.querySelector("#messages"),
         input: messInput,
+        inputRaw: document.querySelector("#mess-input"),
         replyClose: document.querySelector("#replyClose"),
         editClose: document.querySelector("#editClose"),
         sendBtn: document.querySelector("#barc__sendBtn"),
@@ -111,9 +112,6 @@ const messInput = new Proxy(document.querySelector("#mess-input"), {
             preCaretRange.setEnd(range.startContainer, range.startOffset);
             return preCaretRange.toString().length;
         }else
-        if(prop === "focus"){
-            return () => target.focus();
-        }else
         if(prop === "setSelectionRange"){
             return (start, end) => {
                 const range = document.createRange();
@@ -143,9 +141,6 @@ const messInput = new Proxy(document.querySelector("#mess-input"), {
                 selection.removeAllRanges();
                 selection.addRange(range);
             };
-        }else
-        if(prop === "addEventListener"){
-            return (...args) => target.addEventListener(...args);
         }
         return target[prop];
     },
