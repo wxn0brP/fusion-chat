@@ -1,10 +1,10 @@
-import hub from "../../hub.js";
-hub("settingsServer_emoji");
+import hub from "../../../hub.js";
+hub("rs_emoji");
 
-import translateFunc from "../../utils/translate.js";
-import vars from "../../var/var.js";
-import socket from "../../core/socket/ws.js";
-import fileFunc from "../../api/file.js";
+import translateFunc from "../../../utils/translate.js";
+import vars from "../../../var/var.js";
+import socket from "../../../core/socket/socket.js";
+import fileFunc from "../../../api/file.js";
 
 export const renderEmojis = function(_this){
     _this.emojiDiv.innerHTML = `<h1>${translateFunc.get("Emoji Manager")}</h1>`;

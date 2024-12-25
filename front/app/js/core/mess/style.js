@@ -1,5 +1,5 @@
 import hub from "../../hub.js";
-hub("messStyle");
+hub("mess/style");
 
 import { messHTML } from "../../var/html.js";
 import utils from "../../utils/utils.js";

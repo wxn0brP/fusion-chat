@@ -1,18 +1,19 @@
-import hub from "../../hub.js";
-hub("settingsServerLib");
+import hub from "../../../hub.js";
+hub("realmSettings");
 
-import translateFunc from "../../utils/translate.js";
-import { renderMeta } from "./settingsServer_meta.js";
-import { renderEmojis } from "./settingsServer_emoji.js";
-import { renderUserRoleManager } from "./settingsServer_users.js";
-import { renderRoleEdit, renderRoles } from "./settingsServer_roles.js";
-import { saveSettings, exitWithoutSaving } from "./settingsServer_save.js";
-import { renderCategorySwitcher, changeDisplay } from "./settingsServer_nav.js";
-import { renderWebhooks, renderWebhookEdit } from "./settingsServer_webhooks.js";
-import { renderChannels, renderEditChannel, renderEditCategory } from "./settingsServer_channels.js";
-import { initButton, initCategoryElement, addSeparator, initInputText, initCheckbox } from "./settingsServer_utils.js";
+import translateFunc from "../../../utils/translate.js";
+import { renderMeta } from "./rs_meta.js";
+import { renderEmojis } from "./rs_emoji.js";
+import { renderUserRoleManager } from "./rs_users.js";
+import { renderRoleEdit, renderRoles } from "./rs_roles.js";
+import { saveSettings, exitWithoutSaving } from "./rs_save.js";
+import { renderCategorySwitcher, changeDisplay } from "./rs_nav.js";
+import { renderWebhooks, renderWebhookEdit } from "./rs_webhooks.js";
+import { renderChannels, renderEditChannel, renderEditCategory } from "./rs_channels.js";
+import { initButton, initCategoryElement, addSeparator, initInputText, initCheckbox } from "./rs_utils.js";
 
-class SettingsServerManager{
+// TODO: refactor realm settings
+class RealmSettingsManager{
     constructor(settings, realmId, container, saveCallback, exitCallback){
         this.settings = settings;
         this.saveCallback = saveCallback;
@@ -86,4 +87,4 @@ class SettingsServerManager{
     }
 }
 
-export default SettingsServerManager;
+export default RealmSettingsManager;

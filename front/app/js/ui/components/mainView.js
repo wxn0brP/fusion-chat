@@ -5,7 +5,7 @@ import vars from "../../var/var.js";
 import { magistral, mainViewHTML } from "../../var/html.js";
 import coreFunc from "../../core/coreFunc.js";
 import apis from "../../api/apis.js";
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import uiFunc from "../helpers/uiFunc.js";
 import translateFunc from "../../utils/translate.js";
 

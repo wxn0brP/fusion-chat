@@ -6,9 +6,10 @@ await import("./var/var.js");
 await import("./var/html.js");
 
 // features
-await import("./core/socket/ws.js");
-await import("./core/socket/ws_evt.js");
+await import("./core/socket/socket.js");
+await import("./core/socket/evt.js");
 await import("./core/mess/messSocket.js");
+await import("./core/mess/listeners.js");
 await import("./init/features.js");
 await import("./ui/components/buttons.js");
 await import("./ui/components/media.js");

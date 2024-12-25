@@ -1,10 +1,10 @@
-import hub from "../../hub.js";
-hub("settingsServer_meta");
+import hub from "../../../hub.js";
+hub("rs_meta");
 
-import translateFunc from "../../utils/translate.js";
-import vars from "../../var/var.js";
-import socket from "../../core/socket/ws.js";
-import uiFunc from "../helpers/uiFunc.js";
+import translateFunc from "../../../utils/translate.js";
+import vars from "../../../var/var.js";
+import socket from "../../../core/socket/socket.js";
+import uiFunc from "../../helpers/uiFunc.js";
 
 export const renderMeta = function(_this){
     const metaDiv = _this.metaDiv;

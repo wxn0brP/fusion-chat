@@ -73,15 +73,14 @@ const apis = {
                 isElectron: navigator.userAgent.toLowerCase().includes("electron"),
                 isInIframe: window.self !== window.top,
                 isReactNative: !!window.ReactNativeWebView,
-            };
+            }
             
             let path = "web";
             if(dev.isElectron) path = "ele";
             else if(dev.isReactNative) path = "rn";
             else if(dev.isInIframe) path = "if";
             this.apiType = path;
-        
-            // script.src = "js/devices/"+path+".js";
+
             apis.api = await import("./devices/"+path+".js");
             debugFunc.msg("load api: "+path);
         },

@@ -1,6 +1,6 @@
 import vars from "../../var/var.js";
 import debugFunc from "../../core/debug.js";
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import stateManager from "../../ui/helpers/stateManager.js";
 
 export const send = (data) => {

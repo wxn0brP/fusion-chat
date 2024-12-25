@@ -5,8 +5,8 @@ import debugFunc from "../../core/debug.js";
 import vars from "../../var/var.js";
 import coreFunc from "../../core/coreFunc.js";
 import { messHTML } from "../../var/html.js";
-import socket from "../../core/socket/ws.js";
-import messStyle from "../../core/mess/messStyle.js";
+import socket from "../../core/socket/socket.js";
+import messStyle from "../../core/mess/style.js";
 
 const errMessesDiv = document.querySelector("#errMesses");
 const promptDiv = document.querySelector("#prompt");

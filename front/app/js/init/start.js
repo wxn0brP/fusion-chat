@@ -3,7 +3,7 @@ hub("start");
 import debugFunc from "../core/debug.js";
 import apis from "../api/apis.js";
 import coreFunc from "../core/coreFunc.js";
-import socket from "../core/socket/ws.js";
+import socket from "../core/socket/socket.js";
 import stateManager from "../ui/helpers/stateManager.js";
 import translateFunc from "../utils/translate.js";
 

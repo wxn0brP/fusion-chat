@@ -3,14 +3,14 @@ hub("mess");
 
 import { emojiHTML, magistral, messHTML } from "../../var/html.js";
 import vars from "../../var/var.js";
-import messCmd, { messCmds } from "./messCmd.js";
+import messCmd, { messCmds } from "./cmd.js";
 import coreFunc from "../../core/coreFunc.js";
 import uiFunc from "../../ui/helpers/uiFunc.js";
 import apis from "../../api/apis.js";
 import utils from "../../utils/utils.js";
 import formatFunc from "./format.js";
-import socket from "../socket/ws.js";
-import messStyle from "./messStyle.js";
+import socket from "../socket/socket.js";
+import messStyle from "./style.js";
 import contextMenu from "../../ui/components/contextMenu.js";
 import translateFunc from "../../utils/translate.js";
 import permissionFunc, { permissionFlags } from "../../utils/perm.js";

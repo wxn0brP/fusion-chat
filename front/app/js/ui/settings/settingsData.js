@@ -4,7 +4,7 @@ hub("settingsData");
 import translateFunc from "../../utils/translate.js";
 import vars from "../../var/var.js";
 import apis from "../../api/apis.js";
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import renderFunc from "../components/renders.js";
 
 const settingsData = {

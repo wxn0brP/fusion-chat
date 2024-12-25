@@ -1,5 +1,5 @@
-import hub from "../../hub.js";
-hub("settingsServer_utils");
+import hub from "../../../hub.js";
+hub("rs_utils");
 
 export const initCategoryElement = function(){
     const div = document.createElement("div");

@@ -2,7 +2,7 @@ import hub from "../../hub.js";
 hub("buttons");
 
 import uiFunc from "../helpers/uiFunc.js";
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import { otherHTML, magistral } from "../../var/html.js";
 const makeRealmDiv = otherHTML.makeRealm;
 import settingsFunc from "../settings/settings.js";

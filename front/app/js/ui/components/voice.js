@@ -2,7 +2,7 @@ import hub from "../../hub.js";
 hub("voice");
 
 import { magistral, voiceHTML } from "../../var/html.js";
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import apis from "../../api/apis.js";
 import uiFunc from "../helpers/uiFunc.js";
 import vars from "../../var/var.js";

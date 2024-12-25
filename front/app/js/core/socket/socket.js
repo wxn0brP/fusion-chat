@@ -1,5 +1,5 @@
 import hub from "../../hub.js";
-hub("ws");
+hub("socket");
 
 const socket = io("/", {
     transports: ["websocket"],

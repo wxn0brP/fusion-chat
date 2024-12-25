@@ -9,7 +9,7 @@ import mainView from "./mainView.js";
 import translateFunc from "../../utils/translate.js";
 import contextMenu from "./contextMenu.js";
 import coreFunc from "../../core/coreFunc.js";
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import permissionFunc, { permissionFlags } from "../../utils/perm.js";
 import voiceFunc from "./voice.js";
 

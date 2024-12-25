@@ -1,8 +1,8 @@
 import hub from "../../hub.js";
-hub("messCmd");
+hub("mess/cmd");
 
 import { messHTML } from "../../var/html.js";
-import socket from "../socket/ws.js";
+import socket from "../socket/socket.js";
 import coreFunc from "../coreFunc.js";
 import uiFunc from "../../ui/helpers/uiFunc.js";
 import translateFunc from "../../utils/translate.js";

@@ -1,7 +1,7 @@
 import hub from "../../hub.js";
 hub("popup");
 
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import apis from "../../api/apis.js";
 
 export const subscribeEventChnl = {

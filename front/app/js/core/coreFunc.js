@@ -5,7 +5,7 @@ import vars from "../var/var.js";
 import apis from "../api/apis.js";
 import utils from "../utils/utils.js";
 import renderFunc from "../ui/components/renders.js";
-import socket from "../core/socket/ws.js";
+import socket from "./socket/socket.js";
 import emojiFunc from "../ui/components/emoji.js";
 import mainView from "../ui/components/mainView.js";
 import translateFunc from "../utils/translate.js";

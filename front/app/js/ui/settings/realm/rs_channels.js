@@ -1,11 +1,11 @@
-import hub from "../../hub.js";
-hub("settingsServer_channels");
+import hub from "../../../hub.js";
+hub("rs_channels");
 
-import genId from "../../utils/genId.js";
-import translateFunc from "../../utils/translate.js";
-import uiFunc from "../helpers/uiFunc.js";
-import apis from "../../api/apis.js";
-import socket from "../../core/socket/ws.js";
+import genId from "../../../utils/genId.js";
+import translateFunc from "../../../utils/translate.js";
+import uiFunc from "../../helpers/uiFunc.js";
+import apis from "../../../api/apis.js";
+import socket from "../../../core/socket/socket.js";
 
 export const renderChannels = function(_this){
     const categoriesContainer = _this.categoryDiv;

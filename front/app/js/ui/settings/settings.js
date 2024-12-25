@@ -2,11 +2,11 @@ import hub from "../../hub.js";
 hub("settings");
 
 const settingDiv = document.querySelector("#settings");
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import settingsData from "./settingsData.js";
 import debugFunc from "../../core/debug.js";
 import SettingsManager from "./settingsLib.js";
-import SettingsServerManager from "./settingsServerLib.js";
+import RealmSettingsManager from "./realm/realmSettings.js";
 
 const settingsFunc = {
     showUserSettings(){
@@ -19,7 +19,7 @@ const settingsFunc = {
     },
 
     showRealmSettings(dataI, id){
-        new SettingsServerManager(
+        new RealmSettingsManager(
             dataI,
             id,
             settingDiv,

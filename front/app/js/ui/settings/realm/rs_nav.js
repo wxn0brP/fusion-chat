@@ -1,10 +1,10 @@
-import hub from "../../hub.js";
-hub("settingsServer_nav");
+import hub from "../../../hub.js";
+hub("rs_nav");
 
-import translateFunc from "../../utils/translate.js";
-import vars from "../../var/var.js";
-import permissionFunc, { permissionFlags } from "../../utils/perm.js";
-import socket from "../../core/socket/ws.js";
+import translateFunc from "../../../utils/translate.js";
+import vars from "../../../var/var.js";
+import permissionFunc, { permissionFlags } from "../../../utils/perm.js";
+import socket from "../../../core/socket/socket.js";
 
 export const changeDisplay = function(_this, options){
     const displayOptions = {

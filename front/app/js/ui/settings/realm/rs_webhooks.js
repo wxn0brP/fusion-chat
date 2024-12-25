@@ -1,9 +1,9 @@
-import hub from "../../hub.js";
-hub("settingsServer_webhooks");
+import hub from "../../../hub.js";
+hub("rs_webhooks");
 
-import translateFunc from "../../utils/translate.js";
-import genId from "../../utils/genId.js";
-import uiFunc from "../helpers/uiFunc.js";
+import translateFunc from "../../../utils/translate.js";
+import genId from "../../../utils/genId.js";
+import uiFunc from "../../helpers/uiFunc.js";
 
 export const renderWebhooks = function(_this){
     const container = _this.webhookDiv;

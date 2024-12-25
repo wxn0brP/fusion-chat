@@ -1,5 +1,5 @@
-import hub from "../../hub.js";
-hub("settingsServer_save");
+import hub from "../../../hub.js";
+hub("rs_save");
 
 export const saveSettings = async function(_this){
     if(!_this.saveCallback && typeof _this.saveCallback !== "function"){

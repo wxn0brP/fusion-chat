@@ -1,9 +1,9 @@
-import hub from "../../hub.js";
-hub("settingsServer_users");
+import hub from "../../../hub.js";
+hub("rs_users");
 
-import translateFunc from "../../utils/translate.js";
-import apis from "../../api/apis.js";
-import vars from "../../var/var.js";
+import translateFunc from "../../../utils/translate.js";
+import apis from "../../../api/apis.js";
+import vars from "../../../var/var.js";
 
 export const renderUserRoleManager = function(_this){
     _this.usersManagerDiv.innerHTML = `<h1>${translateFunc.get("Users Manager")}</h1>`;

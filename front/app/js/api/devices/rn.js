@@ -1,4 +1,4 @@
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import debugFunc from "../../core/debug.js";
 import stateManager from "../../ui/helpers/stateManager.js";
 

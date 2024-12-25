@@ -9,7 +9,7 @@ import messFunc from "../../core/mess/mess.js";
 import uiFunc from "../helpers/uiFunc.js";
 import translateFunc from "../../utils/translate.js";
 import coreFunc from "../../core/coreFunc.js";
-import socket from "../../core/socket/ws.js";
+import socket from "../../core/socket/socket.js";
 import { subscribeEventChnl } from "./popup.js";
 
 const contextMenu = {

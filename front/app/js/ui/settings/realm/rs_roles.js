@@ -1,10 +1,10 @@
-import hub from "../../hub.js";
-hub("settingsServer_roles");
+import hub from "../../../hub.js";
+hub("rs_roles");
 
-import translateFunc from "../../utils/translate.js";
-import permissionFunc, { permissionFlags } from "../../utils/perm.js";
-import vars from "../../var/var.js";
-import genId from "../../utils/genId.js";
+import translateFunc from "../../../utils/translate.js";
+import permissionFunc, { permissionFlags } from "../../../utils/perm.js";
+import vars from "../../../var/var.js";
+import genId from "../../../utils/genId.js";
 
 export const renderRoles = function(_this){
     const container = _this.roleDiv;
