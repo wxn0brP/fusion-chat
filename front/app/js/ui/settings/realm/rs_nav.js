@@ -1,12 +1,40 @@
+// @ts-check
 import hub from "../../../hub.js";
-hub("rs_nav");
+hub("rs/nav");
 
 import translateFunc from "../../../utils/translate.js";
 import vars from "../../../var/var.js";
 import permissionFunc, { permissionFlags } from "../../../utils/perm.js";
 import socket from "../../../core/socket/socket.js";
+import rs_data from "./rs_var.js";
 
-export const changeDisplay = function(_this, options){
+import { renderMeta } from "./rs_meta.js";
+import { renderWebhooks } from "./rs_webhooks.js";
+import { renderEmojis } from "./rs_emoji.js";
+import { renderUserRoleManager } from "./rs_users.js";
+import { renderRoles } from "./rs_roles.js";
+import { renderChannels } from "./rs_channels.js";
+import { addSeparator } from "./rs_utils.js";
+
+
+/**
+ * Updates the display status of various sections in the UI based on the provided options.
+ * Each section can be toggled between "block" and "none" display styles.
+ * 
+ * @param {Object} options - An object containing boolean values for each section indicating
+ *                           whether the section should be displayed or hidden.
+ * @param {boolean} [options.meta] - Display status for the meta section.
+ * @param {boolean} [options.category] - Display status for the category section.
+ * @param {boolean} [options.editChannel] - Display status for the edit channel section.
+ * @param {boolean} [options.role] - Display status for the role section.
+ * @param {boolean} [options.editRole] - Display status for the edit role section.
+ * @param {boolean} [options.usersManager] - Display status for the users manager section.
+ * @param {boolean} [options.emoji] - Display status for the emoji section.
+ * @param {boolean} [options.webhook] - Display status for the webhook section.
+ * @param {boolean} [options.editWebhook] - Display status for the edit webhook section.
+ */
+
+export const changeDisplay = function(options){
     const displayOptions = {
         meta: false,
         category: false,
@@ -21,12 +49,28 @@ export const changeDisplay = function(_this, options){
     };
 
     for(const category in displayOptions){
-        const div = _this[`${category}Div`];
+        const div = rs_data.html[category];
         div.style.display = displayOptions[category] ? "block" : "none";
     }
 }
 
-export const renderCategorySwitcher = function(_this){
+/**
+ * Renders a container with buttons for each section of the realm settings.
+ * Each button, when clicked, will toggle the display of the corresponding section.
+ * 
+ * The sections available are:
+ * - Basic Settings
+ * - Categories & Channels
+ * - Roles
+ * - Users Manager
+ * - Emoji Manager
+ * - Webhooks
+ * 
+ * Note that some sections may be hidden or disabled based on the user's permissions.
+ */
+export const renderCategorySwitcher = function(){
+    const settings = rs_data.settings;
+
     const isAdmin = permissionFunc.hasPermission(vars.realm.permission, permissionFlags.admin);
     const categoryButtons =
     [
@@ -35,42 +79,42 @@ export const renderCategorySwitcher = function(_this){
             name: "meta",
             req: ["meta"],
             p: permissionFlags.admin,
-            render: _this.renderMeta.bind(_this)
+            render: renderMeta
         },
         {
             text: translateFunc.get("Categories & Channels"),
             name: "category",
             req: ["categories", "channels"],
             p: permissionFlags.manageChannels,
-            render: _this.renderChannels.bind(_this)
+            render: renderChannels
         },
         {
             text: translateFunc.get("Roles"),
             name: "role",
             req: ["roles"],
             p: permissionFlags.manageRoles,
-            render: _this.renderRoles.bind(_this)
+            render: renderRoles
         },
         {
             text: translateFunc.get("Users Manager"),
             req: ["users", "banUsers", "roles"],
             name: "usersManager",
             p: permissionFlags.banUser,
-            render: _this.renderUserRoleManager.bind(_this)
+            render: renderUserRoleManager
         },
         {
             text: translateFunc.get("Emoji Manager"),
             name: "emoji",
             req: ["emojis"],
             p: permissionFlags.manageEmojis,
-            render: _this.renderEmojis.bind(_this)
+            render: renderEmojis
         },
         {
             text: translateFunc.get("Webhooks"),
             name: "webhook",
             req: ["webhooks"],
             p: permissionFlags.manageWebhooks,
-            render: _this.renderWebhooks.bind(_this)
+            render: renderWebhooks
         },
     ]
     .map(category => {
@@ -80,7 +124,7 @@ export const renderCategorySwitcher = function(_this){
         }
 
         function display(){
-            _this.changeDisplay(_this, { [category.name]: true });
+            changeDisplay({ [category.name]: true });
         }
 
         const button = document.createElement("button");
@@ -93,12 +137,12 @@ export const renderCategorySwitcher = function(_this){
                 if(reqs){
                     const sections = [];
                     for(const req of reqs)
-                        if(!_this.settings[req]) sections.push(req);
+                        if(!settings[req]) sections.push(req);
 
 
                     if(sections.length > 0){
-                        socket.emit("realm.settings.get", _this.realmId, sections, (data) => {
-                            _this.settings = Object.assign(_this.settings, data);
+                        socket.emit("realm.settings.get", rs_data.realmId, sections, (data) => {
+                            rs_data.settings = Object.assign(settings, data);
                             if(category.render) category.render();
                             display();
                         })
@@ -115,6 +159,6 @@ export const renderCategorySwitcher = function(_this){
         categorySwitcherContainer.appendChild(button);
     });
 
-    _this.container.appendChild(categorySwitcherContainer);
-    _this.addSeparator(_this.container, 20);
+    rs_data.container.insertAdjacentElement("afterbegin", addSeparator(undefined, 20));
+    rs_data.container.insertAdjacentElement("afterbegin", categorySwitcherContainer);
 }

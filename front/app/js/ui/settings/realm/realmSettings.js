@@ -2,17 +2,16 @@ import hub from "../../../hub.js";
 hub("realmSettings");
 
 import translateFunc from "../../../utils/translate.js";
+import rs_data, { setData} from "./rs_var.js";
 import { renderMeta } from "./rs_meta.js";
 import { renderEmojis } from "./rs_emoji.js";
 import { renderUserRoleManager } from "./rs_users.js";
-import { renderRoleEdit, renderRoles } from "./rs_roles.js";
+import { renderRoles } from "./rs_roles.js";
 import { saveSettings, exitWithoutSaving } from "./rs_save.js";
 import { renderCategorySwitcher, changeDisplay } from "./rs_nav.js";
-import { renderWebhooks, renderWebhookEdit } from "./rs_webhooks.js";
-import { renderChannels, renderEditChannel, renderEditCategory } from "./rs_channels.js";
-import { initButton, initCategoryElement, addSeparator, initInputText, initCheckbox } from "./rs_utils.js";
+import { renderWebhooks } from "./rs_webhooks.js";
+import { renderChannels } from "./rs_channels.js";
 
-// TODO: refactor realm settings
 class RealmSettingsManager{
     constructor(settings, realmId, container, saveCallback, exitCallback){
         this.settings = settings;
@@ -28,26 +27,18 @@ class RealmSettingsManager{
 
     init(){
         this.container.innerHTML = "";
+        this.rs = rs_data;
+        setData(this);
 
-        renderCategorySwitcher(this);
+        renderCategorySwitcher();
 
-        this.metaDiv = this.initCategoryElement();
-        this.categoryDiv = this.initCategoryElement();
-        this.editChannelDiv = this.initCategoryElement();
-        this.roleDiv = this.initCategoryElement();
-        this.editRoleDiv = this.initCategoryElement();
-        this.usersManagerDiv = this.initCategoryElement();
-        this.emojiDiv = this.initCategoryElement();
-        this.webhookDiv = this.initCategoryElement();
-        this.editWebhookDiv = this.initCategoryElement();
-
-        this.renderMeta(this);
-        this.renderChannels(this);
-        this.renderRoles(this);
-        this.renderUserRoleManager(this);
-        this.renderEmojis(this);
-        this.renderWebhooks(this);
-        this.changeDisplay(this, { meta: true });
+        renderMeta();
+        renderChannels();
+        renderRoles();
+        renderUserRoleManager();
+        renderEmojis();
+        renderWebhooks();
+        changeDisplay({ meta: true });
 
         const saveButton = document.createElement("button");
         saveButton.textContent = translateFunc.get("Save");
@@ -66,24 +57,8 @@ class RealmSettingsManager{
     }
 
     initModules(){
-        this.renderChannels = renderChannels;
-        this.renderEditChannel = renderEditChannel;
-        this.renderRoles = renderRoles;
-        this.renderRoleEdit = renderRoleEdit;
-        this.renderEmojis = renderEmojis;
-        this.renderWebhooks = renderWebhooks;
-        this.renderMeta = renderMeta;
-        this.renderUserRoleManager = renderUserRoleManager;
-        this.initCategoryElement = initCategoryElement;
-        this.initButton = initButton;
-        this.addSeparator = addSeparator;
-        this.initInputText = initInputText;
-        this.initCheckbox = initCheckbox;
-        this.changeDisplay = changeDisplay;
         this.saveSettings = saveSettings;
         this.exitWithoutSaving = exitWithoutSaving;
-        this.renderWebhookEdit = renderWebhookEdit;
-        this.renderEditCategory = renderEditCategory;
     }
 }
 

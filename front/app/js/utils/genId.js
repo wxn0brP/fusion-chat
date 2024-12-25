@@ -1,3 +1,7 @@
+/**
+ * @typedef {import("./Id").Id} Id
+ */
+
 import hub from "../hub.js";
 hub("genId");
 
@@ -6,9 +10,9 @@ const usedIdsMap = new Map();
 /**
  * Generates a unique identifier based on specified parts.
  * @function
- * @param {number|number[]} parts - The number of parts or an array of parts.
+ * @param {number|number[]} [parts] - The number of parts or an array of parts.
  * @param {number} [fill=1] - The fill value for each part (default: 1).
- * @returns {string} The generated unique identifier.
+ * @returns {Id} The generated unique identifier.
  */
 function genId(parts, fill=1){
     parts = changeInputToPartsArray(parts, fill);
@@ -23,7 +27,7 @@ function genId(parts, fill=1){
  * @param {string} time - The current time in a base36 string format.
  * @param {number[]} parts - An array of parts to be used for generating the identifier.
  * @param {number} [s=0] - Recursion counter for handling collision (default: 0).
- * @returns {string} The unique random identifier.
+ * @returns {Id} The unique random identifier.
  */
 function getUniqueRandom(time, partsA, s=0){
     const parts = partsA.map(l => getRandom(l));

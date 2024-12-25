@@ -1,25 +1,33 @@
+// @ts-check
 import hub from "../../../hub.js";
-hub("rs_meta");
+hub("rs/meta");
 
 import translateFunc from "../../../utils/translate.js";
 import vars from "../../../var/var.js";
 import socket from "../../../core/socket/socket.js";
 import uiFunc from "../../helpers/uiFunc.js";
+import fileFunc from "../../../api/file.js";
+import coreFunc from "../../../core/coreFunc.js";
+import rs_data from "./rs_var.js";
+import { addSeparator, initButton, initInputText } from "./rs_utils.js";
+import debugFunc from "../../../core/debug.js";
 
-export const renderMeta = function(_this){
-    const metaDiv = _this.metaDiv;
+export const renderMeta = function(){
+    const settings = rs_data.settings;
+    if(!settings || !settings.meta) return debugFunc.msg("No settings data");
+    const metaDiv = rs_data.html.meta;
     metaDiv.innerHTML = `<h1>${translateFunc.get("Basic Settings")}</h1>`;
 
-    const meta = _this.settings.meta;
-    meta.tmpData = {};
+    const meta = settings.meta;
+    const tmpData = {};
 
-    const nameInput = _this.initInputText(metaDiv, translateFunc.get("Server name"), meta.name);
+    const nameInput = initInputText(metaDiv, translateFunc.get("Server name"), meta.name);
 
-    _this.addSeparator(metaDiv, 10);
+    addSeparator(metaDiv, 10);
 
     const serverImg = document.createElement("img");
     serverImg.id = "settings__serverImg";
-    if(meta.img) serverImg.src = "/userFiles/realms/" + _this.realmId + ".png";
+    if(meta.img) serverImg.src = "/userFiles/realms/" + rs_data.realmId + ".png";
     else serverImg.style.display = "none";
     metaDiv.appendChild(serverImg);
 
@@ -27,22 +35,23 @@ export const renderMeta = function(_this){
     serverImgFile.type = "file";
     serverImgFile.accept = vars.uploadImgTypes.join(", ");
     serverImgFile.addEventListener("change", e => {
-        meta.tmpData.img = e.target.files[0];
+        // @ts-ignore
+        tmpData.img = e.target.files[0];
+        // @ts-ignore
         serverImg.src = URL.createObjectURL(e.target.files[0]);
         serverImg.style.display = "";
     });
 
     metaDiv.appendChild(serverImgFile);
-    _this.addSeparator(metaDiv, 5);
-    _this.initButton(metaDiv, translateFunc.get("Remove image"), () => {
+    addSeparator(metaDiv, 5);
+    initButton(metaDiv, translateFunc.get("Remove image"), () => {
         serverImg.style.display = "none";
-        delete meta.tmpData.img;
         meta.img = false;
     });
 
-    _this.addSeparator(metaDiv, 15);
+    addSeparator(metaDiv, 15);
     
-    _this.initButton(metaDiv, translateFunc.get("Delete server"), async () => {
+    initButton(metaDiv, translateFunc.get("Delete server"), async () => {
         const result = confirm(translateFunc.get("Are you sure you want to delete _this server? ($)", meta.name));
         if(!result) return;
         const result2 = confirm(translateFunc.get("Are you sure you want to delete all data of _this server? ($)", meta.name));
@@ -53,20 +62,18 @@ export const renderMeta = function(_this){
         const name = await uiFunc.prompt("Confirm server name");
         if(name !== meta.name) return uiFunc.uiMsg(translateFunc.get("Wrong server name"));
 
-        _this.exitWithoutSaving();
+        rs_data._this.exitWithoutSaving();
         coreFunc.changeChat("main");
         setTimeout(() => {
-            socket.emit("realm.delete", _this.realmId, name);
+            socket.emit("realm.delete", rs_data.realmId, name);
         }, 1000);
     }).style.color = "red";
 
-    _this.saveMetaSettings = () => {
-        _this.settings.meta.name = nameInput.value;
+    rs_data._this.saveMetaSettings = () => {
+        settings.meta.name = nameInput.value;
 
-        if(meta.tmpData.img){
-            fileFunc.server(meta.tmpData.img, _this.realmId);
+        if(tmpData.img){
+            fileFunc.server(tmpData.img, rs_data.realmId);
         }
-
-        delete meta.tmpData;
     }
 }

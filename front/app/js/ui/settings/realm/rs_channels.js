@@ -1,60 +1,77 @@
+// @ts-check
 import hub from "../../../hub.js";
-hub("rs_channels");
+hub("rs/channels");
 
 import genId from "../../../utils/genId.js";
 import translateFunc from "../../../utils/translate.js";
 import uiFunc from "../../helpers/uiFunc.js";
 import apis from "../../../api/apis.js";
 import socket from "../../../core/socket/socket.js";
+import debugFunc from "../../../core/debug.js";
+import rs_data from "./rs_var.js";
+import {
+    initInputText,
+    initButton,
+    addSeparator,
+    initCheckbox,
+} from "./rs_utils.js";
 
-export const renderChannels = function(_this){
-    const categoriesContainer = _this.categoryDiv;
+/**
+ * @typedef {import("./types.js").Category} Category
+ * @typedef {import("./types.js").Channel} Channel
+ */
+
+export const renderChannels = function(){
+    const settings = rs_data.settings;
+    if(!settings || !settings.categories || !settings.channels) return debugFunc.msg("No settings data");
+
+    const categoriesContainer = rs_data.html.category;
     categoriesContainer.innerHTML = `<h1>${translateFunc.get("Categories & Channels")}</h1>`;
 
-    const sortedCategories = _this.settings.categories.sort((a, b) => a.i - b.i);
-    const channels = _this.settings.channels;
+    const sortedCategories = settings.categories.sort((a, b) => a.i - b.i);
+    const channels = settings.channels;
 
-    _this.initButton(categoriesContainer, translateFunc.get("Add category"), async () => {
+    initButton(categoriesContainer, translateFunc.get("Add category"), async () => {
         const name = await uiFunc.prompt("Name");
 
-        _this.settings.categories.push({
+        settings.categories.push({
             cid: genId(),
             name: name || "New Category",
-            i: _this.settings.categories.length
+            i: settings.categories.length
         });
-        _this.renderChannels();
+        renderChannels();
     })
 
     sortedCategories.forEach(category => {
-        _this.addSeparator(categoriesContainer, 15);
+        addSeparator(categoriesContainer, 15);
         const categoryDiv = document.createElement("div");
         categoryDiv.innerHTML = `<span style="font-size: 1.5rem" class="settings__nameSpan">- ${category.name}</span>`;
 
-        _this.initButton(categoryDiv, translateFunc.get("Move up"), () => {
+        initButton(categoryDiv, translateFunc.get("Move up"), () => {
             if(category.i === 0) return;
 
             const i = category.i;
-            _this.settings.categories[i].i = i - 1;
-            _this.settings.categories[i - 1].i = i;
-            _this.renderChannels();
+            settings.categories[i].i = i - 1;
+            settings.categories[i - 1].i = i;
+            renderChannels();
         });
 
-        _this.initButton(categoryDiv, translateFunc.get("Move down"), () => {
+        initButton(categoryDiv, translateFunc.get("Move down"), () => {
             if(category.i === sortedCategories.length - 1) return;
 
             const i = category.i;
-            _this.settings.categories[i].i = i + 1;
-            _this.settings.categories[i + 1].i = i;
-            _this.renderChannels();
+            settings.categories[i].i = i + 1;
+            settings.categories[i + 1].i = i;
+            renderChannels();
         });
 
-        _this.initButton(categoryDiv, translateFunc.get("Edit"), () => {
+        initButton(categoryDiv, translateFunc.get("Edit"), () => {
             categoriesContainer.querySelectorAll("div").forEach(div => div.style.border = "");
             categoryDiv.style.border = "3px dotted var(--accent)";
-            renderEditCategory(_this, category);
+            renderEditCategory(category);
         });
 
-        _this.initButton(categoryDiv, translateFunc.get("Add channel"), async () => {
+        initButton(categoryDiv, translateFunc.get("Add channel"), async () => {
             const name = await uiFunc.prompt(translateFunc.get("Enter name"));
             const type = await uiFunc.selectPrompt(
                 translateFunc.get("Enter type"),
@@ -62,6 +79,7 @@ export const renderChannels = function(_this){
                 ["text", "voice", "realm_event", "open_event"]
             );
 
+            /** @type {Channel} */
             const newChannel = {
                 name: name || "New Channel",
                 type: type || "text",
@@ -71,11 +89,11 @@ export const renderChannels = function(_this){
                 chid: genId(),
                 desc: ""
             };
-            _this.settings.channels.push(newChannel);
-            _this.renderChannels(); 
+            settings.channels.push(newChannel);
+            renderChannels(); 
         });
 
-        _this.addSeparator(categoryDiv, 10);
+        addSeparator(categoryDiv, 10);
 
         const categoryChannels = channels.filter(channel => channel.category === category.cid).sort((a, b) => a.i - b.i);
         categoryChannels.forEach(channel => {
@@ -83,68 +101,78 @@ export const renderChannels = function(_this){
             channelElement.innerHTML =
                 `<span style="font-size: 1.2rem" class="settings__nameSpan">${"&nbsp;".repeat(3)}+ ${channel.name} (${channel.type})</span>`;
 
-            _this.initButton(channelElement, translateFunc.get("Move up"), () => {
+            initButton(channelElement, translateFunc.get("Move up"), () => {
                 if(channel.i === 0) return;
 
                 const i = channel.i;
                 
-                const currentChannelIndex = _this.settings.channels.findIndex(ch => {
+                const currentChannelIndex = settings.channels.findIndex(ch => {
                     if(ch.category !== channel.category) return false;
                     return ch.i === i;
                 });
-                const previousChannelIndex = _this.settings.channels.findIndex(ch => {
+                const previousChannelIndex = settings.channels.findIndex(ch => {
                     if(ch.category !== channel.category) return false;
                     return ch.i === i - 1;
                 });
 
                 if(currentChannelIndex === -1 || previousChannelIndex === -1) return;
-                _this.settings.channels[currentChannelIndex].i = i - 1;
-                _this.settings.channels[previousChannelIndex].i = i;
+                settings.channels[currentChannelIndex].i = i - 1;
+                settings.channels[previousChannelIndex].i = i;
 
-                _this.renderChannels();
+                renderChannels();
             });
 
-            _this.initButton(channelElement, translateFunc.get("Move down"), () => {
+            initButton(channelElement, translateFunc.get("Move down"), () => {
                 if(channel.i >= categoryChannels.length - 1) return;
 
                 const i = channel.i;
 
-                const currentChannelIndex = _this.settings.channels.findIndex(ch => {
+                const currentChannelIndex = settings.channels.findIndex(ch => {
                     if(ch.category !== channel.category) return false;
                     return ch.i === i;
                 });
-                const nextChannelIndex = _this.settings.channels.findIndex(ch => {
+                const nextChannelIndex = settings.channels.findIndex(ch => {
                     if(ch.category !== channel.category) return false;
                     return ch.i === i + 1;
                 });
 
                 if(currentChannelIndex === -1 || nextChannelIndex === -1) return;
-                _this.settings.channels[currentChannelIndex].i = i + 1;
-                _this.settings.channels[nextChannelIndex].i = i;
+                settings.channels[currentChannelIndex].i = i + 1;
+                settings.channels[nextChannelIndex].i = i;
 
-                _this.renderChannels();
+                renderChannels();
             });
 
-            _this.initButton(channelElement, translateFunc.get("Edit"), () => {
+            initButton(channelElement, translateFunc.get("Edit"), () => {
                 categoriesContainer.querySelectorAll("div").forEach(div => div.style.border = "");
                 channelElement.style.border = "3px dotted var(--accent)";
-                renderEditChannel(_this, channel); 
+                renderEditChannel(channel); 
             });
 
             categoryDiv.appendChild(channelElement);
-            _this.addSeparator(categoryDiv, 10);
+            addSeparator(categoryDiv, 10);
         });
 
         categoriesContainer.appendChild(categoryDiv);
     });
 }
 
-export const renderEditChannel = function(_this, channel){
-    const containerElement = _this.editChannelDiv;
+/**
+ * Renders the edit channel interface, allowing users to modify channel details
+ * such as name, description, roles, and subscriptions. Provides options to save,
+ * cancel, or delete the channel. Handles permission settings for each role and
+ * displays subscribed channels with the option to unsubscribe.
+ * 
+ * @param {Channel} channel The channel object to edit.
+ */
+
+export const renderEditChannel = function(channel){
+    const containerElement = rs_data.html.editChannel;
+    const settings = rs_data.settings;
     containerElement.innerHTML = `<h1>${translateFunc.get("Edit channel")}</h1>`;
 
-    const nameInp = _this.initInputText(containerElement, translateFunc.get("Name"), channel.name);
-    const descInp = _this.initInputText(containerElement, translateFunc.get("Description"), channel.desc || "");
+    const nameInp = initInputText(containerElement, translateFunc.get("Name"), channel.name);
+    const descInp = initInputText(containerElement, translateFunc.get("Description"), channel.desc || "");
 
     const flags = vars_channelsFlags();
 
@@ -154,23 +182,25 @@ export const renderEditChannel = function(_this, channel){
         summary.innerHTML = role.name;
         details.appendChild(summary);
         let roleRp = channel.rp.find(rp => rp.startsWith(role._id));
+        // @ts-ignore: roleRp is string
         roleRp = roleRp ? parseInt(roleRp.split("/")[1]) : 0;
 
         flags.forEach((perm, i) => {
+            // @ts-ignore: i is number
             const checked = roleRp & (1 << i);
-            const checkbox = _this.initCheckbox(details, perm, checked);
+            const checkbox = initCheckbox(details, perm, !!checked);
             checkbox.setAttribute("data-role", role._id);
-            checkbox.setAttribute("data-perm", i);
+            checkbox.setAttribute("data-perm", i.toString());
         });
         containerElement.appendChild(details);
-        _this.addSeparator(details, 5);
+        addSeparator(details, 5);
     }
 
-    _this.settings.roles.forEach(renderRole);
+    settings.roles.forEach(renderRole);
 
-    const subscribed = _this.settings.addons.subscribedChannels.filter(tc => tc.tc === channel.chid);
+    const subscribed = settings.addons.subscribedChannels.filter(tc => tc.tc === channel.chid);
     if(subscribed.length > 0){
-        _this.addSeparator(containerElement, 10);
+        addSeparator(containerElement, 10);
 
         const details = document.createElement("details");
         const summary = document.createElement("summary");
@@ -189,8 +219,8 @@ export const renderEditChannel = function(_this, channel){
             unsubscribe.addEventListener("click", () => {
                 const conf = confirm(translateFunc.get("Are you sure you want to unsubscribe from $?", apis.www.changeChat(sub.sr) + " - " + sub.name));
                 if(!conf) return;
-                socket.emit("realm.event.channel.unsubscribe", sub.sr, sub.sc, _this.realmId, sub.tc);
-                _this.settings.addons.subscribedChannels = _this.settings.addons.subscribedChannels.filter(s => s !== sub);
+                socket.emit("realm.event.channel.unsubscribe", sub.sr, sub.sc, rs_data.realmId, sub.tc);
+                settings.addons.subscribedChannels = settings.addons.subscribedChannels.filter(s => s !== sub);
                 li.remove();
             });
             li.appendChild(unsubscribe);
@@ -203,21 +233,23 @@ export const renderEditChannel = function(_this, channel){
     }
     
 
-    _this.addSeparator(containerElement, 15);
-    _this.initButton(containerElement, translateFunc.get("Save"), () => {
+    addSeparator(containerElement, 15);
+    initButton(containerElement, translateFunc.get("Save"), () => {
         channel.name = nameInp.value;
         const desc = descInp.value;
         channel.desc = desc.trim() === "" ? undefined : desc;
-        const roles = _this.settings.roles;
+        const roles = settings.roles;
         const rolesMap = new Map();
         roles.forEach(role => rolesMap.set(role._id, 0));
 
         containerElement.querySelectorAll("input[type=checkbox][data-role][data-perm]").forEach(checkbox => {
+            // @ts-ignore: checkbox is HTMLInputElement
             if(!checkbox.checked) return;
             const role = checkbox.getAttribute("data-role");
             const perm = checkbox.getAttribute("data-perm");
             
             const allPerm = rolesMap.get(role);
+            // @ts-ignore: perm is string
             const number = 1 << parseInt(perm);
             rolesMap.set(role, allPerm | number);
         });
@@ -226,20 +258,20 @@ export const renderEditChannel = function(_this, channel){
             .filter(([, value]) => value !== 0)
             .map(([key, value]) => `${key}/${value}`);
 
-        _this.renderChannels();
+        renderChannels();
         containerElement.fadeOut();
     });
 
-    _this.initButton(containerElement, translateFunc.get("Cancel"), () => {
-        _this.renderChannels();
+    initButton(containerElement, translateFunc.get("Cancel"), () => {
+        renderChannels();
         containerElement.fadeOut();
     });
 
-    _this.initButton(containerElement, translateFunc.get("Delete"), () => {
-        const index = _this.settings.channels.findIndex(ch => ch === channel);
+    initButton(containerElement, translateFunc.get("Delete"), () => {
+        const index = settings.channels.findIndex(ch => ch === channel);
         if(index !== -1){
-            _this.settings.channels.splice(index, 1);
-            _this.renderChannels();
+            settings.channels.splice(index, 1);
+            renderChannels();
             containerElement.fadeOut();
         }
     });
@@ -247,27 +279,34 @@ export const renderEditChannel = function(_this, channel){
     containerElement.fadeIn();
 }
 
-export const renderEditCategory = function(_this, category){
-    const containerElement = _this.editChannelDiv;
+/**
+ * Renders a form to edit the given category.
+ * @param {Category} category The category to edit
+ */
+export const renderEditCategory = function(category){
+    const settings = rs_data.settings;
+    if(!settings || !settings.categories) return debugFunc.msg("No settings data");
+
+    const containerElement = rs_data.html.editChannel;
     containerElement.innerHTML = `<h1>${translateFunc.get("Edit category")}</h1>`;
 
-    const nameInput = _this.initInputText(containerElement, translateFunc.get("Name"), category.name);
+    const nameInput = initInputText(containerElement, translateFunc.get("Name"), category.name);
 
-    _this.addSeparator(containerElement, 15);
-    _this.initButton(containerElement, translateFunc.get("Save"), () => {
-        _this.settings.categories.find(cat => cat === category).name = nameInput.value;
-        _this.renderChannels();
+    addSeparator(containerElement, 15);
+    initButton(containerElement, translateFunc.get("Save"), () => {
+        category.name = nameInput.value;
+        renderChannels();
         containerElement.fadeOut();
     });
-    _this.initButton(containerElement, translateFunc.get("Cancel"), () => {
-        _this.renderChannels();
+    initButton(containerElement, translateFunc.get("Cancel"), () => {
+        renderChannels();
         containerElement.fadeOut();
     });
-    _this.initButton(containerElement, translateFunc.get("Delete"), () => {
-        const index = _this.settings.categories.findIndex(cat => cat.cid === category.cid);
+    initButton(containerElement, translateFunc.get("Delete"), () => {
+        const index = settings.categories.findIndex(cat => cat.cid === category.cid);
         if(index !== -1){
-            _this.settings.categories.splice(index, 1);
-            _this.renderChannels();
+            settings.categories.splice(index, 1);
+            renderChannels();
             containerElement.fadeOut();
         }
     });
