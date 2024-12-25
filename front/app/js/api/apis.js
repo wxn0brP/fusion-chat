@@ -86,7 +86,11 @@ const apis = {
         },
         apiType: "",
     },
-    api: {}
+    api: {
+        send(data){
+            debugFunc.msg("default api: "+JSON.stringify(data));
+        }
+    }
 }
 
 export default apis;
