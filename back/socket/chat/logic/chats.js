@@ -8,8 +8,8 @@ export async function realm_get(suser){
 
     for(let i = 0; i < realms.length; i++){
         const realm = realms[i];
-        const serverSet = await global.db.realmConf.findOne(realm.realm, { _id: 'set' });
-        realm.img = serverSet.img || false;
+        const realmSet = await global.db.realmConf.findOne(realm.realm, { _id: 'set' });
+        realm.img = realmSet.img || false;
     }
 
     return { err: false, res: realms };

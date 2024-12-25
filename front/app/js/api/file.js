@@ -69,7 +69,7 @@ const fileFunc = {
         fileFunc.read(opt);
     },
 
-    server(file, id){
+    realm(file, id){
         const opt = {
             file,
             callback: () => {
@@ -79,7 +79,7 @@ const fileFunc = {
             maxName: 60,
             endpoint: "/api/realm/profile/upload",
             addionalFields: (xhr, formData) => {
-                xhr.setRequestHeader("serverid", id);
+                xhr.setRequestHeader("realm", id);
             }
         }
 
@@ -96,7 +96,7 @@ const fileFunc = {
             maxName: 100,
             endpoint: "/api/emoji/upload",
             addionalFields: (xhr, formData) => {
-                xhr.setRequestHeader("server", realmId);
+                xhr.setRequestHeader("realm", realmId);
             }
         };
 

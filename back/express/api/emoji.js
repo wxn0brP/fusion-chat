@@ -10,7 +10,7 @@ import Permissions from "../../logic/permission-system/permBD.js";
 
 const router = Router();
 
-const baseServerPath = "userFiles/realms";
+const baseRealmPath = "userFiles/realms";
 const formats = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
 
 const storage = memoryStorage();
@@ -25,8 +25,8 @@ const upload = multer({
     }
 }).single("file");
 
-async function checkUserPermission(userId, server){
-    const permSys = new permissionSystem(server);
+async function checkUserPermission(userId, realm){
+    const permSys = new permissionSystem(realm);
     const userPerm = await permSys.canUserPerformAnyAction(
         userId,
         [Permissions.admin, Permissions.manageEmojis]
@@ -34,7 +34,7 @@ async function checkUserPermission(userId, server){
     return userPerm;
 }
 
-async function getServerEmoji(realmId){
+async function getRealmEmoji(realmId){
     const emoji = await global.db.realmConf.find(realmId, { $exists: { unicode: true }});
     return emoji;
 }
@@ -84,29 +84,29 @@ function uploadEmoji(basePath, unicode, req, res){
 
 router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => {
     const userId = req.user;
-    const server = req.headers.server;
-    if(!server) return res.status(400).json({ err: true, msg: "No server id provided." });
-    if(!valid.id(server)) return res.status(400).json({ err: true, msg: "Invalid server id." });
+    const realm = req.headers.realm;
+    if(!realm) return res.status(400).json({ err: true, msg: "No realm id provided." });
+    if(!valid.id(realm)) return res.status(400).json({ err: true, msg: "Invalid realm id." });
 
     try{
-        const userPerm = await checkUserPermission(userId, server);
+        const userPerm = await checkUserPermission(userId, realm);
         if(!userPerm) return res.status(403).json({ err: true, msg: "You do not have permission to do that." });
     }catch(err){
         return res.status(500).json({ err: true, msg: "You do not have permission to do that." });
     }
 
-    const serverEmoji = await getServerEmoji(server);
-    const serverEmojiUnicode = serverEmoji.map(emoji => emoji.unicode);
+    const realmEmoji = await getRealmEmoji(realm);
+    const realmEmojiUnicode = realmEmoji.map(emoji => emoji.unicode);
 
     const emojiUnicodes = generatePrivateUseArea();
-    const availablesUnicodes = emojiUnicodes.filter(unicode => !serverEmojiUnicode.includes(unicode));
+    const availablesUnicodes = emojiUnicodes.filter(unicode => !realmEmojiUnicode.includes(unicode));
 
     if(availablesUnicodes.length === 0){
         return res.status(400).json({ err: true, msg: "Emoji limit reached." });
     }
 
     const unicode = availablesUnicodes[0];
-    const basePath = join(baseServerPath, server, "emojis");
+    const basePath = join(baseRealmPath, realm, "emojis");
 
     if(!existsSync(basePath)){
         mkdirSync(basePath, { recursive: true });
@@ -120,7 +120,7 @@ router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => 
         name: "new emoji",
     };
 
-    await global.db.realmConf.add(server, newEmoji, false);    
+    await global.db.realmConf.add(realm, newEmoji, false);    
 
     res.json({ err: false, msg: "Emoji uploaded successfully." });
 });

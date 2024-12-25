@@ -21,46 +21,46 @@ export const renderMeta = function(){
     const meta = settings.meta;
     const tmpData = {};
 
-    const nameInput = initInputText(metaDiv, translateFunc.get("Server name"), meta.name);
+    const nameInput = initInputText(metaDiv, translateFunc.get("Realm name"), meta.name);
 
     addSeparator(metaDiv, 10);
 
-    const serverImg = document.createElement("img");
-    serverImg.id = "settings__serverImg";
-    if(meta.img) serverImg.src = "/userFiles/realms/" + rs_data.realmId + ".png";
-    else serverImg.style.display = "none";
-    metaDiv.appendChild(serverImg);
+    const realmImg = document.createElement("img");
+    realmImg.id = "settings__realmImg";
+    if(meta.img) realmImg.src = "/userFiles/realms/" + rs_data.realmId + ".png";
+    else realmImg.style.display = "none";
+    metaDiv.appendChild(realmImg);
 
-    const serverImgFile = document.createElement("input");
-    serverImgFile.type = "file";
-    serverImgFile.accept = vars.uploadImgTypes.join(", ");
-    serverImgFile.addEventListener("change", e => {
+    const realmImgFile = document.createElement("input");
+    realmImgFile.type = "file";
+    realmImgFile.accept = vars.uploadImgTypes.join(", ");
+    realmImgFile.addEventListener("change", e => {
         // @ts-ignore
         tmpData.img = e.target.files[0];
         // @ts-ignore
-        serverImg.src = URL.createObjectURL(e.target.files[0]);
-        serverImg.style.display = "";
+        realmImg.src = URL.createObjectURL(e.target.files[0]);
+        realmImg.style.display = "";
     });
 
-    metaDiv.appendChild(serverImgFile);
+    metaDiv.appendChild(realmImgFile);
     addSeparator(metaDiv, 5);
     initButton(metaDiv, translateFunc.get("Remove image"), () => {
-        serverImg.style.display = "none";
+        realmImg.style.display = "none";
         meta.img = false;
     });
 
     addSeparator(metaDiv, 15);
     
-    initButton(metaDiv, translateFunc.get("Delete server"), async () => {
-        const result = confirm(translateFunc.get("Are you sure you want to delete _this server? ($)", meta.name));
+    initButton(metaDiv, translateFunc.get("Delete realm"), async () => {
+        const result = confirm(translateFunc.get("Are you sure you want to delete this realm? ($)", meta.name));
         if(!result) return;
-        const result2 = confirm(translateFunc.get("Are you sure you want to delete all data of _this server? ($)", meta.name));
+        const result2 = confirm(translateFunc.get("Are you sure you want to delete all data of this realm? ($)", meta.name));
         if(!result2) return;
-        const result3 = confirm(translateFunc.get("Are you sure you want to delete all messages of _this server? ($)", meta.name));
+        const result3 = confirm(translateFunc.get("Are you sure you want to delete all messages of this realm? ($)", meta.name));
         if(!result3) return;
 
-        const name = await uiFunc.prompt("Confirm server name");
-        if(name !== meta.name) return uiFunc.uiMsg(translateFunc.get("Wrong server name"));
+        const name = await uiFunc.prompt("Confirm realm name");
+        if(name !== meta.name) return uiFunc.uiMsg(translateFunc.get("Wrong realm name"));
 
         rs_data._this.exitWithoutSaving();
         coreFunc.changeChat("main");
@@ -73,7 +73,7 @@ export const renderMeta = function(){
         settings.meta.name = nameInput.value;
 
         if(tmpData.img){
-            fileFunc.server(tmpData.img, rs_data.realmId);
+            fileFunc.realm(tmpData.img, rs_data.realmId);
         }
     }
 }

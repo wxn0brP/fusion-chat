@@ -11,10 +11,10 @@ export async function realm_setup(suser, id){
     const validE = new ValidError("realm.setup");
     if(!valid.id(id)) return validE.valid("id");
 
-    const serverMeta = await global.db.realmConf.findOne(id, { _id: "set" });
-    if(!serverMeta) return validE.err("server does not exist");
+    const realmMeta = await global.db.realmConf.findOne(id, { _id: "set" });
+    if(!realmMeta) return validE.err("realm does not exist");
     
-    const name = serverMeta.name;
+    const name = realmMeta.name;
     const permSys = new permissionSystem(id);
 
     const buildChannels = [];
@@ -88,12 +88,12 @@ export async function realm_delete(suser, id, name){
     if(!valid.id(id)) return validE.valid("id");
     if(!valid.str(name, 0, 30)) return validE.valid("name");
 
-    const serverMeta = await global.db.realmConf.findOne(id, { _id: "set" });
-    if(serverMeta.name != name) return validE.valid("name");
+    const realmMeta = await global.db.realmConf.findOne(id, { _id: "set" });
+    if(realmMeta.name != name) return validE.valid("name");
 
     const permSys = new permissionSystem(id);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if(!userPerm) return validE.err("You don't have permission to edit this server");
+    if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
     const users = await global.db.realmUser.find(id, {}).then(users => users.map(u => u.u));
     for(const user of users) await global.db.userData.removeOne(user, { realm: id });
@@ -120,7 +120,7 @@ export async function realm_user_kick(suser, realmId, uid, ban=false){
         Permissions.banUser,
         Permissions.kickUser
     ]);
-    if(!userPerm) return validE.err("You don't have permission to edit this server");
+    if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
     await global.db.userData.removeOne(uid, { realm: realmId });
     await global.db.realmUser.removeOne(realmId, { uid });
@@ -144,7 +144,7 @@ export async function realm_user_unban(suser, realmId, uid){
         Permissions.admin,
         Permissions.banUser
     ]);
-    if(!userPerm) return validE.err("You don't have permission to edit this server");
+    if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
     await global.db.realmUser.removeOne(realmId, { ban: uid });
     return { err: false };
@@ -167,7 +167,7 @@ export async function realm_event_channel_subscribe(suser, sourceRealmId, source
 
     const permSys = new permissionSystem(targetRealmId);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if(!userPerm) return validE.err("You don't have permission to edit this server");
+    if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
     const data = {
         sr: sourceRealmId,
@@ -194,7 +194,7 @@ export async function realm_event_channel_unsubscribe(suser, sourceRealmId, sour
 
     const permSys = new permissionSystem(targetRealmId);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if(!userPerm) return validE.err("You don't have permission to edit this server");
+    if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
     await global.db.realmData.removeOne("events.channels", {
         sr: sourceRealmId,
@@ -226,7 +226,7 @@ export async function realm_event_channel_list(suser, realmId){
 
     const permSys = new permissionSystem(realmId);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if(!userPerm) return validE.err("You don't have permission to edit this server");
+    if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
     const subscribedChannels = await global.db.realmData.find("events.channels", { tr: realmId });
     const channels = await global.db.realmConf.find(
@@ -264,7 +264,7 @@ export async function realm_thread_create(suser, realmId, channelId, name, reply
     if(replyMsgId && !valid.id(replyMsgId)) return validE.valid("replyMsgId");
 
     const perms = await getChnlPerm(suser._id, realmId, channelId);
-    if(!perms.threadCreate) return validE.err("You don't have permission to edit this server");
+    if(!perms.threadCreate) return validE.err("You don't have permission to edit this realm");
 
     const threadObj = {
         thread: channelId,
@@ -289,7 +289,7 @@ export async function realm_thread_delete(suser, realmId, threadId){
     if(!valid.id(threadId)) return validE.valid("threadId");
 
     const perms = await getChnlPerm(suser._id, realmId, threadId);
-    if(!perms.threadCreate) return validE.err("You don't have permission to edit this server");
+    if(!perms.threadCreate) return validE.err("You don't have permission to edit this realm");
     
     const thread = await global.db.realmData.findOne(realmId, { _id: threadId });
     if(!thread) return validE.err("thread does not exist");
@@ -317,7 +317,7 @@ export async function realm_thread_list(suser, realmId, channelId){
     if(!valid.id(channelId)) return validE.valid("channelId");
 
     const perms = await getChnlPerm(suser._id, realmId, channelId);
-    if(!perms.threadView) return validE.err("You don't have permission to edit this server");
+    if(!perms.threadView) return validE.err("You don't have permission to edit this realm");
 
     const threads = await global.db.realmData.find(realmId, { thread: channelId });
     return { err: false, res: threads };

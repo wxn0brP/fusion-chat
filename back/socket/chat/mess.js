@@ -83,18 +83,18 @@ export default (socket) => {
         }
     });
 
-    socket.onLimit("message.react", 100, async (server, msgId, react) => {
+    socket.onLimit("message.react", 100, async (realm, msgId, react) => {
         try{
-            const { err } = await message_react(socket.user, server, msgId, react);
+            const { err } = await message_react(socket.user, realm, msgId, react);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.onLimit("message.search", 1000, async (server, chnl, query, cb) => {
+    socket.onLimit("message.search", 1000, async (realm, chnl, query, cb) => {
         try{
-            const { err, res } = await message_search(socket.user, server, chnl, query);
+            const { err, res } = await message_search(socket.user, realm, chnl, query);
             if(err) return socket.emit(...err);
             if(cb) cb(res);
             else socket.emit("message.search", res);
@@ -103,18 +103,18 @@ export default (socket) => {
         }
     });
 
-    socket.onLimit("message.pin", 1000, async (server, chnl, msgId, pin) => {
+    socket.onLimit("message.pin", 1000, async (realm, chnl, msgId, pin) => {
        try{
-           const { err } = await message_pin(socket.user, server, chnl, msgId, pin);
+           const { err } = await message_pin(socket.user, realm, chnl, msgId, pin);
            if(err) return socket.emit(...err);
        }catch(e){
            socket.logError(e);
        }
     });
 
-    socket.onLimit("message.fetch.pinned", 1000, async (server, chnl, cb) => {
+    socket.onLimit("message.fetch.pinned", 1000, async (realm, chnl, cb) => {
         try{
-            const { err, res } = await message_fetch_pinned(socket.user, server, chnl);
+            const { err, res } = await message_fetch_pinned(socket.user, realm, chnl);
             if(err) return socket.emit(...err);
             if(cb) cb(res);
             else socket.emit("message.fetch.pinned", res);

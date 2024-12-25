@@ -44,7 +44,7 @@ export default async function realm_settings_get(suser, id, sections=[]){
     const userPerms = await permSystem.getUserPermissions(suser._id);
     
     if(!hasRequiredPermissions(userPerms)){
-        return validator.err("You don't have permission to edit this server");
+        return validator.err("You don't have permission to edit this realm");
     }
 
     const data = {
@@ -61,11 +61,11 @@ export default async function realm_settings_get(suser, id, sections=[]){
 
 
 /**
- * Checks if a user has the required permissions to access server settings.
+ * Checks if a user has the required permissions to access realm settings.
  * @param {number} userPerms - The user"s permissions
  * @returns {boolean} True if the user has the required permissions
  */
-function hasRequiredPermissions(userPerms) {
+function hasRequiredPermissions(userPerms){
     const requiredPerms = [
         Permissions.admin,
         Permissions.manageEmojis,

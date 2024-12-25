@@ -179,7 +179,7 @@ const renderFunc = {
                         "</p>"
                     : ""}
             `.trim();
-            renderFunc.serverUserStatus(data._id, Object.assign({}, data.activity));
+            renderFunc.realmUserStatus(data._id, Object.assign({}, data.activity));
             if(act.startTime){
                 const timeP = activityDiv.querySelector("#userProfileActivityTime");
                 function update(){
@@ -243,7 +243,7 @@ const renderFunc = {
                 socket.emit("realm.settings.get", sid);
                 // settingsFunc.showrealmSettings({}, sid);
             });
-            settingsBtn.id = "serverSettingsBtn";
+            settingsBtn.id = "realmSettingsBtn";
             navHTML.realms__name.appendChild(settingsBtn);
         }
 
@@ -305,7 +305,7 @@ const renderFunc = {
     
         navHTML.realms__channels.innerHTML = "";
         if(categories.length === 0 || categories.every(category => category.chnls.length === 0)){
-            navHTML.realms__channels.innerHTML = "No channels in this server";
+            navHTML.realms__channels.innerHTML = "No channels in this realm";
             vars.chat.chnl = null;
             return;
         }
@@ -405,11 +405,11 @@ const renderFunc = {
 
             userDiv.appendChild(textContainer);
             navHTML.realms__users.appendChild(userDiv);
-            renderFunc._serverUserStatus(userID);
+            renderFunc._realmUserStatus(userID);
         });
     },
 
-    _serverUserStatus(id){
+    _realmUserStatus(id){
         const ele = document.querySelector("#user_status_"+utils.escape(id));
         if(!ele) return;
         const data = vars.apisTemp.user_status[id];
@@ -423,13 +423,13 @@ const renderFunc = {
         ele.innerHTML = act.state + " | " + act.name;
     },
 
-    serverUserStatus(id, state){
+    realmUserStatus(id, state){
         let { text, activity } = state;
         const temp = vars.apisTemp.user_status;
         if(!temp[id]){
             const userStatus = temp[id] = {};
-            userStatus.text = renderUtils.createUpdater(() => renderFunc._serverUserStatus(id), text ?? "");
-            userStatus.activity = renderUtils.createUpdater(() => renderFunc._serverUserStatus(id), activity ?? {});
+            userStatus.text = renderUtils.createUpdater(() => renderFunc._realmUserStatus(id), text ?? "");
+            userStatus.activity = renderUtils.createUpdater(() => renderFunc._realmUserStatus(id), activity ?? {});
         }
 
         if(text) temp[id].text.set(text);

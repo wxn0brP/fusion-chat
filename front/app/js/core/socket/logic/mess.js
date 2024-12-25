@@ -106,8 +106,8 @@ export function message_edit(id, msg, time){
     messStyle.hideFromMessageInfo();
 }
 
-export function message_react(uid, server, messId, react){
-    if(vars.chat.to != server) return;
+export function message_react(uid, realm, messId, react){
+    if(vars.chat.to != realm) return;
     
     const mess = document.querySelector("#mess__"+messId);
     if(!mess) return;
@@ -120,7 +120,7 @@ export function message_react(uid, server, messId, react){
         span.innerHTML = react + " 1";
         span.title = apis.www.changeUserID(uid);
         span.addEventListener("click", () => {
-            socket.emit("message.react", server, messId, react);
+            socket.emit("message.react", realm, messId, react);
         });
         mess.querySelector(".mess_reacts").appendChild(span);
         messStyle.styleMessReacts(mess.querySelector(".mess_reacts"));

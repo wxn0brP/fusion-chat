@@ -85,10 +85,10 @@ export async function refreshData(settings, ...moreData){
         events = [settings];
     }else
     if(typeof settings == "object"){
-        const { server, chnl, evt, wait } = settings;
+        const { realm, chnl, evt, wait } = settings;
         events = typeof evt == "string" ? [evt] : Array.isArray(evt) ? evt : [];
 
-        if(server && server != vars.chat.to && server !== "*") return;
+        if(realm && realm != vars.chat.to && realm !== "*") return;
         if(chnl && chnl != vars.chat.chnl && chnl !== "*") return;
         if(wait) await delay(wait);
     }
@@ -122,7 +122,7 @@ export function realm_users_sync(users, roles){
     vars.realm.roles = roles;
     renderFunc.usersInChat();
     users.forEach(user => {
-        renderFunc.serverUserStatus(user.uid, { activity: Object.assign({}, user.activity) });
+        renderFunc.realmUserStatus(user.uid, { activity: Object.assign({}, user.activity) });
         delete user.activity;
     })
 }

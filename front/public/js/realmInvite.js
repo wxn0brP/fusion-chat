@@ -59,7 +59,7 @@ async function main(){
         break;
         case 2:
             changeState("error");
-            state.error.innerHTML = "You are banned from this server";
+            state.error.innerHTML = "You are banned from this realm";
         break;
     }
 }

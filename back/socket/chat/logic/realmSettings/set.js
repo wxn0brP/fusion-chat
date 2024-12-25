@@ -2,7 +2,7 @@ import valid from "../../../../logic/validData.js";
 import ValidError from "../../../../logic/validError.js";
 import permissionSystem from "../../../../logic/permission-system/index.js";
 import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permBD.js";
-import setServerSettingsData from "../../valid/realmsSettings.js";
+import setRealmSettingsData from "../../valid/realmsSettings.js";
 import cpu from "./set/cpu.js";
 
 const sect_req_perms = {
@@ -23,14 +23,14 @@ const db_data_req_sect = [
     "webhooks"
 ];
 
-const setServerSettingsSchema = valid.objAjv(setServerSettingsData);
+const setRealmSettingsSchema = valid.objAjv(setRealmSettingsData);
 
 
 /**
- * Updates server settings based on user input
+ * Updates realm settings based on user input
  * @param {Object} suser - Session user object
  * @param {string} id - Realm ID
- * @param {Object} data - Settings data to update. Valid sections and properties are defined in setServerSettingsData
+ * @param {Object} data - Settings data to update. Valid sections and properties are defined in setRealmSettingsData
  * @returns {Promise<Object>} Error message on failure or confirmation of success
  */
 export default async function realm_settings_set(suser, id, data){
@@ -38,8 +38,8 @@ export default async function realm_settings_set(suser, id, data){
     
     // Validate basic input
     if(!valid.id(id)) return validE.valid("id");
-    if(!validateData(data, setServerSettingsSchema)){
-        return validE.valid("data", setServerSettingsSchema.errors);
+    if(!validateData(data, setRealmSettingsSchema)){
+        return validE.valid("data", setRealmSettingsSchema.errors);
     }
 
     // Validate user permissions
@@ -135,7 +135,7 @@ async function processAllSections(id, data, dbData, suser){
  */
 function notifyUsersAboutChanges(id, sections){
     global.sendToChatUsers(id, "refreshData", {
-        server: id,
+        realm: id,
         evt: [
             "realm.setup",
             "realm.users.sync"
