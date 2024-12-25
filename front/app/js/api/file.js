@@ -94,7 +94,7 @@ const fileFunc = {
             },
             maxSize: 4*1024*1024,
             maxName: 100,
-            endpoint: "/api/uploadEmoji",
+            endpoint: "/api/emoji/upload",
             addionalFields: (xhr, formData) => {
                 xhr.setRequestHeader("server", realmId);
             }
