@@ -41,26 +41,22 @@ async function main(){
         return;
     }
 
-    switch(bot.state){
-        case 0:
-            changeState("invite");
-            document.querySelector("#botName").innerHTML = bot.data.name;
+    changeState("invite");
+    document.querySelector("#botName").innerHTML = bot.data.name;
 
-            const realmSelect = document.querySelector("#realmSelect");
-            if(!realmSelect) return;
-            if(bot.data.realms.length == 0){
-                changeState("error");
-                state.error.innerHTML = "No available realms to invite";
-                break;
-            }
-            bot.data.realms.forEach(realm => {
-                const option = document.createElement("option");
-                option.value = realm;
-                fetch("/api/id/chat?chat="+realm).then(res => res.json()).then(res => option.innerHTML = res.name);
-                realmSelect.appendChild(option);
-            });
-        break;
+    const realmSelect = document.querySelector("#realmSelect");
+    if(!realmSelect) return;
+    if(bot.data.realms.length == 0){
+        changeState("error");
+        state.error.innerHTML = "No available realms to invite";
+        return;
     }
+    bot.data.realms.forEach(realm => {
+        const option = document.createElement("option");
+        option.value = realm;
+        fetch("/api/id/chat?chat="+realm).then(res => res.json()).then(res => option.innerHTML = res.name);
+        realmSelect.appendChild(option);
+    });
 }
 
 function invite(){

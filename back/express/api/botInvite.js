@@ -26,7 +26,7 @@ router.get("/meta", global.authenticateMiddleware, async (req, res) => {
     const availablerealms = userRealms.filter(s => !botRealms.includes(s.realm)).map(s => s.realm);
     botRes.realms = availablerealms;
 
-    res.json({ err: false, state: 0, data: botRes });
+    res.json({ err: false, data: botRes });
 });
 
 export default router;
