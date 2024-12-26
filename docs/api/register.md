@@ -39,7 +39,7 @@ Always 200, but returns a JSON response used flag `err`.
 ```
 
 
-## POST /api/register-code
+## POST /api/register/verify
 
 ### Description
 Register a new user. 2nd step.

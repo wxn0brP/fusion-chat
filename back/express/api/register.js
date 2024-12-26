@@ -42,12 +42,17 @@ router.post("/register", async function(req, res){
     res.json({ err: false, msg: "Verification code sent" });
 });
 
-router.post("/register-code", async function(req, res){
+router.post("/register/verify", async function(req, res){
     if(!req.session.tmp_user) return res.json({ err: true, msg: "No authentication data found" });
     const { verificationCode } = req.session.tmp_user;
 
     const codeFromRequest = req.body.code;
     if(!codeFromRequest) return res.json({ err: true, msg: "Verification code is required" });
+
+    if(req.session.tmp_user.attemptsLeft <= 0){
+        delete req.session.tmp_user;
+        return res.json({ err: true, msg: "Too many attempts" });
+    }
 
     if(codeFromRequest !== verificationCode){
         req.session.tmp_user.attemptsLeft -= 1;
