@@ -14,6 +14,7 @@ import formatFunc from "../../mess/format.js";
 import translateFunc from "../../../utils/translate.js";
 import utils from "../../../utils/utils.js";
 import messInteract from "../../mess/interact.js";
+import render_dm from "../../../ui/render/dm.js";
 
 export function mess(data){
     // generate last message storage if needed
@@ -33,14 +34,14 @@ export function mess(data){
 
         if(vars.settings.notifications) utils.sendNotification(title, data.msg, { msg: data });
     }
-    if(isPrivateChat) renderFunc.privs();
+    if(isPrivateChat) render_dm.chats();
 
     // end if not in chat
     if(vars.chat.to !== data.to || vars.chat.chnl !== data.chnl) return;
 
     // update last message read
     vars.lastMess[data.to][data.chnl].read = data._id;
-    if(isPrivateChat) renderFunc.privsRead();
+    if(isPrivateChat) render_dm.privsRead();
 
     // add message to chat
     messFunc.addMess(data);

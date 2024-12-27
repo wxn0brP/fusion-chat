@@ -5,7 +5,8 @@ import translateFunc from "../../utils/translate.js";
 import vars from "../../var/var.js";
 import apis from "../../api/apis.js";
 import socket from "../../core/socket/socket.js";
-import renderFunc from "../components/renders.js";
+import render_user from "../render/user.js";
+import uiFunc from "../helpers/uiFunc.js";
 
 const settingsData = {
     user: () => [
@@ -183,13 +184,13 @@ const settingsData = {
         }
         if(settings["Status"] != undefined || settings["Status text"] != undefined){
             socket.emit("status.update", vars.user.status, vars.user.statusText);
-            renderFunc.localUserProfile();
+            render_user.localUserProfile();
         }
 
         if(settings["Nickname"] != undefined){
             socket.emit("profile.set_nickname", settings["Nickname"]);
             vars.apisTemp.user.main[vars.user._id] = settings["Nickname"];
-            renderFunc.localUserProfile();
+            render_user.localUserProfile();
         }
 
         const lang = settings["Language"];

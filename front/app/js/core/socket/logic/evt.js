@@ -3,10 +3,12 @@ hub("socket/evt");
 
 import socket from "../socket.js";
 import vars from "../../../var/var.js";
-import renderFunc from "../../../ui/components/renders.js";
 import debugFunc from "../../debug.js";
 import uiFunc from "../../../ui/helpers/uiFunc.js";
 import translateFunc from "../../../utils/translate.js";
+import render_user from "../../../ui/render/user.js";
+import render_dm from "../../../ui/render/dm.js";
+import render_realm from "../../../ui/render/realm.js";
 
 export function connect(){
     debugFunc.msg("connected to socket");
@@ -102,7 +104,7 @@ export async function refreshData(settings, ...moreData){
 export function self_status_get(status, text){
     vars.user.status = status;
     vars.user.statusText = text;
-    renderFunc.localUserProfile();
+    render_user.localUserProfile();
 }
 
 export function message_markAsRead(to, chnl, id){
@@ -113,16 +115,16 @@ export function message_markAsRead(to, chnl, id){
         vars.lastMess[to][chnl] = vars.lastMess[to][chnl] || { read: null, mess: null };
 
         vars.lastMess[to][chnl].read = id;
-        if(to.startsWith("$")) renderFunc.privs();
+        if(to.startsWith("$")) render_dm.chats();
     }catch{}
 }
 
 export function realm_users_sync(users, roles){
     vars.realm.users = users;
     vars.realm.roles = roles;
-    renderFunc.usersInChat();
+    render_realm.usersInChat();
     users.forEach(user => {
-        renderFunc.realmUserStatus(user.uid, { activity: Object.assign({}, user.activity) });
+        render_realm.realmUserStatus(user.uid, { activity: Object.assign({}, user.activity) });
         delete user.activity;
     })
 }

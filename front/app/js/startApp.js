@@ -14,6 +14,7 @@ await import("./init/features.js");
 await import("./ui/components/media.js");
 await import("./ui/components/voice.js");
 await import("./ui/settings/settings.js");
+await import("./ui/render/socket.js");
 
 // ui interact
 await import("./ui/interact/context.js");

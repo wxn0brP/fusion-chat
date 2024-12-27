@@ -4,13 +4,13 @@ hub("coreFunc");
 import vars from "../var/var.js";
 import apis from "../api/apis.js";
 import utils from "../utils/utils.js";
-import renderFunc from "../ui/components/renders.js";
 import socket from "./socket/socket.js";
 import emojiFunc from "../ui/components/emoji.js";
 import mainView from "../ui/components/mainView.js";
 import translateFunc from "../utils/translate.js";
 
 import { navHTML, coreHTML, messHTML, mainViewHTML, mglVar } from "../var/html.js";
+import { renderState } from "../ui/render/var.js";
 
 const coreFunc = {
     changeChat(id, chnl=null){
@@ -71,7 +71,7 @@ const coreFunc = {
             messHTML.nav_priv.style.display = "none";
             messHTML.nav_realm.style.display = "";
             vars.chat.chnl = chnl;
-            renderFunc.state.chnl_user = false;
+            renderState.chnl_user = false;
             navHTML.realms__channels.style.display = "";
             navHTML.realms__users.style.display = "none";
             socket.emit("realm.setup", id);

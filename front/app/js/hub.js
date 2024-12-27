@@ -34,7 +34,6 @@ const required = [
         "emoji",
         "mainView",
         "media",
-        "renders",
         "voice",
     // helpers
         "stateManager",
@@ -44,6 +43,14 @@ const required = [
         "interact/mainView",
         "interact/relations",
         "interact/subscribeEventChnl",
+    // render
+        "render/dm",
+        "render/realm",
+        "render/realmInit",
+        "render/socket",
+        "render/user",
+        "render/utils",
+        "render/var",
     // settings
         // realm
             "realmSettings",
