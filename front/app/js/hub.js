@@ -7,7 +7,8 @@ const required = [
 //  core
     // mess
         "mess/cmd",
-        "format",
+        "mess/format",
+        "mess/interact",
         "mess/listeners",
         "mess",
         "mess/socket",

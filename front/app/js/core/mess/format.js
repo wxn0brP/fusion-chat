@@ -1,5 +1,5 @@
 import hub from "../../hub.js";
-hub("format");
+hub("mess/format");
 
 import createMediaPopup from "../../ui/components/media.js";
 
@@ -40,14 +40,14 @@ const formatFunc = {
         .replace(/--([^\s].*?[^\s])--/g, "<strike>$1</strike>")
         .replace(/__([^\s].*?[^\s])__/g, "<u>$1</u>")
 
-        .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" onclick="magistral.messFunc.linkClick(event)">$1</a>')
+        .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" onclick="magistral.messInteract.linkClick(event)">$1</a>')
         .replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>')
 
         .replace(/##([0-9A-Fa-f]{3,6})\s(.*?)\s#c/g, '<span style="color:#$1">$2</span>')
         .replace(/#([a-zA-Z]+)\s(.*?)\s#c/g, '<span style="color:$1">$2</span>')
         .replace(/#(fc)\s(.*?)\s#c/gi, '<span style="color:var(--accent)">$2</span>')
         
-        .replace(/(?:&lt;|<)\!\s*(.*?)\s*!(?:&gt;|>)/g, '<span class="spoiler" onclick="magistral.messFunc.spoiler(event)">$1</span>')
+        .replace(/(?:&lt;|<)\!\s*(.*?)\s*!(?:&gt;|>)/g, '<span class="spoiler" onclick="magistral.messInteract.spoiler(event)">$1</span>')
 
         .replaceAll("\n", "<br />")
         .replaceAll("\\n", "<br />")
@@ -245,7 +245,7 @@ const formatFunc = {
                     ${embedData.description ? `<p>${embedData.description}</p><br />` : ""}
                     ${embedData.url ? `
                         <b>Link: </b>
-                        <a href="${embedData.url}" onclick="magistral.messFunc.linkClick(event)">${embedData.url}</a>
+                        <a href="${embedData.url}" onclick="magistral.messInteract.linkClick(event)">${embedData.url}</a>
                     `: ""}
                 </div>
             </div>

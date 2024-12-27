@@ -1,6 +1,6 @@
 <main>
-    <div id="replyClose" class="context-menu" onclick="magistral.messFunc.replyClose()" translate>Reply to message</div>
-    <div id="editClose" class="context-menu" onclick="magistral.messFunc.editMessClose()" translate>Edit message</div>
+    <div id="replyClose" class="context-menu" onclick="magistral.messInteract.replyClose()" translate>Reply to message</div>
+    <div id="editClose" class="context-menu" onclick="magistral.messInteract.editMessClose()" translate>Edit message</div>
     <div id="messages_nav" style="display: none;">
         <div id="messages_nav__priv">
 
@@ -9,8 +9,8 @@
             <span id="messages_nav__realm__description"></span>
         </div>
         <div id="messages_nav__main">
-            <button onclick="magistral.messFunc.displayPinned()" class="btn">📌</button>
-            <button onclick="magistral.messFunc.search()" class="btn">🔎</button>
+            <button onclick="magistral.messInteract.displayPinned()" class="btn">📌</button>
+            <button onclick="magistral.messInteract.search()" class="btn">🔎</button>
         </div>
     </div>
     <div id="messages" style="display: none;"></div>
@@ -42,9 +42,9 @@
             <div id="barc__commads"></div>
             <div contenteditable="true" id="mess-input"></div>
             <div id="barc__others">
-                <button id="barc__emocji" onclick="magistral.messFunc.emocji()">❤️</button>
+                <button id="barc__emocji" onclick="magistral.messInteract.emocji()">❤️</button>
                 <button id="barc__sendFile" onclick="magistral.messFunc.sendFile()">📁</button>
-                <button id="barc__sendBtn" onclick="magistral.messFunc.sendMess()" loadInner="/assets/send.svg">Send</button>
+                <button id="barc__sendBtn" onclick="magistral.messInteract.sendMess()" loadInner="/assets/send.svg">Send</button>
             </div>
         </div>
     </div>

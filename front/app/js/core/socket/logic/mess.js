@@ -13,6 +13,7 @@ import coreFunc from "../../coreFunc.js";
 import formatFunc from "../../mess/format.js";
 import translateFunc from "../../../utils/translate.js";
 import utils from "../../../utils/utils.js";
+import messInteract from "../../mess/interact.js";
 
 export function mess(data){
     // generate last message storage if needed
@@ -178,7 +179,7 @@ export function realm_thread_list(data){
 
         if(t.reply){
             const mess = document.querySelector("#mess__"+t.reply);
-            messFunc.thread(t, mess);
+            messInteract.thread(t, mess);
         }
     })
 }

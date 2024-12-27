@@ -5,12 +5,12 @@ import { magistral, messHTML } from "../../var/html.js";
 import contextMenuLib from "../../lib/contextMenuLib.js";
 import utils from "../../utils/utils.js";
 import vars from "../../var/var.js";
-import messFunc from "../../core/mess/mess.js";
 import uiFunc from "../helpers/uiFunc.js";
 import translateFunc from "../../utils/translate.js";
 import coreFunc from "../../core/coreFunc.js";
 import socket from "../../core/socket/socket.js";
 import { subscribeEventChnl } from "./popup.js";
+import messInteract from "../../core/mess/interact.js";
 
 const contextMenu = {
     showMenu(e, ele, id) {
@@ -141,7 +141,7 @@ const contextFunc = {
                 if(chnl){
                     if(!vars.realm.chnlPerms[chnl].react) return uiFunc.uiMsg(translateFunc.get("You can't react in this channel") + "!");
                 }
-                messFunc.emocjiPopup((e) => {
+                messInteract.emocjiPopup((e) => {
                     if(!e) return;
                     socket.emit("message.react", vars.chat.to, id, e);
                 });
