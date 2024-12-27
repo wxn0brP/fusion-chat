@@ -10,7 +10,7 @@
     "license": "MIT",
     "type": "module",
     "dependencies": {
-        "@wxn0brp/db": "^0.0.5",
+        "@wxn0brp/db": "^0.0.6",
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
         "body-parser": "^1.20.2",
@@ -19,9 +19,9 @@
         "dotenv": "^16.4.4",
         "ejs": "^3.1.10",
         "express": "^4.18.2",
-        "firebase-admin": "^12.1.0",
+        "firebase-admin": "^13.0.2",
         "html-minifier": "^4.0.0",
-        "image-js": "^0.35.6",
+        "image-js": "^0.36.0",
         "jose": "^5.9.6",
         "multer": "^1.4.5-lts.1",
         "node-cache": "^5.1.2",
@@ -32,7 +32,7 @@
         "sass": "^1.81.0",
         "socket.io": "^4.7.4",
         "svg2ttf": "^6.0.3",
-        "svgicons2svgfont": "12.0.0"
+        "svgicons2svgfont": "15.0.0"
     },
     "engines": {
         "node": ">=22.0.0"

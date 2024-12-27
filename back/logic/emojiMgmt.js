@@ -1,22 +1,32 @@
 import { createWriteStream, createReadStream, readFileSync, writeFileSync, existsSync, rmSync, unlinkSync } from "fs";
 import { join } from "path";
-import svgicons2svgfont from "svgicons2svgfont";
 import svg2ttf from "svg2ttf";
+import { SVGIcons2SVGFontStream } from "svgicons2svgfont";
+
 
 function createSVGFont(emojis, outputSVGFontPath, opts){
     opts = {
         fontName: "FusionChatEmojiFont",
         fontHeight: 1000,
         normalize: true,
-        ...opts
-    }
+        ...opts,
+    };
+
     return new Promise((resolve, reject) => {
-        const fontStream = new svgicons2svgfont(opts);
+        const fontStream = new SVGIcons2SVGFontStream(opts);
         const writeStream = createWriteStream(outputSVGFontPath);
 
-        fontStream.pipe(writeStream).on("finish", resolve).on("error", reject);
+        fontStream
+            .pipe(writeStream)
+            .on("finish", () => {
+                resolve();
+            })
+            .on("error", (err) => {
+                console.error("Error creating font:", err);
+                reject(err);
+            });
 
-        emojis.forEach(emoji => {
+        emojis.forEach((emoji) => {
             const glyphStream = createReadStream(emoji.path);
             glyphStream.metadata = {
                 unicode: emoji.unicode,
@@ -28,6 +38,7 @@ function createSVGFont(emojis, outputSVGFontPath, opts){
         fontStream.end();
     });
 }
+
 
 function createTTF(inputSvgFontPath, outputTTFPath){
     const svgFile = readFileSync(inputSvgFontPath, "utf8");
