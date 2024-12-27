@@ -2,7 +2,7 @@ import hub from "../../hub.js";
 hub("render/realmInit");
 
 import vars from "../../var/var.js";
-import { navHTML } from "../../var/html.js";
+import { coreHTML, navHTML } from "../../var/html.js";
 import coreFunc from "../../core/coreFunc.js";
 import contextMenu from "../components/contextMenu.js";
 import { renderState } from "./var.js";
@@ -141,8 +141,8 @@ function realmInit(sid, name, categories, isOwnEmoji, permission){
 
     coreFunc.changeChnl(vars.chat.chnl);
 
-    lo("render realm", sid, isOwnEmoji);
     if(isOwnEmoji){
+        coreHTML.emojiStyle.innerHTML = ""; // remove old emojis
         const emojiStyle = document.createElement("style");
         emojiStyle.innerHTML = `
             @font-face{
@@ -156,7 +156,7 @@ function realmInit(sid, name, categories, isOwnEmoji, permission){
                 font-family: 'emoji', 'Ubuntu', sans-serif;
             }
         `;
-        emojiStyleDiv.appendChild(emojiStyle);
+        coreHTML.emojiStyle.appendChild(emojiStyle);
     }
 
     vars.realm.users.forEach(u => render_realm.usersInChat(u.uid));

@@ -1,4 +1,4 @@
-import { createWriteStream, createReadStream, readFileSync, writeFileSync, existsSync } from "fs";
+import { createWriteStream, createReadStream, readFileSync, writeFileSync, existsSync, rmSync, unlinkSync } from "fs";
 import { join } from "path";
 import svgicons2svgfont from "svgicons2svgfont";
 import svg2ttf from "svg2ttf";
@@ -59,4 +59,23 @@ export async function createFont(emojis, realmId){
     });
 
     createTTF(svgFontPath, ttfPath);
+}
+
+export async function manageRealmEmojis(realmId){
+    const emojis = await global.db.realmConf.find(realmId, { $exists: { unicode: true }});
+    if(emojis.length > 0){
+        await createFont(emojis, realmId);
+    }else{
+        deleteFile(`userFiles/emoji/${realmId}.ttf`);
+        deleteFile(`userFiles/realms/${realmId}/emojiFont.svg`);
+        deleteDir(`userFiles/realms/${realmId}/emojis/`);
+    }
+}
+
+function deleteFile(path){
+    if(existsSync(path)) unlinkSync(path);
+}
+
+function deleteDir(path){
+    if(existsSync(path)) rmSync(path, { recursive: true });
 }

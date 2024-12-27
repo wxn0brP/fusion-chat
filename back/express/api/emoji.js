@@ -7,6 +7,7 @@ import { trace } from "potrace";
 import valid from "../../logic/validData.js";
 import permissionSystem from "../../logic/permission-system/index.js";
 import Permissions from "../../logic/permission-system/permBD.js";
+import { manageRealmEmojis } from "../../logic/emojiMgmt.js";
 
 const router = Router();
 
@@ -120,7 +121,8 @@ router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => 
         name: "new emoji",
     };
 
-    await global.db.realmConf.add(realm, newEmoji, false);    
+    await global.db.realmConf.add(realm, newEmoji, false);
+    manageRealmEmojis(realm);   
 
     res.json({ err: false, msg: "Emoji uploaded successfully." });
 });
