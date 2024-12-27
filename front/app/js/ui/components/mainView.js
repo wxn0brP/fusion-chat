@@ -2,7 +2,7 @@ import hub from "../../hub.js";
 hub("mainView");
 
 import vars from "../../var/var.js";
-import { magistral, mainViewHTML } from "../../var/html.js";
+import { mainViewHTML } from "../../var/html.js";
 import coreFunc from "../../core/coreFunc.js";
 import apis from "../../api/apis.js";
 import socket from "../../core/socket/socket.js";
@@ -143,13 +143,6 @@ const mainView = {
         if(accept) socket.emit("friend.getAll");
     },
 
-    async addFriend(friend){
-        if(!friend) friend = await uiFunc.prompt(translateFunc.get("Enter friend Name"));
-        
-        if(!friend) return;
-        socket.emit("friend.request", friend);
-    },
-
     removeFriend(friend){
         if(!friend) return;
 
@@ -170,14 +163,6 @@ const mainView = {
 
         socket.emit("friend.requestRemove", friend);
     },
-
-    showNav(){
-        if(mainViewHTML.nav.clientHeight == 0){
-            mainViewHTML.nav.fadeIn();
-        }else{
-            mainViewHTML.nav.fadeOut();
-        }
-    }
 }
 
 mainView.changeView("online");
@@ -209,4 +194,3 @@ socket.on("friend.response", (from, accept) => {
 });
 
 export default mainView;
-magistral.mainView = mainView;

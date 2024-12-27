@@ -32,7 +32,7 @@
         <% items.forEach(item => { %>
             <div class="context-menu__item" 
                 <% if (item.dataId) { %> data-id="<%= item.dataId %>" <% } %>
-                onclick="magistral.contextFunc.<%= contextType %>('<%= item.action %>')" 
+                onclick="mglInt.contextFunc.<%= contextType %>('<%= item.action %>')" 
                 translate 
                 <% if (item.style) { %> style="<%= item.style %>" <% } %>
             >

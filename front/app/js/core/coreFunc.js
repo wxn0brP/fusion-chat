@@ -10,7 +10,7 @@ import emojiFunc from "../ui/components/emoji.js";
 import mainView from "../ui/components/mainView.js";
 import translateFunc from "../utils/translate.js";
 
-import { navHTML, coreHTML, messHTML, mainViewHTML, magistral } from "../var/html.js";
+import { navHTML, coreHTML, messHTML, mainViewHTML, mglVar } from "../var/html.js";
 
 const coreFunc = {
     changeChat(id, chnl=null){
@@ -176,4 +176,4 @@ const coreFunc = {
 }
 
 export default coreFunc;
-magistral.coreFunc = coreFunc;
+mglVar.coreFunc = coreFunc;

@@ -7,6 +7,7 @@ import settingsData from "./settingsData.js";
 import debugFunc from "../../core/debug.js";
 import SettingsManager from "./settingsLib.js";
 import RealmSettingsManager from "./realm/realmSettings.js";
+import { mglInt } from "../../var/html.js";
 
 const settingsFunc = {
     showUserSettings(){
@@ -39,3 +40,4 @@ const settingsFunc = {
 
 socket.on("realm.settings.get", settingsFunc.showRealmSettings);
 export default settingsFunc;
+mglInt.settingsFunc = settingsFunc;

@@ -166,14 +166,21 @@ export const otherHTML = other();
 export const voiceHTML = voice();
 export const emojiHTML = emoji();
 
-export const magistral = {
-    messHTML,
-    navHTML,
-    coreHTML,
-    renderHTML,
-    mainViewHTML,
-    otherHTML,
-    voiceHTML,
-    emojiHTML
+export const mglHTML = { // magistral for html variables
+    mess: messHTML,
+    nav: navHTML,
+    core: coreHTML,
+    render: renderHTML,
+    mainView: mainViewHTML,
+    other: otherHTML,
+    voice: voiceHTML,
+    emoji: emojiHTML
 }
-window.magistral = magistral;
+
+export const mglInt = {} // magistral for interactions functions
+
+export const mglVar = {} // magistral for variables
+
+window.mglHTML = mglHTML;
+window.mglInt = mglInt;
+window.mglVar = mglVar;

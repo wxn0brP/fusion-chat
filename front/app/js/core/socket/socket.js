@@ -1,5 +1,5 @@
 import hub from "../../hub.js";
-import { magistral } from "../../var/html.js";
+import { mglVar } from "../../var/html.js";
 hub("socket");
 
 const socket = io("/", {
@@ -16,4 +16,4 @@ const socket = io("/", {
 });
 
 export default socket;
-magistral.socket = socket;
+mglVar.socket = socket;

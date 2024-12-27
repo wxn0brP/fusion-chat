@@ -1,11 +1,11 @@
 import hub from "../../hub.js";
-hub("buttons");
+hub("interact/relations");
 
 import uiFunc from "../helpers/uiFunc.js";
 import socket from "../../core/socket/socket.js";
-import { otherHTML, magistral } from "../../var/html.js";
+import { otherHTML, mglVar } from "../../var/html.js";
+
 const makeRealmDiv = otherHTML.makeRealm;
-import settingsFunc from "../settings/settings.js";
 
 const buttonFunc = {
     async addPriv(){
@@ -36,11 +36,7 @@ const buttonFunc = {
 
         socket.emit("realm.join", id);
     },
-
-    userSettings(){
-        settingsFunc.showUserSettings();
-    },
 }
 
 export default buttonFunc;
-magistral.buttonFunc = buttonFunc;
+mglVar.buttonFunc = buttonFunc;

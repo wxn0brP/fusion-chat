@@ -1,7 +1,7 @@
 import hub from "../../hub.js";
 hub("mess");
 
-import { magistral, messHTML } from "../../var/html.js";
+import { messHTML, mglVar } from "../../var/html.js";
 import vars from "../../var/var.js";
 import messCmd from "./cmd.js";
 import coreFunc from "../../core/coreFunc.js";
@@ -183,4 +183,4 @@ const messFunc = {
 }
 
 export default messFunc;
-magistral.messFunc = messFunc;
+mglVar.messFunc = messFunc;

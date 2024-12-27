@@ -1,7 +1,7 @@
 import hub from "../../hub.js";
 hub("voice");
 
-import { magistral, voiceHTML } from "../../var/html.js";
+import { mglVar, voiceHTML } from "../../var/html.js";
 import socket from "../../core/socket/socket.js";
 import apis from "../../api/apis.js";
 import uiFunc from "../helpers/uiFunc.js";
@@ -248,4 +248,4 @@ socket.on("voice.join", (to) => {
 });
 
 export default voiceFunc;
-magistral.voiceFunc = voiceFunc;
+mglVar.voiceFunc = voiceFunc;

@@ -4,7 +4,7 @@
 
 <div id="emojiDiv">
     <div id="emojiDiv__struct">
-        <button onclick="magistral.emojiFunc.emojiClick()" id="emojiDiv__close" class="btn">X</button>
+        <button onclick="mglVar.emojiFunc.emojiClick()" id="emojiDiv__close" class="btn">X</button>
         <div id="emoji__search">
             <label for="emocji-input">🔎</label>
             <input type="text" id="emocji-input" class="btn">
@@ -19,9 +19,9 @@
 <div id="prompt"></div>
 
 <div id="voice_call" style="display: none;">
-    <button onclick="magistral.voiceHTML.div.fadeOut()" translate class="btn">Hide</button>
-    <button onclick="magistral.voiceFunc.endCall()" id="voice_call_end" translate class="btn">Disconnect</button>
-    <button onclick="magistral.voiceFunc.toggleMute()" id="voice_call_mute_mic" class="btn">Mute</button>
+    <button onclick="mglHTML.voice.div.fadeOut()" translate class="btn">Hide</button>
+    <button onclick="mglVar.voiceFunc.endCall()" id="voice_call_end" translate class="btn">Disconnect</button>
+    <button onclick="mglVar.voiceFunc.toggleMute()" id="voice_call_mute_mic" class="btn">Mute</button>
     <div id="voice_call_users_container">
         <span translate>Users</span>:
         <ul id="voice_call_users"></ul>
@@ -41,10 +41,10 @@
 </div>
 
 <div id="makeRealm" style="display: none;">
-    <button onclick="magistral.buttonFunc.createRealm();" translate class="btn">Create realm</button>
+    <button onclick="mglVar.buttonFunc.createRealm();" translate class="btn">Create realm</button>
     <br />
     <br />
-    <button onclick="magistral.buttonFunc.joinRealm();" translate class="btn">Join realm</button>
+    <button onclick="mglVar.buttonFunc.joinRealm();" translate class="btn">Join realm</button>
     <br />
     <br />
     <button onclick="event.target.parentElement.fadeOut()" translate class="btn">Cancel</button>
@@ -59,6 +59,6 @@
     <h2>Channel:</h2>
     <select id="subscribeEventChnl_channels"></select>
     <br /><br />
-    <button onclick="magistralsubscribeEventChnl.exit()" translate class="btn" id="subscribeEventChnl_exit">Cancel</button>
-    <button onclick="magistralsubscribeEventChnl.subscribe()" translate class="btn" id="subscribeEventChnl_subscribe">Subscribe</button>
+    <button onclick="mglInt.subscribeEventChnl.exit()" translate class="btn" id="subscribeEventChnl_exit">Cancel</button>
+    <button onclick="mglInt.subscribeEventChnl.subscribe()" translate class="btn" id="subscribeEventChnl_subscribe">Subscribe</button>
 </div>

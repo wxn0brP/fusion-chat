@@ -2,7 +2,7 @@ import hub from "../../hub.js";
 hub("emoji");
 
 const emojiData = JSON.parse(cw.get("/assets/emoji.json"));
-import { emojiHTML, magistral } from "../../var/html.js";
+import { emojiHTML, mglVar } from "../../var/html.js";
 
 const emojiFunc = {
     customEmojisCat: [],
@@ -101,4 +101,4 @@ emojiHTML.input.addEventListener("input", emojiFunc.renderEmoji);
 emojiFunc.renderEmoji();
 
 export default emojiFunc;
-magistral.emojiFunc = emojiFunc;
+mglVar.emojiFunc = emojiFunc;

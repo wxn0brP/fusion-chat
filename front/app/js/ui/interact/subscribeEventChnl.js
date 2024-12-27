@@ -1,10 +1,11 @@
 import hub from "../../hub.js";
-hub("popup");
+hub("interact/subscribeEventChnl");
 
 import socket from "../../core/socket/socket.js";
 import apis from "../../api/apis.js";
+import { mglInt } from "../../var/html.js";
 
-export const subscribeEventChnl = {
+const subscribeEventChnl = {
     popup: document.querySelector("#subscribeEventChnl"),
 
     init(){
@@ -62,3 +63,5 @@ export const subscribeEventChnl = {
     }
 }
 subscribeEventChnl.init();
+export default subscribeEventChnl;
+mglInt.subscribeEventChnl = subscribeEventChnl;

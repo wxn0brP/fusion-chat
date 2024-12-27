@@ -1,7 +1,7 @@
 import hub from "../../hub.js";
 hub("mess/interact");
 
-import { emojiHTML, magistral, messHTML } from "../../var/html.js";
+import { emojiHTML, messHTML, mglInt } from "../../var/html.js";
 import vars from "../../var/var.js";
 import messCmd, { messCmds } from "./cmd.js";
 import coreFunc from "../../core/coreFunc.js";
@@ -116,7 +116,7 @@ const messInteract = {
         messCmd.selectedCmd = messCmds.system.search;
 
         const evt = new Event("input");
-        messHTML.input.dispatchEvent(evt);
+        messHTML.inputRaw.dispatchEvent(evt);
 
         messCmd.handleCommandInput(
             barc__commads,
@@ -161,4 +161,4 @@ const messInteract = {
 
 messInteract.replyClose();
 export default messInteract;
-magistral.messInteract = messInteract;
+mglInt.mess = messInteract;

@@ -30,17 +30,20 @@ const required = [
     "swipeLib",
 //  ui
     // components
-        "buttons",
         "contextMenu",
         "emoji",
         "mainView",
         "media",
-        "popup",
         "renders",
         "voice",
     // helpers
         "stateManager",
         "uiFunc",
+    // interact
+        "interact/context",
+        "interact/mainView",
+        "interact/relations",
+        "interact/subscribeEventChnl",
     // settings
         // realm
             "realmSettings",
