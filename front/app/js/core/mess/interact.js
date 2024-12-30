@@ -11,6 +11,7 @@ import socket from "../socket/socket.js";
 import translateFunc from "../../utils/translate.js";
 import emojiFunc from "../../ui/components/emoji.js";
 import messFunc from "./mess.js";
+import messStyle from "./style.js";
 
 const messInteract = {
     replyClose(){
@@ -101,7 +102,7 @@ const messInteract = {
         _this.emocjiPopup((emoticon) => {
             _this.handleEmocji(emoticon);
             setTimeout(() => {
-                messHTML.input.selectionStart = messHTML.input.value.length;
+                messStyle.setSelectionStart();
             }, 100);
         });
     },

@@ -7,6 +7,7 @@ import coreFunc from "../coreFunc.js";
 import uiFunc from "../../ui/helpers/uiFunc.js";
 import translateFunc from "../../utils/translate.js";
 import vars from "../../var/var.js";
+import messStyle from "./style.js";
 
 const barc__commads = document.querySelector("#barc__commads");
 barc__commads.style.display = "none";
@@ -118,8 +119,11 @@ const messCmd = {
     temp: [],
 
     check(){
-        if(this.selectedCmd) return;
         let msg = messHTML.input.value;
+        if(messCmd.selectedCmd){
+            if(!msg.trim() || msg == "/") messCmd.close();
+            return;
+        }
 
         if(!msg.startsWith("/") && msg != "/"){
             barc__commads.style.display = "none";
@@ -168,6 +172,10 @@ const messCmd = {
                 messCmd.selectedCmd
             );
 
+            setTimeout(() => {
+                messStyle.setSelectionStart();
+            }, 100)
+
             coreFunc.focusInp();
             return;
         }
@@ -184,7 +192,14 @@ const messCmd = {
                 const cmdLi = document.createElement("li");
                 cmdLi.innerHTML = key;
                 cmdLi.style.cursor = "pointer";
-                cmdLi.addEventListener("click", () => {
+                cmdLi.tabIndex = 0;
+                cmdLi.addEventListener("click", selectCmd);
+                cmdLi.addEventListener("keydown", (e) => {
+                    if(e.key == "Enter") selectCmd();
+                });
+                ul.appendChild(cmdLi);
+
+                function selectCmd(){
                     messCmd.selectedCmd = avelibleCmds[category][key];
                     const args = msg.split(" ");
                     args[0] = "/" + key;
@@ -195,11 +210,24 @@ const messCmd = {
                         key,
                         messCmd.selectedCmd
                     );
+
+                    setTimeout(() => {
+                        messStyle.setSelectionStart();
+                    }, 100)
                     
                     coreFunc.focusInp();
-                });
-                ul.appendChild(cmdLi);
+                }
             });
+
+            function tab(e){
+                if(e.key !== "Tab") return;
+
+                e.preventDefault();
+                ul.querySelector("li")?.focus();
+                document.removeEventListener("keydown", tab);    
+            }
+
+            document.addEventListener("keydown", tab);
 
             barc__commads.appendChild(categoryDiv);
         });
@@ -318,6 +346,8 @@ const messCmd = {
 
         const cmdArgs = commandObj.args;
         messCmd.temp = new Array(cmdArgs.length);
+
+        let firstTabEle = null;
 
         const argsList = document.createElement("ul");
         cmdArgs.forEach((arg, index) => {
@@ -441,10 +471,19 @@ const messCmd = {
             }
             argItem.innerHTML += ` (${typeDesc})${arg.optional ? " (optional)" : ""} &nbsp;`;
             if(ele) argItem.appendChild(ele);
+            if(!firstTabEle && ele) firstTabEle = ele;
             argsList.appendChild(argItem);
         });
 
         ul.appendChild(argsList);
+
+        function tab(){
+            if(!firstTabEle) return;
+            firstTabEle.focus();
+            document.removeEventListener("keydown", tab);
+        }
+
+        document.addEventListener("keydown", tab);
 
         categoryDiv.appendChild(ul);
         container.innerHTML = "";

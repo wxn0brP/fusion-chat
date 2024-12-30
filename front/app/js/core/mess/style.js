@@ -103,6 +103,22 @@ const messStyle = {
             span.title = users.map(u => apis.www.changeUserID(u)).join(", ");
             span.innerHTML = span.getAttribute("_key") + " " + users.length;
         });
+    },
+
+    setSelectionStart(position){
+        const selection = window.getSelection();
+        const range = document.createRange();
+
+        if(!position) position = messHTML.input.value.length;
+
+        const textNode = messHTML.inputRaw.firstChild;
+        if(textNode && textNode.nodeType === Node.TEXT_NODE){
+            range.setStart(textNode, Math.min(position, textNode.length));
+            range.collapse(true);
+
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
     }
 }
 
@@ -110,5 +126,22 @@ setTimeout(() => {
     messStyle.sendBtnStyle();
     messStyle.messageHeight();
 }, 100); // Delay of 100ms to accommodate any cached input values in the browser
+
+
+// Set the cursor position to the end of the input if input focus is triggered by tab
+let tabTriggeredFocus = false;
+document.addEventListener("keydown", (e) => {
+    if(e.key == "Tab") tabTriggeredFocus = true;
+});
+
+messHTML.inputRaw.addEventListener("focus", () => {
+    if(!tabTriggeredFocus) return;
+    messStyle.setSelectionStart();
+})
+
+document.addEventListener("keyup", (e) => {
+    tabTriggeredFocus = false;
+});
+
 
 export default messStyle;

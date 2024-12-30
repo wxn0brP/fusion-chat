@@ -11,6 +11,7 @@ import translateFunc from "../utils/translate.js";
 
 import { navHTML, coreHTML, messHTML, mainViewHTML, mglVar } from "../var/html.js";
 import { renderState } from "../ui/render/var.js";
+import messStyle from "./mess/style.js";
 
 const coreFunc = {
     changeChat(id, chnl=null){
@@ -134,7 +135,7 @@ const coreFunc = {
         setTimeout(() => {
             messHTML.inputRaw.focus();
             // move cursor to end
-            if(end) messHTML.input.selectionStart = messHTML.input.value.length;
+            if(end) messStyle.setSelectionStart();
         }, 100);
     },
 
