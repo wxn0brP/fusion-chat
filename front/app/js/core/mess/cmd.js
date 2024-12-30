@@ -129,7 +129,7 @@ const messCmd = {
         barc__commads.style.display = "";
         barc__commads.innerHTML = "";
 
-        const cmdName = msg.split(" ")[0].substring(1);
+        const cmdName = msg.trim().split(" ")[0].substring(1);
         const avelibleCmds = {};
         Object.keys(messCmds).forEach(category => {
             Object.keys(messCmds[category]).forEach(key => {
@@ -195,7 +195,7 @@ const messCmd = {
                         key,
                         messCmd.selectedCmd
                     );
-
+                    
                     coreFunc.focusInp();
                 });
                 ul.appendChild(cmdLi);
