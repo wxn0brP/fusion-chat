@@ -9,6 +9,7 @@ import render_user from "../render/user.js";
 import uiFunc from "../helpers/uiFunc.js";
 import fileFunc from "../../api/file.js";
 import { Settings_settingsManager__category } from "../../types/ui/settings.js";
+import { reloadProfileImages } from "../helpers/reloadImages.js";
 
 interface SettingsData {
     user: () => Settings_settingsManager__category[];
@@ -79,6 +80,9 @@ const settingsData: SettingsData = {
             save: (div, tmpData) => {
                 if(tmpData.img){
                     fileFunc.profile(tmpData.img);
+                    setTimeout(() => {
+                        reloadProfileImages(vars.user._id);
+                    }, 3000);
                 }
                 
                 return {}
