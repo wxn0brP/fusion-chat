@@ -26,6 +26,9 @@ const messInteract = {
         messHTML.input.value = "";
         vars.temp.editId = null;
         coreFunc.focusInp();
+        messStyle.sendBtnStyle();
+        messStyle.messageHeight();
+        messStyle.setSelectionStart();
     },
 
     linkClick(e: MouseEvent) {

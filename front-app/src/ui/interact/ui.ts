@@ -18,6 +18,8 @@ const uiInteract = {
         messHTML.editClose.style.display = "block";
         coreFunc.focusInp(true);
         messStyle.sendBtnStyle();
+        messStyle.messageHeight();
+        messStyle.setSelectionStart();
     },
 
     clipboardError(text: string){
