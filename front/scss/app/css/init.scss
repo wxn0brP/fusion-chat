@@ -1,4 +1,4 @@
-#loadingScreen{
+#loadingScreen {
     position: absolute;
     top: 0;
     left: 0;
@@ -13,8 +13,8 @@
 
     animation: init-anim 1s;
     animation-delay: 3.1s;
-    
-    #loadingScreenAnim{
+
+    #loadingScreenAnim {
         width: 25rem;
         height: 25rem;
         margin-top: -2rem;
@@ -22,11 +22,12 @@
 }
 
 
-@keyframes init-anim{
-    0%{
+@keyframes init-anim {
+    0% {
         opacity: 1;
     }
-    100%{
+
+    100% {
         opacity: 0;
     }
 }

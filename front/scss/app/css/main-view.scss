@@ -1,4 +1,4 @@
-#main__view{
+#main__view {
     width: 100%;
     max-width: 100%;
     overflow-y: scroll;
@@ -6,23 +6,23 @@
     text-align: left;
 }
 
-#main__view__nav{
+#main__view__nav {
     margin-bottom: 1rem;
     white-space: nowrap;
     overflow-x: auto;
 }
 
-#main__view__nav button{
+#main__view__nav button {
     --pad_radius: 5px;
     margin-right: 5px;
     transition: background-color 0.5s;
 }
 
-#main__view__nav button:hover{
+#main__view__nav button:hover {
     --bg: color-mix(in srgb, var(--accent) 50%, transparent);
 }
 
-.main__view__friend{
+.main__view__friend {
     border-radius: 1.3rem;
     padding: 1rem;
     margin-bottom: 3px;
@@ -33,35 +33,36 @@
     align-items: center;
 }
 
-.main__view__friend:hover{
+.main__view__friend:hover {
     background-color: var(--messHover);
 }
 
-.friend__avatar{
+.friend__avatar {
     width: 48px;
     height: 48px;
     border-radius: 5px;
     margin-right: 5px;
 }
 
-.friend__name:hover{
+.friend__name:hover {
     text-decoration: underline;
 }
 
-.friend__status{
+.friend__status {
     color: lightgreen;
-    &::before{
+
+    &::before {
         content: "(";
     }
-    
-    &::after{
+
+    &::after {
         content: ")";
     }
 }
 
 
-.main__view__friend{
-    .request__btn{
+.main__view__friend {
+    .request__btn {
         background-color: transparent;
         border: 2px solid var(--accent);
         color: var(--txt);
@@ -72,13 +73,13 @@
         margin-top: 5px;
     }
 
-    .request__btn:hover{
+    .request__btn:hover {
         background-color: var(--accent);
     }
 }
 
-@media screen and (max-width: 800px){
-    #main__view__nav button{
+@media screen and (max-width: 800px) {
+    #main__view__nav button {
         display: block;
         margin-top: 5px;
     }

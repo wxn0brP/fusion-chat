@@ -1,0 +1,17 @@
+{
+    "name": "fc-front",
+    "version": "0.0.1",
+    "main": "index.js",
+    "author": "wxn0brP",
+    "license": "MIT",
+    "type": "module",
+    "scripts": {
+        "build": "tsc && tsc-alias"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "@types/socket.io-client": "^3.0.0",
+        "tsc-alias": "^1.8.10",
+        "typescript": "^5.7.2"
+    }
+}

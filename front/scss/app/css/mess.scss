@@ -1,9 +1,9 @@
-main{
+main {
     flex-grow: 1;
     height: 100%;
 }
 
-#messages{
+#messages {
     width: 100%;
     max-width: calc(100vw - 290px);
     height: calc(100vh - 60px - 2.1rem);
@@ -12,7 +12,7 @@ main{
     text-align: left;
 }
 
-#messages_nav{
+#messages_nav {
     width: 100%;
     height: 2.1rem;
     background-color: var(--panel);
@@ -20,8 +20,8 @@ main{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    
-    :where(input, button){
+
+    :where(input, button) {
         background-color: var(--back);
         border: none;
         border-radius: 5px;
@@ -31,12 +31,12 @@ main{
 }
 
 
-#bar{
+#bar {
     width: 100%;
     height: 60px;
 }
 
-#barc{
+#barc {
     background-color: var(--menu);
     display: flex;
     align-items: center;
@@ -49,7 +49,7 @@ main{
     position: relative;
 }
 
-#mess-input{
+#mess-input {
     --messHeight: 0px;
     width: calc(100% - 120px);
     max-width: calc(100vw - 290px - 120px);
@@ -67,19 +67,19 @@ main{
     word-wrap: break-word;
     overflow-wrap: break-word;
 
-    &:focus{
+    &:focus {
         outline: none;
     }
 }
 
-#barc__others{
+#barc__others {
     width: 110px;
     height: 50px;
     display: flex;
     align-items: center;
 }
 
-#barc__sendBtn{
+#barc__sendBtn {
     width: 1rem;
     border: none;
     cursor: pointer;
@@ -89,31 +89,32 @@ main{
     padding-top: 2px;
 }
 
-.mess_message{
+.mess_message {
     border-radius: 5px;
     width: 100%;
     padding: 3px;
 
-    &:hover{
+    &:hover {
         background-color: var(--menu);
     }
 
-    .mess_meta{
-        div{
+    .mess_meta {
+        div {
             margin-top: -37px;
             margin-bottom: 2px;
             margin-left: 35px;
             font-weight: bold;
         }
 
-        .mess_author_name{
+        .mess_author_name {
             cursor: pointer;
-            &:hover{
+
+            &:hover {
                 text-decoration: underline;
             }
         }
 
-        img{
+        img {
             width: 32px;
             height: 32px;
             border-radius: 50%;
@@ -121,46 +122,47 @@ main{
         }
     }
 
-    .mess_content{
+    .mess_content {
         margin-left: 35px;
-        
-        li{
+
+        li {
             margin-left: 1rem;
         }
 
-        .table_wrap{
+        .table_wrap {
             overflow-x: auto;
             width: 100%;
         }
 
-        table{
+        table {
             width: 100%;
             border-collapse: collapse;
             background-color: var(--back);
 
-            thead th{
+            thead th {
                 font-weight: bold;
                 padding: 5px;
                 border-bottom: 1px solid var(--accent);
             }
 
-            tbody{
-                td{
+            tbody {
+                td {
                     padding: 5px;
                 }
-                tr{
-                    &:nth-child(even){
+
+                tr {
+                    &:nth-child(even) {
                         background-color: var(--panel)
                     }
-                    
-                    &:hover{
+
+                    &:hover {
                         background-color: var(--menu);
                     }
                 }
             }
         }
 
-        .spoiler{
+        .spoiler {
             cursor: pointer;
             background-color: #333;
             color: transparent;
@@ -170,20 +172,20 @@ main{
             transition: all 0.3s ease;
         }
 
-        .spoiler__show{
+        .spoiler__show {
             color: inherit;
         }
     }
 
-    .mess_time{
+    .mess_time {
         color: var(--txt);
         font-size: 0.7rem;
         font-weight: normal;
         margin-left: 5px;
     }
 
-    .mess_reacts{
-        span{
+    .mess_reacts {
+        span {
             margin-right: 5px;
             cursor: pointer;
             background-color: var(--menu);
@@ -192,49 +194,53 @@ main{
             border-radius: 5px;
             font-weight: bold;
 
-            &.userReacted{
+            &.userReacted {
                 background-color: var(--accent);
             }
         }
 
     }
-    
-    .thread{
+
+    .thread {
         cursor: pointer;
         color: var(--txt);
         margin-left: 2.4rem;
-        &:hover{
+
+        &:hover {
             color: var(--accent);
         }
     }
 }
 
-:where(#replyClose, #editClose){
+:where(#replyClose, #editClose) {
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
     cursor: pointer;
-    &::before{
+
+    &::before {
         content: 'X - ';
     }
 }
 
-.editMessText{
+.editMessText {
     font-size: 0.7rem;
     margin-left: 5px;
 }
 
-#barc__sendBtn__img{
+#barc__sendBtn__img {
     width: 1.5rem;
     aspect-ratio: 1/1;
     --fil: grey;
-    path{
+
+    path {
         fill: var(--fil);
     }
 }
 
 
-#barc__emocji, #barc__sendFile{
+#barc__emocji,
+#barc__sendFile {
     width: 2.5rem;
     border: none;
     cursor: pointer;
@@ -243,29 +249,30 @@ main{
     font-size: 1.2rem;
 }
 
-.res_msg{
+.res_msg {
     margin-top: 7px;
     margin-bottom: 5px;
     font-size: 0.9rem;
     margin-left: 5px;
     cursor: pointer;
-    &::before{
+
+    &::before {
         content: "-----> ";
         color: grey;
     }
 }
 
-.res_msg__animate{
+.res_msg__animate {
     animation: res_msg 2s ease;
 }
 
-@keyframes res_msg{
-    50%{
+@keyframes res_msg {
+    50% {
         background-color: var(--accent);
     }
 }
 
-#barc__commads{
+#barc__commads {
     position: absolute;
     bottom: 60px;
     left: 10px;
@@ -280,10 +287,11 @@ main{
 
     text-align: left;
 
-    ul li{
+    ul li {
         margin-left: 1rem;
         margin-bottom: 5px;
-        :where(input, select, button){
+
+        :where(input, select, button) {
             background-color: var(--menu);
             color: var(--txt);
             border: 2px solid var(--accent);
@@ -291,41 +299,47 @@ main{
             padding: 3px;
             border-radius: 5px;
         }
-        :where(input, select):focus{
+
+        :where(input, select):focus {
             outline: none;
         }
     }
 }
 
 
-.embed{
+.embed {
     border: 1px solid var(--txt);
     padding: 10px;
     margin: 10px 0;
     border-radius: 10px;
     width: 400px;
-    .custom-fields{
+
+    .custom-fields {
         margin-top: 10px;
         font-size: 14px;
     }
-    
-    .custom-field{
+
+    .custom-field {
         margin-bottom: 5px;
     }
 }
 
 
-@media screen and (max-width: 800px){
-    main{
+@media screen and (max-width: 800px) {
+    main {
         width: 100vw;
     }
 
-    #messages{
+    #messages {
         padding-top: 20px;
+        max-width: unset;
     }
 
-    .embed{
+    #mess-input{
+        max-width: unset;
+    }
+
+    .embed {
         width: 90%;
     }
 }
-

@@ -1,4 +1,4 @@
-.context-menu{
+.context-menu {
     position: absolute;
     display: none;
     background-color: var(--panel);
@@ -10,7 +10,7 @@
     box-shadow: 0 10px 25px rgba(var(--accentRGB), .5);
 }
 
-.context-menu__item{
+.context-menu__item {
     padding: 5px;
     cursor: pointer;
     text-align: left;

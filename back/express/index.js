@@ -33,6 +33,7 @@ await import("./sass.js");
 app.use("/", express.static("front/public"));
 app.use("/assets", express.static("front/assets"));
 app.use("/app", express.static("front/app"));
+app.use("/app/js", express.static("front-app/dist"));
 app.use("/dev-panel", express.static("front/dev-panel"));
 app.use("/meta", express.static("front/meta"));
 app.use("/userFiles", express.static("userFiles"));

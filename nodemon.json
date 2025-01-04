@@ -1,6 +1,7 @@
 {
     "ignore": [
         "front",
+        "front-app",
         "app",
         "data",
         "fc-index",

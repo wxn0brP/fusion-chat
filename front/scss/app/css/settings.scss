@@ -1,4 +1,4 @@
-#settings{
+#settings {
     position: absolute;
     top: 0;
     left: 0;
@@ -11,23 +11,23 @@
     padding: 20px;
     z-index: 10;
 
-    button{
+    button {
         cursor: pointer;
     }
 
-    .settings__categorySwitcher{
-        button{
+    .settings__categorySwitcher {
+        button {
             --border: 1px;
             margin: 5px;
             transition: background-color 0.5s;
 
-            &:hover{
+            &:hover {
                 --bg: var(--accent);
             }
         }
     }
 
-    .settings__exitButton{
+    .settings__exitButton {
         padding: 10px;
         border-radius: 5px;
         background-color: var(--back);
@@ -37,7 +37,7 @@
         cursor: pointer;
     }
 
-    .settings__category{
+    .settings__category {
         text-align: left;
         border: 1px solid var(--border);
         border-radius: 5px;
@@ -46,27 +46,27 @@
         margin-left: auto;
         margin-right: auto;
 
-        &:not(:last-child){
+        &:not(:last-child) {
             margin-bottom: 1rem;
         }
 
-        h1{
+        h1 {
             margin-bottom: 1rem;
         }
 
-        .settings__setting:not(:last-child){
+        .settings__setting:not(:last-child) {
             margin-bottom: 1rem;
         }
 
-        label{
+        label {
             margin-right: 1rem;
         }
 
-        details summary{
+        details summary {
             cursor: pointer;
         }
 
-        :where(input[type="text"], select, button){
+        :where(input[type="text"], select, button) {
             background-color: var(--back);
             color: var(--txt);
             border: 1px solid var(--border);
@@ -74,56 +74,56 @@
             padding: 5px;
         }
 
-        .margin-left{
+        .margin-left {
             margin-left: 1rem;
         }
 
-        input[type="checkbox"]{
+        input[type="checkbox"] {
             margin: 0 3px -2px 0;
             --h: 1.1rem;
         }
     }
 
-    .settings__nameSpan{
+    .settings__nameSpan {
         margin-right: 0.5rem;
     }
 
-    #settings__realmImg{
+    #settings__realmImg {
         width: 64px;
         height: 64px;
         border-radius: 50%;
         object-fit: cover;
     }
 
-    .emoji__container{
+    .emoji__container {
         display: flex;
         align-items: center;
         justify-content: left;
         gap: 1rem;
         padding: 1rem;
 
-        &:not(:first-of-type){
+        &:not(:first-of-type) {
             border-top: 1px solid var(--accent);
         }
 
-        &:not(:last-of-type){
+        &:not(:last-of-type) {
             margin-bottom: 1rem;
         }
     }
 }
 
-@media screen and (max-width: 800px){
-    #settings{
-        .settings__category{
+@media screen and (max-width: 800px) {
+    #settings {
+        .settings__category {
             max-width: 90vw;
         }
 
-        .settings__categorySwitcher{
+        .settings__categorySwitcher {
             display: flex;
             flex-direction: column;
         }
 
-        .settings__nameSpan{
+        .settings__nameSpan {
             display: block;
             margin-bottom: 0.3rem;
         }

@@ -8,6 +8,7 @@ userFiles
 serverDB
 front/app/css
 !docs/**
+front-app/dist
 
 # files
 *.env

@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "ES2022",
+        "target": "ES2022",
+        "outDir": "dist",
+        "paths": {},
+        "skipLibCheck": true,
+        "moduleResolution": "node"
+    },
+    "include": [
+        "src"
+    ],
+    "tsc-alias": {
+        "resolveFullPaths": true,
+        "verbose": false
+    }
+}

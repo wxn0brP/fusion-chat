@@ -1,4 +1,4 @@
-#errMesses div{
+#errMesses div {
     position: absolute;
     max-width: 70%;
     top: -10rem;
@@ -13,15 +13,15 @@
     cursor: pointer;
 }
 
-.uiMsgClass{
+.uiMsgClass {
     backdrop-filter: blur(5px);
     background-color: rgba(var(--accentRGB), .2);
     border: 3px solid var(--accent);
     box-shadow: 0 0 10px 5px rgba(var(--accentRGB), .5);
 }
 
-#prompt{
-    div{
+#prompt {
+    div {
         position: absolute;
         min-width: 200px;
         max-width: 70%;
@@ -35,11 +35,13 @@
         backdrop-filter: blur(4px);
     }
 
-    p{
+    p {
         font-size: 1.2rem;
     }
 
-    input, button, select{
+    input,
+    button,
+    select {
         border-radius: 1rem;
         padding: 7px 12px;
         border: 2px solid var(--accent);
@@ -48,22 +50,22 @@
         margin-top: 5px;
     }
 
-    option{
+    option {
         background-color: var(--back);
         color: var(--txt);
     }
 
-    button{
+    button {
         transition: background-color 0.3s;
         cursor: pointer;
 
-        &:hover{
+        &:hover {
             background-color: rgba(var(--accentRGB), 0.5);
         }
     }
 }
 
-#userProfile{
+#userProfile {
     position: absolute;
     top: 40%;
     left: 50%;
@@ -80,12 +82,12 @@
 
     text-align: left;
 
-    #userProfileInfo{
+    #userProfileInfo {
         display: flex;
         gap: 1rem;
     }
 
-    img{
+    img {
         width: 100px;
         height: 100px;
         border-radius: 50%;
@@ -93,7 +95,7 @@
     }
 }
 
-#linkClick{
+#linkClick {
     position: absolute;
     top: 40%;
     left: 50%;
@@ -106,13 +108,13 @@
     padding: 1rem;
     width: 600px;
 
-    #linkClick_btns{
+    #linkClick_btns {
         width: 100%;
         display: flex;
         justify-content: space-around;
     }
 
-    button{
+    button {
         width: 35%;
         border-radius: 1rem;
         padding: 7px 12px;
@@ -123,12 +125,12 @@
         cursor: pointer;
     }
 
-    span{
+    span {
         color: red;
     }
 }
 
-#makeRealm{
+#makeRealm {
     position: absolute;
     top: 40%;
     left: 50%;
@@ -142,7 +144,7 @@
     width: 300px;
 }
 
-#emojiDiv{
+#emojiDiv {
     position: absolute;
     right: 2rem;
     bottom: 4rem;
@@ -159,7 +161,7 @@
     display: none;
 }
 
-#emojiDiv__struct{
+#emojiDiv__struct {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -167,55 +169,55 @@
     position: relative;
 }
 
-#emojiDiv__close{
+#emojiDiv__close {
     cursor: pointer;
     position: absolute;
     color: red;
 }
 
-#emoji__search{
+#emoji__search {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 5px;
 
-    label{
+    label {
         font-size: 1.5rem;
         cursor: pointer;
     }
 
-    input:where(:active, :focus){
+    input:where(:active, :focus) {
         outline: none;
     }
 }
 
-#emoji__nav{
+#emoji__nav {
     display: grid;
     gap: 5px;
     grid-template-columns: repeat(4, 1fr);
 }
 
-#emoji__container{
+#emoji__container {
     flex-grow: 1;
     overflow-y: scroll;
 }
 
-#emoji__container div > h1{
+#emoji__container div>h1 {
     text-transform: uppercase;
 }
 
-.emoji__category{
+.emoji__category {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     gap: 5px;
 }
 
-.emoji__item{
+.emoji__item {
     cursor: pointer;
     font-size: 2rem;
 }
 
-#subscribeEventChnl{
+#subscribeEventChnl {
     position: absolute;
     top: 40%;
     left: 50%;
@@ -228,7 +230,7 @@
     padding: 1rem;
     width: 300px;
 
-    select{
+    select {
         width: 70%;
         border-radius: 1rem;
         padding: 7px 12px;
@@ -239,28 +241,28 @@
     }
 }
 
-@media screen and (max-width: 800px){
-    #errMesses div{
+@media screen and (max-width: 800px) {
+    #errMesses div {
         width: 90vw;
         max-width: none;
     }
 
-    #linkClick{
+    #linkClick {
         width: 90vw;
     }
 
-    #emojiDiv{
+    #emojiDiv {
         width: 90vw;
         right: 5vw;
         height: 70vh;
     }
 
-    #emoji__nav{
+    #emoji__nav {
         grid-template-columns: repeat(2, 1fr);
         gap: 7px;
     }
 
-    #subscribeEventChnl{
+    #subscribeEventChnl {
         width: 90vw;
     }
 }
