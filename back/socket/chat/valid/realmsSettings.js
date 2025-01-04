@@ -39,10 +39,6 @@ export default {
                         items: { type: "string", channelRP: true },
                     },
                     desc: { type: "string", minLength: 0, maxLength: 150 },
-                    threads: {
-                        type: "array",
-                        items: { type: "string", validId: true }
-                    }
                 },
                 required: ["chid", "name", "type", "category", "i", "rp"],
                 additionalProperties: false
