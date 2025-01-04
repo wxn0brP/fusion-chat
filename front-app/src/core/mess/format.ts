@@ -22,7 +22,7 @@ const formatFunc = {
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
 
-        const excludePattern = /```(.*?)```/g;
+        const excludePattern = /\`\`\`(.*?)\`\`\`/gs;
         const excludeMatches = text.match(excludePattern);
         const exclusions = [];
         if (excludeMatches) {
@@ -53,12 +53,12 @@ const formatFunc = {
 
             .replaceAll("\n", "<br />")
             .replaceAll("\\n", "<br />")
-            .replaceAll("---", "<hr />")
+            .replace(/(?<=^|\s)---(?=\s|$)/g, "<hr />")
 
         text = formatList.cpu(text, 1, "rem");
 
         for (let i = 0; i < exclusions.length; i++) {
-            const exclusion = exclusions[i];
+            const exclusion = `<pre>${exclusions[i]}</pre>`;
             const placeholder = `@EXCLUSION${i + 1}@`;
             text = text.replace(placeholder, exclusion);
         }
