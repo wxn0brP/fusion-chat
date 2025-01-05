@@ -1,6 +1,6 @@
 import hub from "../../hub";
 import translateFunc from "../../utils/translate";
-hub("media");
+hub("components/media");
 
 // TODO add types
 

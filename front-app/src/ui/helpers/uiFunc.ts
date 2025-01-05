@@ -1,5 +1,5 @@
 import hub from "../../hub";
-hub("uiFunc");
+hub("helpers/uiFunc");
 
 import debugFunc from "../../core/debug";
 

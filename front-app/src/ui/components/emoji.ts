@@ -2,7 +2,7 @@ import cw from "../../core";
 import hub from "../../hub";
 import { Ui_EmojiData, Ui_EmojiData_emoji } from "../../types/ui/components";
 import { emojiHTML, mglVar } from "../../var/html";
-hub("emoji");
+hub("components/emoji");
 
 const emojiData: Ui_EmojiData = JSON.parse(cw.get("/assets/emoji.json"));
 

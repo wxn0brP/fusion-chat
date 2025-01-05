@@ -30,14 +30,15 @@ const required = [
     "swipeLib",
 //  ui
     // components
-        "contextMenu",
-        "emoji",
-        "mainView",
-        "media",
-        "voice",
+        "components/contextMenu",
+        "components/emoji",
+        "components/mainView",
+        "components/media",
+        "components/voice",
     // helpers
-        "stateManager",
-        "uiFunc",
+        "helpers/reloadImages",
+        "helpers/stateManager",
+        "helpers/uiFunc",
     // interact
         "interact/context",
         "interact/mainView",
@@ -74,6 +75,7 @@ const required = [
     "translate",
     "utils",
 //  var
+    "var/html",
     "var",
 ];
 

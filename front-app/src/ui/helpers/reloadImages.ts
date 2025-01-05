@@ -1,4 +1,6 @@
+import hub from "../../hub";
 import utils from "../../utils/utils";
+hub("helpers/reloadImages");
 
 export function reloadProfileImages(id: string): void {
     const escapedUrl = utils.escape(`/api/profile/img?id=${id}`);

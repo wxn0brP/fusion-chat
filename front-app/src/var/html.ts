@@ -1,4 +1,6 @@
-import { MessInput, MglInt, MglVar } from "../types/html";
+import hub from "../hub";
+import { MglInt, MglVar } from "../types/html";
+hub("var/html");
 
 function qd(selector: string, container?: HTMLElement) {
     return (container || document).querySelector<HTMLDivElement>(selector);

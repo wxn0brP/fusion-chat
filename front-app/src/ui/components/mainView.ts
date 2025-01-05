@@ -1,5 +1,5 @@
 import hub from "../../hub";
-hub("mainView");
+hub("components/mainView");
 
 import vars from "../../var/var";
 import { mainViewHTML } from "../../var/html";

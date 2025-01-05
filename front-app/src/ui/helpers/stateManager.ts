@@ -1,13 +1,14 @@
+import hub from "../../hub";
+hub("helpers/stateManager");
+
 import apis from "../../api/apis";
 import coreFunc from "../../core/coreFunc";
 import socket from "../../core/socket/socket";
-import hub from "../../hub";
 import Id from "../../types/Id";
 import translateFunc from "../../utils/translate";
 import utils from "../../utils/utils";
 import vars from "../../var/var";
 import uiFunc from "./uiFunc";
-hub("stateManager");
 
 const stateManager = {
     handle(type: string, ...data: string[]){

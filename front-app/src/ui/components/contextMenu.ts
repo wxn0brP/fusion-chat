@@ -1,5 +1,5 @@
 import hub from "../../hub";
-hub("contextMenu");
+hub("components/contextMenu");
 
 import contextMenuLib from "../../lib/contextMenuLib";
 import Id from "../../types/Id";

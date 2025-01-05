@@ -1,5 +1,5 @@
 import hub from "../../hub";
-hub("voice");
+hub("components/voice");
 
 import { mglVar, voiceHTML } from "../../var/html";
 import socket from "../../core/socket/socket";
