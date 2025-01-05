@@ -29,7 +29,7 @@ interface Vars {
                 [id: Id]: string;
             };
             [chat: Id]: {
-                [id: Id]: string | 0; //TODO why 0?
+                [id: Id]: string | 0; // 0 if user haven't realm nick
             }
         };
         chat: {

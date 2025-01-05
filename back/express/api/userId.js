@@ -9,21 +9,21 @@ router.get("/id/u", async (req, res) => {
 
     if(chat){
         const userData = await global.db.realmData.findOne(chat, { uid: id });
-        if(userData) return res.json({ err: false, name: userData.name });
+        if(userData) return res.json({ err: false, name: userData.name, c: 1 });
     }
 
     const user = await global.db.data.findOne("user", { _id: id });
     if(!user){
         const rm = await global.db.data.findOne("rm", { _id: id });
         if(rm)
-            return res.json({ err: false, name: "Deleted User "+id });
+            return res.json({ err: false, name: "Deleted User "+id, c: -1 });
         return res.json({ err: true, msg: "user is not found" });
     }
 
     const nickData = await global.db.userData.findOne(id, { $exists: { nick: true }});
-    if(nickData) return res.json({ err: false, name: nickData.nick });
+    if(nickData) return res.json({ err: false, name: nickData.nick, c: 0 });
 
-    return res.json({ err: false, name: user.name });
+    return res.json({ err: false, name: user.name, c: 0 });
 });
 
 export default router;

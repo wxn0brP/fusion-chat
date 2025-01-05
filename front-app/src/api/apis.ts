@@ -18,6 +18,7 @@ const apis = {
             if (chat.startsWith("$") || chat == "main") { // if dm or main
                 if (temp.main[id]) return temp.main[id];
                 const data = apis.www.getInServer("/api/id/u?id=" + id).name;
+                if(!data) return "Unknown";
                 temp.main[id] = data;
                 return data;
             }
@@ -31,22 +32,38 @@ const apis = {
 
             if (id.startsWith("%")) { // if webhook
                 const data = apis.www.getInServer("/api/id/wh?id=" + id.replace("%", "") + "&chat=" + chat).name + " (APP)";
+                if(!data) return "Unknown";
                 temp[chat][id] = data;
                 return data;
             } else if (id.startsWith("^")) { // if bot
                 const data = apis.www.getInServer("/api/id/bot?id=" + id.replace("^", "") + "&chat=" + chat).name + " (BOT)";
+                if(!data) return "Unknown";
                 temp[chat][id] = data;
                 return data;
             } else if (id.startsWith("(")) { // if event chnl
                 const data = apis.www.getInServer("/api/id/event?id=" + id.replace("(", "")).name + " (EVENT)";
+                if(!data) return "Unknown";
                 temp[chat][id] = data;
                 return data;
             }
             else { // if user in chat
-                const data = apis.www.getInServer("/api/id/u?id=" + id + "&chat=" + chat);
-                temp.main[id] = data.name;
-                temp[chat][id] = 0;
-                return data.name;
+                const data: { err: boolean, name: string, c: -1 | 0 | 1 } | null = apis.www.getInServer("/api/id/u?id=" + id + "&chat=" + chat);
+                if(!data) return "Unknown";
+                if(data.c == 1){
+                    temp[chat][id] = data.name;
+                    return data.name;
+                }
+                else if(data.c == 0){
+                    temp[chat][id] = 0;
+                    if(temp.main[id]) return temp.main[id];
+                    const data = apis.www.getInServer("/api/id/u?id=" + id).name;
+                    if(!data) return "Unknown";
+                    temp.main[id] = data.name;
+                    return data.name;
+                }else{
+                    temp.main[id] = data.name;
+                    return data.name;
+                }
             }
         },
 
