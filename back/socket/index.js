@@ -1,9 +1,5 @@
 import { Server } from "socket.io";
-global.io = new Server(global.server, {
-    cors: {
-        origin: ["localhost:1478", "ifp.ct8.pl"],
-    },
-});
+global.io = new Server(global.server);
 
 global.getSocket = (to, room = "") => {
     const namespace = io.of("/" + room);
