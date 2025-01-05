@@ -108,23 +108,25 @@ const render_realm = {
 
         const act = data.activity.get();
         if (!act?.state) {
-            ele.innerHTML = data.text.get() || "";
+            ele.innerHTML = data.status.get() || "";
             return;
         }
         ele.innerHTML = act.state + " | " + act.name;
     },
 
     realmUserStatus(id: Id, state: Ui_UserState) {
-        let { text, activity } = state;
+        let { status, activity } = state;
         const temp = vars.apisTemp.user_status;
         if (!temp[id]) {
+            const reRender = () => render_realm._realmUserStatus(id);
+
             temp[id] = {
-                text: renderUtils.createUpdater<string>(() => render_realm._realmUserStatus(id), text ?? ""),
-                activity: renderUtils.createUpdater<Vars_user__activity | null>(() => render_realm._realmUserStatus(id), activity ?? null),
+                status: renderUtils.createUpdater<string>(reRender, status ?? ""),
+                activity: renderUtils.createUpdater<Vars_user__activity | null>(reRender, activity ?? null),
             };
         }
 
-        if (text) temp[id].text.set(text);
+        if (status) temp[id].status.set(status);
         if (activity) temp[id].activity.set(activity);
     }
 }

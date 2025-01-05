@@ -11,6 +11,8 @@ import render_dm from "../../../ui/render/dm";
 import render_realm from "../../../ui/render/realm";
 import { Core_socket__refresh, Core_socket__user_startus_type } from "../../../types/core/socket";
 import Id from "../../../types/Id";
+import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
+import { Ui_UserState } from "../../../types/ui/render";
 
 export function connect() {
     debugFunc.msg("connected to socket");
@@ -121,12 +123,21 @@ export function message_markAsRead(to: Id, chnl: Id, id: Id) {
     } catch { }
 }
 
-export function realm_users_sync(users, roles) {
+export function realm_users_sync(users: Vars_realm__user[], roles: Vars_realm__role[]) {
     vars.realm.users = users;
     vars.realm.roles = roles;
     render_realm.usersInChat();
-    users.forEach(user => {
-        render_realm.realmUserStatus(user.uid, { activity: Object.assign({}, user.activity) });
-        delete user.activity;
+}
+
+interface Core_socket__realm_users_activity_sync extends Ui_UserState {
+    uid: Id
+}
+
+export function realm_users_activity_sync(userActivity: Core_socket__realm_users_activity_sync[]) {
+    userActivity.forEach(user => {
+        const { uid, status, activity } = user;
+        if(!status && !activity) return;
+
+        render_realm.realmUserStatus(uid, user);
     })
 }

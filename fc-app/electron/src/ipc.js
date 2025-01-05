@@ -19,8 +19,8 @@ ipcMain.on('electronAPI', async (event, data) => {
                 return true;
             });
         break;
-        case "status":
-            confArg.rpcAuto = !!data.data;
+        case "desktopHandling":
+            confArg.rpcAuto = data.data;
         break;
     }
 });

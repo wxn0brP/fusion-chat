@@ -76,11 +76,40 @@ export async function realm_users_sync(id){
         return {
             uid: symbolUID,
             roles: u.r.map(r => rolesMap.get(r)),
-            activity: statusMgmtGetCache(uid),
         }
     });
 
     return { err: false, res: [usersData, rolesData] };
+}
+
+export async function realm_users_activity_sync(id){
+    const validE = new ValidError("realm.users.activity.sync");
+    if(!valid.id(id)) return validE.valid("id");
+
+    const users = await global.db.realmUser.find(id, {});
+    const usersData = users.map(async u => {
+        const uid = u.u || u.bot;
+        let symbolUID = uid;
+        if(u.bot) symbolUID = "^" + u.bot;
+
+        let userOnline = false;
+        if(u.u) userOnline = global.getSocket(uid).length > 0;
+        if(u.bot) userOnline = global.getSocket(uid, "bot").length > 0;
+        if(!userOnline) return { uid: symbolUID };
+
+        const st = await global.db.userData.findOne(uid, { _id: "status" });
+        const status = st?.text || "online";
+
+        return {
+            uid: symbolUID,
+            activity: statusMgmtGetCache(uid),
+            status,
+        }
+    });
+
+    const res = await Promise.all(usersData);
+
+    return { err: false, res: [res] };
 }
 
 export async function realm_delete(suser, id, name){

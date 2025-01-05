@@ -3,7 +3,7 @@ import Id from "../Id";
 import { Vars_realm__chnlPerm, Vars_user__activity } from "../var";
 
 export interface Ui_UserState {
-    text?: string;
+    status?: string; // user status text displayed if not activity
     activity?: Vars_user__activity
 }
 

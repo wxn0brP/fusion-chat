@@ -12,7 +12,7 @@ import translateFunc from "../../utils/translate";
 import mainViewInteract from "../interact/mainView";
 import { navHTML, renderHTML } from "../../var/html";
 import { Core_socket__friendStatus, Core_socket__user_profile } from "../../types/core/socket";
-import { Vars_user__activity } from "../../types/var";
+import utils from "../../utils/utils";
 
 const render_user = {
     localUserProfile(){
@@ -37,6 +37,8 @@ const render_user = {
             <div id="userProfileActivity"></div>
             <div id="userProfileAbout"></div>
         `.trim();
+
+        if(data.statusText) render_realm.realmUserStatus(data._id, { status: data.statusText });
 
         if(!targetIsMe){
             const frinedBtn = document.createElement("button");
@@ -78,6 +80,7 @@ const render_user = {
         }
 
         const activityDiv = renderHTML.userProfile.querySelector("#userProfileActivity");
+        lo(data.activity)
         if(data.activity?.state){
             const act = data.activity;
             activityDiv.innerHTML = `
@@ -94,9 +97,9 @@ const render_user = {
                         "</p>"
                     : ""}
             `.trim();
-            // TODO wtf? debug requires this
-            // @ts-ignore
-            render_realm.realmUserStatus(data._id, Object.assign({}, data.activity));
+            
+            render_realm.realmUserStatus(data._id, { activity: utils.rmRef(act) });
+
             if(act.startTime){
                 const timeP = activityDiv.querySelector("#userProfileActivityTime");
                 function update(){

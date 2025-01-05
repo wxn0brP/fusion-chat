@@ -37,8 +37,8 @@ interface Vars {
         };
         user_status: {
             [id: Id]: {
-                text: Utils_updater<string>;
-                activity: Utils_updater<Vars_user__activity>;
+                status: Utils_updater<string>;
+                activity: Utils_updater<Vars_user__activity | null>;
             }
         };
     };
@@ -110,10 +110,9 @@ export interface Vars_mess__pinned extends Core_mess__dbMessage {
 export interface Vars_user__activity {
     state: string;
     name: string;
+    endTime: number;
 
     startTime?: number;
-    endTime?: number;
-
     details?: string;
     logoName?: string;
     logoText?: string;

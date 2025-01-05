@@ -12,6 +12,7 @@ import {
     realm_thread_create,
     realm_thread_delete,
     realm_thread_list,
+    realm_users_activity_sync,
 } from "./logic/realms.js";
 
 export default (socket) => {
@@ -36,6 +37,17 @@ export default (socket) => {
             socket.logError(e);
         }
     });
+
+    socket.onLimit("realm.users.activity.sync", 1000, async (id, cb) => {
+        try{
+            const { err, res } = await realm_users_activity_sync(id);
+            if(err) return socket.emit(...err);
+            if(cb) cb(...res);
+            else socket.emit("realm.users.activity.sync", ...res);
+        }catch(e){
+            socket.logError(e);
+        }
+    })
 
     socket.onLimit("realm.delete", 10_000, async (id, name) => {
         try{

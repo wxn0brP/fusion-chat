@@ -84,6 +84,10 @@ const utils = {
 
     escape(selector: string): string {
         return selector.replace(/([.&*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+    },
+
+    rmRef<T>(obj: T): T {
+        return JSON.parse(JSON.stringify(obj));
     }
 }
 

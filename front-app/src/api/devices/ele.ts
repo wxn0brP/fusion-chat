@@ -42,7 +42,7 @@ document.querySelector("#assets").appendChild(electronApiDiv);
 
 setTimeout(() => {
     send({
-        type: "status",
+        type: "desktopHandling",
         data: vars.settings.desktopHandling
     })
 }, 5_000);
