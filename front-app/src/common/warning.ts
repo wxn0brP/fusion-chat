@@ -1,11 +1,11 @@
-import hub from "../hub.js";
+import hub from "../hub";
 hub("warning");
 
-import debugFunc from "../core/debug.js";
-import translateFunc from "../utils/translate.js";
+import debugFunc from "../core/debug";
+import translateFunc from "../utils/translate";
 
-(function(){
-    if(debugFunc.isDebug) return;
+(function () {
+    if (debugFunc.isDebug) return;
 
     const warnings = [
         { txt: "Wait!", css: "60px;color:gold" },

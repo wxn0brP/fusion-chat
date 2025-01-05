@@ -1,7 +1,7 @@
-import hub from "../../hub.js";
+import hub from "../../hub";
 hub("socket/_evt");
 
-import socket from "./socket.js";
+import socket from "./socket";
 import {
     connect,
     error,
@@ -13,7 +13,7 @@ import {
     self_status_get,
     realm_users_sync,
     realm_users_activity_sync,
-} from "./logic/evt.js";
+} from "./logic/evt";
 
 socket.on("connect", connect);
 socket.on("error", error);

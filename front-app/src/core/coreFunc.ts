@@ -1,18 +1,17 @@
-import hub from "../hub.js";
+import hub from "../hub";
 hub("coreFunc");
 
-import vars from "../var/var.js";
-import apis from "../api/apis.js";
-import utils from "../utils/utils.js";
-import socket from "./socket/socket.js";
-import { customEmoji } from "../ui/components/emoji.js";
-import mainView from "../ui/components/mainView.js";
-import translateFunc from "../utils/translate.js";
-
-import { navHTML, coreHTML, messHTML, mainViewHTML, mglVar } from "../var/html.js";
-import { renderState } from "../ui/render/var.js";
-import messStyle from "./mess/style.js";
-import Id from "../types/Id.js";
+import Id from "../types/Id";
+import vars from "../var/var";
+import apis from "../api/apis";
+import utils from "../utils/utils";
+import socket from "./socket/socket";
+import messStyle from "./mess/style";
+import translateFunc from "../utils/translate";
+import { renderState } from "../ui/render/var";
+import mainView from "../ui/components/mainView";
+import { customEmoji } from "../ui/components/emoji";
+import { navHTML, coreHTML, messHTML, mainViewHTML, mglVar } from "../var/html";
 
 const coreFunc = {
     changeChat(id: Id, chnl: Id | "main" | null = null) {

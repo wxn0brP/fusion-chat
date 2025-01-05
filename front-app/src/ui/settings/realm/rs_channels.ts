@@ -1,21 +1,21 @@
 import hub from "../../../hub";
 hub("rs/channels");
 
-import genId from "../../../utils/genId";
-import translateFunc from "../../../utils/translate";
-import uiFunc from "../../helpers/uiFunc";
-import apis from "../../../api/apis";
-import socket from "../../../core/socket/socket";
-import debugFunc from "../../../core/debug";
 import rs_dataF from "./rs_var";
+import apis from "../../../api/apis";
+import genId from "../../../utils/genId";
+import uiFunc from "../../helpers/uiFunc";
+import debugFunc from "../../../core/debug";
+import socket from "../../../core/socket/socket";
+import translateFunc from "../../../utils/translate";
+import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Role } from "./types";
+import { Channel_Type } from "../../../types/channel";
 import {
     initInputText,
     initButton,
     addSeparator,
     initCheckbox,
-} from "./rs_utils.js";
-import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Role } from "./types";
-import { Channel_Type } from "../../../types/channel";
+} from "./rs_utils";
 
 export const renderChannels = function () {
     const rs_data = rs_dataF();

@@ -1,4 +1,4 @@
-import uiFunc from "../../ui/helpers/uiFunc.js";
+import uiFunc from "../../ui/helpers/uiFunc";
 
 export const send = (data) => {
     uiFunc.uiMsg(data);

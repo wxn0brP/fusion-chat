@@ -136,7 +136,7 @@ interface Core_socket__realm_users_activity_sync extends Ui_UserState {
 export function realm_users_activity_sync(userActivity: Core_socket__realm_users_activity_sync[]) {
     userActivity.forEach(user => {
         const { uid, status, activity } = user;
-        if(!status && !activity) return;
+        if (!status && !activity) return;
 
         render_realm.realmUserStatus(uid, user);
     })

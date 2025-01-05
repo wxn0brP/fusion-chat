@@ -1,10 +1,10 @@
-import hub from "../../hub.js";
-import Id from "../../types/Id.js";
-import { Utils_updater } from "../../types/utils.js";
+import hub from "../../hub";
 hub("render/utils");
 
-import utils from "../../utils/utils.js";
-import vars from "../../var/var.js";
+import Id from "../../types/Id";
+import utils from "../../utils/utils";
+import vars from "../../var/var";
+import { Utils_updater } from "../../types/utils";
 
 const renderUtils = {
     // TODO unused check

@@ -1,7 +1,7 @@
-import vars from "../../var/var.js";
-import debugFunc from "../../core/debug.js";
-import socket from "../../core/socket/socket.js";
-import stateManager from "../../ui/helpers/stateManager.js";
+import vars from "../../var/var";
+import debugFunc from "../../core/debug";
+import socket from "../../core/socket/socket";
+import stateManager from "../../ui/helpers/stateManager";
 
 export const send = (data) => {
     // @ts-ignore
@@ -10,24 +10,24 @@ export const send = (data) => {
 
 export const receiveMessage = (data) => {
     data = JSON.parse(data);
-    switch(data.type){
+    switch (data.type) {
         case "debug":
             debugFunc.msg(data.msg);
-        break;
+            break;
         case "status":
-            if(!vars.settings.desktopHandling) return;
+            if (!vars.settings.desktopHandling) return;
             const state = data.data;
-            if(state === "clear"){
+            if (state === "clear") {
                 socket.emit("status.activity.remove");
-            }else if(typeof state == "object" && !Array.isArray(state)){
+            } else if (typeof state == "object" && !Array.isArray(state)) {
                 socket.emit("status.activity.set", data.data);
             }
-        break;
+            break;
         case "ctrl":
-            if(typeof data.ctrl == "object" && !Array.isArray(data.ctrl)) data.ctrl = [data.ctrl];
+            if (typeof data.ctrl == "object" && !Array.isArray(data.ctrl)) data.ctrl = [data.ctrl];
             const ctrl = data.ctrl.map(c => ({ type: c[0], value: c.slice(1) }));
             stateManager.handleArray(ctrl);
-        break;
+            break;
     }
 }
 

@@ -1,11 +1,11 @@
-import hub from "../../hub.js";
+import hub from "../../hub";
 hub("mess/listeners");
 
-import { messHTML } from "../../var/html.js";
-import vars from "../../var/var.js";
-import messFunc from "./mess.js";
-import messStyle from "./style.js";
-import uiInteract from "../../ui/interact/ui.js";
+import messFunc from "./mess";
+import messStyle from "./style";
+import vars from "../../var/var";
+import { messHTML } from "../../var/html";
+import uiInteract from "../../ui/interact/ui";
 
 messHTML.input.addEventListener("keydown", (e) => {
     if(e.key != "Enter") return;

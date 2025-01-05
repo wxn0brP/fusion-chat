@@ -1,14 +1,14 @@
-import hub from "../../hub.js";
+import hub from "../../hub";
 hub("interact/subscribeEventChnl");
 
-import socket from "../../core/socket/socket.js";
-import apis from "../../api/apis.js";
-import { mglInt } from "../../var/html.js";
+import apis from "../../api/apis";
+import { mglInt } from "../../var/html";
+import socket from "../../core/socket/socket";
 
 const subscribeEventChnl = {
     popup: document.querySelector("#subscribeEventChnl"),
 
-    init(){
+    init() {
         const p = this.popup;
         this.realms = p.querySelector("#subscribeEventChnl_realms");
         this.channels = p.querySelector("#subscribeEventChnl_channels");
@@ -16,9 +16,9 @@ const subscribeEventChnl = {
         this.cancelBtn = p.querySelector("#subscribeEventChnl_exit");
     },
 
-    loadChannels(){
+    loadChannels() {
         const realm = this.realms.value;
-        if(!realm) return;
+        if (!realm) return;
         const _this = this;
         this.channels.innerHTML = "";
 
@@ -32,7 +32,7 @@ const subscribeEventChnl = {
         });
     },
 
-    show(sourceRealmId, sourceChannelId){
+    show(sourceRealmId, sourceChannelId) {
         this.realms.innerHTML = "";
         this.realms.onchange = () => this.loadChannels();
         const _this = this;
@@ -45,11 +45,11 @@ const subscribeEventChnl = {
             });
             this.loadChannels();
         });
-        
+
         this.okBtn.onclick = () => {
             const realm = this.realms.value;
             const channel = this.channels.value;
-            if(realm && channel){
+            if (realm && channel) {
                 socket.emit("realm.event.channel.subscribe", sourceRealmId, sourceChannelId, realm, channel);
                 this.popup.fadeOut();
             }

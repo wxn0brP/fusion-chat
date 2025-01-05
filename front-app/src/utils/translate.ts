@@ -1,8 +1,8 @@
-import hub from "../hub.js";
+import hub from "../hub";
 hub("translate");
 
-import utils from "./utils";
 import cw from "../core";
+import utils from "./utils";
 
 const translateFunc = {
     locale: {},

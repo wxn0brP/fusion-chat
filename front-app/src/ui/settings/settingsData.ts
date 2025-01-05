@@ -1,15 +1,15 @@
-import hub from "../../hub.js";
+import hub from "../../hub";
 hub("settingsData");
 
-import translateFunc from "../../utils/translate.js";
-import vars from "../../var/var.js";
-import apis from "../../api/apis.js";
-import socket from "../../core/socket/socket.js";
-import render_user from "../render/user.js";
-import uiFunc from "../helpers/uiFunc.js";
-import fileFunc from "../../api/file.js";
-import { Settings_settingsManager__category } from "../../types/ui/settings.js";
-import { reloadProfileImages } from "../helpers/reloadImages.js";
+import vars from "../../var/var";
+import apis from "../../api/apis";
+import fileFunc from "../../api/file";
+import uiFunc from "../helpers/uiFunc";
+import render_user from "../render/user";
+import socket from "../../core/socket/socket";
+import translateFunc from "../../utils/translate";
+import { reloadProfileImages } from "../helpers/reloadImages";
+import { Settings_settingsManager__category } from "../../types/ui/settings";
 
 interface SettingsData {
     user: () => Settings_settingsManager__category[];
@@ -78,13 +78,13 @@ const settingsData: SettingsData = {
                 return [div, tmpData];
             },
             save: (div, tmpData) => {
-                if(tmpData.img){
+                if (tmpData.img) {
                     fileFunc.profile(tmpData.img);
                     setTimeout(() => {
                         reloadProfileImages(vars.user._id);
                     }, 3000);
                 }
-                
+
                 return {}
             }
         },
@@ -112,7 +112,7 @@ const settingsData: SettingsData = {
                     type: "button",
                     onclick: () => {
                         window.Notification.requestPermission((result) => {
-                            if(result == "granted") uiFunc.uiMsg(translateFunc.get("OK"));
+                            if (result == "granted") uiFunc.uiMsg(translateFunc.get("OK"));
                             else uiFunc.uiMsg(translateFunc.get("Notification permission denied") + ".");
                         });
                     },
@@ -141,7 +141,7 @@ const settingsData: SettingsData = {
             txt: translateFunc.get("Account settings"),
             type: "obj",
             settings: [
-                
+
                 {
                     name: "Logout",
                     txt: translateFunc.get("Logout"),
@@ -149,8 +149,8 @@ const settingsData: SettingsData = {
                     onclick: () => {
                         const confText = translateFunc.get("Are you sure you want to log out") + "?";
                         const doubleText = " (" + translateFunc.get("double check") + ")";
-                        if(!confirm(confText)) return;
-                        if(!confirm(confText+doubleText)) return;
+                        if (!confirm(confText)) return;
+                        if (!confirm(confText + doubleText)) return;
 
                         localStorage.removeItem("user_id");
                         localStorage.removeItem("from");
@@ -171,10 +171,10 @@ const settingsData: SettingsData = {
                         const confText = translateFunc.get("Are you sure you want to delete your account") + "?";
                         const doubleText = " (" + translateFunc.get("double check") + ")";
                         const tripleText = " (" + translateFunc.get("triple check") + ")";
-                        if(!confirm(confText)) return;
-                        if(!confirm(confText+doubleText)) return;
-                        if(!confirm(confText+tripleText)) return;
-                        
+                        if (!confirm(confText)) return;
+                        if (!confirm(confText + doubleText)) return;
+                        if (!confirm(confText + tripleText)) return;
+
                         socket.emit("user.delete", () => {
                             localStorage.removeItem("user_id");
                             localStorage.removeItem("from");
@@ -192,47 +192,47 @@ const settingsData: SettingsData = {
     ],
 
     userSave: (settings) => {
-        if(settings["Status"] != undefined){
+        if (settings["Status"] != undefined) {
             vars.user.status = settings["Status"];
         }
-        if(settings["Status text"] != undefined){
+        if (settings["Status text"] != undefined) {
             vars.user.statusText = settings["Status text"];
         }
-        if(settings["Status"] != undefined || settings["Status text"] != undefined){
+        if (settings["Status"] != undefined || settings["Status text"] != undefined) {
             socket.emit("status.update", vars.user.status, vars.user.statusText);
             render_user.localUserProfile();
         }
 
-        if(settings["Nickname"] != undefined){
+        if (settings["Nickname"] != undefined) {
             socket.emit("profile.set_nickname", settings["Nickname"]);
             vars.apisTemp.user.main[vars.user._id] = settings["Nickname"];
             render_user.localUserProfile();
         }
 
         const lang = settings["Language"];
-        if(lang != undefined){
-            if(lang != localStorage.getItem("lang")) translateFunc.load(lang);
+        if (lang != undefined) {
+            if (lang != localStorage.getItem("lang")) translateFunc.load(lang);
         }
 
         const notifications = settings["Notifications"];
-        if(notifications != undefined){
+        if (notifications != undefined) {
             localStorage.setItem("notifications", notifications);
             vars.settings.notifications = notifications;
-            if(notifications){
+            if (notifications) {
                 // check permissions
                 window.Notification.requestPermission((result) => {
-                    if(result == "granted") return;
+                    if (result == "granted") return;
                     uiFunc.uiMsg(translateFunc.get("Notification permission denied") + ".");
                 });
             }
         }
 
         const desktopHandling = settings["desktopHandling"];
-        if(desktopHandling != undefined){
+        if (desktopHandling != undefined) {
             localStorage.setItem("desktopHandling", desktopHandling);
             vars.settings.desktopHandling = desktopHandling;
-            if(!desktopHandling) socket.emit("status.activity.remove");
-            if(apis.app.apiType == "ele") apis.api.send({type: "desktopHandling", data: desktopHandling});
+            if (!desktopHandling) socket.emit("status.activity.remove");
+            if (apis.app.apiType == "ele") apis.api.send({ type: "desktopHandling", data: desktopHandling });
         }
     },
 }

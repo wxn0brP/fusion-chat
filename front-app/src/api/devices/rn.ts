@@ -1,6 +1,6 @@
-import socket from "../../core/socket/socket.js";
-import debugFunc from "../../core/debug.js";
-import stateManager from "../../ui/helpers/stateManager.js";
+import socket from "../../core/socket/socket";
+import debugFunc from "../../core/debug";
+import stateManager from "../../ui/helpers/stateManager";
 
 export const send = (data) => {
     // @ts-ignore
@@ -9,33 +9,33 @@ export const send = (data) => {
 
 export const receiveMessage = (data) => {
     data = JSON.parse(data);
-    switch(data.type){
+    switch (data.type) {
         case "debug":
             debugFunc.msg(data.msg);
-        break;
+            break;
         case "close":
             socket.disconnect();
-        break;
+            break;
         case "unclose":
             socket.connect();
-        break;
+            break;
         case "ctrl":
-            if(typeof data.ctrl == "object" && !Array.isArray(data.ctrl)) data.ctrl = [data.ctrl];
+            if (typeof data.ctrl == "object" && !Array.isArray(data.ctrl)) data.ctrl = [data.ctrl];
             const ctrl = data.ctrl.map(c => ({ type: c[0], value: c.slice(1) }));
             stateManager.handleArray(ctrl);
-        break;
+            break;
     }
 }
 
 const processMediaRN = {
-    init(){
+    init() {
         this.audioContext = new AudioContext();
         this.destination = this.audioContext.createMediaStreamDestination();
         const track = this.destination.stream.getAudioTracks()[0];
         this.mediaStream = new MediaStream([track]);
     },
 
-    base64ToArrayBuffer(base64){
+    base64ToArrayBuffer(base64) {
         const binaryString = window.atob(base64);
         const len = binaryString.length;
         const bytes = new Uint8Array(len);
@@ -44,20 +44,20 @@ const processMediaRN = {
         }
         return bytes.buffer;
     },
-    
-    async handleAudioData(wavDataBuffer){
-        try{
+
+    async handleAudioData(wavDataBuffer) {
+        try {
             const audioBuffer = await this.audioContext.decodeAudioData(wavDataBuffer);
             const source = this.audioContext.createBufferSource();
             source.buffer = audioBuffer;
             source.connect(this.destination);
             source.start();
-        }catch(error){
+        } catch (error) {
             debugFunc.msg('Error processing audio data: ' + error);
         }
     },
 
-    async getStream(){
+    async getStream() {
         send({
             type: "startAudio",
         });
@@ -73,9 +73,9 @@ export const receiveAudio = async (base64WavData) => {
 };
 
 setTimeout(() => {
-    try{
+    try {
         processMediaRN.init();
-    }catch(error){
+    } catch (error) {
         debugFunc.msg(error);
     }
 }, 1000);

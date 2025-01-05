@@ -1,34 +1,34 @@
-import hub from "../../hub.js";
+import hub from "../../hub";
 hub("interact/relations");
 
-import uiFunc from "../helpers/uiFunc.js";
-import socket from "../../core/socket/socket.js";
-import { otherHTML, mglVar } from "../../var/html.js";
-import Id from "../../types/Id.js";
+import Id from "../../types/Id";
+import uiFunc from "../helpers/uiFunc";
+import socket from "../../core/socket/socket";
+import { otherHTML, mglVar } from "../../var/html";
 
 const makeRealmDiv = otherHTML.makeRealm;
 
 const buttonFunc = {
-    async addPriv(){
+    async addPriv() {
         const to = await uiFunc.prompt("Name of the 2 people");
-        if(!to) return;
+        if (!to) return;
         socket.emit("dm.create", to);
     },
 
-    async createRealm(){
+    async createRealm() {
         makeRealmDiv.fadeOut();
         const name = await uiFunc.prompt("Name of the realm");
-        if(!name) return;
+        if (!name) return;
         socket.emit("realm.create", name);
         setTimeout(() => {
             socket.emit("realm.get");
         }, 1500);
     },
 
-    async joinRealm(){
-        makeRealmDiv.fadeOut(); 
+    async joinRealm() {
+        makeRealmDiv.fadeOut();
         let id = await uiFunc.prompt("Invite link of the realm") as Id;
-        if(!id) return;
+        if (!id) return;
 
         id = id
             .replace(location.protocol + "//", "")

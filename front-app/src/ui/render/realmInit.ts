@@ -1,19 +1,19 @@
-import hub from "../../hub.js";
+import hub from "../../hub";
 hub("render/realmInit");
 
-import vars from "../../var/var.js";
-import { coreHTML, navHTML } from "../../var/html.js";
-import coreFunc from "../../core/coreFunc.js";
-import contextMenu from "../components/contextMenu.js";
-import { renderState } from "./var.js";
-import permissionFunc, { PermissionFlags } from "../../utils/perm.js";
-import translateFunc from "../../utils/translate.js";
-import uiFunc from "../helpers/uiFunc.js";
-import socket from "../../core/socket/socket.js";
-import voiceFunc from "../components/voice.js";
-import Id from "../../types/Id.js";
-import { Ui_render__category, Ui_render__channel } from "../../types/ui/render.js";
-import { Channel_Type } from "../../types/channel.js";
+import Id from "../../types/Id";
+import vars from "../../var/var";
+import { renderState } from "./var";
+import uiFunc from "../helpers/uiFunc";
+import coreFunc from "../../core/coreFunc";
+import voiceFunc from "../components/voice";
+import socket from "../../core/socket/socket";
+import translateFunc from "../../utils/translate";
+import { Channel_Type } from "../../types/channel";
+import { coreHTML, navHTML } from "../../var/html";
+import contextMenu from "../components/contextMenu";
+import permissionFunc, { PermissionFlags } from "../../utils/perm";
+import { Ui_render__category, Ui_render__channel } from "../../types/ui/render";
 
 function initRealmState(permission: number = 0) {
     vars.realm = {

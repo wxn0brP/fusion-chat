@@ -1,20 +1,20 @@
+import Id from "../../types/Id";
+import vars from "../../var/var";
+import { messHTML } from "../../var/html";
 import coreFunc from "../../core/coreFunc";
 import messStyle from "../../core/mess/style";
 import socket from "../../core/socket/socket";
-import Id from "../../types/Id";
 import translateFunc from "../../utils/translate";
-import { messHTML } from "../../var/html";
-import vars from "../../var/var";
 import uiFunc, { promptDiv } from "../helpers/uiFunc";
 
 const uiInteract = {
-    editMess(id: Id){
-        const messageDiv = document.querySelector("#mess__"+id+" .mess_content");
-        if(!messageDiv) return;
+    editMess(id: Id) {
+        const messageDiv = document.querySelector("#mess__" + id + " .mess_content");
+        if (!messageDiv) return;
         const message = messageDiv.getAttribute("_plain");
         messHTML.input.value = message;
         vars.temp.editId = id;
-        
+
         messHTML.editClose.style.display = "block";
         coreFunc.focusInp(true);
         messStyle.sendBtnStyle();
@@ -22,7 +22,7 @@ const uiInteract = {
         messStyle.setSelectionStart();
     },
 
-    clipboardError(text: string){
+    clipboardError(text: string) {
         const div = document.createElement("div");
         div.style.opacity = "0";
         div.classList.add("prompt");
@@ -53,14 +53,14 @@ const uiInteract = {
         });
     },
 
-    async createThread(messId: Id=null){
+    async createThread(messId: Id = null) {
         const { to, chnl } = vars.chat;
-        if(!to || !chnl) return;
-        if(to.startsWith("$")) return;
-        if(!vars.realm.chnlPerms[chnl]?.threadCreate) return;
+        if (!to || !chnl) return;
+        if (to.startsWith("$")) return;
+        if (!vars.realm.chnlPerms[chnl]?.threadCreate) return;
 
         const name = await uiFunc.prompt("Name of the thread");
-        if(!name) return;
+        if (!name) return;
 
         socket.emit("realm.thread.create", to, chnl, name, messId, () => {
             socket.emit("realm.thread.list", to, chnl);

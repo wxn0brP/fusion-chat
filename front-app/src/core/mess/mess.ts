@@ -1,21 +1,21 @@
-import hub from "../../hub.js";
+import hub from "../../hub";
 hub("mess");
 
-import { messHTML, mglVar } from "../../var/html.js";
-import vars from "../../var/var.js";
-import messCmd from "./cmd.js";
-import coreFunc from "../coreFunc.js";
-import apis from "../../api/apis.js";
-import utils from "../../utils/utils.js";
-import formatFunc from "./format.js";
-import socket from "../socket/socket.js";
-import messStyle from "./style.js";
-import contextMenu from "../../ui/components/contextMenu.js";
-import permissionFunc, { PermissionFlags } from "../../utils/perm.js";
-import fileFunc from "../../api/file.js";
-import messInteract from "./interact.js";
-import { Core_mess__dbMessage, Core_mess__sendMessage } from "../../types/core/mess.js";
-import { Api_fileFunc_read__options } from "../../types/api.js";
+import messCmd from "./cmd";
+import vars from "../../var/var";
+import messStyle from "./style";
+import apis from "../../api/apis";
+import formatFunc from "./format";
+import coreFunc from "../coreFunc";
+import utils from "../../utils/utils";
+import socket from "../socket/socket";
+import fileFunc from "../../api/file";
+import messInteract from "./interact";
+import { messHTML, mglVar } from "../../var/html";
+import contextMenu from "../../ui/components/contextMenu";
+import { Api_fileFunc_read__options } from "../../types/api";
+import permissionFunc, { PermissionFlags } from "../../utils/perm";
+import { Core_mess__dbMessage, Core_mess__sendMessage } from "../../types/core/mess";
 
 export const maxMessLen = 2000; 
 export const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
