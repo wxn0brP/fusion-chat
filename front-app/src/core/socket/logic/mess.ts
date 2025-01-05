@@ -203,3 +203,11 @@ export function realm_thread_delete(id: Id){
     document.querySelector("#channel_\\&"+id)?.remove();
     document.querySelector("#thread__"+id)?.remove();
 }
+
+export function message_markAsRead(to: Id, chnl: Id, id: Id) {
+    vars.lastMess[to] = vars.lastMess[to] || {};
+    vars.lastMess[to][chnl] = vars.lastMess[to][chnl] || { read: null, mess: null };
+
+    vars.lastMess[to][chnl].read = id;
+    if (to.startsWith("$")) render_dm.chats();
+}

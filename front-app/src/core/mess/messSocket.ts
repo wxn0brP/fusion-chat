@@ -13,6 +13,7 @@ import {
     message_fetch_pinned,
     realm_thread_list,
     realm_thread_delete,
+    message_markAsRead,
 } from "../socket/logic/mess";
 
 socket.on("mess", mess);
@@ -25,3 +26,4 @@ socket.on("message.search", message_search);
 socket.on("message.fetch.pinned", message_fetch_pinned);
 socket.on("realm.thread.list", realm_thread_list);
 socket.on("realm.thread.delete", realm_thread_delete);
+socket.on("message.markAsRead", message_markAsRead);
