@@ -43,6 +43,7 @@ const required = [
         "interact/mainView",
         "interact/relations",
         "interact/subscribeEventChnl",
+        "interact/ui",
     // render
         "render/dm",
         "render/realm",

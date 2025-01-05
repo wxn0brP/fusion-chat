@@ -1,3 +1,6 @@
+import hub from "../../hub";
+hub("interact/ui");
+
 import Id from "../../types/Id";
 import vars from "../../var/var";
 import { messHTML } from "../../var/html";
