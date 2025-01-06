@@ -81,9 +81,9 @@ const required = [
     "var",
 ];
 
-const registered = [];
+const registered: string[] = [];
 
-export default (name) => {
+export default (name: string) => {
     if(registered.includes(name)) return;
     registered.push(name);
 }
