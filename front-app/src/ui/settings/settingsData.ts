@@ -10,6 +10,7 @@ import socket from "../../core/socket/socket";
 import translateFunc from "../../utils/translate";
 import { reloadProfileImages } from "../helpers/reloadImages";
 import { Settings_settingsManager__category } from "../../types/ui/settings";
+import staticData from "../../var/staticData";
 
 interface SettingsData {
     user: () => Settings_settingsManager__category[];
@@ -65,7 +66,7 @@ const settingsData: SettingsData = {
 
                 const imgSel = document.createElement('input');
                 imgSel.type = 'file';
-                imgSel.accept = vars.uploadImgTypes.join(', ');
+                imgSel.accept = staticData.uploadImgTypes.join(', ');
                 imgSel.addEventListener("change", e => {
                     // TODO fix types
                     // @ts-ignore

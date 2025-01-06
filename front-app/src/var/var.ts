@@ -14,15 +14,14 @@ const vars: Vars = {
         to: "main",
         chnl: "main",
         actMess: 0,
-        pinned: []
+        pinned: [],
+        selectedMess: null
     },
     temp: {
         socrollBlock: false,
         replyId: null,
         editId: null,
     }, // temporary
-    messCount: 40,
-    baseTitle: `Fusion Chat`,
     apisTemp: {
         user: {
             main: {},
@@ -47,7 +46,6 @@ const vars: Vars = {
         requests: [],
         page: "online"
     },
-    uploadImgTypes: ["image/png", "image/jpeg", "image/jpg", "image/gif"],
     settings: {
         notifications: localStorage.getItem("notifications") == "true" || false,
         desktopHandling: localStorage.getItem("desktopHandling") == "true" || false

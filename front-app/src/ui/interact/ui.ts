@@ -9,6 +9,7 @@ import messStyle from "../../core/mess/style";
 import socket from "../../core/socket/socket";
 import translateFunc from "../../utils/translate";
 import uiFunc, { promptDiv } from "../helpers/uiFunc";
+import KeyState from "../../var/keys";
 
 const uiInteract = {
     editMess(id: Id) {
@@ -68,6 +69,15 @@ const uiInteract = {
         socket.emit("realm.thread.create", to, chnl, name, messId, () => {
             socket.emit("realm.thread.list", to, chnl);
         });
+    },
+
+    deleteMess(id: Id) {
+        const keys = KeyState.shift || KeyState.ctrl; // if shift or ctrl is pressed skip confirmation
+        if (!keys) {
+            const conf = !confirm(translateFunc.get("Are you sure you want to delete this message", "?")); // TODO rm mess confirm make better (popup with content) 
+            if (conf) return;
+        }
+        socket.emit("message.delete", vars.chat.to, id);
     }
 }
 

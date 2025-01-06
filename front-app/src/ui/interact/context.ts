@@ -29,8 +29,7 @@ const contextFunc = {
                 uiInteract.editMess(id);
             break;
             case "delete":
-                if(!confirm("Are you sure you want to delete this message?")) return;
-                socket.emit("message.delete", vars.chat.to, id);
+                uiInteract.deleteMess(id);
             break;
             case "reply":
                 vars.temp.replyId = id;

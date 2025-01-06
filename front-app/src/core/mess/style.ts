@@ -118,14 +118,4 @@ setTimeout(() => {
     messStyle.messageHeight();
 }, 100); // Delay of 100ms to accommodate any cached input values in the browser
 
-// Paste
-input.addEventListener("paste", (e) => {
-    e.preventDefault();
-    const pasteText = (e.clipboardData || (window as any).clipboardData).getData("text");
-    input.value += pasteText;
-    messStyle.setSelectionStart();
-    messStyle.sendBtnStyle();
-    messStyle.messageHeight();
-})
-
 export default messStyle;

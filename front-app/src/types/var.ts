@@ -15,14 +15,13 @@ interface Vars {
         chnl: Id;
         actMess: number;
         pinned: Vars_mess__pinned[];
+        selectedMess: Id | null;
     };
     temp: {
         socrollBlock: boolean;
         replyId: Id | null;
         editId: Id | null;
     }; // temporary
-    messCount: number;
-    baseTitle: string;
     apisTemp: {
         user: {
             main: {
@@ -62,7 +61,6 @@ interface Vars {
         page: Vars_mainView__page;
         requests: Id[];
     };
-    uploadImgTypes: string[];
     settings: {
         notifications: boolean;
         desktopHandling: boolean;

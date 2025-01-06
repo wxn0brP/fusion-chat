@@ -76,6 +76,8 @@ const required = [
     "utils",
 //  var
     "var/html",
+    "var/keys",
+    "var/staticData",
     "var",
 ];
 

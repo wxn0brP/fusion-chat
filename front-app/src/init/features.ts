@@ -1,10 +1,10 @@
 import hub from "../hub";
 hub("features");
 
-import { messHTML } from "../var/html";
 import vars from "../var/var";
 import messFunc from "../core/mess/mess";
 import setupSwipe from "../lib/swipeLib";
+import staticData from "../var/staticData";
 
 document.querySelector("#nav__toggle").addEventListener("click", () => {
     const nav = document.querySelector("nav").style;
@@ -14,6 +14,10 @@ document.querySelector("#nav__toggle").addEventListener("click", () => {
 document.querySelector<HTMLImageElement>("#navs__user img").src = "/api/profile/img?id=" + vars.user._id;
 
 document.querySelector("#app").addEventListener("contextmenu", (e) => {
+    const target = e.target as HTMLElement;
+    const tag = target.tagName.toLowerCase();
+    if(staticData.contextmenuTags.includes(tag)) return;
+
     e.preventDefault();
 });
 
@@ -32,18 +36,6 @@ setupSwipe(
         // down
     }
 );
-
-messHTML.input.addEventListener("paste", function (e: ClipboardEvent) {
-    const items = e.clipboardData?.items;
-
-    if (!items) return;
-
-    for (const item of items) {
-        if (item.type.indexOf("image") === -1) continue;
-        e.preventDefault();
-        messFunc.sendFile(item.getAsFile())
-    };
-});
 
 (function initDragAndDrop() {
     const app = document.querySelector("#app");

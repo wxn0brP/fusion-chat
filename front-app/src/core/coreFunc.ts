@@ -12,6 +12,7 @@ import { renderState } from "../ui/render/var";
 import mainView from "../ui/components/mainView";
 import { customEmoji } from "../ui/components/emoji";
 import { navHTML, coreHTML, messHTML, mainViewHTML, mglVar } from "../var/html";
+import staticData from "../var/staticData";
 
 const coreFunc = {
     changeChat(id: Id, chnl: Id | "main" | null = null) {
@@ -23,7 +24,7 @@ const coreFunc = {
         if (id == "main") {
             vars.chat.to = "main";
             messHTML.bar.style.display = "none";
-            document.querySelector("title").innerHTML = vars.baseTitle;
+            document.querySelector("title").innerHTML = staticData.baseTitle;
 
             navHTML.main.style.display = "block";
             navHTML.realms.style.display = "none";
@@ -51,7 +52,7 @@ const coreFunc = {
         vars.chat.actMess = 0;
 
         if (id.startsWith("$")) {
-            document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeUserID(id.substring(1));
+            document.querySelector("title").innerHTML = staticData.baseTitle + " | " + apis.www.changeUserID(id.substring(1));
             navHTML.main.style.display = "block";
             navHTML.realms.style.display = "none";
             vars.chat.chnl = "main";
@@ -66,7 +67,7 @@ const coreFunc = {
             messHTML.nav_priv.style.display = "";
             messHTML.nav_realm.style.display = "none";
         } else {
-            document.querySelector("title").innerHTML = vars.baseTitle + " | " + apis.www.changeChat(id);
+            document.querySelector("title").innerHTML = staticData.baseTitle + " | " + apis.www.changeChat(id);
             navHTML.main.style.display = "none";
             navHTML.realms.style.display = "block";
             messHTML.nav_priv.style.display = "none";
@@ -86,6 +87,7 @@ const coreFunc = {
     changeChnl(id: Id) {
         vars.chat.chnl = id;
         vars.chat.actMess = 0;
+        vars.chat.selectedMess = null;
 
         document.querySelectorAll(".channel_textActive").forEach(e => e.classList.remove("channel_textActive"));
         document.querySelector("#channel_" + utils.escape(id))?.classList?.add("channel_textActive");
@@ -140,7 +142,7 @@ const coreFunc = {
     loadMess() {
         messHTML.div.innerHTML = "";
         const tmp = vars.chat.actMess;
-        vars.chat.actMess += vars.messCount;
+        vars.chat.actMess += staticData.messCount;
         if (vars.chat.to == "main") return;
 
         socket.emit("message.fetch", vars.chat.to, vars.chat.chnl, tmp, vars.chat.actMess);

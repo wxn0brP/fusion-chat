@@ -147,6 +147,10 @@ const messFunc = {
                 delete: canDelete
             });
         });
+
+        messDiv.addEventListener("click", () => {
+            vars.chat.selectedMess = data._id;
+        })
     },
 
     sendFile(f: File | undefined){

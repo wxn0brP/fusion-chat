@@ -7,6 +7,7 @@ import { Ui_contextMenu__channelOptions, Ui_contextMenu__messageOptions } from "
 import { Vars_realm__thread } from "../../types/var";
 import permissionFunc from "../../utils/perm";
 import utils from "../../utils/utils";
+import staticData from "../../var/staticData";
 import vars from "../../var/var";
 
 const contextMenu = {
@@ -63,6 +64,10 @@ const contextMenu = {
     menuClickEvent(div: HTMLElement, call: (e: MouseEvent) => void) {
         if (!utils.isMobile()) {
             div.addEventListener("contextmenu", (e) => {
+                const target = e.target as HTMLElement;
+                const tag = target.tagName.toLowerCase();
+                if(staticData.contextmenuTags.includes(tag)) return;
+                
                 e.preventDefault();
                 call(e);
                 return false;

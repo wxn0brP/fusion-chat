@@ -9,6 +9,7 @@ import debugFunc from "../../../core/debug";
 import rs_dataF from "./rs_var";
 import { initButton, initInputText } from "./rs_utils";
 import { Settings_rs__Emoji } from "./types";
+import staticData from "../../../var/staticData";
 
 export const renderEmojis = function(){
     const rs_data = rs_dataF();
@@ -21,7 +22,7 @@ export const renderEmojis = function(){
     uploadButton.onclick = () => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
-        fileInput.accept = vars.uploadImgTypes.join(",");
+        fileInput.accept = staticData.uploadImgTypes.join(",");
         fileInput.onchange = async () => {
             // @ts-ignore
             const file = fileInput.files[0];

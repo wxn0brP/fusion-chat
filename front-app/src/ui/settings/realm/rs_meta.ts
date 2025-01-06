@@ -2,7 +2,6 @@ import hub from "../../../hub";
 hub("rs/meta");
 
 import translateFunc from "../../../utils/translate";
-import vars from "../../../var/var";
 import socket from "../../../core/socket/socket";
 import uiFunc from "../../helpers/uiFunc";
 import fileFunc from "../../../api/file";
@@ -10,6 +9,7 @@ import coreFunc from "../../../core/coreFunc";
 import rs_dataF from "./rs_var";
 import { addSeparator, initButton, initInputText } from "./rs_utils";
 import debugFunc from "../../../core/debug";
+import staticData from "../../../var/staticData";
 
 export const renderMeta = function(){
     const rs_data = rs_dataF();
@@ -33,7 +33,7 @@ export const renderMeta = function(){
 
     const realmImgFile = document.createElement("input");
     realmImgFile.type = "file";
-    realmImgFile.accept = vars.uploadImgTypes.join(", ");
+    realmImgFile.accept = staticData.uploadImgTypes.join(", ");
     realmImgFile.addEventListener("change", e => {
         // @ts-ignore
         tmpData.img = e.target.files[0];
