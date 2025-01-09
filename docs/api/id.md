@@ -143,13 +143,15 @@ Always 200, but returns a JSON response used flag `err`.
 | `err` | boolean | Indicates if there was an error. `true` for error, `false` for success. |
 | `msg?` | string  | A message providing more details about the response (e.g., error or success message). |
 | `name?` | string | The name of the user retrieved by ID. |
+| `c?` | number | The type of user. `-1` for deleted user, `0` for user name/nick, `1` for realm user nick. |
 
 ### Example Response (Success)
 
 ```json
 {
 	"err": false,
-	"name": "User_01"
+	"name": "User_01",
+  "c": 0
 }
 ```
 
