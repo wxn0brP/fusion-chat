@@ -120,7 +120,6 @@ export interface Vars_user__activity {
         state: number;
         max?: number;
     }
-    // TODO end
 }
 
 export interface Vars_realms {

@@ -3,8 +3,6 @@ import type graph from "@wxn0brp/db/graph.d.ts";
 
 declare global {
     var db: {
-        [name: string]: db,
-        [name: string]: graph,
         data: db,
         dataGraph: graph,
         system: db,
