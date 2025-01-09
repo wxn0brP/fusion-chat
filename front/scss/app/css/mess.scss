@@ -332,7 +332,11 @@ main {
 
     #messages {
         padding-top: 20px;
-        max-width: unset;
+        max-width: 100vw;
+        
+        pre {
+            overflow-x: auto;
+        }    
     }
 
     #mess-input{

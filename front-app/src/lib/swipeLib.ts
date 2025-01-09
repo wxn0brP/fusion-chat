@@ -22,6 +22,7 @@ function setupSwipe(
         endX = e.changedTouches[0].clientX;
         endY = e.changedTouches[0].clientY;
 
+        if (shouldIgnoreSwipe(e.target as HTMLElement)) return;
         handleSwipe();
     });
 
@@ -36,7 +37,7 @@ function setupSwipe(
         endX = e.clientX;
         endY = e.clientY;
 
-        handleSwipe();
+        if (!shouldIgnoreSwipe(e.target as HTMLElement)) handleSwipe();
         element.removeEventListener('mouseup', onMouseUp);
     }
 
@@ -59,6 +60,19 @@ function setupSwipe(
                 if (onSwipeDown) onSwipeDown();
             }
         }
+    }
+
+    function shouldIgnoreSwipe(target: HTMLElement) {
+        const diffX = Math.abs(startX - endX);
+        const diffY = Math.abs(startY - endY);
+
+        if (diffX > diffY && target.scrollWidth != target.clientWidth)
+            return true;
+
+        if (diffY > diffX && target.scrollHeight != target.clientHeight)
+            return true;
+
+        return false;
     }
 }
 
