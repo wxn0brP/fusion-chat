@@ -16,6 +16,7 @@ import contextMenu from "../../ui/components/contextMenu";
 import { Api_fileFunc_read__options } from "../../types/api";
 import permissionFunc, { PermissionFlags } from "../../utils/perm";
 import { Core_mess__dbMessage, Core_mess__sendMessage } from "../../types/core/mess";
+import staticData from "../../var/staticData";
 
 export const maxMessLen = 2000; 
 export const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
@@ -146,6 +147,8 @@ const messFunc = {
                 edit: data.fr == vars.user._id,
                 delete: canDelete
             });
+        }, (target) => {
+            return !staticData.contextmenuTags.includes(target.tagName.toLowerCase());
         });
 
         messDiv.addEventListener("click", () => {

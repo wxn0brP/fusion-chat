@@ -7,7 +7,6 @@ import { Ui_contextMenu__channelOptions, Ui_contextMenu__messageOptions } from "
 import { Vars_realm__thread } from "../../types/var";
 import permissionFunc from "../../utils/perm";
 import utils from "../../utils/utils";
-import staticData from "../../var/staticData";
 import vars from "../../var/var";
 
 const contextMenu = {
@@ -61,13 +60,14 @@ const contextMenu = {
     },
 
 
-    menuClickEvent(div: HTMLElement, call: (e: MouseEvent) => void) {
+    menuClickEvent(
+        div: HTMLElement,
+        call: (e: MouseEvent) => void,
+        conditionCb?: (target: HTMLElement) => boolean
+    ) {
         if (!utils.isMobile()) {
             div.addEventListener("contextmenu", (e) => {
-                const target = e.target as HTMLElement;
-                const tag = target.tagName.toLowerCase();
-                if(staticData.contextmenuTags.includes(tag)) return;
-                
+                if (conditionCb && !conditionCb(e.target as HTMLElement)) return;
                 e.preventDefault();
                 call(e);
                 return false;
@@ -96,18 +96,18 @@ const contextMenu = {
 
             holdTimeout = setTimeout(() => {
                 call(mouseEvent);
-            }, 700);
+            }, 1300);
         }
 
         function cancelHold(e: MouseEvent | TouchEvent) {
             clearTimeout(holdTimeout);
             time = new Date().getTime() - time;
-            if (time < 1000) return;
+            if (time < 2000) return;
 
             e.preventDefault();
             return false;
         }
-    }
+    },
 }
 
 function convertTouchEventToMouseEvent(touchEvent: TouchEvent): MouseEvent {
