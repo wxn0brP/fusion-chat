@@ -182,7 +182,7 @@ export function realm_thread_list(data: Vars_realm__thread[]) {
             div.classList.add("channel_text");
             div.id = "channel_&" + t._id;
             div.style.paddingLeft = "2.4rem";
-            div.innerHTML = `|- ${t.name}`;
+            div.innerHTML = `\`- ${t.name}`;
             div.addEventListener("click", () => {
                 coreFunc.changeChnl("&" + t._id);
             });
