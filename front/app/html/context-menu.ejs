@@ -12,8 +12,11 @@
     ],
     realm: [
         { text: "Mute", action: "mute" },
-        { text: "Copy ID", action: "copy_id" },
         { text: "Copy Invite", action: "copy_invite" },
+        { text: "hr" },
+        { text: "Settings", action: "settings", dataId: "settings" },
+        { text: "hr" },
+        { text: "Copy ID", action: "copy_id" },
         { text: "Exit From Realm", action: "exit", style: "color: red" }
     ],
     channel: [
@@ -30,14 +33,18 @@
 <% const renderMenu = (menuId, items, contextType) => { %>
     <div id="<%= menuId %>" class="context-menu">
         <% items.forEach(item => { %>
-            <div class="context-menu__item" 
-                <% if (item.dataId) { %> data-id="<%= item.dataId %>" <% } %>
-                onclick="mglInt.contextFunc.<%= contextType %>('<%= item.action %>', event)" 
-                translate 
-                <% if (item.style) { %> style="<%= item.style %>" <% } %>
-            >
-                <%= item.text %>
-            </div>
+            <% if (item.text === "hr") { %>
+                <hr>
+            <% } else { %>
+                <div class="context-menu__item" 
+                    <% if (item.dataId) { %> data-id="<%= item.dataId %>" <% } %>
+                    onclick="mglInt.contextFunc.<%= contextType %>('<%= item.action %>', event)" 
+                    translate 
+                    <% if (item.style) { %> style="<%= item.style %>" <% } %>
+                >
+                    <%= item.text %>
+                </div>
+            <% } %>
         <% }); %>
     </div>
 <% }; %>

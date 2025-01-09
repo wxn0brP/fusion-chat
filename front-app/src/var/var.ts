@@ -1,5 +1,5 @@
 import hub from "../hub";
-import Vars from "../types/var";
+import Vars, { Vars_realm } from "../types/var";
 import { mglVar } from "./html";
 hub("var");
 
@@ -32,15 +32,7 @@ const vars: Vars = {
     lastMess: {},
     privs: [],
     realms: [],
-    realm: {
-        users: [],
-        roles: [],
-        permission: 0,
-        text: [],
-        desc: {},
-        chnlPerms: {},
-        threads: [] 
-    },
+    realm: getEmptyRealmConfig(),
     mainView: {
         friends: [],
         requests: [],
@@ -54,3 +46,15 @@ const vars: Vars = {
 
 export default vars;
 mglVar.vars = vars;
+
+export function getEmptyRealmConfig(): Vars_realm {
+    return {
+        users: [],
+        roles: [],
+        permission: 0,
+        text: [],
+        desc: {},
+        chnlPerms: {},
+        threads: []
+    }
+}

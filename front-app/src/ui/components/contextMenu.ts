@@ -5,7 +5,7 @@ import contextMenuLib from "../../lib/contextMenuLib";
 import Id from "../../types/Id";
 import { Ui_contextMenu__channelOptions, Ui_contextMenu__messageOptions } from "../../types/ui/components";
 import { Vars_realm__thread } from "../../types/var";
-import permissionFunc from "../../utils/perm";
+import permissionFunc, { PermissionFlags } from "../../utils/perm";
 import utils from "../../utils/utils";
 import vars from "../../var/var";
 
@@ -15,25 +15,24 @@ const contextMenu = {
         return contextMenuLib.menuShower(ele, e);
     },
 
-    getByDataIdStyle(ele: HTMLElement, id: string) {
-        return ele.querySelector<HTMLElement>(`[data-id='${id}']`).style;
-    },
-
     message(e: MouseEvent, id: Id, opts: Ui_contextMenu__messageOptions) {
-        const ele = document.querySelector("#mesage_context_menu");
+        const ele = document.querySelector<HTMLElement>("#mesage_context_menu");
 
-        this.getByDataIdStyle(ele, "pin").display = opts.pin ? "" : "none";
-        this.getByDataIdStyle(ele, "unpin").display = opts.pin ? "none" : "";
-        this.getByDataIdStyle(ele, "delete").display = opts.delete ? "" : "none";
-        this.getByDataIdStyle(ele, "edit").display = opts.edit ? "" : "none";
-        this.getByDataIdStyle(ele, "add_reaction").display = vars.realm.chnlPerms[vars.chat.chnl]?.react ? "" : "none";
-        this.getByDataIdStyle(ele, "create_thread").display = vars.realm.chnlPerms[vars.chat.chnl]?.threadCreate ? "" : "none";
+        setDisplayByDataId(ele, "pin", opts.pin);
+        setDisplayByDataId(ele, "unpin", !opts.pin);
+        setDisplayByDataId(ele, "delete", opts.delete);
+        setDisplayByDataId(ele, "edit", opts.edit);
+        setDisplayByDataId(ele, "add_reaction", vars.realm.chnlPerms[vars.chat.chnl]?.react);
+        setDisplayByDataId(ele, "create_thread", vars.realm.chnlPerms[vars.chat.chnl]?.threadCreate);
 
         this.showMenu(e, ele, id);
     },
 
     realm(e: MouseEvent, id: Id) {
-        const ele = document.querySelector("#realm_context_menu");
+        const ele = document.querySelector<HTMLElement>("#realm_context_menu");
+
+        setDisplayByDataId(ele, "settings", canUserManageRealm());
+
         this.showMenu(e, ele, id);
     },
 
@@ -42,19 +41,19 @@ const contextMenu = {
             type: "text",
             ...opts,
         }
-        const ele = document.querySelector("#channel_context_menu");
+        const ele = document.querySelector<HTMLElement>("#channel_context_menu");
 
-        this.getByDataIdStyle(ele, "subscribe").display = ["realm_event", "open_event"].includes(opts.type) ? "" : "none";
-        this.getByDataIdStyle(ele, "create_thread").display = vars.realm.chnlPerms[vars.chat.chnl]?.threadCreate ? "" : "none";
+        setDisplayByDataId(ele, "subscribe", ["realm_event", "open_event"].includes(opts.type));
+        setDisplayByDataId(ele, "create_thread", vars.realm.chnlPerms[vars.chat.chnl]?.threadCreate);
 
         this.showMenu(e, ele, id);
     },
 
     thread(e: MouseEvent, thread: Vars_realm__thread) {
-        const ele = document.querySelector("#thread_context_menu");
+        const ele = document.querySelector<HTMLElement>("#thread_context_menu");
 
         const permToDelete = vars.user._id === thread.author || permissionFunc.isAdmin();
-        this.getByDataIdStyle(ele, "delete").display = permToDelete ? "" : "none";
+        setDisplayByDataId(ele, "delete", permToDelete);
 
         this.showMenu(e, ele, thread._id);
     },
@@ -119,6 +118,25 @@ function convertTouchEventToMouseEvent(touchEvent: TouchEvent): MouseEvent {
     });
 
     return mouseEvent;
+}
+function getByDataIdStyle(ele: HTMLElement, id: string) {
+    return ele.querySelector<HTMLElement>(`[data-id='${id}']`).style;
+}
+
+function setDisplayByDataId(ele: HTMLElement, id: string, display: boolean) {
+    getByDataIdStyle(ele, id).display = display ? "" : "none";
+}
+
+function canUserManageRealm() {
+    const requiredPermissions = [
+        PermissionFlags.Admin,
+        PermissionFlags.ManageChannels,
+        PermissionFlags.ManageRoles,
+        PermissionFlags.ManageWebhooks,
+        PermissionFlags.ManageEmojis,
+    ];
+
+    return permissionFunc.hasAnyPermission(vars.realm.permission, requiredPermissions);
 }
 
 export default contextMenu;

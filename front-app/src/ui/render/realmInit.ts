@@ -7,12 +7,10 @@ import { renderState } from "./var";
 import uiFunc from "../helpers/uiFunc";
 import coreFunc from "../../core/coreFunc";
 import voiceFunc from "../components/voice";
-import socket from "../../core/socket/socket";
 import translateFunc from "../../utils/translate";
 import { Channel_Type } from "../../types/channel";
 import { coreHTML, navHTML } from "../../var/html";
 import contextMenu from "../components/contextMenu";
-import permissionFunc, { PermissionFlags } from "../../utils/perm";
 import { Ui_render__category, Ui_render__channel } from "../../types/ui/render";
 
 function initRealmState(permission: number = 0) {
@@ -37,7 +35,7 @@ function createRealmNameSection(name: string, sid: Id) {
     navHTML.realms__name.appendChild(nameText);
 
     addUsersDisplayButton();
-    addSettingsButtonIfAllowed(sid);
+    addMenuButton(sid);
 }
 
 function addUsersDisplayButton() {
@@ -54,23 +52,16 @@ function toggleUserDisplay() {
     navHTML.realms__users.style.display = renderState.chnl_user ? "" : "none";
 }
 
-function addSettingsButtonIfAllowed(sid: Id) {
-    const requiredPermissions = [
-        PermissionFlags.Admin,
-        PermissionFlags.ManageChannels,
-        PermissionFlags.ManageRoles,
-        PermissionFlags.ManageWebhooks,
-        PermissionFlags.ManageEmojis,
-    ];
-
-    if (permissionFunc.hasAnyPermission(vars.realm.permission, requiredPermissions)) {
-        const settingsBtn = document.createElement("span");
-        settingsBtn.classList.add("realm_nav_btn");
-        settingsBtn.innerHTML = "⚙️";
-        settingsBtn.addEventListener("click", () => socket.emit("realm.settings.get", sid));
-        settingsBtn.id = "realmSettingsBtn";
-        navHTML.realms__name.appendChild(settingsBtn);
-    }
+function addMenuButton(sid: Id) {
+    const menuBtn = document.createElement("span");
+    menuBtn.classList.add("realm_nav_btn");
+    menuBtn.innerHTML = "⬇️";
+    menuBtn.addEventListener("click", (e) => {
+        setTimeout(() => {
+            contextMenu.realm(e, sid);
+        }, 20); // wait for click event end
+    });
+    navHTML.realms__name.appendChild(menuBtn);
 }
 
 function createChannel(channel: Ui_render__channel, root: HTMLElement, sid: Id) {

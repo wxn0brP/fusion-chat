@@ -2,7 +2,7 @@ import hub from "../hub";
 hub("coreFunc");
 
 import Id from "../types/Id";
-import vars from "../var/var";
+import vars, { getEmptyRealmConfig } from "../var/var";
 import apis from "../api/apis";
 import utils from "../utils/utils";
 import socket from "./socket/socket";
@@ -20,6 +20,7 @@ const coreFunc = {
         coreHTML.emojiStyle.innerHTML = "";
         customEmoji.categories = [];
         customEmoji.emojis = {};
+        vars.realm = getEmptyRealmConfig();
 
         if (id == "main") {
             vars.chat.to = "main";
