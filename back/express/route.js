@@ -73,7 +73,15 @@ async function renderLayout(res, layout, bodyPath, layoutData, bodyData){
     });
 }
 
-frontRouter.get("/app", error500((req, res) => res.render("app/app")));
+frontRouter.get("/app", error500((req, res) => {
+    res.render("app/app", (err, body) => {
+        if(err)
+            return sendInternalError(res, err);
+        const html = process.env.status == "dev" ? body : minifyHtml(body);
+        res.send(html);
+    })
+}));
+
 frontRouter.get("/", error500((req, res) => renderLayout(res, "layout/main", "main/index", {}, {})));
 frontRouter.get("/dev-panel", error500((req, res) => renderLayout(res, "layout/main", "dev-panel/dev-panel", {}, {})));
 
