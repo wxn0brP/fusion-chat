@@ -5,7 +5,8 @@
         "outDir": "dist",
         "paths": {},
         "skipLibCheck": true,
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "sourceMap": true
     },
     "include": [
         "src"
