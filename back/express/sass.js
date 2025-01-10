@@ -2,7 +2,7 @@ import * as sass from "sass";
 import fs from "fs";
 import path from "path";
 
-if(process.env.status == "dev"){
+if(process.env.NODE_ENV == "development"){
     global.app.use((req, res, next) => {
         if(!req.url.endsWith(".css")) return next();
         const srcPath = path.join("front", "scss", req.path.replace(".css", ".scss"));

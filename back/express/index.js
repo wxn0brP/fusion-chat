@@ -15,8 +15,7 @@ app.use(cors({
 }));
 
 app.use("/", express.static("front/static"));
-const pageBreak = process.env.pageBreak;
-if(pageBreak == "true"){
+if(process.env.IS_TECHNICAL_BREAK == "true"){
     app.use((req, res) => {
         res.status(503).send(`
             <link rel="stylesheet" href="/style.css"></link>

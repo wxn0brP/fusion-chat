@@ -77,7 +77,7 @@ frontRouter.get("/app", error500((req, res) => {
     res.render("app/app", (err, body) => {
         if(err)
             return sendInternalError(res, err);
-        const html = process.env.status == "dev" ? body : minifyHtml(body);
+        const html = process.env.NODE_ENV == "development" ? body : minifyHtml(body);
         res.send(html);
     })
 }));

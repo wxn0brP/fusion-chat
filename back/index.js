@@ -39,8 +39,8 @@ global.server = server;
 await import("./socket/index.js");
 
 lo("__________________"+(new Date()+"").split(" ").slice(1,5).join(" "));
-server.listen(process.env.PORT, function(){
-    if(process.env.status == "dev"){
+server.listen(parseInt(process.env.PORT), function(){
+    if(process.env.NODE_ENV == "development"){
         lo("Server started by developer mode");
         lo("http://localhost:"+process.env.PORT+"/app")
     }

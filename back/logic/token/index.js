@@ -70,7 +70,7 @@ export async function decode(token, keyIndex){
             return payload;
         }
     }catch(error){
-        if(process.env.status == "dev") lo("Token verification error:", error.message);
+        if(process.env.NODE_ENV == "development") lo("Token verification error:", error.message);
         return null;
     }
 }

@@ -63,7 +63,7 @@ global.fireBaseMessage = {
                     }
                     global.firebaseAdmin.messaging().send(message);
                 }catch(e){
-                    if(process.env.status == "dev") lo("Firebase error: ", e.message);
+                    if(process.env.NODE_ENV == "development") lo("Firebase error: ", e.message);
                 }
             })
         }catch{}
