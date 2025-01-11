@@ -99,9 +99,9 @@ export async function realm_mute(suser, id, time){
 }
 
 export async function dm_block(suser, id, blocked){
-    const valid = new ValidError("dm.block");
-    if(!valid.id(id)) return valid.valid("id"); 
-    if(!valid.bool(blocked)) return valid.valid("blocked");
+    const validE = new ValidError("dm.block");
+    if(!valid.id(id)) return validE.valid("id"); 
+    if(!valid.bool(blocked)) return validE.valid("blocked");
 
     await db.userData.updateOneOrAdd(suser._id, { priv: id }, { blocked });
     return { err: false };
