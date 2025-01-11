@@ -1,8 +1,8 @@
 import hub from "../../hub";
 hub("settingsLib");
 
-import translateFunc from "../../utils/translate";
 import apis from "../../api/apis";
+import LangPkg from "../../utils/translate";
 import {
     Settings_settingsManager__category,
     Settings_settingsManager__fns,
@@ -172,12 +172,12 @@ class SettingsManager {
         this.changeDisplay(this.settings[0]?.name);
 
         const saveButton = document.createElement("button");
-        saveButton.textContent = translateFunc.get("Save");
+        saveButton.textContent = LangPkg.settings.save;
         saveButton.className = "settings__exitButton";
         saveButton.onclick = () => this.saveSettings(saveFns);
 
         const exitButton = document.createElement("button");
-        exitButton.textContent = translateFunc.get("Exit without save");
+        exitButton.textContent = LangPkg.settings.exit_without_save;
         exitButton.className = "settings__exitButton";
         exitButton.onclick = () => this.exitWithoutSaving();
 

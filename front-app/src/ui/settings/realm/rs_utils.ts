@@ -4,17 +4,17 @@ hub("rs/utils");
 /**
  * Initializes a new settings category element
  */
-export const initCategoryElement = function(container: HTMLElement){
+export const initCategoryElement = function (container: HTMLElement) {
     const div = document.createElement("div");
     div.className = "settings__category";
-    if(container) container.appendChild(div);
+    if (container) container.appendChild(div);
     return div;
 }
 
 /**
  * Initializes a text input element with the given label and default value.
  */
-export const initInputText = function(container: HTMLElement, label: string, defaultValue: string){
+export const initInputText = function (container: HTMLElement, label: string, defaultValue: string) {
     const textInputContainer = document.createElement("div");
     textInputContainer.innerHTML = `<label>${label}</label>`;
     const inputElement = document.createElement("input");
@@ -29,7 +29,7 @@ export const initInputText = function(container: HTMLElement, label: string, def
  * Creates a button element with the specified text and click handler, and appends it to the given container.
  */
 
-export const initButton = function(container: HTMLElement, text: string, onclick: () => void){
+export const initButton = function (container: HTMLElement, text: string, onclick: () => void) {
     const button = document.createElement("button");
     button.innerHTML = text;
     // @ts-ignore
@@ -43,7 +43,7 @@ export const initButton = function(container: HTMLElement, text: string, onclick
  * Initializes a checkbox with an optional label and appends it to the given container.
  */
 
-export const initCheckbox = function(container: HTMLElement, label: string, defaultValue: boolean){
+export const initCheckbox = function (container: HTMLElement, label: string, defaultValue: boolean) {
     const checkboxContainer = document.createElement("div");
     checkboxContainer.style.marginBottom = "3px";
 
@@ -52,7 +52,7 @@ export const initCheckbox = function(container: HTMLElement, label: string, defa
     inputElement.checked = defaultValue || false;
     inputElement.classList.add("checkbox_switch");
     checkboxContainer.appendChild(inputElement);
-    
+
     const labelElement = document.createElement("label");
     labelElement.innerHTML = label;
     checkboxContainer.appendChild(labelElement);
@@ -66,9 +66,9 @@ export const initCheckbox = function(container: HTMLElement, label: string, defa
  * @param [container] the container to append to. If not provided, the separator is not appended to anything.
  * @param [x=0] the height of the separator in pixels.
  */
-export const addSeparator = function(container: HTMLElement=undefined, x: number=0){
+export const addSeparator = function (container: HTMLElement = undefined, x: number = 0) {
     const div = document.createElement("div");
-    div.style.height = x+"px";
-    if(container) container.appendChild(div);
+    div.style.height = x + "px";
+    if (container) container.appendChild(div);
     return div;
 }

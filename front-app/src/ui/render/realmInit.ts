@@ -7,11 +7,11 @@ import { renderState } from "./var";
 import uiFunc from "../helpers/uiFunc";
 import coreFunc from "../../core/coreFunc";
 import voiceFunc from "../components/voice";
-import translateFunc from "../../utils/translate";
 import { Channel_Type } from "../../types/channel";
 import { coreHTML, navHTML } from "../../var/html";
 import contextMenu from "../components/contextMenu";
 import { Ui_render__category, Ui_render__channel } from "../../types/ui/render";
+import LangPkg from "../../utils/translate";
 
 function initRealmState(permission: number = 0) {
     vars.realm = {
@@ -105,7 +105,7 @@ function handleChannelClick(type: Channel_Type, cid: Id, sid: Id) {
 function handleVoiceChannelJoin(cid: Id, sid: Id) {
     const chnl = vars.realm.chnlPerms[cid];
     if (!chnl || !chnl.write) {
-        uiFunc.uiMsg(translateFunc.get("You can't have permission to join this voice channel") + "!");
+        uiFunc.uiMsgT(LangPkg.ui.channel.no_permission, ["!"]);
         return;
     }
     voiceFunc.joinToVoiceChannel(sid + "=" + cid);

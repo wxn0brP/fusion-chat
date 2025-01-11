@@ -1,34 +1,34 @@
 import hub from "../../../hub";
 hub("rs/roles");
 
-import translateFunc from "../../../utils/translate";
-import permissionFunc, { PermissionFlags } from "../../../utils/perm";
+import permissionFunc from "../../../utils/perm";
 import vars from "../../../var/var";
 import genId from "../../../utils/genId";
 import rs_dataF from "./rs_var";
 import debugFunc from "../../../core/debug";
 import { addSeparator, initButton, initCheckbox, initInputText } from "./rs_utils";
 import { Settings_rs__Role } from "./types";
+import LangPkg from "../../../utils/translate";
 
-export const renderRoles = function(){
+export const renderRoles = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if(!settings || !settings.roles) return debugFunc.msg(translateFunc.get("No settings data"));
+    if (!settings || !settings.roles) return debugFunc.msg(LangPkg.settings_realm.no_data);
 
     const container = rs_data.html.role;
-    container.innerHTML = `<h1>${translateFunc.get("Roles")}</h1>`;
+    container.innerHTML = `<h1>${LangPkg.settings_realm.roles}</h1>`;
 
     const roles = settings.roles;
     const rolesElements = new Map();
 
-    function repairHierarchy(){
+    function repairHierarchy() {
         roles.sort((a, b) => a.lvl - b.lvl).forEach((role, i) => role.lvl = i);
     }
- 
+
     /**
      * Creates a HTML representation for a role in the roles manager.
      */
-    function renderRole(role: Settings_rs__Role, i: number){
+    function renderRole(role: Settings_rs__Role, i: number) {
         const details = document.createElement("details");
         rolesElements.set(role._id, details);
         addSeparator(details, 5);
@@ -39,24 +39,24 @@ export const renderRoles = function(){
         details.appendChild(summary);
 
         const roleContent = document.createElement("div");
-        if(role.p < 0){
-            roleContent.innerHTML = translateFunc.get("You can't permissions for edit this role");
-        }else{
+        if (role.p < 0) {
+            roleContent.innerHTML = LangPkg.settings_realm.no_perm_to_edit_role;
+        } else {
             const opts = {
                 summary
             }
-            initButton(details, translateFunc.get("Edit"), () => renderRoleEdit(role, opts));
-            if(role.lvl != 0){
-                initButton(details, translateFunc.get("Delete"), () => {
+            initButton(details, LangPkg.uni.edit, () => renderRoleEdit(role, opts));
+            if (role.lvl != 0) {
+                initButton(details, LangPkg.uni.delete, () => {
                     settings.roles = roles.filter(r => r._id !== role._id);
                     repairHierarchy();
                     renderRoles();
                 });
             }
-            if(i > 0){
+            if (i > 0) {
                 const prevRole = roles[i - 1];
-                if(prevRole.p >= 0){
-                    initButton(details, translateFunc.get("Move up"), () => {
+                if (prevRole.p >= 0) {
+                    initButton(details, LangPkg.settings_realm.move_up, () => {
                         const _thisLvl = role.lvl;
                         role.lvl = prevRole.lvl;
                         prevRole.lvl = _thisLvl;
@@ -65,8 +65,8 @@ export const renderRoles = function(){
                     });
                 }
             }
-            if(i < roles.length - 1){
-                initButton(details, translateFunc.get("Move down"), () => {
+            if (i < roles.length - 1) {
+                initButton(details, LangPkg.settings_realm.move_down, () => {
                     const nextRole = roles[i + 1];
                     const _thisLvl = role.lvl;
                     role.lvl = nextRole.lvl;
@@ -83,7 +83,7 @@ export const renderRoles = function(){
     }
 
     addSeparator(container, 10);
-    initButton(container, translateFunc.get("Add"), () => {
+    initButton(container, LangPkg.uni.add, () => {
         const _id = genId();
         const role: Settings_rs__Role = {
             name: "New role",
@@ -96,7 +96,7 @@ export const renderRoles = function(){
         renderRoles();
     });
 
-    for(let i=0; i<settings.roles.length; i++){
+    for (let i = 0; i < settings.roles.length; i++) {
         renderRole(settings.roles[i], i);
     }
 }
@@ -106,10 +106,10 @@ export const renderRoles = function(){
  * such as name, color, and permissions. Provides options to save,
  * cancel, or delete the role. Handles permission settings for each role.
  */
-export const renderRoleEdit = function(role: Settings_rs__Role, opts: { summary: HTMLElement }){
+export const renderRoleEdit = function (role: Settings_rs__Role, opts: { summary: HTMLElement }) {
     const containerElement = rs_dataF().html.editRole;
-    containerElement.innerHTML = `<h1>${translateFunc.get("Edit role")}</h1>`;
-    const nameInput = initInputText(containerElement, translateFunc.get("Name"), role.name);
+    containerElement.innerHTML = `<h1>${LangPkg.settings_realm.edit_role}</h1>`;
+    const nameInput = initInputText(containerElement, LangPkg.settings.name, role.name);
 
     nameInput.onchange = () => {
         role.name = nameInput.value;
@@ -128,39 +128,48 @@ export const renderRoleEdit = function(role: Settings_rs__Role, opts: { summary:
     containerElement.appendChild(roleColor);
     addSeparator(containerElement, 5);
 
-    function caclulatePermissionsByCheckBoxs(){
+    function caclulatePermissionsByCheckBoxs() {
         let newPerms = 0;
         checkboxs.forEach((c, i) => {
-            if(c.checkbox.checked) newPerms += (1 << i);
+            if (c.checked) newPerms += (1 << i);
         })
         return newPerms;
     }
 
     const checkboxs = [];
     const permsBuild = [
-        { name: "Admin", id: "admin" },
-        { name: "Manage messages", id: "manageMessages" },
-        { name: "Ban user", id: "banUser" },
-        { name: "Mute user", id: "muteUser" },
-        { name: "Kick user", id: "kickUser" },
-        { name: "Manage roles", id: "manageRoles" },
-        { name: "Manage emojis", id: "manageEmojis" },
-        { name: "Manage invites", id: "manageInvites" },
-        { name: "Manage webhooks", id: "manageWebhooks" },
-        { name: "Manage channels", id: "manageChannels" },
+        "admin",
+        "manage_messages",
+        "ban_user",
+        "mute_user",
+        "kick_user",
+        "manage_roles",
+        "manage_emojis",
+        "manage_invites",
+        "manage_webhooks",
+        "manage_channels",
     ];
 
-    const userPerms = vars.realm.permission;
+    const userPermissions = vars.realm.permission || 0;
 
-    permsBuild.forEach(pb => {
-        const isPerm = permissionFunc.hasPermission(userPerms, PermissionFlags[pb.id]);
-        const checkbox = initCheckbox(containerElement, translateFunc.get(pb.name), isPerm);
-        checkbox.onchange = () => role.p = caclulatePermissionsByCheckBoxs();
-        checkboxs.push({ id: pb.id, checkbox });
+    permsBuild.forEach((pb, i) => {
+        const isPerm = permissionFunc.hasPermission(role.p, (1 << i));
+        const checkbox = initCheckbox(containerElement, LangPkg.settings_realm.role_permissions[pb], isPerm);
+
+        // if user not has permission, don't allow to change
+        if(permissionFunc.hasPermission(userPermissions, (1 << i)))
+            checkbox.onchange = () => role.p = caclulatePermissionsByCheckBoxs();
+        else{
+            checkbox.disabled = true;
+            const label = checkbox.nextElementSibling as HTMLLabelElement;
+            label.style.textDecoration = "line-through";
+        }
+        
+        checkboxs.push(checkbox);
     });
 
     addSeparator(containerElement, 10);
-    initButton(containerElement, translateFunc.get("Close"), () => {
+    initButton(containerElement, LangPkg.uni.close, () => {
         renderRoles();
         containerElement.fadeOut();
     });

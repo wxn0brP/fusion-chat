@@ -14,11 +14,6 @@ const utils = {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },
 
-    parseJSONC(jsonc: string): any {
-        const json = jsonc.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, '');
-        return JSON.parse(json);
-    },
-
     extractTimeFromId(id: Id): number {
         if (!id) return 0;
         const timePart = id.split("-")[0];

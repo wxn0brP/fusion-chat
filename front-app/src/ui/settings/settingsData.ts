@@ -7,10 +7,10 @@ import fileFunc from "../../api/file";
 import uiFunc from "../helpers/uiFunc";
 import render_user from "../render/user";
 import socket from "../../core/socket/socket";
-import translateFunc from "../../utils/translate";
+import staticData from "../../var/staticData";
 import { reloadProfileImages } from "../helpers/reloadImages";
 import { Settings_settingsManager__category } from "../../types/ui/settings";
-import staticData from "../../var/staticData";
+import LangPkg, { LangRef, load_translate } from "../../utils/translate";
 
 interface SettingsData {
     user: () => Settings_settingsManager__category[];
@@ -21,25 +21,25 @@ const settingsData: SettingsData = {
     user: () => [
         {
             name: "User settings",
-            txt: translateFunc.get("User settings"),
+            txt: LangPkg.settings_user.user_settings,
             type: "obj",
             settings: [
                 {
                     name: "Status",
-                    txt: translateFunc.get("Status"),
+                    txt: LangPkg.settings_user.status,
                     type: "select",
                     defaultValue: vars.user.status || "online",
                     options: ["online", "away", "offline"]
                 },
                 {
                     name: "Status text",
-                    txt: translateFunc.get("Status text"),
+                    txt: LangPkg.settings_user.status_text,
                     type: "text",
                     defaultValue: vars.user.statusText || ""
                 },
                 {
                     name: "Nickname",
-                    txt: translateFunc.get("Nickname"),
+                    txt: LangPkg.settings_user.nick,
                     type: "text",
                     defaultValue: apis.www.changeUserID(vars.user._id) || vars.user.fr
                 },
@@ -47,7 +47,7 @@ const settingsData: SettingsData = {
         },
         {
             name: "Profile image",
-            txt: translateFunc.get("Profile image"),
+            txt: LangPkg.settings_user.image,
             type: "fn",
             settings: () => {
                 const div = document.createElement("div");
@@ -91,41 +91,41 @@ const settingsData: SettingsData = {
         },
         {
             name: "Client settings",
-            txt: translateFunc.get("Client settings"),
+            txt: LangPkg.settings_user.client_settings,
             type: "obj",
             settings: [
                 {
                     name: "Language",
-                    txt: translateFunc.get("Language"),
+                    txt: LangPkg.settings_user.lang,
                     type: "select",
                     defaultValue: localStorage.getItem("lang") || "en",
-                    options: translateFunc.localesList
+                    options: LangRef.localesList
                 },
                 {
                     name: "Notifications",
-                    txt: translateFunc.get("Notifications"),
+                    txt: LangPkg.settings_user.notifications,
                     type: "checkbox",
                     defaultValue: localStorage.getItem("notifications") == "true" || false,
                     only: ["web", "ele"]
                 },
                 {
-                    txt: translateFunc.get("Check notifications permissions"),
+                    txt: LangPkg.settings_user.check_notifications_permissions,
                     type: "button",
                     onclick: () => {
                         window.Notification.requestPermission((result) => {
-                            if (result == "granted") uiFunc.uiMsg(translateFunc.get("OK"));
-                            else uiFunc.uiMsg(translateFunc.get("Notification permission denied") + ".");
+                            if (result == "granted") uiFunc.uiMsgT(LangPkg.uni.ok);
+                            else uiFunc.uiMsgT(LangPkg.settings_user.notifications_error);
                         });
                     },
                     only: ["web", "ele"]
                 },
                 { type: "hr" },
                 {
-                    txt: translateFunc.get("Experimental features"),
+                    txt: LangPkg.settings_user.experimental_features,
                     type: "h2"
                 },
                 {
-                    txt: translateFunc.get("Not all features are stable and may not work as expected. Use at your own risk."),
+                    txt: LangPkg.settings_user.experimental_warning,
                     type: "h3"
                 },
                 {
@@ -139,19 +139,18 @@ const settingsData: SettingsData = {
         },
         {
             name: "Account settings",
-            txt: translateFunc.get("Account settings"),
+            txt: LangPkg.settings_user.account_settings,
             type: "obj",
             settings: [
 
                 {
                     name: "Logout",
-                    txt: translateFunc.get("Logout"),
+                    txt: LangPkg.settings_user.logout,
                     type: "button",
                     onclick: () => {
-                        const confText = translateFunc.get("Are you sure you want to log out") + "?";
-                        const doubleText = " (" + translateFunc.get("double check") + ")";
+                        const confText = LangPkg.settings_user.confirm_logout + "?";
                         if (!confirm(confText)) return;
-                        if (!confirm(confText + doubleText)) return;
+                        if (!confirm(confText + " (" + LangPkg.settings_user.double_check + ")")) return;
 
                         localStorage.removeItem("user_id");
                         localStorage.removeItem("from");
@@ -166,21 +165,18 @@ const settingsData: SettingsData = {
                 },
                 {
                     name: "Delete Account",
-                    txt: translateFunc.get("Delete Account"),
+                    txt: LangPkg.settings_user.delete,
                     type: "button",
                     onclick: () => {
-                        const confText = translateFunc.get("Are you sure you want to delete your account") + "?";
-                        const doubleText = " (" + translateFunc.get("double check") + ")";
-                        const tripleText = " (" + translateFunc.get("triple check") + ")";
-                        if (!confirm(confText)) return;
-                        if (!confirm(confText + doubleText)) return;
-                        if (!confirm(confText + tripleText)) return;
+                        if (!confirm(LangPkg.settings_user.confirm_delete.w1 + "?")) return;
+                        if (!confirm(LangPkg.settings_user.confirm_delete.w2 + "?")) return;
+                        if (!confirm(LangPkg.settings_user.confirm_delete.w3 + "?")) return;
 
                         socket.emit("user.delete", () => {
                             localStorage.removeItem("user_id");
                             localStorage.removeItem("from");
                             localStorage.removeItem("token");
-                            alert(translateFunc.get("Check your email to confirm the deletion"));
+                            alert(LangPkg.settings_user.after_delete);
                             location.href = "/login";
                         });
                     },
@@ -212,7 +208,7 @@ const settingsData: SettingsData = {
 
         const lang = settings["Language"];
         if (lang != undefined) {
-            if (lang != localStorage.getItem("lang")) translateFunc.load(lang);
+            if (lang != localStorage.getItem("lang")) load_translate(lang);
         }
 
         const notifications = settings["Notifications"];
@@ -223,7 +219,7 @@ const settingsData: SettingsData = {
                 // check permissions
                 window.Notification.requestPermission((result) => {
                     if (result == "granted") return;
-                    uiFunc.uiMsg(translateFunc.get("Notification permission denied") + ".");
+                    uiFunc.uiMsgT(LangPkg.settings_user.notifications_error);
                 });
             }
         }

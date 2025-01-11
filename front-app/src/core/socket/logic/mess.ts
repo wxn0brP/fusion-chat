@@ -13,11 +13,11 @@ import { messHTML } from "../../../var/html";
 import render_dm from "../../../ui/render/dm";
 import messInteract from "../../mess/interact";
 import uiFunc from "../../../ui/helpers/uiFunc";
-import translateFunc from "../../../utils/translate";
 import messFunc, { editMessText } from "../../mess/mess";
 import contextMenu from "../../../ui/components/contextMenu";
 import { Vars_mess__pinned, Vars_realm__thread } from "../../../types/var";
 import { Core_mess__dbMessage, Core_mess__receivedMessage } from "../../../types/core/mess";
+import LangPkg, { langFunc } from "../../../utils/translate";
 
 export function mess(data: Core_mess__receivedMessage) {
     // generate last message storage if needed
@@ -32,7 +32,7 @@ export function mess(data: Core_mess__receivedMessage) {
     const isSenderCurrentUser = data.fr === vars.user._id;
 
     if (isPrivateChat && !currentChatIsDM && !isSenderCurrentUser) {
-        const title = translateFunc.get("Received message from $", apis.www.changeUserID(data.fr));
+        const title = langFunc(LangPkg.ui.new_message, apis.www.changeUserID(data.fr));
         uiFunc.uiMsg(title);
 
         if (vars.settings.notifications) utils.sendNotification(title, data.msg, { msg: data });
@@ -81,7 +81,7 @@ export function message_fetch(data: Core_mess__dbMessage[]) {
                 console.error(e);
                 console.error(mess);
                 const div = document.createElement("div");
-                div.innerHTML = `<span style="color: red;">${translateFunc.get("Failed to load this message")}!</span>`;
+                div.innerHTML = `<span style="color: red;">${LangPkg.ui.failed_to_load_message}!</span>`;
                 messHTML.div.add(div);
             }
         });
@@ -90,7 +90,7 @@ export function message_fetch(data: Core_mess__dbMessage[]) {
     } catch (e) {
         console.error(e);
         const div = document.createElement("div");
-        div.innerHTML = `<span style="color: red;">${translateFunc.get("Failed to load all message")}! :(</span>`;
+        div.innerHTML = `<span style="color: red;">${LangPkg.ui.failed_to_load_messages}! :(</span>`;
         messHTML.div.add(div);
     }
     messStyle.colorRole();
@@ -156,10 +156,10 @@ export function message_react(uid: Id, realm: Id, messId: Id, react: string) {
 
 export function message_search(data: Core_mess__dbMessage[]) {
     if (data.length == 0) {
-        messHTML.div.innerHTML += "No result found";
+        messHTML.div.innerHTML += LangPkg.ui.message.search_no_results;
         return;
     }
-    messHTML.div.innerHTML = "<h2>" + translateFunc.get("Search result") + ":</h2>";
+    messHTML.div.innerHTML = "<h2>" + LangPkg.ui.message.search_results + ":</h2>";
 
     data.forEach((mess) => {
         messFunc.addMess(mess, false);

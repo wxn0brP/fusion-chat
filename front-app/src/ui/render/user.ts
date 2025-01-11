@@ -8,11 +8,11 @@ import render_realm from "./realm";
 import coreFunc from "../../core/coreFunc";
 import socket from "../../core/socket/socket";
 import mainView from "../components/mainView";
-import translateFunc from "../../utils/translate";
 import mainViewInteract from "../interact/mainView";
 import { navHTML, renderHTML } from "../../var/html";
 import { Core_socket__friendStatus, Core_socket__user_profile } from "../../types/core/socket";
 import utils from "../../utils/utils";
+import LangPkg from "../../utils/translate";
 
 const render_user = {
     localUserProfile(){
@@ -46,32 +46,32 @@ const render_user = {
             let frinedBtnText: string;
             switch(data.friendStatus){
                 case Core_socket__friendStatus.NOT_FRIEND:
-                    frinedBtnText = "Add friend";
+                    frinedBtnText = LangPkg.ui.friend.add;
                     frinedBtn.onclick = () => mainViewInteract.addFriend(data._id);
                 break;
                 case Core_socket__friendStatus.IS_FRIEND:
-                    frinedBtnText = "Remove friend";
+                    frinedBtnText = LangPkg.ui.friend.remove;
                     frinedBtn.onclick = () => mainView.removeFriend(data._id);
                 break;
                 case Core_socket__friendStatus.REQUEST_SENT:
-                    frinedBtnText = "Friend request sent (click to cancel)";
+                    frinedBtnText = LangPkg.ui.friend.request_sent;
                     frinedBtn.onclick = () => mainView.removeFriendRequest(data._id);
                 break;
                 case Core_socket__friendStatus.REQUEST_RECEIVED:
-                    frinedBtnText = "Request received (click to view)";
+                    frinedBtnText = LangPkg.ui.friend.request_received;
                     frinedBtn.onclick = () => {
                         coreFunc.changeChat("main");
                         mainView.changeView("requests");
                     }
                 break;
             }
-            frinedBtn.innerHTML = translateFunc.get(frinedBtnText);
+            frinedBtn.innerHTML = frinedBtnText;
             renderHTML.userProfile.querySelector("#userProfileBtns").appendChild(frinedBtn);
             
             const blockBtn = document.createElement("button");
             blockBtn.classList.add("btn");
             blockBtn.style.marginLeft = "10px";
-            blockBtn.innerHTML = translateFunc.get(data.isBlocked ? "Unblock" : "Block");
+            blockBtn.innerHTML = data.isBlocked ? LangPkg.ui.friend.unblock : LangPkg.ui.friend.block;
             blockBtn.onclick = () => {
                 data.isBlocked = !data.isBlocked;
                 socket.emit("dm.block", data._id, data.isBlocked);
@@ -80,7 +80,6 @@ const render_user = {
         }
 
         const activityDiv = renderHTML.userProfile.querySelector("#userProfileActivity");
-        lo(data.activity)
         if(data.activity?.state){
             const act = data.activity;
             activityDiv.innerHTML = `

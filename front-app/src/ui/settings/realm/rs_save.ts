@@ -2,8 +2,8 @@ import hub from "../../../hub";
 hub("rs/save");
 
 import rs_dataF from "./rs_var";
-import translateFunc from "../../../utils/translate";
 import uiFunc from "../../helpers/uiFunc";
+import LangPkg from "../../../utils/translate";
 
 export const saveSettings = async function () {
     const rs_data = rs_dataF();
@@ -22,7 +22,7 @@ export const saveSettings = async function () {
     const saved = await _this.saveCallback(settings);
     if (!saved) {
         settings.addons = addons;
-        uiFunc.uiMsg(translateFunc.get("Failed to save settings. Make sure all settings are valid."));
+        uiFunc.uiMsgT(LangPkg.settings_realm.failed_to_save);
         return;
     }
 

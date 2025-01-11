@@ -9,7 +9,7 @@ import { otherHTML, mglVar } from "../../var/html";
 const makeRealmDiv = otherHTML.makeRealm;
 
 const buttonFunc = {
-    async addPriv() {
+    async addDm() {
         const to = await uiFunc.prompt("Name of the 2 people");
         if (!to) return;
         socket.emit("dm.create", to);

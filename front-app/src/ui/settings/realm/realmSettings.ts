@@ -10,11 +10,11 @@ import { renderEmojis } from "./rs_emoji";
 import { renderChannels } from "./rs_channels";
 import { renderWebhooks } from "./rs_webhooks";
 import { renderUserRoleManager } from "./rs_users";
-import translateFunc from "../../../utils/translate";
 import { saveSettings, exitWithoutSaving } from "./rs_save";
 import { renderCategorySwitcher, changeDisplay } from "./rs_nav";
+import LangPkg from "../../../utils/translate";
 
-class RealmSettingsManager{
+class RealmSettingsManager {
     settings: Settings;
     saveCallback: (settings: Settings) => Promise<boolean>;
     exitCallback: () => void;
@@ -23,14 +23,14 @@ class RealmSettingsManager{
     saveSettings: Function;
     exitWithoutSaving: typeof exitWithoutSaving;
     saveMetaSettings: () => void;
-    
-    constructor(settings: Settings, realmId: Id, container: HTMLDivElement, saveCallback: (settings: Settings) => Promise<boolean>, exitCallback: () => void){
+
+    constructor(settings: Settings, realmId: Id, container: HTMLDivElement, saveCallback: (settings: Settings) => Promise<boolean>, exitCallback: () => void) {
         this.settings = settings;
         this.saveCallback = saveCallback;
         this.exitCallback = exitCallback;
         this.container = container;
         this.realmId = realmId;
-        if(!this.settings){
+        if (!this.settings) {
             console.warn("No settings found");
             return;
         }
@@ -42,8 +42,8 @@ class RealmSettingsManager{
 
     /* init gui elements */
 
-    init(){
-        if(!this.settings) return console.warn("No settings found");
+    init() {
+        if (!this.settings) return console.warn("No settings found");
 
         renderCategorySwitcher();
 
@@ -56,12 +56,12 @@ class RealmSettingsManager{
         changeDisplay({ meta: true });
 
         const saveButton = document.createElement("button");
-        saveButton.textContent = translateFunc.get("Save");
+        saveButton.textContent = LangPkg.settings.save;
         saveButton.className = "settings__exitButton";
         saveButton.onclick = () => this.saveSettings(this);
-        
+
         const exitButton = document.createElement("button");
-        exitButton.textContent = translateFunc.get("Exit without save");
+        exitButton.textContent = LangPkg.settings.exit_without_save;
         exitButton.className = "settings__exitButton";
         exitButton.onclick = () => this.exitWithoutSaving();
 
@@ -71,7 +71,7 @@ class RealmSettingsManager{
         this.container.fadeIn();
     }
 
-    initModules(){
+    initModules() {
         this.saveSettings = saveSettings;
         this.exitWithoutSaving = exitWithoutSaving;
     }

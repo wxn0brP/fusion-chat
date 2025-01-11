@@ -7,9 +7,9 @@ import genId from "../../../utils/genId";
 import uiFunc from "../../helpers/uiFunc";
 import debugFunc from "../../../core/debug";
 import socket from "../../../core/socket/socket";
-import translateFunc from "../../../utils/translate";
 import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Role } from "./types";
 import { Channel_Type } from "../../../types/channel";
+import LangPkg, { langFunc } from "../../../utils/translate";
 import {
     initInputText,
     initButton,
@@ -20,15 +20,15 @@ import {
 export const renderChannels = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.categories || !settings.channels) return debugFunc.msg("No settings data");
+    if (!settings || !settings.categories || !settings.channels) return debugFunc.msg(LangPkg.settings_realm.no_data);
 
     const categoriesContainer = rs_data.html.category;
-    categoriesContainer.innerHTML = `<h1>${translateFunc.get("Categories & Channels")}</h1>`;
+    categoriesContainer.innerHTML = `<h1>${LangPkg.settings_realm.categories_and_channels}</h1>`;
 
     const sortedCategories = settings.categories.sort((a, b) => a.i - b.i);
     const channels = settings.channels;
 
-    initButton(categoriesContainer, translateFunc.get("Add category"), async () => {
+    initButton(categoriesContainer, LangPkg.settings_realm.add_category, async () => {
         const name = await uiFunc.prompt("Name");
 
         settings.categories.push({
@@ -44,7 +44,7 @@ export const renderChannels = function () {
         const categoryDiv = document.createElement("div");
         categoryDiv.innerHTML = `<span style="font-size: 1.5rem" class="settings__nameSpan">- ${category.name}</span>`;
 
-        initButton(categoryDiv, translateFunc.get("Move up"), () => {
+        initButton(categoryDiv, LangPkg.settings_realm.move_up, () => {
             if (category.i === 0) return;
 
             const i = category.i;
@@ -53,7 +53,7 @@ export const renderChannels = function () {
             renderChannels();
         });
 
-        initButton(categoryDiv, translateFunc.get("Move down"), () => {
+        initButton(categoryDiv, LangPkg.settings_realm.move_down, () => {
             if (category.i === sortedCategories.length - 1) return;
 
             const i = category.i;
@@ -62,17 +62,18 @@ export const renderChannels = function () {
             renderChannels();
         });
 
-        initButton(categoryDiv, translateFunc.get("Edit"), () => {
+        initButton(categoryDiv, LangPkg.uni.edit, () => {
             categoriesContainer.querySelectorAll("div").forEach(div => div.style.border = "");
             categoryDiv.style.border = "3px dotted var(--accent)";
             renderEditCategory(category);
         });
 
-        initButton(categoryDiv, translateFunc.get("Add channel"), async () => {
-            const name = await uiFunc.prompt(translateFunc.get("Enter name"));
+        initButton(categoryDiv, LangPkg.settings_realm.add_channel, async () => {
+            const name = await uiFunc.prompt(LangPkg.settings_realm.enter_name);
+            const { text, voice, realm_event, open_event } = LangPkg.settings_realm.channel_types;
             const type = await uiFunc.selectPrompt(
-                translateFunc.get("Enter type"),
-                [translateFunc.get("Text"), translateFunc.get("Voice"), translateFunc.get("Realm Event"), translateFunc.get("Open Event")],
+                LangPkg.settings_realm.select_type,
+                [text, voice, realm_event, open_event],
                 ["text", "voice", "realm_event", "open_event"]
             ) as Channel_Type;
 
@@ -97,7 +98,7 @@ export const renderChannels = function () {
             channelElement.innerHTML =
                 `<span style="font-size: 1.2rem" class="settings__nameSpan">${"&nbsp;".repeat(3)}+ ${channel.name} (${channel.type})</span>`;
 
-            initButton(channelElement, translateFunc.get("Move up"), () => {
+            initButton(channelElement, LangPkg.settings_realm.move_up, () => {
                 if (channel.i === 0) return;
 
                 const i = channel.i;
@@ -118,7 +119,7 @@ export const renderChannels = function () {
                 renderChannels();
             });
 
-            initButton(channelElement, translateFunc.get("Move down"), () => {
+            initButton(channelElement, LangPkg.settings_realm.move_down, () => {
                 if (channel.i >= categoryChannels.length - 1) return;
 
                 const i = channel.i;
@@ -139,7 +140,7 @@ export const renderChannels = function () {
                 renderChannels();
             });
 
-            initButton(channelElement, translateFunc.get("Edit"), () => {
+            initButton(channelElement, LangPkg.uni.edit, () => {
                 categoriesContainer.querySelectorAll("div").forEach(div => div.style.border = "");
                 channelElement.style.border = "3px dotted var(--accent)";
                 renderEditChannel(channel);
@@ -166,12 +167,10 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
     const rs_data = rs_dataF();
     const containerElement = rs_data.html.editChannel;
     const settings = rs_data.settings;
-    containerElement.innerHTML = `<h1>${translateFunc.get("Edit channel")}</h1>`;
+    containerElement.innerHTML = `<h1>${LangPkg.settings_realm.edit_channel}</h1>`;
 
-    const nameInp = initInputText(containerElement, translateFunc.get("Name"), channel.name);
-    const descInp = initInputText(containerElement, translateFunc.get("Description"), channel.desc || "");
-
-    const flags = vars_channelsFlags();
+    const nameInp = initInputText(containerElement, LangPkg.settings.name, channel.name);
+    const descInp = initInputText(containerElement, LangPkg.settings.description, channel.desc || "");
 
     function renderRole(role: Settings_rs__Role) {
         const details = document.createElement("details");
@@ -182,7 +181,7 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
         // @ts-ignore: roleRp is string
         roleRp = roleRp ? parseInt(roleRp.split("/")[1]) : 0;
 
-        flags.forEach((perm, i) => {
+        vars_channelsFlags().forEach((perm, i) => {
             // @ts-ignore: i is number
             const checked = roleRp & (1 << i);
             const checkbox = initCheckbox(details, perm, !!checked);
@@ -201,7 +200,7 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
 
         const details = document.createElement("details");
         const summary = document.createElement("summary");
-        summary.innerHTML = translateFunc.get("Subscribed channels");
+        summary.innerHTML = LangPkg.settings_realm.subscribed_channels;
         details.appendChild(summary);
 
         const ul = document.createElement("ul");
@@ -212,9 +211,9 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
 
             const unsubscribe = document.createElement("button");
             unsubscribe.style.marginLeft = "1rem";
-            unsubscribe.innerHTML = translateFunc.get("Unsubscribe");
+            unsubscribe.innerHTML = LangPkg.settings_realm.unsubscribe_channel;
             unsubscribe.addEventListener("click", () => {
-                const conf = confirm(translateFunc.get("Are you sure you want to unsubscribe from $?", apis.www.changeChat(sub.sr) + " - " + sub.name));
+                const conf = confirm(langFunc(LangPkg.settings_realm.confirm_unsubscribe, apis.www.changeChat(sub.sr) + " - " + sub.name) + "?");
                 if (!conf) return;
                 socket.emit("realm.event.channel.unsubscribe", sub.sr, sub.sc, rs_data.realmId, sub.tc);
                 settings.addons.subscribedChannels = settings.addons.subscribedChannels.filter(s => s !== sub);
@@ -231,7 +230,7 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
 
 
     addSeparator(containerElement, 15);
-    initButton(containerElement, translateFunc.get("Save"), () => {
+    initButton(containerElement, LangPkg.settings.save, () => {
         channel.name = nameInp.value;
         const desc = descInp.value;
         channel.desc = desc.trim() === "" ? undefined : desc;
@@ -259,12 +258,12 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
         containerElement.fadeOut();
     });
 
-    initButton(containerElement, translateFunc.get("Cancel"), () => {
+    initButton(containerElement, LangPkg.uni.cancel, () => {
         renderChannels();
         containerElement.fadeOut();
     });
 
-    initButton(containerElement, translateFunc.get("Delete"), () => {
+    initButton(containerElement, LangPkg.uni.delete, () => {
         const index = settings.channels.findIndex(ch => ch === channel);
         if (index !== -1) {
             settings.channels.splice(index, 1);
@@ -286,21 +285,21 @@ export const renderEditCategory = function (category: Settings_rs__Category) {
     if (!settings || !settings.categories) return debugFunc.msg("No settings data");
 
     const containerElement = rs_data.html.editChannel;
-    containerElement.innerHTML = `<h1>${translateFunc.get("Edit category")}</h1>`;
+    containerElement.innerHTML = `<h1>${LangPkg.settings_realm.edit_category}</h1>`;
 
-    const nameInput = initInputText(containerElement, translateFunc.get("Name"), category.name);
+    const nameInput = initInputText(containerElement, LangPkg.settings.name, category.name);
 
     addSeparator(containerElement, 15);
-    initButton(containerElement, translateFunc.get("Save"), () => {
+    initButton(containerElement, LangPkg.settings.save, () => {
         category.name = nameInput.value;
         renderChannels();
         containerElement.fadeOut();
     });
-    initButton(containerElement, translateFunc.get("Cancel"), () => {
+    initButton(containerElement, LangPkg.uni.cancel, () => {
         renderChannels();
         containerElement.fadeOut();
     });
-    initButton(containerElement, translateFunc.get("Delete"), () => {
+    initButton(containerElement, LangPkg.uni.delete, () => {
         const index = settings.categories.findIndex(cat => cat.cid === category.cid);
         if (index !== -1) {
             settings.categories.splice(index, 1);
@@ -313,11 +312,11 @@ export const renderEditCategory = function (category: Settings_rs__Category) {
 }
 
 const vars_channelsFlags = () => [
-    translateFunc.get("View channel"),
-    translateFunc.get("Write messages"),
-    translateFunc.get("Send files"),
-    translateFunc.get("Add reactions"),
-    translateFunc.get("Thread create"),
-    translateFunc.get("Thread view"),
-    translateFunc.get("Thread write messages"),
+    LangPkg.settings_realm.mess_permissions.view,
+    LangPkg.settings_realm.mess_permissions.write,
+    LangPkg.settings_realm.mess_permissions.files,
+    LangPkg.settings_realm.mess_permissions.reactions,
+    LangPkg.settings_realm.mess_permissions.thread,
+    LangPkg.settings_realm.mess_permissions.thread_view,
+    LangPkg.settings_realm.mess_permissions.thread_write
 ]

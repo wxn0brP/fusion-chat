@@ -5,7 +5,6 @@ import socket from "../socket";
 import vars from "../../../var/var";
 import debugFunc from "../../debug";
 import uiFunc from "../../../ui/helpers/uiFunc";
-import translateFunc from "../../../utils/translate";
 import render_user from "../../../ui/render/user";
 import render_dm from "../../../ui/render/dm";
 import render_realm from "../../../ui/render/realm";
@@ -13,6 +12,7 @@ import { Core_socket__refresh, Core_socket__user_startus_type } from "../../../t
 import Id from "../../../types/Id";
 import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
 import { Ui_UserState } from "../../../types/ui/render";
+import LangPkg from "../../../utils/translate";
 
 export function connect() {
     debugFunc.msg("connected to socket");
@@ -22,30 +22,24 @@ export function connect() {
 }
 
 export function error(text: string, ...data: any[]) {
-    uiFunc.uiMsg(translateFunc.get(text, ...data));
+    uiFunc.uiMsgT(text, [], ...data);
     debugFunc.msg(...data)
 }
 
 export function error_valid(evt: string, name: string, ...data: any[]) {
-    uiFunc.uiMsg(translateFunc.get("Error processing data. Some features may not work correctly."));
+    uiFunc.uiMsgT(LangPkg.socket.valid_error);
     debugFunc.msg(`Valid error: ${evt} - ${name}`, ...data)
 }
 
 export function error_spam(type: string, ...data: any[]) {
-    let text = "Detected spam.";
-    switch (type) {
-        case "last warning":
-            text = "Detected spam. Please wait $ seconds and try again. Your behavior has been logged.";
-            break;
-        case "ban":
-            text = "Spam detected from your account. You have been temporarily banned due to spam activity.";
-            break;
-        case "warn":
-            text = "Spam protection activated. Please wait a moment and try again.";
-            break;
+    const map = {
+        "last warning": "socket.spam.last",
+        "ban": "socket.spam.ban",
+        "warn": "socket.spam.warn",
     }
+    let text = map[type] || "socket.spam";
 
-    uiFunc.uiMsg(translateFunc.get(text, ...data));
+    uiFunc.uiMsgT(text, [], ...data);
 }
 
 export function connect_error(data: Error) {
@@ -61,14 +55,14 @@ export function connect_error(data: Error) {
             let text = "";
             let param = "";
             if (timeMath) {
-                text = "You are temporarily banned. Please try again after $ minutes.";
+                text = "socket.ban";
                 param = timeMath[1];
             } else {
                 text = dataStr;
                 param = "";
             }
 
-            uiFunc.uiMsg(translateFunc.get(text, param));
+            uiFunc.uiMsgT(text, param);
             return;
         }
 

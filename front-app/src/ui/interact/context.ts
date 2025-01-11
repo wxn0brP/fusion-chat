@@ -9,11 +9,11 @@ import uiFunc from "../helpers/uiFunc";
 import coreFunc from "../../core/coreFunc";
 import socket from "../../core/socket/socket";
 import permissionFunc from "../../utils/perm";
-import translateFunc from "../../utils/translate";
 import { messHTML, mglInt } from "../../var/html";
 import messInteract from "../../core/mess/interact";
 import subscribeEventChnl from "../interact/subscribeEventChnl";
 import { Context__channel, Context__message, Context__realm, Context__thread } from "../../types/context";
+import LangPkg, { langFunc } from "../../utils/translate";
 
 const contextFunc = {
     message(type: Context__message) {
@@ -22,7 +22,7 @@ const contextFunc = {
             case "copy":
                 const message = document.querySelector("#mess__" + id + " .mess_content").getAttribute("_plain");
                 utils.writeToClipboard(message).then(ok => {
-                    if (ok) uiFunc.uiMsg("Copied message!");
+                    if (ok) uiFunc.uiMsgT(LangPkg.ui.copied);
                 });
                 break;
             case "edit":
@@ -38,13 +38,13 @@ const contextFunc = {
                 break;
             case "copy_id":
                 utils.writeToClipboard(id).then(ok => {
-                    if (ok) uiFunc.uiMsg("Copied message ID!");
+                    if (ok) uiFunc.uiMsgT(LangPkg.ui.copied);
                 })
                 break;
             case "add_reaction":
                 const chnl = vars.chat.chnl;
                 if (chnl) {
-                    if (!vars.realm.chnlPerms[chnl].react) return uiFunc.uiMsg(translateFunc.get("You can't react in this channel") + "!");
+                    if (!vars.realm.chnlPerms[chnl].react) return uiFunc.uiMsgT(LangPkg.ui.message.no_react, ["!"]);
                 }
                 messInteract.emocjiPopup((e) => {
                     if (!e) return;
@@ -69,18 +69,18 @@ const contextFunc = {
         switch (type) {
             case "copy_id":
                 utils.writeToClipboard(id).then(ok => {
-                    if (ok) uiFunc.uiMsg(translateFunc.get("Copied realm ID") + "!");
+                    if (ok) uiFunc.uiMsgT(LangPkg.ui.copied);
                 });
                 break;
             case "copy_invite":
                 // socket.emit("getInviteLink", id);
                 const link = location.protocol + "//" + location.host + "/ir?id=" + id;
                 utils.writeToClipboard(link).then(ok => {
-                    if (ok) uiFunc.uiMsg(translateFunc.get("Copied invite link") + "!");
+                    if (ok) uiFunc.uiMsgT(LangPkg.ui.copied);
                 });
                 break;
             case "exit":
-                const conf = confirm(translateFunc.get("Are you sure you want to exit realm $($)", "? ", apis.www.changeChat(id)));
+                const conf = confirm(langFunc(LangPkg.ui.confirm.exit_realm, apis.www.changeChat(id)) + "?");
                 if (conf) {
                     socket.emit("realm.exit", id);
                     coreFunc.changeChat("main");
@@ -91,7 +91,7 @@ const contextFunc = {
                 if (!realm) return;
 
                 let muted = false;
-                let endTime;
+                let endTime: string;
                 if (realm.muted != undefined) {
                     if (realm.muted == -1) {
                         muted = false;
@@ -105,61 +105,61 @@ const contextFunc = {
                     }
                 }
 
-                const muteStatus = muted ? translateFunc.get("muted") : translateFunc.get("unmuted");
+                const muteStatus = muted ? LangPkg.ui.muted : LangPkg.ui.unmuted;
                 let endTimeText = '';
 
                 if (muted) {
                     if (realm.muted === 0) {
-                        endTimeText = translateFunc.get("Mute is permanent");
+                        endTimeText = LangPkg.ui.mute.is_permanent;
                     } else if (realm.muted > new Date().getTime()) {
                         const endTime = new Date(realm.muted).toLocaleString();
-                        endTimeText = translateFunc.get("Mute ends at $", endTime);
+                        endTimeText = langFunc(LangPkg.ui.mute.ends_at, endTime);
                     }
                 }
 
                 const text = `
-                    ${translateFunc.get("Mute realm ($)", apis.www.changeChat(id))}
+                    ${langFunc(LangPkg.ui.mute.realm, apis.www.changeChat(id))}
                     <br />
-                    ${translateFunc.get("Status")}: ${muteStatus}
+                    ${LangPkg.ui.status}: ${muteStatus}
                     ${endTimeText ? "<br />" + endTimeText : ''}
                 `;
 
+                const durations = LangPkg.ui.durations;
                 uiFunc.selectPrompt(
                     text,
                     [
-                        translateFunc.get("15 minutes"),
-                        translateFunc.get("1 hour"),
-                        translateFunc.get("1 day"),
-                        translateFunc.get("Permanently"),
-                        translateFunc.get("Unmute"),
-                        translateFunc.get("Cancel")
+                        durations.minutes15,
+                        durations.hour1,
+                        durations.day1,
+                        durations.permanently,
+                        LangPkg.ui.mute.unmute,
+                        LangPkg.uni.cancel
                     ],
-                    ["15m", "1h", "1d", "forever", "unmute", "cancel"]
                 ).then(value => {
                     if (!value) return;
 
                     const now = new Date();
                     let targetTime = -1;
                     switch (value) {
-                        case "15m":
+                        case durations.minutes15:
                             now.setMinutes(now.getMinutes() + 15);
                             targetTime = now.getTime();
                             break;
-                        case "1h":
+                        case durations.hour1:
                             now.setHours(now.getHours() + 1);
                             targetTime = now.getTime();
                             break;
-                        case "1d":
+                        case durations.day1:
                             now.setDate(now.getDate() + 1);
                             targetTime = now.getTime();
                             break;
-                        case "forever":
+                        case durations.permanently:
                             targetTime = 0;
                             break;
-                        case "unmute":
+                        case LangPkg.ui.mute.unmute:
                             targetTime = -1;
                             break;
-                        case "cancel":
+                        case LangPkg.uni.cancel:
                             return;
                     }
 
@@ -181,7 +181,7 @@ const contextFunc = {
         switch (type) {
             case "copy_id":
                 utils.writeToClipboard(id).then(ok => {
-                    if (ok) uiFunc.uiMsg(translateFunc.get("Copied channel ID") + "!");
+                    if (ok) uiFunc.uiMsgT(LangPkg.ui.copied);
                 });
                 break;
             case "subscribe":
@@ -201,11 +201,11 @@ const contextFunc = {
         switch (type) {
             case "copy_id":
                 utils.writeToClipboard(id).then(ok => {
-                    if (ok) uiFunc.uiMsg(translateFunc.get("Copied thread ID") + "!");
+                    if (ok) uiFunc.uiMsgT(LangPkg.ui.copied);
                 });
                 break;
             case "delete":
-                const conf = confirm(translateFunc.get("Are you sure you want to delete this thread?"));
+                const conf = confirm(LangPkg.ui.confirm.delete_thread + "?");
                 if (!conf) return;
 
                 const thread = vars.realm.threads.find(t => t._id == id);

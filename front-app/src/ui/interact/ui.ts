@@ -7,9 +7,9 @@ import { messHTML } from "../../var/html";
 import coreFunc from "../../core/coreFunc";
 import messStyle from "../../core/mess/style";
 import socket from "../../core/socket/socket";
-import translateFunc from "../../utils/translate";
 import uiFunc, { promptDiv } from "../helpers/uiFunc";
 import KeyState from "../../var/keys";
+import LangPkg from "../../utils/translate";
 
 const uiInteract = {
     editMess(id: Id) {
@@ -30,8 +30,8 @@ const uiInteract = {
         const div = document.createElement("div");
         div.style.opacity = "0";
         div.classList.add("prompt");
-        div.innerHTML = "<h2>" + translateFunc.get("Copy to Clipboard error.") + "</h2>";
-        div.innerHTML += "<h3>" + translateFunc.get("Please copy manually.") + "</h3>";
+        div.innerHTML = "<h2>" + LangPkg.ui.clipboard.error + ".</h2>";
+        div.innerHTML += "<h3>" + LangPkg.ui.clipboard.error_text + ".</h3>";
 
         div.appendChild(document.createElement("br"));
 
@@ -74,8 +74,8 @@ const uiInteract = {
     deleteMess(id: Id) {
         const keys = KeyState.shift || KeyState.ctrl; // if shift or ctrl is pressed skip confirmation
         if (!keys) {
-            const conf = !confirm(translateFunc.get("Are you sure you want to delete this message", "?")); // TODO rm mess confirm make better (popup with content) 
-            if (conf) return;
+            const conf = confirm(LangPkg.ui.confirm.delete_message + "?"); // TODO rm mess confirm make better (popup with content) 
+            if (!conf) return;
         }
         socket.emit("message.delete", vars.chat.to, id);
     }

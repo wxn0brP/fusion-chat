@@ -1,5 +1,5 @@
 import hub from "../../hub";
-import translateFunc from "../../utils/translate";
+import LangPkg from "../../utils/translate";
 hub("components/media");
 
 // TODO add types
@@ -75,25 +75,25 @@ class MediaPopup{
         controls.className = "media-popup-controls";
 
         this.controlsResets = [];
+        const lang = LangPkg.media;
         this.addControlGroup(controls, [
-            { icon: translateFunc.get("Zoom")+"+", action: () => this.zoom(1 + this.options.scaleStep), title: "Zoom In" },
-            { icon: translateFunc.get("Zoom")+"-", action: () => this.zoom(1 - this.options.scaleStep), title: "Zoom Out" },
-            { icon: translateFunc.get("Rotate")+" <", action: () => this.rotate(-this.options.rotationStep), title: "Rotate Left" },
-            { icon: translateFunc.get("Rotate")+" >", action: () => this.rotate(this.options.rotationStep), title: "Rotate Right" },
-            { icon: translateFunc.get("Flip"), action: () => this.flip(), title: "Flip" },
-            { icon: translateFunc.get("Reset"), action: () => this.resetTransforms(), title: "Reset Transforms" },
-
-            { icon: "✖", action: () => this.close(), title: "Close" }
+            { icon: lang.zoom+"+", action: () => this.zoom(1 + this.options.scaleStep), title: lang.zoom_in},
+            { icon: lang.zoom+"-", action: () => this.zoom(1 - this.options.scaleStep), title: lang.zoom_out },
+            { icon: lang.rotate+" <", action: () => this.rotate(-this.options.rotationStep), title: lang.rotate_left },
+            { icon: lang.rotate+" >", action: () => this.rotate(this.options.rotationStep), title: lang.rotate_right },
+            { icon: lang.flip, action: () => this.flip(), title: lang.flip },
+            { icon: lang.reset, action: () => this.resetTransforms(), title: lang.reset_transforms },
+            { icon: "✖", action: () => this.close(), title: LangPkg.uni.close }
         ]);
 
         controls.appendChild(document.createElement("br"));
 
         const sliders = document.createElement("div");
         sliders.className = "media-popup-sliders";
-        this.addSlider(sliders, "brightness", translateFunc.get("Brightness"), 0, 200);
-        this.addSlider(sliders, "contrast", translateFunc.get("Contrast"), 0, 200);
-        this.addSlider(sliders, "saturation", translateFunc.get("Saturation"), 0, 200);
-        this.addSlider(sliders, "blur", translateFunc.get("Blur"), 0, 10);
+        this.addSlider(sliders, "brightness", lang.brightness, 0, 200);
+        this.addSlider(sliders, "contrast", lang.contrast, 0, 200);
+        this.addSlider(sliders, "saturation", lang.saturation, 0, 200);
+        this.addSlider(sliders, "blur", lang.blur, 0, 10);
         controls.appendChild(sliders);
 
         this.content.appendChild(this.media);

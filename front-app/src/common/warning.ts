@@ -2,19 +2,20 @@ import hub from "../hub";
 hub("warning");
 
 import debugFunc from "../core/debug";
-import translateFunc from "../utils/translate";
+import LangPkg from "../utils/translate";
 
 (function () {
     if (debugFunc.isDebug) return;
+    const lang = LangPkg.common.console_warning;
 
-    const warnings = [
-        { txt: "Wait!", css: "60px;color:gold" },
-        { txt: "If someone told you to copy and paste something here, there's a 110% chance they're trying to scam you.", css: "20px" },
-        { txt: "Pasting anything here could give someone access to your Fusion Chat account and your messages.", css: "20px;color:red" },
-        { txt: "Unless you fully understand what you're doing, close this window and stay safe.", css: "20px" }
+    const csss = [
+        "60px;color:gold",
+        "20px",
+        "20px;color:red",
+        "20px",
     ];
 
-    warnings.forEach(({ txt, css }) => {
-        console.log(`%c${translateFunc.get(txt)}`, `font-size:${css}`);
+    csss.forEach((css, i) => {
+        console.log(`%c${lang["w"+(i+1)]}`, `font-size:${css}`);
     });
 })();

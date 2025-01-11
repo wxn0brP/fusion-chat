@@ -5,9 +5,9 @@ import Id from "../../types/Id";
 import uiFunc from "../helpers/uiFunc";
 import socket from "../../core/socket/socket";
 import mainView from "../components/mainView";
-import translateFunc from "../../utils/translate";
 import { mainViewHTML, mglInt } from "../../var/html";
 import { Vars_mainView__page } from "../../types/var";
+import LangPkg from "../../utils/translate";
 
 const mainViewInteract = {
     showNav() {
@@ -19,7 +19,7 @@ const mainViewInteract = {
     },
 
     async addFriend(friend: Id) {
-        if (!friend) friend = await uiFunc.prompt(translateFunc.get("Enter friend Name"));
+        if (!friend) friend = await uiFunc.prompt(LangPkg.ui.enter_friend);
         if (!friend) return;
         socket.emit("friend.request", friend);
     },

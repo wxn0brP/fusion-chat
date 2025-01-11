@@ -8,11 +8,11 @@ import apis from "../../api/apis";
 import coreFunc from "../coreFunc";
 import socket from "../socket/socket";
 import uiFunc from "../../ui/helpers/uiFunc";
-import translateFunc from "../../utils/translate";
 import { Vars_realm__thread } from "../../types/var";
 import messCmd, { messCmds, setCurrentCmd } from "./cmd";
 import { emojiHTML, messHTML, mglInt } from "../../var/html";
 import emojiFunc, { customEmoji } from "../../ui/components/emoji";
+import LangPkg from "../../utils/translate";
 
 const messInteract = {
     replyClose() {
@@ -39,7 +39,7 @@ const messInteract = {
         if (!/^(https?:\/\/)/i.test(url)) url = "http://" + url;
 
         const urlParts = url.split("/");
-        if (urlParts.length < 2) return uiFunc.uiMsg(translateFunc.get("Invalid link") + ".");
+        if (urlParts.length < 2) return uiFunc.uiMsgT(LangPkg.ui.message.invalid_link);
         const urlClored =
             urlParts[0] + "//" +
             "<span>" + urlParts[2] + "</span>" +
@@ -127,9 +127,9 @@ const messInteract = {
     },
 
     displayPinned() {
-        messHTML.div.innerHTML = "<h2>" + translateFunc.get("Pinned messages") + "</h2>";
+        messHTML.div.innerHTML = "<h2>" + LangPkg.ui.pinned_messages + "</h2>";
         if (vars.chat.pinned.length == 0) {
-            messHTML.div.innerHTML += translateFunc.get("No pinned messages");
+            messHTML.div.innerHTML += LangPkg.ui.no_pinned_messages;
             return;
         }
         vars.chat.pinned.forEach((m) => {

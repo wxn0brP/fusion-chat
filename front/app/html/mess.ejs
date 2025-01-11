@@ -1,10 +1,8 @@
 <main>
-    <div id="replyClose" class="context-menu" onclick="mglInt.mess.replyClose()" translate>Reply to message</div>
-    <div id="editClose" class="context-menu" onclick="mglInt.mess.editMessClose()" translate>Edit message</div>
+    <div id="replyClose" class="context-menu" onclick="mglInt.mess.replyClose()" translate>ui.reply_to_message</div>
+    <div id="editClose" class="context-menu" onclick="mglInt.mess.editMessClose()" translate>ui.edit_message</div>
     <div id="messages_nav" style="display: none;">
-        <div id="messages_nav__priv">
-
-        </div>
+        <div id="messages_nav__priv"></div>
         <div id="messages_nav__realm">
             <span id="messages_nav__realm__description"></span>
         </div>
@@ -16,24 +14,24 @@
     <div id="messages" style="display: none;"></div>
     <div id="main__view">
         <div class="only_mobile">
-            <button onclick="mglInt.mainView.showNav()" translate class="btn">Show</button>
+            <button onclick="mglInt.mainView.showNav()" translate class="btn">uni.show</button>
         </div>
         <div id="main__view__nav" class="only_desktop">
-            <button onclick="mglInt.mainView.changeView('all')" translate main_view="all" class="btn">All</button>
-            <button onclick="mglInt.mainView.changeView('online')" translate main_view="online" class="btn">Online</button>
-            <button onclick="mglInt.mainView.changeView('offline')" translate main_view="offline" class="btn">Offline</button>
-            <button onclick="mglInt.mainView.addFriend()" translate class="btn">Add friend</button>
+            <button onclick="mglInt.mainView.changeView('all')" translate main_view="all" class="btn">uni.all</button>
+            <button onclick="mglInt.mainView.changeView('online')" translate main_view="online" class="btn">ui.online</button>
+            <button onclick="mglInt.mainView.changeView('offline')" translate main_view="offline" class="btn">ui.offline</button>
+            <button onclick="mglInt.mainView.addFriend()" translate class="btn">ui.add_friend</button>
             <button onclick="mglInt.mainView.changeView('requests')" main_view="requests" class="btn">
-                <span translate>Friend requests</span>
+                <span translate>ui.friend_requests</span>
                 <span id="main__view__requests__count"></span>
             </button>
         </div>
         <div id="main__view__friends">
-            <div id="main__view__noFriends" translate style="text-align: center;">No friends</div>
+            <div id="main__view__noFriends" translate style="text-align: center;">ui.no_friends</div>
             <div id="main__view__friends_container"></div>
         </div>
         <div id="main__view__requests">
-            <div id="main__view__noRequests" translate style="text-align: center;">No requests</div>
+            <div id="main__view__noRequests" translate style="text-align: center;">ui.no_requests</div>
             <div id="main__view__requests_container"></div>
         </div>
     </div>
@@ -44,7 +42,7 @@
             <div id="barc__others">
                 <button id="barc__emocji" onclick="mglInt.mess.emocji()">❤️</button>
                 <button id="barc__sendFile" onclick="mglVar.messFunc.sendFile()">📁</button>
-                <button id="barc__sendBtn" onclick="mglVar.messFunc.sendMess()" loadInner="/assets/send.svg">Send</button>
+                <button id="barc__sendBtn" onclick="mglVar.messFunc.sendMess()" loadInner="/assets/send.svg">📨</button>
             </div>
         </div>
     </div>

@@ -6,7 +6,7 @@ import socket from "../../core/socket/socket";
 import apis from "../../api/apis";
 import uiFunc from "../helpers/uiFunc";
 import vars from "../../var/var";
-import translateFunc from "../../utils/translate";
+import LangPkg, { langFunc } from "../../utils/translate";
 
 interface voiceFuncVar{
     local_stream: null | MediaStream;
@@ -110,7 +110,7 @@ const voiceFunc = {
         const id = vars.chat.to.replace("$","");
         if(id == "main") return;
 
-        const isConfirm = confirm(translateFunc.get("Are you sure you want to call $", apis.www.changeUserID(id)) + "?");
+        const isConfirm = confirm(langFunc(LangPkg.ui.confirm.call_to, apis.www.changeUserID(id)) + "?");
         if(!isConfirm) return;
 
         socket.emit("call.dm.init", id);
@@ -129,7 +129,7 @@ const voiceFunc = {
             });
         }
 
-        voiceHTML.muteMic.innerHTML = translateFunc.get(voiceFuncVar.muteMic ? "Unmute" : "Mute");
+        voiceHTML.muteMic.innerHTML = voiceFuncVar.muteMic ? LangPkg.ui.mute.unmute : LangPkg.ui.mute.mute;
     },
 
     async getStream(audio=true, video=false){
@@ -158,14 +158,14 @@ const voiceFunc = {
         async function selectDevice(devices, prompt){
             const labels = devices.map(device => device.label);
             const deviceIds = devices.map(device => device.deviceId);
-            const selectedIndex = await uiFunc.selectPrompt(translateFunc.get(prompt), labels, deviceIds) as number;
+            const selectedIndex = await uiFunc.selectPrompt(prompt, labels, deviceIds) as number;
             return deviceIds[selectedIndex];
         }
 
         try{
             const permisons = await getUserMedia({ audio, video });
             if(!permisons){
-                uiFunc.uiMsg(translateFunc.get('Error getting stream'));
+                uiFunc.uiMsgT('Error getting stream');
                 return stream;
             }
             setTimeout(() => {
@@ -176,8 +176,8 @@ const voiceFunc = {
             const audioDevices = devices.filter(device => device.kind === 'audioinput');
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-            const audioOptions = audio ? { deviceId: await selectDevice(audioDevices, 'Select audio device') } : false;
-            const videoOptions = video ? { deviceId: await selectDevice(videoDevices, 'Select video device') } : false;
+            const audioOptions = audio ? { deviceId: await selectDevice(audioDevices, LangPkg.ui.call.select_audio_device) } : false;
+            const videoOptions = video ? { deviceId: await selectDevice(videoDevices, LangPkg.ui.call.select_video_device) } : false;
 
             const mediaStream = await getUserMedia({ audio: audioOptions, video: videoOptions });
             if(mediaStream)
@@ -227,14 +227,14 @@ socket.on("voice.get.users", (users) => {
 
 socket.on("call.dm.init", (id, userOffline=false) => {
     if(userOffline){
-        alert(translateFunc.get("$ is offline", apis.www.changeUserID(id)));
-        const join = confirm(translateFunc.get("Do you want join to call and wait") + "?");
+        uiFunc.uiMsgT(LangPkg.ui.call.offline, apis.www.changeUserID(id));
+        const join = confirm(LangPkg.ui.call.wait + "?");
         if(!join) return;
     }else{ // if user is online
         if(voiceFunc.isInUserCall(id))
             return socket.emit("call.dm.answer", id, true);
         
-        const isConfirm = confirm(translateFunc.get("$ is calling you. Accept", apis.www.changeUserID(id)) + "?");
+        const isConfirm = confirm(langFunc(LangPkg.ui.call.called, apis.www.changeUserID(id)) + "?");
         socket.emit("call.dm.answer", id, isConfirm);
     
         if(!isConfirm) return;
@@ -246,9 +246,9 @@ socket.on("call.dm.init", (id, userOffline=false) => {
 
 socket.on("call.dm.answer", (id, answer) => {
     if(!answer)
-        return alert(translateFunc.get("Call rejected"));
+        return alert(LangPkg.ui.call.rejected);
 
-    const isConfirm = confirm(translateFunc.get("$ accepted your call. Join in this device", apis.www.changeUserID(id)) + "?");
+    const isConfirm = confirm(langFunc(LangPkg.ui.call.answer, apis.www.changeUserID(id)) + "?");
     if(!isConfirm) return;
 
     const room = "user_" + [id, vars.user._id].sort().join("=");
@@ -256,11 +256,11 @@ socket.on("call.dm.answer", (id, answer) => {
 });
 
 socket.on("voice.leave", (id) => {
-    uiFunc.uiMsg(translateFunc.get("$ left the voice channel", apis.www.changeUserID(id)));
+    uiFunc.uiMsgT(LangPkg.ui.call.left, apis.www.changeUserID(id));
 });
 
 socket.on("voice.join", (to) => {
-    uiFunc.uiMsg(translateFunc.get("$ joined the voice channel", apis.www.changeUserID(to)));
+    uiFunc.uiMsgT(LangPkg.ui.call.joined, apis.www.changeUserID(to));
 });
 
 export default voiceFunc;

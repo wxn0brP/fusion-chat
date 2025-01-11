@@ -7,12 +7,12 @@ import apis from "../api/apis";
 import utils from "../utils/utils";
 import socket from "./socket/socket";
 import messStyle from "./mess/style";
-import translateFunc from "../utils/translate";
 import { renderState } from "../ui/render/var";
 import mainView from "../ui/components/mainView";
 import { customEmoji } from "../ui/components/emoji";
 import { navHTML, coreHTML, messHTML, mainViewHTML, mglVar } from "../var/html";
 import staticData from "../var/staticData";
+import LangPkg from "../utils/translate";
 
 const coreFunc = {
     changeChat(id: Id, chnl: Id | "main" | null = null) {
@@ -62,7 +62,7 @@ const coreFunc = {
             vars.realm.users = [];
             vars.realm.roles = [];
             vars.realm.chnlPerms = {};
-            messHTML.input.placeholder = translateFunc.get("Write message here") + "...";
+            messHTML.input.placeholder = LangPkg.ui.message.placeholder + "...";
             messHTML.input.disabled = false;
             navHTML.main__call.style.display = "";
             messHTML.nav_priv.style.display = "";
@@ -118,8 +118,8 @@ const coreFunc = {
         }
 
         messHTML.input.placeholder = permToWrite ?
-            translateFunc.get("Write message here") + "..." :
-            translateFunc.get("You can't write in this channel") + "!";
+            LangPkg.ui.message.placeholder + "..." :
+            LangPkg.ui.message.read_only + "!";
         messHTML.input.disabled = !permToWrite;
     },
 

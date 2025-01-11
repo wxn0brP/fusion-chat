@@ -1,7 +1,6 @@
 import hub from "../../../hub";
 hub("rs/meta");
 
-import translateFunc from "../../../utils/translate";
 import socket from "../../../core/socket/socket";
 import uiFunc from "../../helpers/uiFunc";
 import fileFunc from "../../../api/file";
@@ -10,24 +9,25 @@ import rs_dataF from "./rs_var";
 import { addSeparator, initButton, initInputText } from "./rs_utils";
 import debugFunc from "../../../core/debug";
 import staticData from "../../../var/staticData";
+import LangPkg from "../../../utils/translate";
 
-export const renderMeta = function(){
+export const renderMeta = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if(!settings || !settings.meta) return debugFunc.msg("No settings data");
+    if (!settings || !settings.meta) return debugFunc.msg(LangPkg.settings_realm.no_data);
     const metaDiv = rs_data.html.meta;
-    metaDiv.innerHTML = `<h1>${translateFunc.get("Basic Settings")}</h1>`;
+    metaDiv.innerHTML = `<h1>${LangPkg.settings_realm.basic_settings}</h1>`;
 
     const meta = settings.meta;
     let img: boolean | File = false;
 
-    const nameInput = initInputText(metaDiv, translateFunc.get("Realm name"), meta.name);
+    const nameInput = initInputText(metaDiv, LangPkg.settings_realm.realm_name, meta.name);
 
     addSeparator(metaDiv, 10);
 
     const realmImg = document.createElement("img");
     realmImg.id = "settings__realmImg";
-    if(meta.img) realmImg.src = "/userFiles/realms/" + rs_data.realmId + ".png";
+    if (meta.img) realmImg.src = "/userFiles/realms/" + rs_data.realmId + ".png";
     else realmImg.style.display = "none";
     metaDiv.appendChild(realmImg);
 
@@ -44,23 +44,27 @@ export const renderMeta = function(){
 
     metaDiv.appendChild(realmImgFile);
     addSeparator(metaDiv, 5);
-    initButton(metaDiv, translateFunc.get("Remove image"), () => {
+    initButton(metaDiv, LangPkg.settings_realm.remove_image, () => {
         realmImg.style.display = "none";
         meta.img = false;
     });
 
     addSeparator(metaDiv, 15);
-    
-    initButton(metaDiv, translateFunc.get("Delete realm"), async () => {
-        const result = confirm(translateFunc.get("Are you sure you want to delete this realm? ($)", meta.name));
-        if(!result) return;
-        const result2 = confirm(translateFunc.get("Are you sure you want to delete all data of this realm? ($)", meta.name));
-        if(!result2) return;
-        const result3 = confirm(translateFunc.get("Are you sure you want to delete all messages of this realm? ($)", meta.name));
-        if(!result3) return;
+
+    initButton(metaDiv, LangPkg.settings_realm.delete_realm, async () => {
+        const end = "? (" + meta.name + ")";
+        const warns = [
+            LangPkg.settings_realm.delete_realm_confirm.w1,
+            LangPkg.settings_realm.delete_realm_confirm.w2,
+            LangPkg.settings_realm.delete_realm_confirm.w3
+        ];
+        for (const text of warns) {
+            const result = confirm(text + end);
+            if (!result) return;
+        }
 
         const name = await uiFunc.prompt("Confirm realm name");
-        if(name !== meta.name) return uiFunc.uiMsg(translateFunc.get("Wrong realm name"));
+        if (name !== meta.name) return uiFunc.uiMsgT(LangPkg.settings_realm.rename_wrong);
 
         rs_data._this.exitWithoutSaving();
         coreFunc.changeChat("main");
@@ -72,7 +76,7 @@ export const renderMeta = function(){
     rs_data._this.saveMetaSettings = () => {
         settings.meta.name = nameInput.value;
 
-        if(img)
+        if (img)
             fileFunc.realm(img, rs_data.realmId);
     }
 }

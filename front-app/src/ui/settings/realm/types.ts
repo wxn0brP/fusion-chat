@@ -110,7 +110,7 @@ export type Settings_rs__SettingsNav = {
     [Key in typeof settingsKeys[number]]?: boolean;
 };
 
-export interface Settings_rs__CategorySwitcherButton{
+export interface Settings_rs__CategorySwitcherButton {
     text: string;
     name: string;
     req: string[];

@@ -1,8 +1,9 @@
 import hub from "../hub";
 import Id from "../types/Id";
 import uiFunc from "../ui/helpers/uiFunc";
-import translateFunc from "../utils/translate";
 import { Api_fileFunc_read__options } from "../types/api";
+import debugFunc from "../core/debug";
+import LangPkg from "../utils/translate";
 hub("file");
 
 const fileFunc = {
@@ -13,11 +14,11 @@ const fileFunc = {
         }
 
         if (file.size > maxSize) {
-            uiFunc.uiMsg(translateFunc.get("File size exceeds $ limit", (maxSize / 1024 / 1024) + "MB") + ".");
+            uiFunc.uiMsgT(LangPkg.ui.file.size_limit, (maxSize / 1024 / 1024) + "MB");
             return;
         }
         if (file.name.length > maxName) {
-            uiFunc.uiMsg(translateFunc.get("File name exceeds $ char limit", maxName) + ".");
+            uiFunc.uiMsgT(LangPkg.ui.file.name_limit, maxName);
             return;
         }
 
@@ -28,20 +29,20 @@ const fileFunc = {
 
             xhr.onload = () => {
                 if (xhr.status === 200) {
-                    uiFunc.uiMsg(translateFunc.get("File uploaded successfully") + ".");
+                    uiFunc.uiMsgT(LangPkg.ui.file.uploaded);
                     callback(xhr);
                 } else {
-                    uiFunc.uiMsg(translateFunc.get("Failed to upload file") + ": " + xhr.statusText);
+                    uiFunc.uiMsgT(LangPkg.ui.file.upload_error, [": " + xhr.statusText]);
                 }
             };
 
             xhr.onerror = () => {
-                uiFunc.uiMsg(translateFunc.get("An error occurred during the file upload") + ".");
+                uiFunc.uiMsgT(LangPkg.ui.file.upload_error);
             }
 
             const token = localStorage.getItem("token");
             if (!token) {
-                uiFunc.uiMsg(translateFunc.get("No authentication data found") + ".");
+                uiFunc.uiMsgT(LangPkg.api.auth_error);
                 return;
             }
 
@@ -59,7 +60,7 @@ const fileFunc = {
         const opt: Api_fileFunc_read__options = {
             file,
             callback: () => {
-                console.log("File uploaded successfully");
+                debugFunc.msg(LangPkg.ui.file.uploaded);
             },
             maxSize: 4 * 1024 * 1024,
             maxName: 60,
@@ -73,7 +74,7 @@ const fileFunc = {
         const opt: Api_fileFunc_read__options = {
             file,
             callback: () => {
-                console.log("File uploaded successfully");
+                debugFunc.msg(LangPkg.ui.file.uploaded);
             },
             maxSize: 4 * 1024 * 1024,
             maxName: 60,
@@ -90,7 +91,7 @@ const fileFunc = {
         const opts: Api_fileFunc_read__options = {
             file: file,
             callback: () => {
-                console.log("File uploaded successfully");
+                debugFunc.msg(LangPkg.ui.file.uploaded);
             },
             maxSize: 4 * 1024 * 1024,
             maxName: 100,

@@ -2,6 +2,7 @@ import hub from "../../hub";
 hub("helpers/uiFunc");
 
 import debugFunc from "../../core/debug";
+import { langFunc } from "../../utils/translate";
 
 export const errMessesDiv = document.querySelector<HTMLDivElement>("#errMesses");
 export const promptDiv = document.querySelector<HTMLDivElement>("#prompt");
@@ -57,6 +58,18 @@ const uiFunc = {
         const speed = 1/3; //1s = 3 words
         const time = data.split(" ").length * speed + 6 + extraTime;
         uiFunc.uiMessage(data, undefined, time * 1000, "uiMsgClass");
+    },
+
+    uiMsgT(text: string, ...data: any){
+        let lastText = "";
+        if(data.length > 0){
+            if(Array.isArray(data[0])){
+                lastText = data.shift();
+            }
+        }
+
+        text = langFunc(text, ...data) + lastText;
+        uiFunc.uiMsg(text);
     },
 
     prompt(text, defaultValue=""): Promise<string> {

@@ -1,7 +1,7 @@
 import hub from "../../../hub";
 hub("rs/nav");
 
-import translateFunc from "../../../utils/translate";
+import LangPkg from "../../../utils/translate";
 import permissionFunc, { PermissionFlags } from "../../../utils/perm";
 import socket from "../../../core/socket/socket";
 import rs_dataF from "./rs_var";
@@ -45,41 +45,41 @@ export const renderCategorySwitcher = function () {
     const categoryButtonsBuilder: Settings_rs__CategorySwitcherButton[] =
         [
             {
-                text: translateFunc.get("Basic Settings"),
+                text: LangPkg.settings_realm.basic_settings,
                 name: "meta",
                 req: ["meta"],
                 render: renderMeta
             },
             {
-                text: translateFunc.get("Categories & Channels"),
+                text: LangPkg.settings_realm.categories_and_channels,
                 name: "category",
                 req: ["categories", "channels"],
                 p: PermissionFlags.ManageChannels,
                 render: renderChannels
             },
             {
-                text: translateFunc.get("Roles"),
+                text: LangPkg.settings_realm.roles,
                 name: "role",
                 req: ["roles"],
                 p: PermissionFlags.ManageRoles,
                 render: renderRoles
             },
             {
-                text: translateFunc.get("Users Manager"),
+                text: LangPkg.settings_realm.users_manager,
                 req: ["users", "banUsers", "roles"],
                 name: "usersManager",
                 p: PermissionFlags.BanUser,
                 render: renderUserRoleManager
             },
             {
-                text: translateFunc.get("Emoji Manager"),
+                text: LangPkg.settings_realm.emoji_manager,
                 name: "emoji",
                 req: ["emojis"],
                 p: PermissionFlags.ManageEmojis,
                 render: renderEmojis
             },
             {
-                text: translateFunc.get("Webhooks"),
+                text: LangPkg.settings_realm.webhooks.webhook,
                 name: "webhook",
                 req: ["webhooks"],
                 p: PermissionFlags.ManageWebhooks,

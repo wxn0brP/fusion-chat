@@ -3,11 +3,11 @@ hub("apis");
 
 import debugFunc from "../core/debug";
 import uiFunc from "../ui/helpers/uiFunc";
-import translateFunc from "../utils/translate";
 import vars from "../var/var";
 import { mglVar } from "../var/html";
 import cw from "../core";
 import Id from "../types/Id";
+import LangPkg from "../utils/translate";
 
 const apis = {
     www: {
@@ -78,7 +78,7 @@ const apis = {
             const dataS = cw.get(url);
             const data = JSON.parse(dataS);
             if (data.err) {
-                uiFunc.uiMsg(translateFunc.get("Error fetching data from the server") + ".");
+                uiFunc.uiMsgT(LangPkg.api.error_fetch, ["."]);
                 debugFunc.msg(data);
                 return null;
             }

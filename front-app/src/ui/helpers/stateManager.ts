@@ -5,10 +5,10 @@ import apis from "../../api/apis";
 import coreFunc from "../../core/coreFunc";
 import socket from "../../core/socket/socket";
 import Id from "../../types/Id";
-import translateFunc from "../../utils/translate";
 import utils from "../../utils/utils";
 import vars from "../../var/var";
 import uiFunc from "./uiFunc";
+import LangPkg, { langFunc } from "../../utils/translate";
 
 const stateManager = {
     handle(type: string, ...data: string[]){
@@ -69,7 +69,7 @@ const stateManager = {
         const url = path + "?" + params.toString();
         setTimeout(() => {
             utils.writeToClipboard(url).then(ok => {
-                if(ok) uiFunc.uiMsg(translateFunc.get("Copied to clipboard"));
+                if(ok) uiFunc.uiMsgT(LangPkg.ui.copied);
             });
         }, 2000);
     }
@@ -95,7 +95,7 @@ const stateManagerFunc = {
 
     call(id: string){
         if(!utils.validId(id)) return;
-        const conf = confirm(translateFunc.get("Are you sure you want to call $?", apis.www.changeUserID(id as Id)));
+        const conf = confirm(langFunc(LangPkg.ui.confirm.call_to, apis.www.changeUserID(id as Id)));
         if(!conf) return;
         socket.emit("call.dm.init", id);
     }

@@ -6,13 +6,13 @@ import apis from "../api/apis";
 import coreFunc from "../core/coreFunc";
 import socket from "../core/socket/socket";
 import stateManager from "../ui/helpers/stateManager";
-import translateFunc from "../utils/translate";
+import { init_translate } from "../utils/translate";
 
 debugFunc.init();
 await apis.app.init();
 
 coreFunc.changeChat("main");
-translateFunc.init();
+await init_translate();
 socket.connect();
 
 setTimeout(async () => {

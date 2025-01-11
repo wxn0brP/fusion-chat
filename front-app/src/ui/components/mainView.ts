@@ -7,9 +7,9 @@ import coreFunc from "../../core/coreFunc";
 import apis from "../../api/apis";
 import socket from "../../core/socket/socket";
 import uiFunc from "../helpers/uiFunc";
-import translateFunc from "../../utils/translate";
 import Id from "../../types/Id";
 import { Vars_mainView__page } from "../../types/var";
+import LangPkg, { langFunc } from "../../utils/translate";
 
 const mainView = {
     show() {
@@ -148,19 +148,19 @@ const mainView = {
     removeFriend(friend: Id) {
         if (!friend) return;
 
-        const conf = confirm(translateFunc.get("Do you really want to remove $ from your friends list?", apis.www.changeUserID(friend)));
+        const conf = confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
         if (!conf) return;
-        const conf2 = confirm(translateFunc.get("Are you sure?", apis.www.changeUserID(friend)));
+        const conf2 = confirm(langFunc(LangPkg.ui.confirm.sure, apis.www.changeUserID(friend)) + "?");
         if (!conf2) return;
 
         socket.emit("friend.remove", friend);
         socket.emit("friend.getAll");
     },
 
-    removeFriendRequest(friend) {
+    removeFriendRequest(friend: Id) {
         if (!friend) return;
 
-        const conf = confirm(translateFunc.get("Do you really want to remove $ from your friend requests list?", apis.www.changeUserID(friend)));
+        const conf = confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
         if (!conf) return;
 
         socket.emit("friend.requestRemove", friend);
@@ -180,16 +180,16 @@ socket.on("friend.getRequests", (requests) => {
 });
 
 socket.on("friend.request", (from) => {
-    uiFunc.uiMsg(translateFunc.get("Friend request from $", apis.www.changeUserID(from)));
+    uiFunc.uiMsgT(LangPkg.ui.friend.request, apis.www.changeUserID(from));
     socket.emit("friend.getRequests");
 });
 
 socket.on("friend.response", (from, accept) => {
     if (!accept) {
-        uiFunc.uiMsg(translateFunc.get("Declined friend request from $", apis.www.changeUserID(from)));
+        uiFunc.uiMsgT(LangPkg.ui.friend.declined, apis.www.changeUserID(from));
         return;
     }
-    uiFunc.uiMsg(translateFunc.get("Accepted friend request from $", apis.www.changeUserID(from)));
+    uiFunc.uiMsgT(LangPkg.ui.friend.request, apis.www.changeUserID(from));
 
     if (vars.chat.to != "main") return;
     socket.emit("friend.getAll");

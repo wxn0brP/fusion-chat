@@ -6,8 +6,8 @@ import vars from "../../var/var";
 import coreFunc from "../coreFunc";
 import socket from "../socket/socket";
 import { messHTML } from "../../var/html";
+import LangPkg from "../../utils/translate";
 import uiFunc from "../../ui/helpers/uiFunc";
-import translateFunc from "../../utils/translate";
 import permissionFunc, { PermissionFlags } from "../../utils/perm";
 import {
     Core_mess__command,
@@ -332,7 +332,7 @@ const messCmd = {
                     usersMap.set(idToName[id], id);
                 });
                 if (!usersMap.has(val)) {
-                    uiFunc.uiMsg(translateFunc.get("User not found. Skipping this argument..."));
+                    uiFunc.uiMsgT(LangPkg.ui.message.user_not_found);
                     delete argsVal[i];
                     continue;
                 }
@@ -360,7 +360,7 @@ const messCmd = {
         const container = barc__commads;
 
         const categoryDiv = document.createElement("div");
-        categoryDiv.innerHTML = "<h2>" + translateFunc.get("Command Input") + " (" + currentCmd.name + ")</h2>";
+        categoryDiv.innerHTML = "<h2>" + LangPkg.ui.message.command + " (" + currentCmd.name + ")</h2>";
 
         const ul = document.createElement("ul");
 
