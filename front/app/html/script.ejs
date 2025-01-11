@@ -1,10 +1,8 @@
 <% const libs = [
-    "json5",
     "socket.io",
 ] %>
 
 <div id="scripts" style="display: none;">
-    <script src="/core.js"></script>
     <% libs.forEach(script => { %>
         <script src="/libs/<%= script %>.min.js"></script>
     <% }) %>
