@@ -10,7 +10,7 @@ import db from "../dataBase.js";
  * @param {string} id_2 - The second user id
  * @return {string} The combined chat id
  */
-export function combinateId(id_1, id_2){
+export function combineId(id_1, id_2){
     const [id1, id2] = [id_1, id_2].sort();
 
     // Extract prefixes from user ids
@@ -34,7 +34,7 @@ export function combinateId(id_1, id_2){
  * @param {string} chatId - the ID of the chat to check
  * @return {boolean} true if the chat exists, false otherwise
  */
-export async function chatExsists(chatId){
+export async function chatExists(chatId){
     return await db.realmConf.issetCollection(chatId);
 }
 
@@ -138,5 +138,5 @@ export async function createPriv(toId, fromId){
         priv: toId
     }, false);
 
-    await db.mess.checkCollection(combinateId(toId, fromId));
+    await db.mess.checkCollection(combineId(toId, fromId));
 }

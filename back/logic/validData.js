@@ -116,12 +116,12 @@ const valid = {
      *
      * @function
      * @param {string} data - The value to validate.
-     * @param {string[]} strs - List of specific strings that are allowed.
+     * @param {string[]} strings - List of specific strings that are allowed.
      * @returns {boolean} True if the value is a valid id or is included in the list of specific strings, false otherwise.
      */
-    idOrSpecyficStr(data, strs=[]){
+    idOrSpecificStr(data, strings=[]){
         if(this.id(data)) return true;
-        return strs.includes(data);
+        return strings.includes(data);
     },
 
     /**
@@ -152,13 +152,13 @@ const valid = {
      * @function
      * @param {string} data - The value to validate.
      * @param {string[]} prefixes - List of prefixes that are allowed.
-     * @param {string[]} strs - List of specific strings that are allowed.
+     * @param {string[]} strings - List of specific strings that are allowed.
      * @returns {boolean} True if the value is a valid id, or starts with a valid prefix
      * followed by a valid id, or is included in the list of specific strings, false otherwise.
      */
-    idWithPrefixOrSpecyficStr(data, prefixes=[], strs=[]){
+    idWithPrefixOrSpecificStr(data, prefixes=[], strings=[]){
         if(this.idWithPrefix(data, prefixes)) return true;
-        return this.idOrSpecyficStr(data, strs);
+        return this.idOrSpecificStr(data, strings);
     },
 
     /**
@@ -216,5 +216,5 @@ ajv.addKeyword({
 });
 
 export function validChannelId(data){
-    return valid.idWithPrefixOrSpecyficStr(data, ["&"], ["main"]);
+    return valid.idWithPrefixOrSpecificStr(data, ["&"], ["main"]);
 }

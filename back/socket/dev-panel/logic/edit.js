@@ -1,15 +1,15 @@
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
-import editShemaData from "../valid/edit.js";
+import editSchematData from "../valid/edit.js";
 import { create, KeyIndex } from "../../../logic/token/index.js";
 import { genId } from "@wxn0brp/db";
 import db from "../../../dataBase.js";
-const editShema = valid.objAjv(editShemaData);
+const editSchemat = valid.objAjv(editSchematData);
 
 export async function bot_edit(suser, id, data){
     const validE = new ValidError("bot.edit");
     if(!valid.id(id)) return validE.valid("id");
-    if(!editShema(data)) return validE.valid("data");
+    if(!editSchemat(data)) return validE.valid("data");
 
     const perm = await db.userData.findOne(suser._id, { botID: id });
     if(!perm) return validE.err("bot not found");

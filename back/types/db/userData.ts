@@ -14,7 +14,7 @@ namespace Db_UserData {
     }
 
     export interface pr_last {
-        [chnl: Id]: Id;
+        [chnl: string]: Id;
     }
 
     export interface nick {

@@ -2,7 +2,7 @@ import { Router } from "express";
 import valid from "../../logic/validData.js";
 import NodeCache from "node-cache";
 import db from "../../dataBase.js";
-import { combinateId } from "../../logic/chatMgmt.js";
+import { combineId } from "../../logic/chatMgmt.js";
 
 const router = Router();
 const cache = new NodeCache();
@@ -16,7 +16,7 @@ router.get("/id/event", async (req, res) => {
         const data = await db.realmData.findOne("events.channels", (data, ctx) => {
             const { tr, tc } = data;
             return ctx.combinateId(tr, tc) == ctx.id;
-        }, { id, combinateId });
+        }, { id, combinateId: combineId });
         if(!data){
             return res.json({ err: true, msg: "event is not valid" });
         }

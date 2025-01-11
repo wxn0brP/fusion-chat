@@ -11,8 +11,8 @@ import sendMail from "../../../logic/mail.js";
 import * as tokenFunc from "../../../logic/token/index.js";
 import { genId } from "@wxn0brp/db";
 
-const embedDataShema = valid.objAjv(embedData);
-const statusDataShema = valid.objAjv(statusData);
+const embedDataSchemat = valid.objAjv(embedData);
+const statusDataSchemat = valid.objAjv(statusData);
 
 export async function get_ogs(link){
     const validE = new ValidError("get.ogs");
@@ -53,7 +53,7 @@ export async function send_embed_data(suser, to, chnl, embed){
     const validE = new ValidError("send.embed.data");
     if(!valid.id(to))           return validE.valid("to");
     if(!validChannelId(chnl))   return validE.valid("chnl");
-    if(!embedDataShema(embed))  return validE.valid("embed", embedDataShema.errors);
+    if(!embedDataSchemat(embed))  return validE.valid("embed", embedDataSchemat.errors);
 
     const result = await sendMessage(
         {
@@ -77,7 +77,7 @@ export async function fireToken_get(suser, userToken){
 
 export async function status_activity_set(suser, status){
     const validE = new ValidError("status.activity.set");
-    if(!statusDataShema(status)) return validE.valid("status", statusDataShema.errors);
+    if(!statusDataSchemat(status)) return validE.valid("status", statusDataSchemat.errors);
     
     const endCode = statusMgmt.setCache(suser._id, status);
     if(endCode) return validE.err(endCode);

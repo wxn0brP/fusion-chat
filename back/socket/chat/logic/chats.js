@@ -1,5 +1,5 @@
 import db from "../../../dataBase.js";
-import { combinateId, createChat, exitChat, createPriv, addUserToChat } from "../../../logic/chatMgmt.js";
+import { combineId, createChat, exitChat, createPriv, addUserToChat } from "../../../logic/chatMgmt.js";
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
 
@@ -22,7 +22,7 @@ export async function dm_get(suser){
 
     for(let i=0; i<privs.length; i++){
         const priv = privs[i];
-        const id = combinateId(suser._id, priv.priv);
+        const id = combineId(suser._id, priv.priv);
         const lastMess = await db.mess.find(id, {}, {}, { reverse: true, max: 1 });
         if(lastMess.length == 0) continue;
         priv.lastMessId = lastMess[0]._id;

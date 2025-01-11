@@ -45,8 +45,8 @@ global.fireBaseMessage = {
                 continue;
             }
 
-            const tokenLoged = await db.data.findOne("token", { token: data.fc });
-            if(!tokenLoged){
+            const tokenLogged = await db.data.findOne("token", { token: data.fc });
+            if(!tokenLogged){
                 await rm();
                 continue;
             }

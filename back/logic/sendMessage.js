@@ -1,4 +1,4 @@
-import { chatExsists as _chatExsists, combinateId } from "./chatMgmt.js";
+import { chatExists as _chatExists, combineId } from "./chatMgmt.js";
 import valid, { validChannelId } from "./validData.js";
 import ValidError from "./validError.js";
 import getChnlPerm from "./chnlPermissionCache.js";
@@ -63,11 +63,11 @@ export default async function sendMessage(req, user, options={}){
 
         let p1 = user._id;
         let p2 = to.replace("$", "");
-        to = combinateId(p1, p2);
+        to = combineId(p1, p2);
         await db.mess.checkCollection(to);
     }else{
-        const chatExsists = await _chatExsists(to);
-        if(!chatExsists) return validE.err("chat is not exists");
+        const chatExists = await _chatExists(to);
+        if(!chatExists) return validE.err("chat is not exists");
     }
 
     if(!privChat && !options.system){
@@ -157,7 +157,7 @@ async function eventChnl(realm, data){
             chnl: tc,
         }
         const user = {
-            _id: combinateId(tr, tc),
+            _id: combineId(tr, tc),
             name: "Event Chnl",
         }
         const opts = {

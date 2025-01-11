@@ -31,7 +31,7 @@ export default class PermissionSystem{
 
         for(let i=1; i<roles.length; i++){
             if(roles[i].lvl <= roles[i - 1].lvl){
-                throw new Error("Role lvls must form a strict ascending chain");
+                throw new Error("Role lvl must form a strict ascending chain");
             }
         }
     }
@@ -175,8 +175,8 @@ export default class PermissionSystem{
         }, { roleId });
     }
 
-    hasHigherRole(userRoles, targetlvl){
-        return userRoles && userRoles.some(role => role.lvl < targetlvl);
+    hasHigherRole(userRoles, targetLvl){
+        return userRoles && userRoles.some(role => role.lvl < targetLvl);
     }
 
     calculateCombinedPermissions(roles){

@@ -101,13 +101,13 @@ router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => 
     const realmEmojiUnicode = realmEmoji.map(emoji => emoji.unicode);
 
     const emojiUnicodes = generatePrivateUseArea();
-    const availablesUnicodes = emojiUnicodes.filter(unicode => !realmEmojiUnicode.includes(unicode));
+    const availableUnicodes = emojiUnicodes.filter(unicode => !realmEmojiUnicode.includes(unicode));
 
-    if(availablesUnicodes.length === 0){
+    if(availableUnicodes.length === 0){
         return res.status(400).json({ err: true, msg: "Emoji limit reached." });
     }
 
-    const unicode = availablesUnicodes[0];
+    const unicode = availableUnicodes[0];
     const basePath = join(baseRealmPath, realm, "emojis");
 
     if(!existsSync(basePath)){

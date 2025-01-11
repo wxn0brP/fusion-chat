@@ -29,7 +29,7 @@ const upload = multer({
 
 router.post("/realm/profile/upload", global.authenticateMiddleware, async (req, res) => {
     const realmId = req.headers.realm;
-    if(!realmId) return res.status(400).json({ err: true, msg: "No releam id provided." });
+    if(!realmId) return res.status(400).json({ err: true, msg: "No realm id provided." });
 
     const permSys = new permissionSystem(realmId);
     const userId = req.user;

@@ -12,7 +12,7 @@ function processOgsToEmbed(data, link){
         image,
         url,
         customFields: {
-            "Type": data.ogType || "Unknow",
+            "Type": data.ogType || "Unknown",
             "Source": link,
             "Image Available": image ? "Yes" : "No",
             "Domain": new URL(link).hostname,

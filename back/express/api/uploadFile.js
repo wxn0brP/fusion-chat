@@ -8,7 +8,7 @@ const { maxUserFiles, maxUserFileSize } = global.fileConfig;
 const router = Router();
 const uploadDir = "userFiles/users";
 
-function separeFileName(name){
+function separateFileName(name){
     return name.replace(/[^a-zA-Z0-9.]/g, "_");
 }
 
@@ -33,7 +33,7 @@ const storage = diskStorage({
     },
     filename: (req, file, cb) => {
         const genIdValue = genId();
-        const newFilename = `${genIdValue}-${separeFileName(file.originalname)}`;
+        const newFilename = `${genIdValue}-${separateFileName(file.originalname)}`;
         cb(null, newFilename);
     }
 });

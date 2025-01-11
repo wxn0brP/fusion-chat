@@ -24,8 +24,8 @@ router.get("/meta", global.authenticateMiddleware, async (req, res) => {
 
     const userRealms = await db.userData.find(req.user, { $exists: { realm: true }});
     const botRealms = await db.botData.find(id, { $exists: { realm: true }}).then(b => b.map(r => r.realm));
-    const availablerealms = userRealms.filter(s => !botRealms.includes(s.realm)).map(s => s.realm);
-    botRes.realms = availablerealms;
+    const availableRealms = userRealms.filter(s => !botRealms.includes(s.realm)).map(s => s.realm);
+    botRes.realms = availableRealms;
 
     res.json({ err: false, data: botRes });
 });

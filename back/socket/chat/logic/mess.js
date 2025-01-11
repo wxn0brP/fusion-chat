@@ -1,4 +1,4 @@
-import { combinateId } from "../../../logic/chatMgmt.js";
+import { combineId } from "../../../logic/chatMgmt.js";
 import valid, { validChannelId } from "../../../logic/validData.js";
 import permissionSystem from "../../../logic/permission-system/index.js";
 import Permissions from "../../../logic/permission-system/permBD.js";
@@ -9,7 +9,7 @@ import { realm_thread_delete } from "./realms.js";
 import getChnlPerm from "../../../logic/chnlPermissionCache.js";
 import db from "../../../dataBase.js";
 
-const messageSearchShema = valid.objAjv(messageSearchData);
+const messageSearchSchemat = valid.objAjv(messageSearchData);
 
 export async function message_edit(suser, toM, _id, msg, options={}){
     options = {
@@ -27,7 +27,7 @@ export async function message_edit(suser, toM, _id, msg, options={}){
     if(privChat){
         const p1 = suser._id;
         const p2 = to.replace("$", "");
-        to = combinateId(p1, p2);
+        to = combineId(p1, p2);
     }
 
     const mess = await db.mess.findOne(to, { _id });
@@ -61,7 +61,7 @@ export async function message_delete(suser, toM, _id){
     if(privChat){
         const p1 = suser._id;
         const p2 = to.replace("$", "");
-        to = combinateId(p1, p2);
+        to = combineId(p1, p2);
     }
 
     const mess = await db.mess.findOne(to, { _id });
@@ -100,7 +100,7 @@ export async function messages_delete(suser, toM, ids){
     if(privChat){
         const p1 = suser._id;
         const p2 = to.replace("$", "");
-        to = combinateId(p1, p2);
+        to = combineId(p1, p2);
     }
 
     const messages = await db.mess.find(to, { $in: { _id: ids } });
@@ -142,7 +142,7 @@ export async function message_fetch(suser, to, chnl, start, end){
     if(privChat){
         const p1 = suser._id;
         const p2 = to.replace("$", "");
-        to = combinateId(p1, p2);
+        to = combineId(p1, p2);
     }
 
     if(!privChat){
@@ -150,8 +150,8 @@ export async function message_fetch(suser, to, chnl, start, end){
         if(!perm.view) return validE.err("channel is not exist");
     }
 
-    const responeAll = await db.mess.find(to, { chnl }, {}, { reverse: true, max: end+start });
-    const res = responeAll.slice(start, end);
+    const respondAll = await db.mess.find(to, { chnl }, {}, { reverse: true, max: end+start });
+    const res = respondAll.slice(start, end);
 
     return { err: false, res };
 }
@@ -166,7 +166,7 @@ export async function message_fetch_id(suser, to, chnl, mess_id){
     if(privChat){
         const p1 = suser._id;
         const p2 = to.replace("$", "");
-        to = combinateId(p1, p2);
+        to = combineId(p1, p2);
     }
 
     if(!privChat){
@@ -182,22 +182,22 @@ export async function message_markAsRead(suser, to, chnl, mess_id){
     const validE = new ValidError("message.markAsRead");
     if(!valid.id(to))                               return validE.valid("to");
     if(!validChannelId(chnl))                       return validE.valid("chnl");
-    if(!valid.idOrSpecyficStr(mess_id, ["last"]))   return validE.valid("mess_id");
+    if(!valid.idOrSpecificStr(mess_id, ["last"]))   return validE.valid("mess_id");
 
-    const firendChat = to.startsWith("$");
+    const friendChat = to.startsWith("$");
     
     const search = {};
-    if(firendChat) search.priv = to.replace("$", "");
+    if(friendChat) search.priv = to.replace("$", "");
     else search.realm = to;
 
     let res;
 
     if(mess_id == "last"){
         let toM = to;
-        if(firendChat){
+        if(friendChat){
             const p1 = suser._id;
             const p2 = to.replace("$", "");
-            toM = combinateId(p1, p2);
+            toM = combineId(p1, p2);
         }
         const lastIdMess = await db.mess.find(toM, { chnl }, {}, { reverse: true, max: 1 });
         if(lastIdMess.length == 0) return { err: false, res: "no messages in this channel" };
@@ -225,7 +225,7 @@ export async function message_react(suser, realm, msgId, react){
     if(realm.startsWith("$")){
         const p1 = suser._id;
         const p2 = realm.replace("$", "");
-        toM = combinateId(p1, p2);
+        toM = combineId(p1, p2);
     }
 
     const msg = await db.mess.findOne(toM, { _id: msgId });
@@ -261,13 +261,13 @@ export async function message_search(suser, realm, chnl, query){
     const validE = new ValidError("message.search");
     if(!valid.id(realm))            return validE.valid("realm");
     if(!validChannelId(chnl))       return validE.valid("chnl");
-    if(!messageSearchShema(query))  return validE.valid("search", messageSearchShema.errors);
+    if(!messageSearchSchemat(query))  return validE.valid("search", messageSearchSchemat.errors);
 
     const priv = realm.startsWith("$");
     if(priv){
         const p1 = suser._id;
         const p2 = realm.replace("$", "");
-        realm = combinateId(p1, p2);
+        realm = combineId(p1, p2);
     }
 
     const res = await db.mess.find(realm, (data, context) => {
@@ -290,7 +290,7 @@ export async function message_pin(suser, realm, chnl, msgId, pin){
     if(priv){
         const p1 = suser._id;
         const p2 = realm.replace("$", "");
-        chat = combinateId(p1, p2);
+        chat = combineId(p1, p2);
     }
 
     await db.mess.updateOne(chat, { _id: msgId }, { pinned: pin });
@@ -320,7 +320,7 @@ export async function message_fetch_pinned(suser, realm, chnl){
     if(priv){
         const p1 = suser._id;
         const p2 = realm.replace("$", "");
-        realm = combinateId(p1, p2);
+        realm = combineId(p1, p2);
     }
 
     const res = await db.mess.find(realm, (data, context) => {
