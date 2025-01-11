@@ -6,14 +6,14 @@ declare global {
         html(v?: string): string | HTMLElement;
         on(event: string, fn: EventListenerOrEventListenerObject): void;
         css(style: string | Record<string, string>, val?: string | null): void;
-        atrib(att: string, arg?: string | null): string | HTMLElement;
+        attrib(att: string, arg?: string | null): string | HTMLElement;
         clA(arg: string): HTMLElement;
         clR(arg: string): HTMLElement;
         clT(className: string): HTMLElement;
         animateFade(from: number, options?: { time?: number; cb?: () => void }): HTMLElement;
         fadeIn(display?: string | (() => void), cb?: () => void): HTMLElement;
         fadeOut(cb?: () => void): HTMLElement;
-        fadeToogle(): HTMLElement;
+        fadeToggle(): HTMLElement;
         add(child: HTMLElement): HTMLElement;
         addUp(child: HTMLElement): HTMLElement;
         fade: boolean;
@@ -63,7 +63,7 @@ export const cw = {
             }
         },
 
-        atrib(this: HTMLElement, att: string, arg: string | null = null): string | HTMLElement {
+        attrib(this: HTMLElement, att: string, arg: string | null = null): string | HTMLElement {
             if (arg !== null) {
                 this.setAttribute(att, arg);
                 return this;
@@ -127,7 +127,7 @@ export const cw = {
             return this;
         },
 
-        fadeToogle(this: HTMLElement): HTMLElement {
+        fadeToggle(this: HTMLElement): HTMLElement {
             if ((this as any).fade) {
                 this.fadeOut();
             } else {
@@ -151,33 +151,6 @@ export const cw = {
 
     init(): void {
         Object.assign(HTMLElement.prototype, this.proto);
-    },
-
-    grid(doc: Document = document): void {
-        const prefixes = "smlu";
-
-        function getSize(className: string, size: string): number {
-            const match = className.match(new RegExp(`${size}_(\\d+)`));
-            return match ? parseInt(match[0].replace(size + "_", "")) : 12;
-        }
-
-        function add(ele: HTMLElement, start: number, size: number): void {
-            for (let i = start; i < prefixes.length; i++) {
-                ele.classList.add(prefixes[i] + "_" + size);
-            }
-        }
-
-        const elements = doc.querySelectorAll(".s, [class^='s_']");
-        elements.forEach(ele => {
-            const cm = ele.className;
-            let foundPrefix = 0;
-            for (let i = 0; i < prefixes.length; i++) {
-                if (!cm.includes(prefixes[i] + "_")) continue;
-                foundPrefix = i;
-            }
-            const size = getSize(cm, prefixes[foundPrefix]);
-            add(ele as HTMLElement, foundPrefix, size);
-        });
     },
 
     rand(min: number, max: number): number {
