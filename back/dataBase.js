@@ -1,7 +1,7 @@
 import config from "../config/database.js";
 import { DataBase, Graph, DataBaseRemote, GraphRemote } from "@wxn0brp/db";
 
-/** @type {import("./dataBase").dbs"} */
+/** @type {import("./types/dataBase.js").dbs} */
 const db = {};
 
 const databases = [
@@ -24,7 +24,9 @@ const databases = [
 function getRemoteConfig(name, path){
     const cnf = {
         name,
-        path
+        path,
+        url: null,
+        auth: null
     }
     const custom = config[name];
     if(custom.url && custom.auth){
@@ -43,7 +45,7 @@ async function initDataBase(name){
         return new DataBase(cfg.path);
     }else if(cfg.type === "remote"){
         const remoteCfg = getRemoteConfig(name, cfg.path);
-        return await DataBaseRemote(remoteCfg);
+        return new DataBaseRemote(remoteCfg);
     }else{
         throw new Error("Unknown database type " + cfg.name);
     }
@@ -55,7 +57,7 @@ async function initGraph(name){
         return new Graph(cfg.path);
     }else if(cfg.type === "remote"){
         const remoteCfg = getRemoteConfig(name, cfg.path);
-        return await GraphRemote(remoteCfg);
+        return new GraphRemote(remoteCfg);
     }else{
         throw new Error("Unknown database type " + cfg.name);
     }
