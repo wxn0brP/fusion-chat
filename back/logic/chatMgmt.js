@@ -1,6 +1,7 @@
 import { genId } from "@wxn0brp/db";
 import PermissionSystem from "./permission-system/index.js";
 import Permissions, { getAllPermissions } from "./permission-system/permBD.js";
+import db from "../dataBase.js";
 
 /**
  * A function to combine two user ids into a new chat id.
@@ -34,7 +35,7 @@ export function combinateId(id_1, id_2){
  * @return {boolean} true if the chat exists, false otherwise
  */
 export async function chatExsists(chatId){
-    return await global.db.realmConf.issetCollection(chatId);
+    return await db.realmConf.issetCollection(chatId);
 }
 
 /**
@@ -47,7 +48,7 @@ export async function chatExsists(chatId){
 export async function createChat(name, ownerId){
     const chatId = genId();
     
-    await global.db.realmConf.add(chatId, {
+    await db.realmConf.add(chatId, {
         name,
         owner: ownerId,
         img: false,
@@ -58,13 +59,13 @@ export async function createChat(name, ownerId){
     const rootRole = await permSys.createRole("root", getAllPermissions(Permissions));
 
     const categoryId = genId();
-    await global.db.realmConf.add(chatId, {
+    await db.realmConf.add(chatId, {
         cid: categoryId,
         name: "general",
         i: 0,
     }, false);
 
-    await global.db.realmConf.add(chatId, {
+    await db.realmConf.add(chatId, {
         chid: genId(),
         name: "main",
         type: "text",
@@ -73,7 +74,7 @@ export async function createChat(name, ownerId){
         rp: []
     }, false);
 
-    await global.db.realmConf.add(chatId, {
+    await db.realmConf.add(chatId, {
         chid: genId(),
         name: "general",
         type: "voice",
@@ -82,7 +83,7 @@ export async function createChat(name, ownerId){
         rp: []
     }, false);
 
-    await global.db.mess.checkCollection(chatId);
+    await db.mess.checkCollection(chatId);
 
     await addUserToChat(chatId, ownerId, [rootRole._id]);
 
@@ -98,12 +99,12 @@ export async function createChat(name, ownerId){
  * @return {Promise<void>} A Promise that resolves when the user is added to the chat
  */
 export async function addUserToChat(chatId, userId, roles=[]){
-    await global.db.realmUser.add(chatId, {
+    await db.realmUser.add(chatId, {
         u: userId,
         r: roles
     }, false);
 
-    await global.db.userData.add(userId, {
+    await db.userData.add(userId, {
         realm: chatId,
     }, false);
 }
@@ -116,8 +117,8 @@ export async function addUserToChat(chatId, userId, roles=[]){
  * @return {Promise<void>} A promise that resolves when the user is removed from the chat
  */
 export async function exitChat(chatId, userId){
-    await global.db.realmUser.removeOne(chatId, { uid: userId });
-    await global.db.userData.removeOne(userId, { realm: chatId });
+    await db.realmUser.removeOne(chatId, { uid: userId });
+    await db.userData.removeOne(userId, { realm: chatId });
 }
 
 
@@ -129,13 +130,13 @@ export async function exitChat(chatId, userId){
  * @return {type} 
  */
 export async function createPriv(toId, fromId){
-    await global.db.userData.add(toId, {
+    await db.userData.add(toId, {
         priv: fromId//, block: true
     }, false);
 
-    await global.db.userData.add(fromId, {
+    await db.userData.add(fromId, {
         priv: toId
     }, false);
 
-    await global.db.mess.checkCollection(combinateId(toId, fromId));
+    await db.mess.checkCollection(combinateId(toId, fromId));
 }

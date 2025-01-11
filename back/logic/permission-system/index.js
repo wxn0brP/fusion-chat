@@ -1,3 +1,4 @@
+import db from "../../dataBase.js";
 import {
     hasPermission,
     combinePermissions,
@@ -11,8 +12,8 @@ export default class PermissionSystem{
         if(!workspaceCollection)
             throw new Error("Missing required parameter workspaceCollection");
 
-        this.realmRoles = global.db.realmRoles.c(workspaceCollection);
-        this.realmUser = global.db.realmUser.c(workspaceCollection);
+        this.realmRoles = db.realmRoles.c(workspaceCollection);
+        this.realmUser = db.realmUser.c(workspaceCollection);
     }
 
     async initialize(){

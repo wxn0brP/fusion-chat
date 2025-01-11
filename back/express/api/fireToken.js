@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { getTokenFromPointer, cache } from "../../logic/mobileNotif.js";
+import db from "../../dataBase.js";
 const router = Router();
 
 router.post("/fireToken", async (req, res) => {
@@ -9,15 +10,15 @@ router.post("/fireToken", async (req, res) => {
     const userToken = await getTokenFromPointer(fcToken);
     if(!userToken) return res.json({ err: true, msg: "invalid fcToken" });
 
-    const pairIsset = await global.db.data.findOne("fireToken", {
+    const pairIsset = await db.data.findOne("fireToken", {
         fc: userToken.token,
         fire: fireToken
     });
     if(pairIsset) return res.json({ err: false, msg: "ok" });
 
-    await global.db.data.removeOne("fireToken", { fire: fireToken }); // remove if token is registered for another user
+    await db.data.removeOne("fireToken", { fire: fireToken }); // remove if token is registered for another user
 
-    await global.db.data.add("fireToken", {
+    await db.data.add("fireToken", {
         fc: userToken.token,
         fire: fireToken,
         user: userToken.user,

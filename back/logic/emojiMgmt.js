@@ -2,6 +2,7 @@ import { createWriteStream, createReadStream, readFileSync, writeFileSync, exist
 import { join } from "path";
 import svg2ttf from "svg2ttf";
 import { SVGIcons2SVGFontStream } from "svgicons2svgfont";
+import db from "../dataBase.js";
 
 
 function createSVGFont(emojis, outputSVGFontPath, opts){
@@ -73,7 +74,7 @@ export async function createFont(emojis, realmId){
 }
 
 export async function manageRealmEmojis(realmId){
-    const emojis = await global.db.realmConf.find(realmId, { $exists: { unicode: true }});
+    const emojis = await db.realmConf.find(realmId, { $exists: { unicode: true }});
     if(emojis.length > 0){
         await createFont(emojis, realmId);
     }else{

@@ -1,3 +1,4 @@
+import db from "../../dataBase.js";
 import { decode, KeyIndex } from "../../logic/token/index.js";
 import mess from "./mess.js";
 import other from "./other.js";
@@ -17,12 +18,12 @@ io.of("/bot").use(async (socket, next) => {
     const tokenData = await decode(token, KeyIndex.BOT_TOKEN);
     const _id = tokenData._id;
 
-    const isValid = await global.db.botData.findOne(_id, { token });
+    const isValid = await db.botData.findOne(_id, { token });
     if(!isValid) return next(new Error("Authentication error: Missing authentication data."));
 
     const user = {
         _id,
-        name: await global.db.botData.findOne(_id, { _id: "name" }).then(d => d.name),
+        name: await db.botData.findOne(_id, { _id: "name" }).then(d => d.name),
     }
 
     if(tmpBan.has(user._id)){
@@ -42,7 +43,7 @@ io.of("/bot").use(async (socket, next) => {
 io.of("/bot").on("connection", (socket) => {
     socket.logError = (e) => {
         lo("Error: ", e);
-        global.db.logs.add("socket.io", {
+        db.logs.add("socket.io", {
             error: e.message,
             stackTrace: e.stack,
         })
@@ -69,7 +70,7 @@ io.of("/bot").on("connection", (socket) => {
                     if(lastTime.i == 5){
                         const t = Math.ceil(timeout/1000*penalty+1);
                         socket.emit("error.spam", "last warning", t);
-                        global.db.logs.add("spam", {
+                        db.logs.add("spam", {
                             user: socket.user._id,
                             evt,
                         });
@@ -82,7 +83,7 @@ io.of("/bot").on("connection", (socket) => {
                             socket.emit("error.spam", "ban");
                             socket.disconnect();
                         });
-                        global.db.logs.add("spam", {
+                        db.logs.add("spam", {
                             user: socket.user._id,
                             evt,
                             ban: true,

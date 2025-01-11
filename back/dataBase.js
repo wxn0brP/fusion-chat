@@ -1,7 +1,9 @@
 import config from "../config/database.js";
 import { DataBase, Graph, DataBaseRemote, GraphRemote } from "@wxn0brp/db";
 
-global.db = {};
+/** @type {import("./dataBase").dbs"} */
+const db = {};
+
 const databases = [
     { name: "data", type: "database" },             //all types data
     { name: "dataGraph", type: "graph" },           //all types data graph
@@ -61,8 +63,10 @@ async function initGraph(name){
 
 for(const database of databases){
     if(database.type === "database"){
-        global.db[database.name] = await initDataBase(database.name);
+        db[database.name] = await initDataBase(database.name);
     }else if(database.type === "graph"){
-        global.db[database.name] = await initGraph(database.name);
+        db[database.name] = await initGraph(database.name);
     }
 }
+
+export default db;

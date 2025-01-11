@@ -1,7 +1,8 @@
+import db from "../../../../../dataBase.js";
 import { processDbChanges } from "./imports.js";
 
 export default async(id, data) => {
-    const old_data = await global.db.realmUser.find(id, {});
+    const old_data = await db.realmUser.find(id, {});
     let new_data = data.users;
     
     const new_users = new_data.filter(user => /^[a-zA-Z0-9]/.test(user.u)).map(user => {
@@ -32,7 +33,7 @@ async function saveDbChanges(realmId, changes, trackName){
     const itemsToUpdate = changes.itemsToUpdate;
 
     for(const item of itemsToUpdate){
-        await global.db.realmUser.updateOne(
+        await db.realmUser.updateOne(
             realmId,
             { [trackName]: item[trackName] },
             item

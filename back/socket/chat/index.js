@@ -8,6 +8,7 @@ import chats from "./chats.js";
 import evt from "./evt.js";
 import friends from "./friends.js";
 import other from "./other.js";
+import db from "../../dataBase.js";
 
 const tmpBan = new Map();
 
@@ -40,7 +41,7 @@ io.of("/").use(async (socket, next) => {
 io.of("/").on("connection", (socket) => {
     socket.logError = (e) => {
         lo("Error: ", e);
-        global.db.logs.add("socket.io", {
+        db.logs.add("socket.io", {
             error: e.message,
             stackTrace: e.stack,
         })
@@ -67,7 +68,7 @@ io.of("/").on("connection", (socket) => {
                     if(lastTime.i == 5){
                         const t = Math.ceil(timeout/1000*penalty+1);
                         socket.emit("error.spam", "last warning", t);
-                        global.db.logs.add("spam", {
+                        db.logs.add("spam", {
                             user: socket.user._id,
                             evt,
                         });
@@ -80,7 +81,7 @@ io.of("/").on("connection", (socket) => {
                             socket.emit("error.spam", "ban");
                             socket.disconnect();
                         });
-                        global.db.logs.add("spam", {
+                        db.logs.add("spam", {
                             user: socket.user._id,
                             evt,
                             ban: true,
@@ -115,7 +116,7 @@ io.of("/").on("connection", (socket) => {
             const newToken = await createUser({ _id: socket.user._id });
             socket.emit("system.refreshToken", newToken, function confirm(confirm){
                 if(!confirm) return;
-                global.db.data.updateOne("token", { token: oldToken }, { token: newToken });
+                db.data.updateOne("token", { token: oldToken }, { token: newToken });
             });
         }
         delete socket.isShouldRefresh;

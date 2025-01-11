@@ -1,16 +1,17 @@
 import { Router } from 'express';
 import { createHash } from 'crypto';
 import mailer from "../../logic/mail.js";
+import db from '../../dataBase.js';
 const router = Router();
 
 router.post("/register", async function(req, res){
     const { name, password, email } = req.body;
     if(!name || !password || !email) return res.json({ err: true, msg: "name, pass, and email are required" });
 
-    const existingUserByName = await global.db.data.findOne("user", { name });
+    const existingUserByName = await db.data.findOne("user", { name });
     if(existingUserByName) return res.json({ err: true, msg: "User with this name already exists!" });
 
-    const existingUserByEmail = await global.db.data.findOne("user", { email });
+    const existingUserByEmail = await db.data.findOne("user", { email });
     if(existingUserByEmail) return res.json({ err: true, msg: "User with this email already exists!" });
 
     if(!/^[a-zA-Z0-9]+$/.test(name) || name.length < 3 || name.length > 10) {
@@ -60,7 +61,7 @@ router.post("/register/verify", async function(req, res){
     }
 
     const { name, email, password } = req.session.tmp_user;
-    const newUser = await global.db.data.add("user", { name, email, password });
+    const newUser = await db.data.add("user", { name, email, password });
     if(!newUser) return res.json({ err: true, msg: "Failed to register user" });
 
     delete req.session.tmp_user;

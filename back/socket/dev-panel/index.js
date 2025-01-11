@@ -1,3 +1,4 @@
+import db from "../../dataBase.js";
 import { authUser } from "../../logic/auth.js";
 import botsMgmt from "./botsMgmt.js";
 import editBot from "./editBot.js";
@@ -31,7 +32,7 @@ io.of("/dev-panel").use(async (socket, next) => {
 io.of("/dev-panel").on("connection", (socket) => {
     socket.logError = (e) => {
         lo("Error: ", e);
-        global.db.logs.add("socket.io", {
+        db.logs.add("socket.io", {
             error: e.message,
             stackTrace: e.stack,
         })
@@ -58,7 +59,7 @@ io.of("/dev-panel").on("connection", (socket) => {
                     if(lastTime.i == 5){
                         const t = Math.ceil(timeout/1000*penalty+1);
                         socket.emit("error.spam", "last warning", t);
-                        global.db.logs.add("spam", {
+                        db.logs.add("spam", {
                             user: socket.user._id,
                             evt,
                         });
@@ -71,7 +72,7 @@ io.of("/dev-panel").on("connection", (socket) => {
                             socket.emit("error.spam", "ban");
                             socket.disconnect();
                         });
-                        global.db.logs.add("spam", {
+                        db.logs.add("spam", {
                             user: socket.user._id,
                             evt,
                             ban: true,

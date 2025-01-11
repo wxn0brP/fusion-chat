@@ -1,3 +1,4 @@
+import db from "../dataBase.js";
 import { create, decode, KeyIndex } from "./token/index.js";
 
 /**
@@ -15,10 +16,10 @@ export async function authUser(token, tokenDecoded={}){
         const { id } = data;
         if(!id) return false;
         
-        const tokenD = await global.db.data.findOne("token", { token });
+        const tokenD = await db.data.findOne("token", { token });
         if(!tokenD) return false;
     
-        const user = await global.db.data.findOne("user", { _id: id }, {}, { select: ["_id", "name", "email"] });
+        const user = await db.data.findOne("user", { _id: id }, {}, { select: ["_id", "name", "email"] });
         if(!user) return false;
     
         return user;

@@ -4,6 +4,7 @@ import permissionSystem from "../../../../logic/permission-system/index.js";
 import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permBD.js";
 import setRealmSettingsData from "../../valid/realmsSettings.js";
 import cpu from "./set/cpu.js";
+import db from "../../../../dataBase.js";
 
 const sect_req_perms = {
     meta: [Permissions.admin],
@@ -106,7 +107,7 @@ function validateData(data, schema){
  */
 async function fetchRequiredData(id, sections){
     if(sections.some(section => db_data_req_sect.includes(section)))
-        return await global.db.realmConf.find(id, {});
+        return await db.realmConf.find(id, {});
     
     return null;
 }

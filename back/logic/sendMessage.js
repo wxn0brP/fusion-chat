@@ -3,6 +3,7 @@ import valid, { validChannelId } from "./validData.js";
 import ValidError from "./validError.js";
 import getChnlPerm from "./chnlPermissionCache.js";
 import NodeCache from "node-cache";
+import db from "../dataBase.js";
 const eventSubscribeCache = new NodeCache();
 
 /**
@@ -52,18 +53,18 @@ export default async function sendMessage(req, user, options={}){
 
     const privChat = to.startsWith("$");
     if(privChat){
-        const priv = await global.db.userData.findOne(user._id, { priv: to.replace("$", "") });
+        const priv = await db.userData.findOne(user._id, { priv: to.replace("$", "") });
         if(!priv) return validE.err("priv not found");
         if(priv.blocked) return validE.err("blocked");
 
-        const toPriv = await global.db.userData.findOne(to.replace("$", ""), { priv: user._id });
+        const toPriv = await db.userData.findOne(to.replace("$", ""), { priv: user._id });
         if(!toPriv) return validE.err("priv not found");
         if(toPriv.blocked) return validE.err("blocked");
 
         let p1 = user._id;
         let p2 = to.replace("$", "");
         to = combinateId(p1, p2);
-        await global.db.mess.checkCollection(to);
+        await db.mess.checkCollection(to);
     }else{
         const chatExsists = await _chatExsists(to);
         if(!chatExsists) return validE.err("chat is not exists");
@@ -85,7 +86,7 @@ export default async function sendMessage(req, user, options={}){
     if(req.enc) data.enc = req.enc;
     if(req.res) data.res = req.res;
 
-    const message = await global.db.mess.add(to, data);
+    const message = await db.mess.add(to, data);
     data._id = message._id;
 
     if(req.silent) data.silent = req.silent || false;
@@ -93,17 +94,17 @@ export default async function sendMessage(req, user, options={}){
     sendToSocket(user._id, "mess", Object.assign({ to: req.to }, data));
 
     if(!privChat){
-        const realm = await global.db.realmConf.findOne(to, { _id: "set"});
+        const realm = await db.realmConf.findOne(to, { _id: "set"});
         const fromMsg = `${realm.name} @${user.name}`;
         data.to = to;
 
-        global.db.realmUser.find(to, u => u.u)
+        db.realmUser.find(to, u => u.u)
         .then(chat => {
                 chat.forEach(async u => {
                 u = u.uid;
                 if(u == user._id) return;
 
-                const realm = await global.db.userData.findOne(u, { realm: data.to });
+                const realm = await db.userData.findOne(u, { realm: data.to });
                 if(realm && realm.muted && realm.muted != -1){
                     const muted = realm.muted;
                     if(muted == 0) return;
@@ -120,7 +121,7 @@ export default async function sendMessage(req, user, options={}){
             });
         })
 
-        global.db.realmUser.find(to, { $exists: { bot: true }})
+        db.realmUser.find(to, { $exists: { bot: true }})
         .then(botUsers => {
             botUsers.forEach(user => {
                 getSocket(user.bot, "bot").forEach(conn => {
@@ -177,7 +178,7 @@ async function getSubscribed(realm, chnl){
     let realmData = eventSubscribeCache.get(realm);
 
     if(!realmData){
-        const chnls = await global.db.realmData.find("events.channels", { sr: realm });
+        const chnls = await db.realmData.find("events.channels", { sr: realm });
 
         realmData = {};
         chnls.forEach(({ sr, sc, tr, tc }) => {

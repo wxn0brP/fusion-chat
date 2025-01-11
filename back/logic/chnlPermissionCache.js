@@ -1,6 +1,7 @@
 import NodeCache from "node-cache";
 import PermissionSystem from "./permission-system/index.js";
 import rolePermissions,{ hasPermission, getAllPermissions } from "./permission-system/permBD.js";
+import db from "../dataBase.js";
 
 export const cache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache TTL 10 min
 export const channelPermissionsCache = new NodeCache({ stdTTL: 300, checkperiod: 60 }); // Cache TTL 5 min
@@ -16,7 +17,7 @@ async function fetchChannelsPermissions(realm){
     let cachedPermissions = channelPermissionsCache.get(realm);
     if(cachedPermissions) return cachedPermissions;
 
-    const channels = await global.db.realmConf.find(realm, { $exists: { chid: true } });
+    const channels = await db.realmConf.find(realm, { $exists: { chid: true } });
     const permissions = channels.reduce((acc, channel) => {
         const rp = channel.rp; // Role-permissions array
         const chnlId = channel.chid;

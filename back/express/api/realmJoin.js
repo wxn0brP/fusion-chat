@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { realm_join } from '../../socket/chat/logic/chats.js';
+import db from '../../dataBase.js';
 const router = Router();
 
 export const path = "realm/join";
@@ -8,15 +9,15 @@ router.get("/meta", global.authenticateMiddleware, async (req, res) => {
     const { id } = req.query;
     if(!id) return res.json({ err: true, msg: "id is required" });
 
-    const userExists = await global.db.userData.findOne(req.user, { realm: id });
+    const userExists = await db.userData.findOne(req.user, { realm: id });
     if(userExists) return res.json({ err: false, state: 1 });
 
-    const isBaned = await global.db.realmData.findOne(id, { ban: req.user });
+    const isBaned = await db.realmData.findOne(id, { ban: req.user });
     if(isBaned) return res.json({ err: false, state: 2 });
 
     const realmRes = {};
 
-    const realmMeta = await global.db.realmConf.findOne(id, { _id: "set" });
+    const realmMeta = await db.realmConf.findOne(id, { _id: "set" });
     realmRes.name = realmMeta.name;
     realmRes.img = realmMeta.img || false;
 

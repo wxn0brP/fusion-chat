@@ -1,4 +1,5 @@
 import { generateKeyPair, exportSPKI, exportPKCS8, importSPKI, importPKCS8 } from "jose";
+import db from "../../dataBase.js";
 
 const KeyIndex = Object.freeze({
     GENERAL: 0,
@@ -10,7 +11,7 @@ const KeyIndex = Object.freeze({
 
 class KeyManager{
     constructor(){
-        this.db = global.db.system;
+        this.db = db.system;
         this.keys = KeyIndex;
     }
 

@@ -1,3 +1,4 @@
+import db from "../../../../../dataBase.js";
 import { manageRealmEmojis } from "../../../../../logic/emojiMgmt.js";
 import { processDbChanges } from "./imports.js";
 import fs from "fs";
@@ -27,14 +28,14 @@ async function processEmojis(id, changes){
     // Remove emojis from db
     if(changes.itemsToRemove.length > 0){
         const statements = changes.itemsToRemove.map(e => ({ unicode: e.unicode }));
-        await global.db.realmConf.remove(id, {
+        await db.realmConf.remove(id, {
             $or: statements
         });
     }
 
     // Update emojis
     for(const item of changes.itemsToUpdate){
-        await global.db.realmConf.updateOne(id, { unicode: item.unicode }, item);
+        await db.realmConf.updateOne(id, { unicode: item.unicode }, item);
     }
 
     const isEmojisChanged = 

@@ -6,20 +6,21 @@ import ValidError from "../../../logic/validError.js";
 import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
 import getChnlPerm from "../../../logic/chnlPermissionCache.js";
 import { clearEventCache } from "../../../logic/sendMessage.js";
+import db from "../../../dataBase.js";
 
 export async function realm_setup(suser, id){
     const validE = new ValidError("realm.setup");
     if(!valid.id(id)) return validE.valid("id");
 
-    const realmMeta = await global.db.realmConf.findOne(id, { _id: "set" });
+    const realmMeta = await db.realmConf.findOne(id, { _id: "set" });
     if(!realmMeta) return validE.err("realm does not exist");
     
     const name = realmMeta.name;
     const permSys = new permissionSystem(id);
 
     const buildChannels = [];
-    const categories = await global.db.realmConf.find(id, { $exists: { cid: true }});
-    const channels = await global.db.realmConf.find(id, { $exists: { chid: true }});
+    const categories = await db.realmConf.find(id, { $exists: { cid: true }});
+    const channels = await db.realmConf.find(id, { $exists: { chid: true }});
     const sortedCategories = categories.sort((a, b) => a.i - b.i);
 
     for(let i=0; i<sortedCategories.length; i++){
@@ -67,7 +68,7 @@ export async function realm_users_sync(id){
     const rolesMap = new Map();
     for(const role of roles) rolesMap.set(role.rid, role.name);
 
-    const users = await global.db.realmUser.find(id, {});
+    const users = await db.realmUser.find(id, {});
     const usersData = users.map(u => {
         const uid = u.u || u.bot;
         let symbolUID = uid;
@@ -86,7 +87,7 @@ export async function realm_users_activity_sync(id){
     const validE = new ValidError("realm.users.activity.sync");
     if(!valid.id(id)) return validE.valid("id");
 
-    const users = await global.db.realmUser.find(id, {});
+    const users = await db.realmUser.find(id, {});
     const usersData = users.map(async u => {
         const uid = u.u || u.bot;
         let symbolUID = uid;
@@ -97,7 +98,7 @@ export async function realm_users_activity_sync(id){
         if(u.bot) userOnline = global.getSocket(uid, "bot").length > 0;
         if(!userOnline) return { uid: symbolUID };
 
-        const st = await global.db.userData.findOne(uid, { _id: "status" });
+        const st = await db.userData.findOne(uid, { _id: "status" });
         const status = st?.text || "online";
 
         return {
@@ -117,20 +118,20 @@ export async function realm_delete(suser, id, name){
     if(!valid.id(id)) return validE.valid("id");
     if(!valid.str(name, 0, 30)) return validE.valid("name");
 
-    const realmMeta = await global.db.realmConf.findOne(id, { _id: "set" });
+    const realmMeta = await db.realmConf.findOne(id, { _id: "set" });
     if(realmMeta.name != name) return validE.valid("name");
 
     const permSys = new permissionSystem(id);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
     if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
-    const users = await global.db.realmUser.find(id, {}).then(users => users.map(u => u.u));
-    for(const user of users) await global.db.userData.removeOne(user, { realm: id });
+    const users = await db.realmUser.find(id, {}).then(users => users.map(u => u.u));
+    for(const user of users) await db.userData.removeOne(user, { realm: id });
 
-    global.db.realmConf.removeCollection(id);
-    global.db.realmUser.removeCollection(id);
-    global.db.mess.removeCollection(id);
-    global.db.realmData.removeCollection(id);
+    db.realmConf.removeCollection(id);
+    db.realmUser.removeCollection(id);
+    db.mess.removeCollection(id);
+    db.realmData.removeCollection(id);
 
     for(const user of users) global.sendToSocket(user, "refreshData", "realm.get");
 
@@ -151,11 +152,11 @@ export async function realm_user_kick(suser, realmId, uid, ban=false){
     ]);
     if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
-    await global.db.userData.removeOne(uid, { realm: realmId });
-    await global.db.realmUser.removeOne(realmId, { uid });
+    await db.userData.removeOne(uid, { realm: realmId });
+    await db.realmUser.removeOne(realmId, { uid });
     
     if(ban){
-        await global.db.realmUser.add(realmId, { ban: uid }, false);
+        await db.realmUser.add(realmId, { ban: uid }, false);
     }
 
     global.sendToSocket(uid, "refreshData", "realm.get");
@@ -175,7 +176,7 @@ export async function realm_user_unban(suser, realmId, uid){
     ]);
     if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
-    await global.db.realmUser.removeOne(realmId, { ban: uid });
+    await db.realmUser.removeOne(realmId, { ban: uid });
     return { err: false };
 }
 
@@ -183,7 +184,7 @@ export async function realm_emojis_sync(realmId){
     const validE = new ValidError("realm.emojis.sync");
     if(!valid.id(realmId)) return validE.valid("realmId");
 
-    const emojis = await global.db.realmConf.find(realmId, { $exists: { unicode: true }});
+    const emojis = await db.realmConf.find(realmId, { $exists: { unicode: true }});
     return { err: false, res: emojis };
 }
 
@@ -205,10 +206,10 @@ export async function realm_event_channel_subscribe(suser, sourceRealmId, source
         tc: targetChannelId
     }
 
-    const exists = await global.db.realmData.findOne("events.channels", data);
+    const exists = await db.realmData.findOne("events.channels", data);
     if(exists) return validE.err("already exists");
     
-    await global.db.realmData.add("events.channels", data, false);
+    await db.realmData.add("events.channels", data, false);
     clearEventCache(targetRealmId);
 
     return { err: false };
@@ -225,7 +226,7 @@ export async function realm_event_channel_unsubscribe(suser, sourceRealmId, sour
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
     if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
-    await global.db.realmData.removeOne("events.channels", {
+    await db.realmData.removeOne("events.channels", {
         sr: sourceRealmId,
         sc: sourceChannelId,
         tr: targetRealmId,
@@ -238,7 +239,7 @@ export async function realm_event_channel_unsubscribe(suser, sourceRealmId, sour
 }
 
 export async function realm_event_channel_available(suser){
-    const userRealms = await global.db.userData.find(suser._id, { $exists: { realm: true }});
+    const userRealms = await db.userData.find(suser._id, { $exists: { realm: true }});
     const realmsWithAdmin = [];
     for(const userRealmId of userRealms){
         const permSys = new permissionSystem(userRealmId.realm);
@@ -257,8 +258,8 @@ export async function realm_event_channel_list(suser, realmId){
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
     if(!userPerm) return validE.err("You don't have permission to edit this realm");
 
-    const subscribedChannels = await global.db.realmData.find("events.channels", { tr: realmId });
-    const channels = await global.db.realmConf.find(
+    const subscribedChannels = await db.realmData.find("events.channels", { tr: realmId });
+    const channels = await db.realmConf.find(
         realmId,
         {
             $exists: {
@@ -302,7 +303,7 @@ export async function realm_thread_create(suser, realmId, channelId, name, reply
     }
     if(replyMsgId) threadObj.reply = replyMsgId;
 
-    const thread = await global.db.realmData.add(realmId, threadObj, true);
+    const thread = await db.realmData.add(realmId, threadObj, true);
 
     return { err: false, res: thread._id };
 }
@@ -315,7 +316,7 @@ export async function realm_thread_delete(suser, realmId, threadId){
     const perms = await getChnlPerm(suser._id, realmId, threadId);
     if(!perms.threadCreate) return validE.err("You don't have permission to edit this realm");
     
-    const thread = await global.db.realmData.findOne(realmId, { _id: threadId });
+    const thread = await db.realmData.findOne(realmId, { _id: threadId });
     if(!thread) return validE.err("thread does not exist");
 
     if(thread.author != suser._id){
@@ -324,8 +325,8 @@ export async function realm_thread_delete(suser, realmId, threadId){
         if(!canAdmin) return validE.err("you are not the author"); // if admin, can delete any thread
     }
 
-    await global.db.realmData.removeOne(realmId, { _id: threadId });
-    await global.db.mess.remove(realmId, { chnl: "&"+threadId });
+    await db.realmData.removeOne(realmId, { _id: threadId });
+    await db.mess.remove(realmId, { chnl: "&"+threadId });
     global.sendToChatUsers(realmId, "realm.thread.delete", threadId);
 
     return { err: false };
@@ -339,6 +340,6 @@ export async function realm_thread_list(suser, realmId, channelId){
     const perms = await getChnlPerm(suser._id, realmId, channelId);
     if(!perms.threadView) return validE.err("You don't have permission to edit this realm");
 
-    const threads = await global.db.realmData.find(realmId, { thread: channelId });
+    const threads = await db.realmData.find(realmId, { thread: channelId });
     return { err: false, res: threads };
 }

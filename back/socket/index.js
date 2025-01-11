@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import db from "../dataBase.js";
 global.io = new Server(global.server);
 
 global.getSocket = (to, room = "") => {
@@ -16,7 +17,7 @@ global.sendToSocket = (id, channel, ...args) => {
 }
 
 global.sendToChatUsers = async (to, channel, ...args) => {
-    const users = await global.db.realmUser.find(to, {});
+    const users = await db.realmUser.find(to, {});
     for(const user of users){
         if(user.bot){
             getSocket(user.bot, "bot").forEach(conn => {

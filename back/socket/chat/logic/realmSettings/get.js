@@ -3,6 +3,7 @@ import ValidError from "../../../../logic/validError.js";
 
 import permissionSystem from "../../../../logic/permission-system/index.js";
 import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permBD.js";
+import db from "../../../../dataBase.js";
 
 const DEFAULT_SECTIONS = [
     "meta",
@@ -101,7 +102,7 @@ async function fetchRequiredData(id, sections){
     if(!sections.some(section => sectionsRequiringDb.includes(section))){
         return null;
     }
-    return await global.db.realmConf.find(id, {});
+    return await db.realmConf.find(id, {});
 }
 
 /**
@@ -146,7 +147,7 @@ async function processSection(section, data, dbData, userPerms, realmId, userId)
             data.banUsers = dbData.filter(d => !!d.ban).map(u => u.ban);
         break;
         case "users":
-            const users = await global.db.realmUser.find(realmId, {});
+            const users = await db.realmUser.find(realmId, {});
             data.users = users.map(u => {
                 let uid = u.u;
                 if(u.bot) uid = "^" + u.bot;
@@ -181,7 +182,7 @@ async function getAdjustedRoles(realm, userId){
 }
 
 async function getSubscribedChannels(realmId){
-    const channels = await global.db.realmData.find(
+    const channels = await db.realmData.find(
         "events.channels",
         { tr: realmId },
         {},
@@ -192,7 +193,7 @@ async function getSubscribedChannels(realmId){
     const realms = groupBySource(channels);
     
     for(const realm of realms){
-        const names = await global.db.realmConf.find(realm.sr, {
+        const names = await db.realmConf.find(realm.sr, {
             $or: realm.scs.map(sc => ({ chid: sc })),
         }, {}, {}, {
             select: ["chid", "name"]

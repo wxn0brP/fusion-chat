@@ -1,3 +1,4 @@
+import db from "../dataBase.js";
 import permissionSystem from "./permission-system/index.js";
 import Permissions from "./permission-system/permBD.js";
 
@@ -9,11 +10,11 @@ export async function invite(userID, botID, realmID){
     ]);
     if(!userPerm) return { err: true, msg: "You don't have permission to edit this realm" };
 
-    const botName = await global.db.botData.findOne(botID, { _id: "name" });
+    const botName = await db.botData.findOne(botID, { _id: "name" });
     const role = await permSys.createRole(botName.name);
 
-    await global.db.botData.add(botID, { realm: realmID }, false);
-    await global.db.realmUser.add(realmID, { bot: botID, r: [role._id] }, false);
+    await db.botData.add(botID, { realm: realmID }, false);
+    await db.realmUser.add(realmID, { bot: botID, r: [role._id] }, false);
 
     return { err: false, msg: "ok" };
 }

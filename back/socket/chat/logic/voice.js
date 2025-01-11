@@ -1,3 +1,4 @@
+import db from "../../../dataBase.js";
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
 
@@ -50,7 +51,7 @@ export async function call_dm_init(suser, id){
 
     const sockets = global.getSocket(id);
     if(sockets.length == 0){
-        const targetName = await global.db.data.findOne("user", { _id: id }).then(u => u.name);
+        const targetName = await db.data.findOne("user", { _id: id }).then(u => u.name);
         
         global.fireBaseMessage.send({
             to: id,

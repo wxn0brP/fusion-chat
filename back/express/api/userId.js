@@ -1,5 +1,6 @@
 import { Router } from "express";
 import valid from "../../logic/validData.js";
+import db from "../../dataBase.js";
 const router = Router();
 
 router.get("/id/u", async (req, res) => {
@@ -8,19 +9,19 @@ router.get("/id/u", async (req, res) => {
     if(chat && !valid.id(chat)) return res.json({ err: true, msg: "chat is not valid" });
 
     if(chat){
-        const userData = await global.db.realmData.findOne(chat, { uid: id });
+        const userData = await db.realmData.findOne(chat, { uid: id });
         if(userData) return res.json({ err: false, name: userData.name, c: 1 });
     }
 
-    const user = await global.db.data.findOne("user", { _id: id });
+    const user = await db.data.findOne("user", { _id: id });
     if(!user){
-        const rm = await global.db.data.findOne("rm", { _id: id });
+        const rm = await db.data.findOne("rm", { _id: id });
         if(rm)
             return res.json({ err: false, name: "Deleted User "+id, c: -1 });
         return res.json({ err: true, msg: "user is not found" });
     }
 
-    const nickData = await global.db.userData.findOne(id, { $exists: { nick: true }});
+    const nickData = await db.userData.findOne(id, { $exists: { nick: true }});
     if(nickData) return res.json({ err: false, name: nickData.nick, c: 0 });
 
     return res.json({ err: false, name: user.name, c: 0 });

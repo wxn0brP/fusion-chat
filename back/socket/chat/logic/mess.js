@@ -7,6 +7,7 @@ import messageSearchData from "../valid/messageSearch.js";
 import ValidError from "../../../logic/validError.js";
 import { realm_thread_delete } from "./realms.js";
 import getChnlPerm from "../../../logic/chnlPermissionCache.js";
+import db from "../../../dataBase.js";
 
 const messageSearchShema = valid.objAjv(messageSearchData);
 
@@ -29,7 +30,7 @@ export async function message_edit(suser, toM, _id, msg, options={}){
         to = combinateId(p1, p2);
     }
 
-    const mess = await global.db.mess.findOne(to, { _id });
+    const mess = await db.mess.findOne(to, { _id });
     if(!mess){
         return validE.err("message does not exist");
     }
@@ -38,7 +39,7 @@ export async function message_edit(suser, toM, _id, msg, options={}){
     }
 
     const time = global.getTime();
-    await global.db.mess.updateOne(to, { _id }, { msg, lastEdit: time });
+    await db.mess.updateOne(to, { _id }, { msg, lastEdit: time });
 
     if(privChat){
         sendToSocket(suser._id,       "message.edit", _id, msg, time);
@@ -63,7 +64,7 @@ export async function message_delete(suser, toM, _id){
         to = combinateId(p1, p2);
     }
 
-    const mess = await global.db.mess.findOne(to, { _id });
+    const mess = await db.mess.findOne(to, { _id });
     if(!mess){
         return validE.err("message does not exist");
     }
@@ -74,13 +75,13 @@ export async function message_delete(suser, toM, _id){
             return validE.err("not authorized");
     }
 
-    await global.db.mess.removeOne(to, { _id });
+    await db.mess.removeOne(to, { _id });
     if(privChat){
         sendToSocket(suser._id,             "message.delete", _id);
         sendToSocket(toM.replace("$", ""),  "message.delete", _id);
     }else{
         sendToChatUsers(toM, "message.delete", _id);
-        const threads = await global.db.realmData.find(to, { reply: _id });
+        const threads = await db.realmData.find(to, { reply: _id });
         for(const thread of threads){
             await realm_thread_delete(suser, toM, thread._id);
         }
@@ -102,7 +103,7 @@ export async function messages_delete(suser, toM, ids){
         to = combinateId(p1, p2);
     }
 
-    const messages = await global.db.mess.find(to, { $in: { _id: ids } });
+    const messages = await db.mess.find(to, { $in: { _id: ids } });
     if(messages.some(mess => mess.fr !== suser._id)){
         if(privChat) return validE.err("not authorized");
         const permSys = new permissionSystem(to);
@@ -113,13 +114,13 @@ export async function messages_delete(suser, toM, ids){
 
     if(!privChat){
         for(const mess of messages){
-            const threads = await global.db.realmData.find(to, { reply: mess._id });
+            const threads = await db.realmData.find(to, { reply: mess._id });
             for(const thread of threads){
                 await realm_thread_delete(suser, toM, thread._id);
             }
         }
     }
-    await global.db.mess.remove(to, { $in: { _id: ids } });
+    await db.mess.remove(to, { $in: { _id: ids } });
     if(privChat){
         sendToSocket(suser._id,             "messages.delete", ids);
         sendToSocket(toM.replace("$", ""),  "messages.delete", ids);
@@ -149,7 +150,7 @@ export async function message_fetch(suser, to, chnl, start, end){
         if(!perm.view) return validE.err("channel is not exist");
     }
 
-    const responeAll = await global.db.mess.find(to, { chnl }, {}, { reverse: true, max: end+start });
+    const responeAll = await db.mess.find(to, { chnl }, {}, { reverse: true, max: end+start });
     const res = responeAll.slice(start, end);
 
     return { err: false, res };
@@ -173,7 +174,7 @@ export async function message_fetch_id(suser, to, chnl, mess_id){
         if(!perm.view) return validE.err("channel is not exist");
     }
 
-    const res = await global.db.mess.findOne(to, { _id: mess_id });
+    const res = await db.mess.findOne(to, { _id: mess_id });
     return { err: false, res };
 }
 
@@ -198,14 +199,14 @@ export async function message_markAsRead(suser, to, chnl, mess_id){
             const p2 = to.replace("$", "");
             toM = combinateId(p1, p2);
         }
-        const lastIdMess = await global.db.mess.find(toM, { chnl }, {}, { reverse: true, max: 1 });
+        const lastIdMess = await db.mess.find(toM, { chnl }, {}, { reverse: true, max: 1 });
         if(lastIdMess.length == 0) return { err: false, res: "no messages in this channel" };
 
         mess_id = lastIdMess[0]._id;
         res = mess_id;
     }
 
-    await global.db.userData.updateOne(suser._id, search, (data, context) => {
+    await db.userData.updateOne(suser._id, search, (data, context) => {
         if(!data.last) data.last = {};
         data.last[context.chnl] = context.mess_id;
         return data;
@@ -227,7 +228,7 @@ export async function message_react(suser, realm, msgId, react){
         toM = combinateId(p1, p2);
     }
 
-    const msg = await global.db.mess.findOne(toM, { _id: msgId });
+    const msg = await db.mess.findOne(toM, { _id: msgId });
     if(!msg) return validE.err("msg does not exist");
 
     const chnl = msg.chnl;
@@ -244,7 +245,7 @@ export async function message_react(suser, realm, msgId, react){
         reacts[react].push(suser._id);
     }
 
-    await global.db.mess.updateOne(toM, { _id: msgId }, { reacts });
+    await db.mess.updateOne(toM, { _id: msgId }, { reacts });
 
     if(realm.startsWith("$")){
         global.sendToSocket(suser._id, "message.react", suser._id, realm, msgId, react);
@@ -269,7 +270,7 @@ export async function message_search(suser, realm, chnl, query){
         realm = combinateId(p1, p2);
     }
 
-    const res = await global.db.mess.find(realm, (data, context) => {
+    const res = await db.mess.find(realm, (data, context) => {
         if(data.chnl != chnl) return false;
         return filterMessages(context.query, data);
     }, { query });
@@ -292,7 +293,7 @@ export async function message_pin(suser, realm, chnl, msgId, pin){
         chat = combinateId(p1, p2);
     }
 
-    await global.db.mess.updateOne(chat, { _id: msgId }, { pinned: pin });
+    await db.mess.updateOne(chat, { _id: msgId }, { pinned: pin });
     const refreshData = {
         evt: "message.fetch.pinned",
         realm,
@@ -322,7 +323,7 @@ export async function message_fetch_pinned(suser, realm, chnl){
         realm = combinateId(p1, p2);
     }
 
-    const res = await global.db.mess.find(realm, (data, context) => {
+    const res = await db.mess.find(realm, (data, context) => {
         if(data.chnl != context.chnl) return false;
         return data.pinned === true;
     }, { chnl });

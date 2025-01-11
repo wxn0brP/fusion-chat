@@ -1,5 +1,6 @@
 import admin from "firebase-admin";
 import fs from "fs";
+import db from "./dataBase.js";
 
 try{
     const serviceAccount = JSON.parse(fs.readFileSync("config/firebase.json", "utf8"));
@@ -31,12 +32,12 @@ global.fireBaseMessage = {
             if(socket.length > 0) return;
         }
     
-        let tokens = await global.db.data.find("fireToken", { user: to });
+        let tokens = await db.data.find("fireToken", { user: to });
         if(tokens.length == 0) return;
 
         const workedTokens = [];
         for(const data of tokens){
-            const rm = async () => await global.db.data.removeOne("fireToken", data);
+            const rm = async () => await db.data.removeOne("fireToken", data);
 
             const exp = data.exp;
             if(exp * 1000 < Date.now()){
@@ -44,7 +45,7 @@ global.fireBaseMessage = {
                 continue;
             }
 
-            const tokenLoged = await global.db.data.findOne("token", { token: data.fc });
+            const tokenLoged = await db.data.findOne("token", { token: data.fc });
             if(!tokenLoged){
                 await rm();
                 continue;

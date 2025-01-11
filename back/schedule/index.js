@@ -1,5 +1,6 @@
 import schedule from "node-schedule";
 import actions from "./actions/index.js";
+import db from "../dataBase.js";
 
 function performTask(actionType, data, taskId){
 	const action = actions[actionType];
@@ -31,6 +32,6 @@ function processTask(task){
 		scheduleOneTimeTask(task);
 }
 
-global.db.system.find("tasks", {}).then(tasks => {
+db.system.find("tasks", {}).then(tasks => {
 	tasks.forEach(task => processTask(task));
 })

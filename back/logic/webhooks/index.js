@@ -2,6 +2,7 @@ import { genId } from "@wxn0brp/db";
 import * as customWebhookUtils from "./custom.js"; 
 import sendMessage from "../sendMessage.js";
 import { decode, create, KeyIndex } from "../../logic/token/index.js";
+import db from "../../dataBase.js";
 
 export async function addCustom(webhookInfo){
     const { chat, chnl, name, template, ajv, required } = webhookInfo;
@@ -22,7 +23,7 @@ export async function addCustom(webhookInfo){
 
     webhook.token = token;
 
-    await global.db.realmConf.add(chat, webhook, false);
+    await db.realmConf.add(chat, webhook, false);
 }
 
 export async function handleCustom(query, body){
@@ -30,7 +31,7 @@ export async function handleCustom(query, body){
     
     if(!token) return { code: 400, msg: "Invalid token" };
 
-    const wh = await global.db.realmConf.findOne(token.chat, { whid: token.id });
+    const wh = await db.realmConf.findOne(token.chat, { whid: token.id });
     if(!wh) return { code: 404, msg: "Webhook not found" };
 
     const isValid = customWebhookUtils.check(wh, body);

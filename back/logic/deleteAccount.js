@@ -1,22 +1,24 @@
+import db from "../dataBase.js";
+
 export default async (id) => {
-    await global.db.data.removeOne("user", { _id: id });
-    await global.db.data.add("rm", { _id: id });
-    await global.db.data.remove("fireToken", { user: id });
+    await db.data.removeOne("user", { _id: id });
+    await db.data.add("rm", { _id: id });
+    await db.data.remove("fireToken", { user: id });
     
-    const realms = await global.db.userData.find(id, { $exists: { realm: true }});
+    const realms = await db.userData.find(id, { $exists: { realm: true }});
     for(const realm of realms){
-        await global.db.realmUser.removeOne(realm.realm, { uid: id });
+        await db.realmUser.removeOne(realm.realm, { uid: id });
     }
 
-    const bots = await global.db.userData.find(id, { $exists: { botID: true }});
+    const bots = await db.userData.find(id, { $exists: { botID: true }});
     for(const bot of bots){
-        const botRealms = await global.db.botData.find(bot.botID, { $exists: { realm: true }});
+        const botRealms = await db.botData.find(bot.botID, { $exists: { realm: true }});
         for(const realm of botRealms){
-            await global.db.realmUser.removeOne(realm.realm, { bot: bot.botID });
+            await db.realmUser.removeOne(realm.realm, { bot: bot.botID });
         }
-        await global.db.botData.removeCollection(bot.botID);
-        await global.db.data.add("rm", { _id: bot.botID });
+        await db.botData.removeCollection(bot.botID);
+        await db.data.add("rm", { _id: bot.botID });
     }
 
-    await global.db.userData.removeCollection(id);
+    await db.userData.removeCollection(id);
 }

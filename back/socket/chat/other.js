@@ -1,3 +1,4 @@
+import db from "../../dataBase.js";
 import {
     get_ogs,
     send_embed_og,
@@ -52,8 +53,8 @@ export default (socket) => {
 
     socket.on("logout", async (cb) => {
         const token = socket.handshake.auth.token;
-        global.db.data.removeOne("token", { token });
-        global.db.data.removeOne("fireToken", { fc: token });
+        db.data.removeOne("token", { token });
+        db.data.removeOne("fireToken", { fc: token });
         socket.user = null;
         if(cb) cb();
         setTimeout(() => {

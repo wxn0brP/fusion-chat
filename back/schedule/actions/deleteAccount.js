@@ -1,12 +1,13 @@
+import db from "../../dataBase.js";
 import deleteAccount from "../../logic/deleteAccount.js";
 import sendMail from "../../logic/mail.js";
 
 export default async (data, taskId) => {
     const uid = data.user;
-    const user = await global.db.data.findOne("user", { _id: uid });
+    const user = await db.data.findOne("user", { _id: uid });
     if(!user) return;
 
-    const task = await global.db.system.findOne("tasks", { _id: taskId });
+    const task = await db.system.findOne("tasks", { _id: taskId });
     if(!task) return;
 
     await deleteAccount(uid);
@@ -14,5 +15,5 @@ export default async (data, taskId) => {
     if(global.logsConfig.mail.deletedAccount)
         sendMail("deletedAccount", user.email, name);
 
-    await global.db.system.removeOne("tasks", { _id: taskId });
+    await db.system.removeOne("tasks", { _id: taskId });
 }

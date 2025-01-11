@@ -5,13 +5,13 @@ await import("./env.js");
 
 global.dir = "file://" + process.cwd() + "/";
 await import("./global.js");
-await import("./dataBase.js");
+const { default: db } = await import("./dataBase.js");
 await import("./firebase.js");
 
 process.on("uncaughtException", (e) => {
     try{
         console.error("Uncaught Exception: ", e);
-        global.db.logs.add("uncaughtException", {
+        db.logs.add("uncaughtException", {
             error: e.message,
             stackTrace: e.stack
         });
@@ -22,7 +22,7 @@ process.on("uncaughtException", (e) => {
 process.on('unhandledRejection', (reason, promise) => {
     try{
         console.error("Unhandled Rejection: ", reason);
-        global.db.logs.add("unhandledRejection", {
+        db.logs.add("unhandledRejection", {
             reason: reason,
             promise: promise
         })

@@ -8,6 +8,7 @@ import valid from "../../logic/validData.js";
 import permissionSystem from "../../logic/permission-system/index.js";
 import Permissions from "../../logic/permission-system/permBD.js";
 import { manageRealmEmojis } from "../../logic/emojiMgmt.js";
+import db from "../../dataBase.js";
 
 const router = Router();
 
@@ -36,7 +37,7 @@ async function checkUserPermission(userId, realm){
 }
 
 async function getRealmEmoji(realmId){
-    const emoji = await global.db.realmConf.find(realmId, { $exists: { unicode: true }});
+    const emoji = await db.realmConf.find(realmId, { $exists: { unicode: true }});
     return emoji;
 }
 
@@ -121,7 +122,7 @@ router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => 
         name: "new emoji",
     };
 
-    await global.db.realmConf.add(realm, newEmoji, false);
+    await db.realmConf.add(realm, newEmoji, false);
     manageRealmEmojis(realm);   
 
     res.json({ err: false, msg: "Emoji uploaded successfully." });

@@ -5,6 +5,7 @@ import { join } from "path";
 import cropAndResizeProfile from "../../logic/cropAndResizeProfile.js";
 import permissionSystem from "../../logic/permission-system/index.js";
 import Permissions from "../../logic/permission-system/permBD.js";
+import db from "../../dataBase.js";
 
 const router = Router();
 const MAX_FILE_SIZE = global.fileConfig.maxRealmProfileFileSize;
@@ -52,7 +53,7 @@ router.post("/realm/profile/upload", global.authenticateMiddleware, async (req, 
             const processedImage = cropAndResizeProfile(image);
             await processedImage.save(filePath, { format: "png", compressionLevel: 0 });
 
-            await global.db.realmConf.updateOne(realmId, { _id: "set"}, { img: true });
+            await db.realmConf.updateOne(realmId, { _id: "set"}, { img: true });
 
             res.json({ err: false, msg: "Profile picture uploaded successfully.", path: filePath });
             global.sendToChatUsers(realmId, "refreshData", "realm.get");

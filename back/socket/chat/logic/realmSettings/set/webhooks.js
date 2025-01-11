@@ -1,3 +1,4 @@
+import db from "../../../../../dataBase.js";
 import { addCustom } from "../../../../../logic/webhooks/index.js";
 import { processDbChanges } from "./imports.js";
 import { saveDbChanges } from "./utils.js";
@@ -28,6 +29,6 @@ export default async (id, data, suser, dbData) => {
     }
 
     for(const item of changes.itemsToRemove){
-        await global.db.data.add("rm", { _id: item.whid });
+        await db.data.add("rm", { _id: item.whid });
     }
 }
