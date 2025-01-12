@@ -4,12 +4,14 @@ import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
 import { authUser } from '../logic/auth.js';
 import cors from 'cors';
+import { expressMiddleware as bannedIp } from '../bannedIp.js';
 
 const app = express();
 global.app = app;
 app.set('view engine', 'ejs');
 app.set('views', 'front');
 
+app.use(bannedIp);
 app.use(cors({
     origin: "*"
 }));

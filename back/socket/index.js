@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import db from "../dataBase.js";
+import { socketIoMiddleware } from "../bannedIp.js";
 global.io = new Server(global.server);
 
 global.getSocket = (to, room = "") => {
@@ -28,6 +29,8 @@ global.sendToChatUsers = async (to, channel, ...args) => {
         }
     }
 }
+
+io.use(socketIoMiddleware);
 
 await import("./chat/index.js");
 await import("./bot/index.js");
