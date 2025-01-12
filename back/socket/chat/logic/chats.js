@@ -48,12 +48,19 @@ export async function realm_exit(suser, id){
     return { err: false };
 }
 
-export async function dm_create(suser, name){
+export async function dm_create(suser, nameOrId){
     const validE = new ValidError("dm.create");
-    if(!valid.str(name, 0, 30)) return validE.valid("name");
+    if(!valid.str(nameOrId, 0, 30) && !valid.id(nameOrId)) return validE.valid("nameOrId");
+    if(nameOrId == suser._id || nameOrId == suser.name) return validE.err("can't add yourself");
 
-    const user = await db.data.findOne("user", { name });
-    if(!user) return validE.err("user not found");
+    const user = await db.data.findOne("user", {
+        $or: [
+            { name: nameOrId },
+            { _id: nameOrId }
+        ]
+    });
+    if(user._id == suser._id) return validE.err("can't add yourself");
+    if(!user) return validE.err("user does not exist");
 
     const toId = user._id;
 
