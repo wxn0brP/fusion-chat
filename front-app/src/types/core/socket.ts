@@ -16,12 +16,12 @@ export interface Core_socket__dm {
     lastMessId: Id;
 }
 
-export type Core_socket__user_startus_type = "online" | "offline" | "away";
+export type Core_socket__user_status_type = "online" | "offline" | "away";
 
 export interface Core_socket__user_profile {
     _id: Id;
     name: string;
-    status: Core_socket__user_startus_type;
+    status: Core_socket__user_status_type;
     statusText: string;
     friendStatus: Core_socket__friendStatus;
     isBlocked: boolean;

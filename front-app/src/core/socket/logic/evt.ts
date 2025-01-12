@@ -8,7 +8,7 @@ import uiFunc from "../../../ui/helpers/uiFunc";
 import render_user from "../../../ui/render/user";
 import render_dm from "../../../ui/render/dm";
 import render_realm from "../../../ui/render/realm";
-import { Core_socket__refresh, Core_socket__user_startus_type } from "../../../types/core/socket";
+import { Core_socket__refresh, Core_socket__user_status_type } from "../../../types/core/socket";
 import Id from "../../../types/Id";
 import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
 import { Ui_UserState } from "../../../types/ui/render";
@@ -99,7 +99,7 @@ export async function refreshData(settings: string | string[] | Core_socket__ref
     });
 }
 
-export function self_status_get(status: Core_socket__user_startus_type, text: string) {
+export function self_status_get(status: Core_socket__user_status_type, text: string) {
     vars.user.status = status;
     vars.user.statusText = text;
     render_user.localUserProfile();

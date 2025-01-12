@@ -1,5 +1,5 @@
 import { Core_mess__dbMessage } from "./core/mess";
-import { Core_socket__user_startus_type } from "./core/socket";
+import { Core_socket__user_status_type } from "./core/socket";
 import Id from "./Id";
 import { Utils_updater } from "./utils";
 
@@ -7,7 +7,7 @@ interface Vars {
     user: {
         _id: Id;
         fr: Id;
-        status: Core_socket__user_startus_type;
+        status: Core_socket__user_status_type;
         statusText: string;
     };
     chat: {
