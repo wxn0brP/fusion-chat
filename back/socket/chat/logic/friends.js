@@ -66,8 +66,8 @@ export async function friend_response(suser, id, accept){
     return { err: false };
 }
 
-export async function friend_requestRemove(suser, id){
-    const validE = new ValidError("friend.requestRemove");
+export async function friend_request_remove(suser, id){
+    const validE = new ValidError("friend.request.remove");
     if(!valid.id(id)) return validE.valid("id");
 
     await db.data.removeOne("friendRequests", { from: suser._id, to: id });

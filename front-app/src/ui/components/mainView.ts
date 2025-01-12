@@ -20,8 +20,6 @@ const mainView = {
     renderFriends() {
         mainViewHTML.friendsContainer.innerHTML = "";
 
-        lo(vars.mainView.friends)
-
         if (vars.mainView.friends.length == 0) {
             mainViewHTML.noFriends.style.display = "";
             return;
@@ -153,7 +151,7 @@ const mainView = {
         const conf = confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
         if (!conf) return;
 
-        socket.emit("friend.requestRemove", friend);
+        socket.emit("friend.request.remove", friend);
     },
 }
 

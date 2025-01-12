@@ -4,7 +4,7 @@ import {
     friend_remove,
     friend_request,
     friend_response,
-    friend_requestRemove,
+    friend_request_remove,
     user_profile
 } from "./logic/friends.js"
 
@@ -27,9 +27,9 @@ export default (socket) => {
         }
     });
 
-    socket.onLimit("friend.requestRemove", 1_000, async (id) => {
+    socket.onLimit("friend.request.remove", 1_000, async (id) => {
         try{
-            const { err } = await friend_requestRemove(socket.user, id);
+            const { err } = await friend_request_remove(socket.user, id);
             if(err) return socket.emit(...err);
         }catch(e){
             socket.logError(e);
