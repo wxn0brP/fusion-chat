@@ -66,7 +66,9 @@ export function connect_error(data: Error) {
             return;
         }
 
-    uiFunc.uiMsg(data.toString(), 10);
+    uiFunc.uiMsg(data.toString(), {
+        extraTime: 10
+    });
 }
 
 export function system_refreshToken(newToken: string, cb: (value: boolean) => void) {

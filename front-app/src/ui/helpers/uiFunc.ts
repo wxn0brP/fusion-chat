@@ -3,37 +3,42 @@ hub("helpers/uiFunc");
 
 import debugFunc from "../../core/debug";
 import { langFunc } from "../../utils/translate";
+import { Ui_helper_uiMessage__opts, Ui_helper_uiMsg__opts } from "../../types/ui/helpers";
 
 export const errMessesDiv = document.querySelector<HTMLDivElement>("#errMesses");
 export const promptDiv = document.querySelector<HTMLDivElement>("#prompt");
 
 const uiFunc = {
-    async uiMessage(message: string, backgroundColor: string="", displayTime: number=6000, className: string=""){
+    async uiMessage(message: string, opts: Ui_helper_uiMessage__opts = {}) {
+        opts = {
+            displayTime: 6000,
+            ...opts,
+        }
         const div = document.createElement("div");
         div.textContent = message;
-        if(backgroundColor) div.style.backgroundColor = backgroundColor;
 
         div.style.top = `-${div.offsetHeight + 20}px`;
-        if(className) div.classList.add(className);
+        if (opts.className) div.classList.add(opts.className);
+        if (opts.backgroundColor) div.style.backgroundColor = opts.backgroundColor;
 
         const padding = 10;
         let topPosition = calculateTopPosition();
 
-        function calculateTopPosition(){
+        function calculateTopPosition() {
             let top = 0;
-            for(const child of errMessesDiv.children)
+            for (const child of errMessesDiv.children)
                 top += (child as HTMLDivElement).offsetHeight + padding;
             return top;
         }
 
         let ended = false;
 
-        async function end(){
+        async function end() {
             ended = true;
             div.style.top = `-${div.offsetHeight + 20}px`;
-    
+
             await delay(700);
-            for(const child of errMessesDiv.children){
+            for (const child of errMessesDiv.children) {
                 const childE = child as HTMLDivElement;
                 const currentTop = parseInt(childE.style.top.replace("px", ""));
                 childE.style.top = `${currentTop - padding - div.offsetHeight}px`;
@@ -42,28 +47,41 @@ const uiFunc = {
         }
 
         div.addEventListener("click", end);
+        if(opts.onClick) div.addEventListener("click", opts.onClick);
 
         errMessesDiv.appendChild(div);
         await delay(100);
         div.style.top = `${10 + topPosition}px`;
 
-        await delay(displayTime - 700);
-        if(ended) return;
+        await delay(opts.displayTime - 700);
+        if (ended) return;
         await end();
     },
-    
-    uiMsg(data: string, extraTime: number=0){
-        if(debugFunc.isDebug) lo("uiMsg:", data);
 
-        const speed = 1/3; //1s = 3 words
-        const time = data.split(" ").length * speed + 6 + extraTime;
-        uiFunc.uiMessage(data, undefined, time * 1000, "uiMsgClass");
+    uiMsg(data: string, opts: Ui_helper_uiMsg__opts = {}) {
+        debugFunc.msg("uiMsg:", data);
+
+        opts = {
+            extraTime: 0,
+            ...opts
+        }
+
+        const speed = 1 / 3; //1s = 3 words
+        const time = data.split(" ").length * speed + 6 + opts.extraTime;
+
+        const msgOpts: Ui_helper_uiMessage__opts = {
+            displayTime: time * 1000,
+            className: "uiMsgClass",
+        }
+        if (opts.onClick) msgOpts.onClick = opts.onClick;
+
+        uiFunc.uiMessage(data, msgOpts);
     },
 
-    uiMsgT(text: string, ...data: any){
+    uiMsgT(text: string, ...data: any) {
         let lastText = "";
-        if(data.length > 0){
-            if(Array.isArray(data[0])){
+        if (data.length > 0) {
+            if (Array.isArray(data[0])) {
                 lastText = data.shift();
             }
         }
@@ -72,9 +90,9 @@ const uiFunc = {
         uiFunc.uiMsg(text);
     },
 
-    prompt(text, defaultValue=""): Promise<string> {
+    prompt(text, defaultValue = ""): Promise<string> {
         return new Promise((resolve) => {
-            function end(){
+            function end() {
                 resolve(input.value);
                 div.fadeOut();
                 setTimeout(() => {
@@ -91,7 +109,7 @@ const uiFunc = {
             input.type = "text";
             input.value = defaultValue;
             input.addEventListener("keydown", (e) => {
-                if(e.key == "Enter") end();
+                if (e.key == "Enter") end();
             })
             div.appendChild(input);
             setTimeout(() => {
@@ -110,29 +128,29 @@ const uiFunc = {
         });
     },
 
-    selectPrompt<T>(text, options, optionsValues=[]): Promise<string | T> {
+    selectPrompt<T>(text, options, optionsValues = []): Promise<string | T> {
         return new Promise((resolve) => {
-            function end(){
+            function end() {
                 resolve(select.value);
                 div.fadeOut();
                 setTimeout(() => {
                     div.remove();
                 }, 2000);
             }
-            
+
             const div = document.createElement("div");
             div.style.opacity = "0";
             div.classList.add("prompt");
             div.innerHTML = "<p>" + text + "<p><br />";
             const select = document.createElement("select");
-            for(let i=0; i<options.length; i++){
+            for (let i = 0; i < options.length; i++) {
                 const optionElement = document.createElement("option");
                 optionElement.value = optionsValues[i] || options[i];
                 optionElement.innerHTML = options[i];
                 select.appendChild(optionElement);
             }
             select.querySelector("option").selected = true;
-            
+
             div.appendChild(select);
             div.appendChild(document.createElement("br"));
 

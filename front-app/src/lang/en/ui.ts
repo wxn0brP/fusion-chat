@@ -3,7 +3,7 @@ import { Lang_UI } from "../../types/lang/ui";
 const ui: Lang_UI = {
     voice_show: "Voice Show",
     add_dm: "Add Direct Message",
-    reply_to_essage: "Reply to message",
+    reply_to_message: "Reply to message",
     edi_message: "Edit message",
     online: "Online",
     offline: "Offline",
@@ -59,7 +59,7 @@ const ui: Lang_UI = {
         delete_message: "Are you sure you want to delete this message",
     },
     friend: {
-        request: "Friend request from $",
+        request: "Friend request from $ (click to show)",
         declined: "Declined friend request from $",
         accepted: "Accepted friend request from $",
         add: "Add friend",

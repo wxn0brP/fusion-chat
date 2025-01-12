@@ -41,32 +41,32 @@ const render_user = {
         if(data.statusText) render_realm.realmUserStatus(data._id, { status: data.statusText });
 
         if(!targetIsMe){
-            const frinedBtn = document.createElement("button");
-            frinedBtn.classList.add("btn");
-            let frinedBtnText: string;
+            const friendBtn = document.createElement("button");
+            friendBtn.classList.add("btn");
+            let friendBtnText: string;
             switch(data.friendStatus){
                 case Core_socket__friendStatus.NOT_FRIEND:
-                    frinedBtnText = LangPkg.ui.friend.add;
-                    frinedBtn.onclick = () => mainViewInteract.addFriend(data._id);
+                    friendBtnText = LangPkg.ui.friend.add;
+                    friendBtn.onclick = () => mainViewInteract.addFriend(data._id);
                 break;
                 case Core_socket__friendStatus.IS_FRIEND:
-                    frinedBtnText = LangPkg.ui.friend.remove;
-                    frinedBtn.onclick = () => mainView.removeFriend(data._id);
+                    friendBtnText = LangPkg.ui.friend.remove;
+                    friendBtn.onclick = () => mainView.removeFriend(data._id);
                 break;
                 case Core_socket__friendStatus.REQUEST_SENT:
-                    frinedBtnText = LangPkg.ui.friend.request_sent;
-                    frinedBtn.onclick = () => mainView.removeFriendRequest(data._id);
+                    friendBtnText = LangPkg.ui.friend.request_sent;
+                    friendBtn.onclick = () => mainView.removeFriendRequest(data._id);
                 break;
                 case Core_socket__friendStatus.REQUEST_RECEIVED:
-                    frinedBtnText = LangPkg.ui.friend.request_received;
-                    frinedBtn.onclick = () => {
+                    friendBtnText = LangPkg.ui.friend.request_received;
+                    friendBtn.onclick = () => {
                         coreFunc.changeChat("main");
                         mainView.changeView("requests");
                     }
                 break;
             }
-            frinedBtn.innerHTML = frinedBtnText;
-            renderHTML.userProfile.querySelector("#userProfileBtns").appendChild(frinedBtn);
+            friendBtn.innerHTML = friendBtnText;
+            renderHTML.userProfile.querySelector("#userProfileBtns").appendChild(friendBtn);
             
             const blockBtn = document.createElement("button");
             blockBtn.classList.add("btn");

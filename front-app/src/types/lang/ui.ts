@@ -1,7 +1,7 @@
 export interface Lang_UI {
     voice_show: string;
     add_dm: string;
-    reply_to_essage: string;
+    reply_to_message: string;
     edi_message: string;
     online: string;
     offline: string;

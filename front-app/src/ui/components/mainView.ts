@@ -168,7 +168,14 @@ socket.on("friend.requests.get", (requests) => {
 });
 
 socket.on("friend.request", (from) => {
-    uiFunc.uiMsgT(LangPkg.ui.friend.request, apis.www.changeUserID(from));
+    const text = langFunc(LangPkg.ui.friend.request, apis.www.changeUserID(from));
+    uiFunc.uiMsg(text, {
+        onClick: () => {
+            coreFunc.changeChat("main");
+            mainView.changeView("requests");
+        }
+    });
+
     socket.emit("friend.requests.get");
 });
 
