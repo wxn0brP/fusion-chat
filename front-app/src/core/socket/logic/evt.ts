@@ -32,12 +32,13 @@ export function error_valid(evt: string, name: string, ...data: any[]) {
 }
 
 export function error_spam(type: string, ...data: any[]) {
+    const pkg = LangPkg.socket.spam;
     const map = {
-        "last warning": "socket.spam.last",
-        "ban": "socket.spam.ban",
-        "warn": "socket.spam.warn",
+        "last warning": pkg.last,
+        "ban": pkg.ban,
+        "warn": pkg.warn,
     }
-    let text = map[type] || "socket.spam";
+    let text = map[type] || pkg.spam;
 
     uiFunc.uiMsgT(text, [], ...data);
 }
