@@ -18,7 +18,7 @@ const vars: Vars = {
         selectedMess: null
     },
     temp: {
-        socrollBlock: false,
+        scrollBlock: false,
         replyId: null,
         editId: null,
     }, // temporary
@@ -41,7 +41,8 @@ const vars: Vars = {
     settings: {
         notifications: localStorage.getItem("notifications") == "true" || false,
         desktopHandling: localStorage.getItem("desktopHandling") == "true" || false
-    }
+    },
+    blocked: []
 }
 
 export default vars;

@@ -50,7 +50,7 @@ const messFunc = {
         messStyle.messageHeight();
     },
 
-    addMess(data: Core_mess__dbMessage, socroll: boolean=true, up: boolean=false){
+    addMess(data: Core_mess__dbMessage, scroll: boolean=true, up: boolean=false){
         if(!data) return;
 
         /*
@@ -91,7 +91,7 @@ const messFunc = {
 
         const timeDiv = document.createElement("span");
         timeDiv.classList.add("mess_time");
-        timeDiv.innerHTML = utils.formatDateFormUnux(utils.extractTimeFromId(data._id));
+        timeDiv.innerHTML = utils.formatDateFormUnix(utils.extractTimeFromId(data._id));
         fromDivText.appendChild(timeDiv);
 
         fromDiv.appendChild(fromDivText);
@@ -103,7 +103,7 @@ const messFunc = {
         messContentDiv.setAttribute("_plain", data.msg);
         messDiv.appendChild(messContentDiv);
         if(data.lastEdit){
-            messContentDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnux(parseInt(data.lastEdit, 36)));
+            messContentDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnix(parseInt(data.lastEdit, 36)));
         }
         if(data.embed)
            formatFunc.embed(data.embed, messContentDiv);
@@ -133,8 +133,8 @@ const messFunc = {
         setTimeout(() => {
             const errMargin = 70; // (px)
             const isScrollAtBottom = messHTML.div.scrollTop + messHTML.div.clientHeight + messDiv.clientHeight + errMargin >= messHTML.div.scrollHeight;
-            if(data.res)formatFunc.responeMess(data.res, messDiv);
-            if(socroll && isScrollAtBottom){
+            if(data.res) formatFunc.responeMess(data.res, messDiv);
+            if(scroll && isScrollAtBottom){
                 messDiv.scrollIntoView({behavior: "smooth"});
             }
         }, 100);

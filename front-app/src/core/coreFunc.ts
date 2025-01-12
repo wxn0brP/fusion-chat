@@ -62,8 +62,7 @@ const coreFunc = {
             vars.realm.users = [];
             vars.realm.roles = [];
             vars.realm.chnlPerms = {};
-            messHTML.input.placeholder = LangPkg.ui.message.placeholder + "...";
-            messHTML.input.disabled = false;
+            coreFunc.dmPlaceholder(id.substring(1));
             navHTML.main__call.style.display = "";
             messHTML.nav_priv.style.display = "";
             messHTML.nav_realm.style.display = "none";
@@ -150,14 +149,14 @@ const coreFunc = {
         socket.emit("message.markAsRead", vars.chat.to, vars.chat.chnl, "last");
     },
 
-    socrollToBottom() {
-        if (vars.temp.socrollBlock) return;
-        vars.temp.socrollBlock = true;
+    scrollToBottom() {
+        if (vars.temp.scrollBlock) return;
+        vars.temp.scrollBlock = true;
         setTimeout(() => {
             messHTML.div.scrollTop = messHTML.div.scrollHeight;
         }, 50);
         setTimeout(() => {
-            vars.temp.socrollBlock = false;
+            vars.temp.scrollBlock = false;
         }, 300);
     },
 
@@ -175,6 +174,20 @@ const coreFunc = {
         else document.querySelector("#realm_chat_" + to).classList.add("realm_chatActive");
     },
 
+    dmPlaceholder(id: Id) {
+        function set(text: string, disabled: boolean) {
+            messHTML.input.placeholder = text;
+            messHTML.input.disabled = disabled;
+        }
+
+        const toBlocked = vars.blocked.some(block => block.block == id);
+        if(toBlocked) return set(LangPkg.ui.message.block_placeholder.block + "!", true);
+
+        const frBlocked = vars.blocked.some(block => block.blocked == id);
+        if(frBlocked) return set(LangPkg.ui.message.block_placeholder.blocked + "!", true);
+
+        set(LangPkg.ui.message.placeholder + "...", false);
+    }
 }
 
 export default coreFunc;

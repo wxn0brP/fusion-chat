@@ -40,6 +40,10 @@ export interface Lang_UI {
         search_results: string;
         search_no_results: string;
         no_react: string;
+        block_placeholder: {
+            blocked: string;
+            block: string;
+        }
     }
     pinned_messages: string;
     no_pinned_messages: string;

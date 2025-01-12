@@ -150,8 +150,8 @@ export async function message_fetch(suser, to, chnl, start, end){
         if(!perm.view) return validE.err("channel is not exist");
     }
 
-    const respondAll = await db.mess.find(to, { chnl }, {}, { reverse: true, max: end+start });
-    const res = respondAll.slice(start, end);
+    const responeAll = await db.mess.find(to, { chnl }, {}, { reverse: true, max: end+start });
+    const res = responeAll.slice(start, end);
 
     return { err: false, res };
 }

@@ -1,5 +1,5 @@
 import { Core_mess__dbMessage } from "./core/mess";
-import { Core_socket__user_status_type } from "./core/socket";
+import { Core_socket__blocked, Core_socket__user_status_type } from "./core/socket";
 import Id from "./Id";
 import { Utils_updater } from "./utils";
 
@@ -18,7 +18,7 @@ interface Vars {
         selectedMess: Id | null;
     };
     temp: {
-        socrollBlock: boolean;
+        scrollBlock: boolean;
         replyId: Id | null;
         editId: Id | null;
     }; // temporary
@@ -64,7 +64,8 @@ interface Vars {
     settings: {
         notifications: boolean;
         desktopHandling: boolean;
-    }
+    },
+    blocked: Core_socket__blocked[];
 }
 
 export interface Vars_realm__role {

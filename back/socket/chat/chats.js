@@ -25,8 +25,8 @@ export default (socket) => {
         try{
             const { err, res } = await dm_get(socket.user);
             if(err) return socket.emit(...err);
-            if(cb) cb(res);
-            else socket.emit("dm.get", res);
+            if(cb) cb(...res);
+            else socket.emit("dm.get", ...res);
         }catch(e){
             socket.logError(e);
         } 

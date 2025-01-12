@@ -86,7 +86,7 @@ export function message_fetch(data: Core_mess__dbMessage[]) {
             }
         });
         messStyle.hideFromMessageInfo();
-        setTimeout(coreFunc.socrollToBottom, 30);
+        setTimeout(coreFunc.scrollToBottom, 30);
     } catch (e) {
         console.error(e);
         const div = document.createElement("div");
@@ -113,7 +113,7 @@ export function message_edit(id: Id, msg: string, time: string) {
     if (!messageDiv) return;
     messageDiv.setAttribute("_plain", msg);
     formatFunc.formatMess(msg, messageDiv);
-    messageDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnux(parseInt(time, 36)));
+    messageDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnix(parseInt(time, 36)));
 
     const responeMessages = document.querySelectorAll(`[resMsgID=${id}] .res_msg`);
     responeMessages.forEach(mess => {
@@ -176,8 +176,8 @@ export function realm_thread_list(data: Vars_realm__thread[]) {
     if (!chnlDiv) return;
 
     data.forEach(t => {
-        const exitsts = document.querySelector("#channel_\\&" + t._id);
-        if (!exitsts) {
+        const exists = document.querySelector("#channel_\\&" + t._id);
+        if (!exists) {
             const div = document.createElement("div");
             div.classList.add("channel_text");
             div.id = "channel_&" + t._id;

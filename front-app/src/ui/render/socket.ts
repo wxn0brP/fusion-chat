@@ -7,9 +7,10 @@ import render_dm from "./dm";
 import render_realm from "./realm";
 import render_user from "./user";
 import realmInit from "./realmInit";
-import { Core_socket__dm } from "../../types/core/socket";
+import { Core_socket__blocked, Core_socket__dm } from "../../types/core/socket";
+import coreFunc from "../../core/coreFunc";
 
-socket.on("dm.get", (data: Core_socket__dm[]) => {
+socket.on("dm.get", (data: Core_socket__dm[], blocked: Core_socket__blocked[]) => {
     data.forEach((priv) => {
         const id = "$" + priv.priv;
 
@@ -21,6 +22,9 @@ socket.on("dm.get", (data: Core_socket__dm[]) => {
     })
     vars.privs = data.map(d => d.priv);
     render_dm.chats();
+
+    vars.blocked = blocked;
+    if(vars.chat.to.startsWith("$")) coreFunc.dmPlaceholder(vars.chat.to.substring(1));
 });
 
 socket.on("realm.get", render_realm.realms);

@@ -11,7 +11,7 @@ function mess() {
 
     return {
         div: qd("#messages"),
-        input: document.querySelector<HTMLInputElement>("#mess-input"),
+        input: document.querySelector<HTMLTextAreaElement>("#mess-input"),
         replyClose: qd("#replyClose"),
         editClose: qd("#editClose"),
         sendBtn: document.querySelector<HTMLButtonElement>("#barc__sendBtn"),

@@ -2,9 +2,9 @@ import { chatExists as _chatExists, combineId } from "./chatMgmt.js";
 import valid, { validChannelId } from "./validData.js";
 import ValidError from "./validError.js";
 import getChnlPerm from "./chnlPermissionCache.js";
-import NodeCache from "node-cache";
 import db from "../dataBase.js";
-const eventSubscribeCache = new NodeCache();
+import checkDmChat from "./sendMessageUtils/dm.js";
+import eventChnl from "./sendMessageUtils/eventChnl.js";
 
 /**
  * @async
@@ -53,17 +53,13 @@ export default async function sendMessage(req, user, options={}){
 
     const privChat = to.startsWith("$");
     if(privChat){
-        const priv = await db.userData.findOne(user._id, { priv: to.replace("$", "") });
-        if(!priv) return validE.err("priv not found");
-        if(priv.blocked) return validE.err("blocked");
-
-        const toPriv = await db.userData.findOne(to.replace("$", ""), { priv: user._id });
-        if(!toPriv) return validE.err("priv not found");
-        if(toPriv.blocked) return validE.err("blocked");
-
         let p1 = user._id;
         let p2 = to.replace("$", "");
         to = combineId(p1, p2);
+
+        const checkData = await checkDmChat(p1, p2, to, validE);
+        if(checkData) return checkData;
+
         await db.mess.checkCollection(to);
     }else{
         const chatExists = await _chatExists(to);
@@ -144,58 +140,4 @@ export default async function sendMessage(req, user, options={}){
     }
 
     return { err: false };
-}
-
-async function eventChnl(realm, data){
-    const subs = await getSubscribed(realm, data.chnl);
-    if(subs.length == 0) return;
-
-    subs.forEach(async ({ tr, tc }) => {
-        const req = {
-            to: tr,
-            msg: data.msg,
-            chnl: tc,
-        }
-        const user = {
-            _id: combineId(tr, tc),
-            name: "Event Chnl",
-        }
-        const opts = {
-            system: true,
-            frPrefix: "("
-        }
-        sendMessage(req, user, opts);
-    });
-}
-
-/**
- * Gets all tr, tc for given realm and chnl.
- * @param {string} realm - Name of source realm.
- * @param {string} chnl - Name of source channel.
- * @returns {Promise<Array<{ tr: string, tc: string }>>} - List of tr, tc.
- */
-async function getSubscribed(realm, chnl){
-    let realmData = eventSubscribeCache.get(realm);
-
-    if(!realmData){
-        const chnls = await db.realmData.find("events.channels", { sr: realm });
-
-        realmData = {};
-        chnls.forEach(({ sr, sc, tr, tc }) => {
-            const key = `${sr}:${sc}`;
-            if(!realmData[key]){
-                realmData[key] = [];
-            }
-            realmData[key].push({ tr, tc });
-        });
-
-        eventSubscribeCache.set(realm, realmData);
-    }
-
-    const key = `${realm}:${chnl}`;
-    return realmData[key] || [];
-}
-
-export function clearEventCache(realm){
-    eventSubscribeCache.del(realm);
 }

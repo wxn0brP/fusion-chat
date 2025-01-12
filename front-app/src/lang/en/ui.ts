@@ -42,6 +42,10 @@ const ui: Lang_UI = {
         search_results: "Search results",
         search_no_results: "No result found",
         no_react: "You can't react in this channel",
+        block_placeholder: {
+            blocked: "This user blocked you",
+            block: "You blocked this user",
+        }
     },
     pinned_messages: "Pinned messages",
     no_pinned_messages: "No pinned messages",

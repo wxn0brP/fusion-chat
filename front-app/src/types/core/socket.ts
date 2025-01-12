@@ -16,6 +16,11 @@ export interface Core_socket__dm {
     lastMessId: Id;
 }
 
+export interface Core_socket__blocked {
+    blocked?: Id;
+    block?: Id;
+}
+
 export type Core_socket__user_status_type = "online" | "offline" | "away";
 
 export interface Core_socket__user_profile {

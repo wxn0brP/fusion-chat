@@ -1,7 +1,9 @@
 import db from "../../../dataBase.js";
 import { combineId, createChat, exitChat, createPriv, addUserToChat } from "../../../logic/chatMgmt.js";
+import { clearBlockedCache, clearUserDmCache } from "../../../logic/sendMessageUtils/dm.js";
 import valid from "../../../logic/validData.js";
 import ValidError from "../../../logic/validError.js";
+import { friend_remove } from "./friends.js";
 
 export async function realm_get(suser){
     const realms = await db.userData.find(suser._id, r => !!r.realm);
@@ -28,7 +30,23 @@ export async function dm_get(suser){
         priv.lastMessId = lastMess[0]._id;
     }
 
-    return { err: false, res: privs };
+    const blocked = 
+        (await db.userData.find("blocked", {
+            $or: [
+                { from: suser._id },
+                { to: suser._id }
+            ]
+        }))
+        .map(block => {
+            const to = block.from == suser._id ? block.to : block.from;
+            const exists = privs.some(priv => priv.priv == to);
+            if(!exists) return;
+
+            return block.from == suser._id ? { block: to } : { blocked: to };
+        })
+        .filter(Boolean);
+
+    return { err: false, res: [privs, blocked] };
 }
 
 export async function realm_create(suser, name){
@@ -74,6 +92,7 @@ export async function dm_create(suser, nameOrId){
 
     global.sendToSocket(suser._id, "refreshData", "dm.get");
     global.sendToSocket(toId, "refreshData", "dm.get");
+    clearUserDmCache(suser._id, toId);
 
     return { err: false };
 }
@@ -110,6 +129,19 @@ export async function dm_block(suser, id, blocked){
     if(!valid.id(id)) return validE.valid("id"); 
     if(!valid.bool(blocked)) return validE.valid("blocked");
 
-    await db.userData.updateOneOrAdd(suser._id, { priv: id }, { blocked });
+    if(blocked){
+        const exists = await db.userData.findOne("blocked", { from: suser._id, to: id });
+        if(exists) return validE.err("already blocked");
+
+        await db.userData.add("blocked", { from: suser._id, to: id }, false);
+        await friend_remove(suser, id);
+    }else{
+        await db.userData.removeOne("blocked", { from: suser._id, to: id });
+    }
+    clearBlockedCache(suser._id, id);
+
+    global.sendToSocket(suser._id, "refreshData", "dm.get");
+    global.sendToSocket(id, "refreshData", "dm.get");
+    
     return { err: false };
 }

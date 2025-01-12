@@ -5,7 +5,7 @@ import { existsSync } from "fs";
 import ValidError from "../../../logic/validError.js";
 import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
 import getChnlPerm from "../../../logic/chnlPermissionCache.js";
-import { clearEventCache } from "../../../logic/sendMessage.js";
+import { clearEventCache } from "../../../logic/sendMessageUtils/eventChnl.js";
 import db from "../../../dataBase.js";
 
 export async function realm_setup(suser, id){
