@@ -21,9 +21,9 @@ export function connect() {
     socket.emit("dm.get");
 }
 
-export function error(text: string, ...data: any[]) {
-    uiFunc.uiMsgT(text, [], ...data);
-    debugFunc.msg(...data)
+export function error(evt_name: string, ...data: any[]) {
+    debugFunc.msg(evt_name, ...data)
+    if(data.length > 0) uiFunc.uiMsg(data[0]);
 }
 
 export function error_valid(evt: string, name: string, ...data: any[]) {
