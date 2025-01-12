@@ -52,7 +52,8 @@ input.addEventListener("input", messStyle.sendBtnStyle);
 input.addEventListener("input", messStyle.messageHeight);
 
 // Paste
-function pasetText(e: ClipboardEvent) {
+function pasteText(e: ClipboardEvent) {
+    if(!pasteCheck()) return;
     e.preventDefault();
     const pasteText = (e.clipboardData || (window as any).clipboardData).getData("text");
     input.value += pasteText;
@@ -62,10 +63,10 @@ function pasetText(e: ClipboardEvent) {
 }
 
 function pasteImage(e: ClipboardEvent) {
+    if(!pasteCheck()) return;
     const items = (e.clipboardData || (e as any).originalEvent.clipboardData).items;
 
     for (const item of items) {
-        lo(item)
         if (item.type.indexOf("image") === -1) continue;
         e.preventDefault();
 
@@ -74,7 +75,13 @@ function pasteImage(e: ClipboardEvent) {
     }
 }
 
-document.addEventListener("paste", pasetText);
+function pasteCheck() {
+    const tag = document.activeElement.tagName.toLowerCase();
+    if (tag == "input" || tag == "textarea") return false;
+    return true;
+}
+
+document.addEventListener("paste", pasteText);
 document.addEventListener("paste", pasteImage);
 document.addEventListener("paste", () => {
     if (input == document.activeElement) return;
