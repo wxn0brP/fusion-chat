@@ -13,12 +13,14 @@ import LangPkg, { langFunc } from "../../utils/translate";
 
 const mainView = {
     show() {
-        socket.emit("friend.getAll");
-        socket.emit("friend.getRequests");
+        socket.emit("friend.get.all");
+        socket.emit("friend.requests.get");
     },
 
     renderFriends() {
         mainViewHTML.friendsContainer.innerHTML = "";
+
+        lo(vars.mainView.friends)
 
         if (vars.mainView.friends.length == 0) {
             mainViewHTML.noFriends.style.display = "";
@@ -60,19 +62,20 @@ const mainView = {
             mainView.sortFriends(page);
             mainViewHTML.friends.style.display = "";
             mainViewHTML.requests.style.display = "none";
-        } else
-            if (page == "requests") {
-                mainView.renderRequests();
-                mainViewHTML.requests.style.display = "";
-                mainViewHTML.friends.style.display = "none";
-            }
+            mainView.renderFriends();
+        }
+        else if (page == "requests") {
+            mainView.renderRequests();
+            mainViewHTML.requests.style.display = "";
+            mainViewHTML.friends.style.display = "none";
+        }
 
-        mainViewHTML.div.querySelectorAll("[main_view]").forEach(e => (e as HTMLElement).style.backgroundColor = "");
-        (document.querySelector(`[main_view="${page}"]`) as HTMLElement).style.backgroundColor = "var(--accent";
+        mainViewHTML.div.querySelectorAll<HTMLElement>("[main_view]").forEach(e => e.style.backgroundColor = "");
+        document.querySelector<HTMLElement>(`[main_view="${page}"]`).style.backgroundColor = "var(--accent";
     },
 
     sortFriends(status: Vars_mainView__page) {
-        const friends = mainViewHTML.div.querySelectorAll(".main__view__friend") as NodeListOf<HTMLElement>;
+        const friends = mainViewHTML.div.querySelectorAll<HTMLElement>(".main__view__friend");
         if (friends.length == 0) return;
         mainViewHTML.noFriends.style.display = "none";
         let visibleCount = friends.length;
@@ -117,8 +120,8 @@ const mainView = {
                 <img class="friend__avatar" src="/api/profile/img?id=${request}" />
                 <div>
                     <div class="friend__name">${apis.www.changeUserID(request)}</div>
-                    <button onclick="mainView.requestFriendResponse('${request}', true)" class="request__btn">Accept</button>
-                    <button onclick="mainView.requestFriendResponse('${request}', false)" class="request__btn">Decline</button>
+                    <button onclick="mglInt.mainView.requestFriendResponse('${request}', true)" class="request__btn">Accept</button>
+                    <button onclick="mglInt.mainView.requestFriendResponse('${request}', false)" class="request__btn">Decline</button>
                 </div>
             `;
 
@@ -132,19 +135,6 @@ const mainView = {
         });
     },
 
-    requestFriendResponse(user_id: Id, accept: boolean) {
-        if (!user_id) return;
-        const div = mainViewHTML.div.querySelector(`.main__view__friend[user_id="${user_id}"]`);
-        if (!div) return;
-
-        socket.emit("friend.response", user_id, accept);
-        div.remove();
-        vars.mainView.requests = vars.mainView.requests.filter(e => e != user_id);
-        mainViewHTML.requestCount.innerHTML = `(${vars.mainView.requests.length})`;
-
-        if (accept) socket.emit("friend.getAll");
-    },
-
     removeFriend(friend: Id) {
         if (!friend) return;
 
@@ -154,7 +144,7 @@ const mainView = {
         if (!conf2) return;
 
         socket.emit("friend.remove", friend);
-        socket.emit("friend.getAll");
+        socket.emit("friend.get.all");
     },
 
     removeFriendRequest(friend: Id) {
@@ -169,19 +159,19 @@ const mainView = {
 
 mainView.changeView("online");
 
-socket.on("friend.getAll", (friends) => {
+socket.on("friend.get.all", (friends) => {
     vars.mainView.friends = friends;
     mainView.renderFriends();
 });
 
-socket.on("friend.getRequests", (requests) => {
+socket.on("friend.requests.get", (requests) => {
     vars.mainView.requests = requests;
     mainView.renderRequests();
 });
 
 socket.on("friend.request", (from) => {
     uiFunc.uiMsgT(LangPkg.ui.friend.request, apis.www.changeUserID(from));
-    socket.emit("friend.getRequests");
+    socket.emit("friend.requests.get");
 });
 
 socket.on("friend.response", (from, accept) => {
@@ -192,7 +182,7 @@ socket.on("friend.response", (from, accept) => {
     uiFunc.uiMsgT(LangPkg.ui.friend.request, apis.www.changeUserID(from));
 
     if (vars.chat.to != "main") return;
-    socket.emit("friend.getAll");
+    socket.emit("friend.get.all");
 });
 
 export default mainView;

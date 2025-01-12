@@ -94,6 +94,9 @@ const uiFunc = {
                 if(e.key == "Enter") end();
             })
             div.appendChild(input);
+            setTimeout(() => {
+                input.focus();
+            }, 100);
 
             div.appendChild(document.createElement("br"));
 

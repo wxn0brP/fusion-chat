@@ -57,7 +57,7 @@ export async function friend_response(suser, id, accept){
     if(accept) await db.dataGraph.add("friends", id, suser._id);
 
     global.sendToSocket(id, "friend.response", suser._id, accept);
-    if(accept) global.sendToSocket(suser._id, "refreshData", "friend.getAll");
+    if(accept) global.sendToSocket(suser._id, "refreshData", "friend.get.all");
     global.fireBaseMessage.send({
         to: id,
         title: "Friend request",
@@ -72,7 +72,7 @@ export async function friend_requestRemove(suser, id){
 
     await db.data.removeOne("friendRequests", { from: suser._id, to: id });
 
-    global.sendToSocket(id, "refreshData", "friend.getRequests");
+    global.sendToSocket(id, "refreshData", "friend.requests.get");
     return { err: false };
 }
 
@@ -85,12 +85,12 @@ export async function friend_remove(suser, id){
 
     await db.dataGraph.remove("friends", suser._id, id);
 
-    global.sendToSocket(id, "refreshData", "friend.getAll");
-    global.sendToSocket(suser._id, "refreshData", "friend.getAll");
+    global.sendToSocket(id, "refreshData", "friend.get.all");
+    global.sendToSocket(suser._id, "refreshData", "friend.get.all");
     return { err: false };
 }
 
-export async function friend_getAll(suser){
+export async function friend_get_all(suser){
     const friendsGraph = await db.dataGraph.find("friends", suser._id);
     const friends = friendsGraph.map(f => {
         if(f.a == suser._id) return f.b;
@@ -107,8 +107,8 @@ export async function friend_getAll(suser){
         const status = await db.userData.findOne(f, { _id: "status" });
         return {
             _id: f,
-            status: status.status || "online",
-            text: status.text || ""
+            status: status?.status || "online",
+            text: status?.text || ""
         }
     });
 
@@ -117,7 +117,7 @@ export async function friend_getAll(suser){
     return { err: false, res: friendsStatus };
 }
 
-export async function friend_getRequests(suser){
+export async function friend_requests_get(suser){
     const friendRequestsData = await db.data.find("friendRequests", { to: suser._id });
     const friendRequests = friendRequestsData.map(f => f.from);
     return { err: false, res: friendRequests };
@@ -136,8 +136,8 @@ export async function user_profile(suser, id){
 
     let userStatusType = "";
     let userStatusText = "";
-    if(userOnline) userStatusType = userStatus.status || "online";
-    if(userOnline && userStatus.text) userStatusText = userStatus.text;
+    if(userOnline) userStatusType = userStatus?.status || "online";
+    if(userOnline && userStatus.text) userStatusText = userStatus?.text;
     if(!userOnline && !userStatusType) userStatusType = "offline";
 
     let friendStatus = friendStatusEnum.NOT_FRIEND;

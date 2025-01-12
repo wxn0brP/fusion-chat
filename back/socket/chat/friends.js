@@ -1,6 +1,6 @@
 import {
-    friend_getAll,
-    friend_getRequests,
+    friend_get_all,
+    friend_requests_get,
     friend_remove,
     friend_request,
     friend_response,
@@ -45,23 +45,23 @@ export default (socket) => {
         }
     });
 
-    socket.onLimit("friend.getAll", 1_000, async (cb) => {
+    socket.onLimit("friend.get.all", 1_000, async (cb) => {
         try{
-            const { err, res } = await friend_getAll(socket.user);
+            const { err, res } = await friend_get_all(socket.user);
             if(err) return socket.emit(...err);
             if(cb) cb(res);
-            else socket.emit("friend.getAll", res);
+            else socket.emit("friend.get.all", res);
         }catch(e){
             socket.logError(e);
         }
     });
 
-    socket.onLimit("friend.getRequests", 1_000, async (cb) => {
+    socket.onLimit("friend.requests.get", 1_000, async (cb) => {
         try{
-            const { err, res } = await friend_getRequests(socket.user);
+            const { err, res } = await friend_requests_get(socket.user);
             if(err) return socket.emit(...err);
             if(cb) cb(res);
-            else socket.emit("friend.getRequests", res);
+            else socket.emit("friend.requests.get", res);
         }catch(e){
             socket.logError(e);
         }
