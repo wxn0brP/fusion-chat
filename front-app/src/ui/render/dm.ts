@@ -7,6 +7,7 @@ import coreFunc from "../../core/coreFunc";
 import renderUtils from "./utils";
 import utils from "../../utils/utils";
 import apis from "../../api/apis";
+import socket from "../../core/socket/socket";
 
 const render_dm = {
     chats() {
@@ -34,6 +35,11 @@ const render_dm = {
                     render_dm.privsRead();
                 }, 100);
             });
+
+            privDiv.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                socket.emit("user.profile", id);
+            })
         });
         render_dm.privsRead();
         coreFunc.markSelectedChat();
