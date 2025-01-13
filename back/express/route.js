@@ -35,15 +35,14 @@ function error500(cb){
     }
 }    
 
-const apiPath = "./back/express/api/";
-readdirSync(apiPath).filter(file => file.includes(".js")).forEach(async file => {
-    const routerImport = await import("./api/"+file);
-    let { path, default: router } = routerImport;
+const apiPath = "back/express/api/";
+for(const file of readdirSync(apiPath, { recursive: true, withFileTypes: true })){
+    if(!file.isFile() || !file.name.endsWith(".js")) continue;
+    const filePath = file.parentPath.replace(apiPath, "") + "/" + file.name;
+    const { path: routerPath, default: router } = await import("./api/"+filePath);
 
-    if(!path) path = "";
-    
-    apiRouter.use("/"+path, router);
-});
+    apiRouter.use("/"+(routerPath || ""), router);
+}
 
 readdirSync("front/public").filter(file => file.includes(".html")).forEach(file => {
     frontRouter.get("/"+file.replace(".html", ""), (req, res) => {

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { realm_join } from '../../socket/chat/logic/chats.js';
-import db from '../../dataBase.js';
+import { realm_join } from '../../../socket/chat/logic/chats.js';
+import db from '../../../dataBase.js';
 const router = Router();
 
 export const path = "realm/join";

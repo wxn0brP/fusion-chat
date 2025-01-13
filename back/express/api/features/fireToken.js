@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getTokenFromPointer, cache } from "../../logic/mobileNotif.js";
-import db from "../../dataBase.js";
+import { getTokenFromPointer, cache } from "../../../logic/mobileNotif.js";
+import db from "../../../dataBase.js";
 const router = Router();
 
 router.post("/fireToken", async (req, res) => {

@@ -1,8 +1,8 @@
 import { Router } from "express";
 const router = Router();
-import { decode, KeyIndex } from "../../logic/token/index.js";
+import { decode, KeyIndex } from "../../../logic/token/index.js";
 import { comparePasswords, randomDelay } from "./login.js";
-import db from "../../dataBase.js";
+import db from "../../../dataBase.js";
 
 export const path = "account/delete";
 

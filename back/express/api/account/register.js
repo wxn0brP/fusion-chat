@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { createHash } from 'crypto';
-import mailer from "../../logic/mail.js";
-import db from '../../dataBase.js';
+import mailer from "../../../logic/mail.js";
+import db from '../../../dataBase.js';
 const router = Router();
 
 router.post("/register", async function(req, res){

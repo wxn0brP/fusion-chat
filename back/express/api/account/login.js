@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { timingSafeEqual, createHash } from 'crypto';
-import { createUser } from "../../logic/auth.js";
-import mailer from "../../logic/mail.js";
-import db from '../../dataBase.js';
+import { createUser } from "../../../logic/auth.js";
+import mailer from "../../../logic/mail.js";
+import db from '../../../dataBase.js';
 const router = Router();
 
 router.post("/login", async (req, res) => {

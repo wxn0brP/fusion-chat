@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { handleCustom } from "../../logic/webhooks/index.js";
-import valid from "../../logic/validData.js";
+import { handleCustom } from "../../../logic/webhooks/index.js";
+import valid from "../../../logic/validData.js";
 const router = Router();
 
 router.post("/custom", async (req, res) => {

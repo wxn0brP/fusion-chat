@@ -1,8 +1,8 @@
 import { Router } from "express";
-import valid from "../../logic/validData.js";
 import NodeCache from "node-cache";
-import db from "../../dataBase.js";
-import { combineId } from "../../logic/chatMgmt.js";
+import db from "../../../dataBase.js";
+import valid from "../../../logic/validData.js";
+import { combineId } from "../../../logic/chatMgmt.js";
 
 const router = Router();
 const cache = new NodeCache();
@@ -15,8 +15,8 @@ router.get("/id/event", async (req, res) => {
     if(!name){
         const data = await db.realmData.findOne("events.channels", (data, ctx) => {
             const { tr, tc } = data;
-            return ctx.combinateId(tr, tc) == ctx.id;
-        }, { id, combinateId: combineId });
+            return ctx.combineId(tr, tc) == ctx.id;
+        }, { id, combineId: combineId });
         if(!data){
             return res.json({ err: true, msg: "event is not valid" });
         }

@@ -1,7 +1,7 @@
 import { Router } from "express";
 const router = Router();
-import { invite } from "../../logic/inviteBot.js";
-import db from "../../dataBase.js";
+import { invite } from "../../../logic/inviteBot.js";
+import db from "../../../dataBase.js";
 
 export const path = "iv/bot";
 
