@@ -33,16 +33,17 @@ export async function dm_get(suser){
     const blocked = 
         (await db.userData.find("blocked", {
             $or: [
-                { from: suser._id },
+                { fr: suser._id },
                 { to: suser._id }
             ]
         }))
         .map(block => {
-            const to = block.from == suser._id ? block.to : block.from;
+            const userIsFr = block.fr == suser._id;
+            const to = userIsFr ? block.to : block.fr;
             const exists = privs.some(priv => priv.priv == to);
             if(!exists) return;
 
-            return block.from == suser._id ? { block: to } : { blocked: to };
+            return userIsFr? { block: to } : { blocked: to };
         })
         .filter(Boolean);
 
@@ -130,13 +131,13 @@ export async function dm_block(suser, id, blocked){
     if(!valid.bool(blocked)) return validE.valid("blocked");
 
     if(blocked){
-        const exists = await db.userData.findOne("blocked", { from: suser._id, to: id });
+        const exists = await db.userData.findOne("blocked", { fr: suser._id, to: id });
         if(exists) return validE.err("already blocked");
 
-        await db.userData.add("blocked", { from: suser._id, to: id }, false);
+        await db.userData.add("blocked", { fr: suser._id, to: id }, false);
         await friend_remove(suser, id);
     }else{
-        await db.userData.removeOne("blocked", { from: suser._id, to: id });
+        await db.userData.removeOne("blocked", { fr: suser._id, to: id });
     }
     clearBlockedCache(suser._id, id);
 

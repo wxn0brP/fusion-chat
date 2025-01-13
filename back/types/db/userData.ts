@@ -9,7 +9,6 @@ namespace Db_UserData {
 
     export interface priv {
         priv: Id;
-        blocked?: boolean;
         last?: pr_last;
     }
 
@@ -29,6 +28,11 @@ namespace Db_UserData {
         _id: "status";
         status: "online" | "offline" | "away";
         text: string;
+    }
+
+    export interface blocked {
+        fr: Id;
+        to: Id;
     }
 }
 

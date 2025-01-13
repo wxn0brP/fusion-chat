@@ -131,7 +131,7 @@ export async function exitChat(chatId, userId){
  */
 export async function createPriv(toId, fromId){
     await db.userData.add(toId, {
-        priv: fromId//, block: true
+        priv: fromId
     }, false);
 
     await db.userData.add(fromId, {

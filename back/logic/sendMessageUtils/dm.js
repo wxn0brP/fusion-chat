@@ -10,8 +10,8 @@ async function blocked(fr, to, combined){
 
     const blocked = await db.userData.findOne("blocked", {
         $or: [
-            { from: fr, to: to },
-            { from: to, to: fr }
+            { fr: fr, to: to },
+            { fr: to, to: fr }
         ]
     });
     const isBlocked = !!blocked;

@@ -158,7 +158,7 @@ export async function user_profile(suser, id){
         }
     }
 
-    const userIsBlocked = await db.userData.findOne("blocked", { from: suser._id, to: id });
+    const userIsBlocked = await db.userData.findOne("blocked", { fr: suser._id, to: id });
 
     const userData = {
         name: userN.name,
