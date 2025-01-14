@@ -5,12 +5,13 @@ import ValidError from "../../../logic/validError.js";
 import { Id } from "../../../types/base.js";
 import { Socket_StandardRes } from "../../../types/socket/res.js";
 import Db_Data from "../../../types/db/data.js";
+import { Socket_User } from "../../../types/socket/user.js";
 
 const roomPrefix = "voice-";
 
-export async function voice_join(socket, to): Promise<Socket_StandardRes>{
+export async function voice_join(socket: Socket, to: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("voice.join");
-    if(!valid.str(to, 0, 30)) return validE.valid("to");
+    if (!valid.str(to, 0, 30)) return validE.valid("to");
 
     emitToRoom(to, "voice.join", socket.user._id);
     emitToRoom(to, "refreshData", "voice.get.users");
@@ -19,13 +20,13 @@ export async function voice_join(socket, to): Promise<Socket_StandardRes>{
     return { err: false };
 }
 
-export function voice_sendData(suser, voiceRoom, data){
-    if(!voiceRoom) return;
+export function voice_sendData(suser: Socket_User, voiceRoom: Id, data: any) {
+    if (!voiceRoom) return;
     emitToRoom(voiceRoom, "voice.sendData", suser._id, data);
 }
 
-export function leaveVoiceChannel(socket){
-    if(!socket.voiceRoom) return;
+export function leaveVoiceChannel(socket: Socket) {
+    if (!socket.voiceRoom) return;
     const room = socket.voiceRoom;
 
     socket.leave(roomPrefix + room);
@@ -35,31 +36,31 @@ export function leaveVoiceChannel(socket){
 }
 
 export function voice_getUsers(socket: Socket): Socket_StandardRes<Id[]> {
-    if(!socket.voiceRoom) return;
+    if (!socket.voiceRoom) return;
     const to = socket.voiceRoom;
 
     const sockets = global.io.of("/").adapter.rooms.get(roomPrefix + to);
     const users: Id[] = [];
 
-    for(const socketId of sockets){
+    for (const socketId of sockets) {
         const socket = global.io.sockets.sockets.get(socketId);
-        if(socket && socket.user) users.push(socket.user._id);
+        if (socket && socket.user) users.push(socket.user._id);
     }
 
     return { err: false, res: [...new Set(users)] };
 }
 
-export async function call_dm_init(suser, id){
+export async function call_dm_init(suser: Socket_User, id: Id) {
     const validE = new ValidError("call.dm.init");
-    if(!valid.id(id)) return validE.valid("id");
+    if (!valid.id(id)) return validE.valid("id");
 
     const sockets = global.getSocket(id);
-    if(sockets.length == 0){
+    if (sockets.length == 0) {
         const targetName = await db.data.findOne<Db_Data.user>("user", { _id: id }).then(u => u.name);
-        
+
         global.fireBaseMessage.send({
             to: id,
-            title: targetName+" is calling you",
+            title: targetName + " is calling you",
             body: "Join to the call",
             checkSocket: false,
             action: {
@@ -74,15 +75,15 @@ export async function call_dm_init(suser, id){
     return { err: false };
 }
 
-export async function call_dm_answer(suser, id, answer){
+export async function call_dm_answer(suser: Socket_User, id: string, answer: boolean) {
     const validE = new ValidError("call.dm.answer");
-    if(!valid.id(id)) return validE.valid("id");
-    if(!valid.bool(answer)) return validE.valid("answer");
+    if (!valid.id(id)) return validE.valid("id");
+    if (!valid.bool(answer)) return validE.valid("answer");
 
     global.sendToSocket(id, "call.dm.answer", suser._id, answer);
     return { err: false };
 }
 
-function emitToRoom(room, ...args){
+function emitToRoom(room: string, ...args: any[]) {
     global.io.of("/").to(roomPrefix + room).emit(...args);
 }

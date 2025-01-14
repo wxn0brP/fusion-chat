@@ -11,8 +11,10 @@ import Db_RealmConf from "../../../types/db/realmConf.js";
 import Db_UserData from "../../../types/db/userData.js";
 import Db_RealmData from "../../../types/db/realmData.js";
 import { Socket_StandardRes } from "../../../types/socket/res.js";
+import { Socket_User } from "../../../types/socket/user.js";
+import { Id } from "../../../types/base.js";
 
-export async function realm_setup(suser, id) {
+export async function realm_setup(suser: Socket_User, id: Id) {
     const validE = new ValidError("realm.setup");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -63,7 +65,7 @@ export async function realm_setup(suser, id) {
     return { err: false, res: [id, name, buildChannels, isOwnEmoji, userPermissions] };
 }
 
-export async function realm_users_sync(id) {
+export async function realm_users_sync(id: Id) {
     const validE = new ValidError("realm.users.sync");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -89,7 +91,7 @@ export async function realm_users_sync(id) {
     return { err: false, res: [usersData, rolesData] };
 }
 
-export async function realm_users_activity_sync(id) {
+export async function realm_users_activity_sync(id: Id) {
     const validE = new ValidError("realm.users.activity.sync");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -119,7 +121,7 @@ export async function realm_users_activity_sync(id) {
     return { err: false, res: [res] };
 }
 
-export async function realm_delete(suser, id, name) {
+export async function realm_delete(suser: Socket_User, id: Id, name: string) {
     const validE = new ValidError("realm.delete");
     if (!valid.id(id)) return validE.valid("id");
     if (!valid.str(name, 0, 30)) return validE.valid("name");
@@ -144,7 +146,7 @@ export async function realm_delete(suser, id, name) {
     return { err: false };
 }
 
-export async function realm_user_kick(suser, realmId, uid, ban = false) {
+export async function realm_user_kick(suser: Socket_User, realmId: Id, uid: Id, ban: boolean = false) {
     const validE = new ValidError("realm.user.kick");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(uid)) return validE.valid("uid");
@@ -170,7 +172,7 @@ export async function realm_user_kick(suser, realmId, uid, ban = false) {
     return { err: false };
 }
 
-export async function realm_user_unban(suser, realmId, uid) {
+export async function realm_user_unban(suser: Socket_User, realmId: Id, uid: Id) {
     const validE = new ValidError("realm.user.unban");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(uid)) return validE.valid("uid");
@@ -186,7 +188,7 @@ export async function realm_user_unban(suser, realmId, uid) {
     return { err: false };
 }
 
-export async function realm_emojis_sync(realmId) {
+export async function realm_emojis_sync(realmId: Id) {
     const validE = new ValidError("realm.emojis.sync");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
@@ -194,7 +196,13 @@ export async function realm_emojis_sync(realmId) {
     return { err: false, res: emojis };
 }
 
-export async function realm_event_channel_subscribe(suser, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId) {
+export async function realm_event_channel_subscribe(
+    suser: Socket_User,
+    sourceRealmId: Id,
+    sourceChannelId: Id,
+    targetRealmId: Id,
+    targetChannelId: Id
+) {
     const validE = new ValidError("realm.event.channel.subscribe");
     if (!valid.id(sourceRealmId)) return validE.valid("sourceRealmId");
     if (!valid.id(sourceChannelId)) return validE.valid("sourceChannelId");
@@ -221,7 +229,13 @@ export async function realm_event_channel_subscribe(suser, sourceRealmId, source
     return { err: false };
 }
 
-export async function realm_event_channel_unsubscribe(suser, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId) {
+export async function realm_event_channel_unsubscribe(
+    suser: Socket_User,
+    sourceRealmId: Id,
+    sourceChannelId: Id,
+    targetRealmId: Id,
+    targetChannelId: Id
+) {
     const validE = new ValidError("realm.event.channel.unsubscribe");
     if (!valid.id(sourceRealmId)) return validE.valid("sourceRealmId");
     if (!valid.id(sourceChannelId)) return validE.valid("sourceChannelId");
@@ -244,7 +258,7 @@ export async function realm_event_channel_unsubscribe(suser, sourceRealmId, sour
     return { err: false };
 }
 
-export async function realm_event_channel_available(suser): Promise<Socket_StandardRes> {
+export async function realm_event_channel_available(suser: Socket_User): Promise<Socket_StandardRes> {
     const userRealms = await db.userData.find<Db_UserData.realm>(suser._id, { $exists: { realm: true } });
     const realmsWithAdmin = [];
     for (const userRealmId of userRealms) {
@@ -256,7 +270,7 @@ export async function realm_event_channel_available(suser): Promise<Socket_Stand
     return { err: false, res: realmsWithAdmin };
 }
 
-export async function realm_event_channel_list(suser, realmId) {
+export async function realm_event_channel_list(suser: Socket_User, realmId: Id) {
     const validE = new ValidError("realm.event.channel.list");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
@@ -292,7 +306,7 @@ export async function realm_event_channel_list(suser, realmId) {
     return { err: false, res: channels };
 }
 
-export async function realm_thread_create(suser, realmId, channelId, name, replyMsgId = null) {
+export async function realm_thread_create(suser: Socket_User, realmId: Id, channelId: Id, name: string, replyMsgId: Id = null) {
     const validE = new ValidError("realm.thread.create");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(channelId)) return validE.valid("channelId");
@@ -314,7 +328,7 @@ export async function realm_thread_create(suser, realmId, channelId, name, reply
     return { err: false, res: thread._id };
 }
 
-export async function realm_thread_delete(suser, realmId, threadId) {
+export async function realm_thread_delete(suser: Socket_User, realmId: Id, threadId: Id) {
     const validE = new ValidError("realm.thread.delete");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(threadId)) return validE.valid("threadId");
@@ -338,7 +352,7 @@ export async function realm_thread_delete(suser, realmId, threadId) {
     return { err: false };
 }
 
-export async function realm_thread_list(suser, realmId, channelId) {
+export async function realm_thread_list(suser: Socket_User, realmId: Id, channelId: Id) {
     const validE = new ValidError("realm.thread.list");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(channelId)) return validE.valid("channelId");

@@ -4,6 +4,7 @@ import db from '../../../dataBase.js';
 import Db_RealmConf from '../../../types/db/realmConf.js';
 import { Id } from '../../../types/base.js';
 import { Socket_StandardRes_Error } from '../../../types/socket/res.js';
+import { Socket_User } from '../../../types/socket/user.js';
 const router = Router();
 
 export const path = "realm/join";
@@ -31,8 +32,13 @@ router.get("/meta", global.authenticateMiddleware, async (req, res) => {
 });
 
 router.get("/", global.authenticateMiddleware, async (req, res) => {
-    const { id } = req.query;
-    const { err } = await realm_join({ _id: req.user }, id);
+    const { id } = req.query as { id: Id };
+    const suser: Socket_User = {
+        _id: req.user,
+        name: undefined,
+        email: undefined
+    };
+    const { err } = await realm_join(suser, id);
     if(err){
         if(err[0] == "valid.error") return res.status(400).json({ err: true, msg: err[2] });
         else return res.json({ err: true, msg: (err as Socket_StandardRes_Error[]).slice(2) });

@@ -146,7 +146,7 @@ const coreFunc = {
         if (vars.chat.to == "main") return;
 
         socket.emit("message.fetch", vars.chat.to, vars.chat.chnl, tmp, vars.chat.actMess);
-        socket.emit("message.markAsRead", vars.chat.to, vars.chat.chnl, "last");
+        socket.emit("message.mark.read", vars.chat.to, vars.chat.chnl, "last");
     },
 
     scrollToBottom() {

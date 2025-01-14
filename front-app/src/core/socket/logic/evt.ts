@@ -108,7 +108,7 @@ export function self_status_get(status: Core_socket__user_status_type, text: str
     render_user.localUserProfile();
 }
 
-export function message_markAsRead(to: Id, chnl: Id, id: Id) {
+export function message_mark_read(to: Id, chnl: Id, id: Id) {
     if (!to || !chnl || !id) return;
     try {
         // generate last message storage if needed

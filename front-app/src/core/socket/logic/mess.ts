@@ -54,7 +54,7 @@ export function mess(data: Core_mess__receivedMessage) {
     setTimeout(() => {
         const lastMessageId = vars.lastMess[data.to][data.chnl].mess;
         if (lastMessageId === data._id) {
-            socket.emit("message.markAsRead", data.to, data.chnl, data._id);
+            socket.emit("message.mark.read", data.to, data.chnl, data._id);
         }
     }, 1000);
 }
@@ -204,7 +204,7 @@ export function realm_thread_delete(id: Id) {
     document.querySelector("#thread__" + id)?.remove();
 }
 
-export function message_markAsRead(to: Id, chnl: Id, id: Id) {
+export function message_mark_read(to: Id, chnl: Id, id: Id) {
     vars.lastMess[to] = vars.lastMess[to] || {};
     vars.lastMess[to][chnl] = vars.lastMess[to][chnl] || { read: null, mess: null };
 

@@ -3,6 +3,16 @@ namespace Socket__Mess{
         minMsg?: number;
         maxMsg?: number;
     }
+
+    export interface MessageQuery {
+        from?: string;
+        mentions?: string;
+        before?: string;
+        during?: string;
+        after?: string;
+        pinned?: boolean;
+        message?: string;
+    }
 }
 
 export default Socket__Mess;

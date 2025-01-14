@@ -11,11 +11,15 @@ import sendMail from "../../../logic/mail.js";
 import * as tokenFunc from "../../../logic/token/index.js";
 import { genId } from "@wxn0brp/db";
 import { Socket_StandardRes } from "../../../types/socket/res.js";
+import { Socket_User } from "../../../types/socket/user.js";
+import { Id } from "../../../types/base.js";
+import Db_Mess from "../../../types/db/mess.js";
+import Status from "../../../types/socket/chat/status.js";
 
 const embedDataSchemat = valid.objAjv(embedData);
 const statusDataSchemat = valid.objAjv(statusData);
 
-export async function get_ogs(link) {
+export async function get_ogs(link: string) {
     const validE = new ValidError("get.ogs");
     if (!valid.str(link, 0, 300)) return validE.valid("link");
     if (!/^https?:\/\//.test(link)) return validE.valid("link");
@@ -25,7 +29,7 @@ export async function get_ogs(link) {
     return { err: false, res: result };
 }
 
-export async function send_embed_og(suser, to, chnl, link) {
+export async function send_embed_og(suser: Socket_User, to: Id, chnl: Id, link: string) {
     const validE = new ValidError("send.embed.og");
     if (!valid.id(to)) return validE.valid("to");
     if (!validChannelId(chnl)) return validE.valid("chnl");
@@ -50,7 +54,7 @@ export async function send_embed_og(suser, to, chnl, link) {
     return { err: false };
 }
 
-export async function send_embed_data(suser, to, chnl, embed) {
+export async function send_embed_data(suser: Socket_User, to: Id, chnl: Id, embed: Db_Mess.Embed) {
     const validE = new ValidError("send.embed.data");
     if (!valid.id(to)) return validE.valid("to");
     if (!validChannelId(chnl)) return validE.valid("chnl");
@@ -71,12 +75,12 @@ export async function send_embed_data(suser, to, chnl, embed) {
     return { err: false };
 }
 
-export async function fireToken_get(suser, userToken) {
+export async function fireToken_get(suser: Socket_User, userToken: string) {
     const pointer = await createTokenPointer(suser._id, userToken);
     return pointer;
 }
 
-export async function status_activity_set(suser, status) {
+export async function status_activity_set(suser: Socket_User, status: Status) {
     const validE = new ValidError("status.activity.set");
     if (!statusDataSchemat(status)) return validE.valid("status", statusDataSchemat.errors);
 
@@ -85,7 +89,7 @@ export async function status_activity_set(suser, status) {
     return { err: false };
 }
 
-export async function status_activity_get(id) {
+export async function status_activity_get(id: Id) {
     const validE = new ValidError("status.activity.get");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -93,7 +97,7 @@ export async function status_activity_get(id) {
     return { err: false, res: status };
 }
 
-export async function status_activity_gets(ids) {
+export async function status_activity_gets(ids: Id[]) {
     const validE = new ValidError("status.activity.gets");
     if (!valid.arrayId(ids)) return validE.valid("ids");
 
@@ -101,12 +105,12 @@ export async function status_activity_gets(ids) {
     return { err: false, res: states };
 }
 
-export async function status_activity_remove(suser): Promise<Socket_StandardRes> {
+export async function status_activity_remove(suser: Socket_User): Promise<Socket_StandardRes> {
     statusMgmt.rmCache(suser._id);
     return { err: false };
 }
 
-export async function user_delete(suser): Promise<Socket_StandardRes> {
+export async function user_delete(suser: Socket_User): Promise<Socket_StandardRes> {
     const domain = process.env.DOMAIN || "https://fusion.ct8.pl";
     const id = genId();
     const token = await tokenFunc.create({

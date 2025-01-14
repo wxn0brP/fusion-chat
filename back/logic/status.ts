@@ -1,5 +1,6 @@
 import NodeCache from "node-cache";
 import { Id } from "../types/base";
+import Status from "../types/socket/chat/status";
 
 const defTTL = 2 * 60;
 const h2 = 2 * 60 * 60 * 1000; //2 hours in ms
@@ -9,8 +10,7 @@ export const cache = new NodeCache({
     checkperiod: 15 * 60 // 15min
 });
 
-// TODO add type
-export function setCache(userId: Id, state){
+export function setCache(userId: Id, state: Status){
     let endTime = state.endTime;
     if(state.endTime){
         if(state.endTime < Date.now()) return 1;
@@ -32,10 +32,10 @@ export function setCache(userId: Id, state){
     return 0;
 }
 
-export function getCache(userId){
+export function getCache(userId: Id){
     return cache.get(userId);
 }
 
-export function rmCache(userId){
+export function rmCache(userId: Id){
     cache.del(userId);
 }
