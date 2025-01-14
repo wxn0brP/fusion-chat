@@ -1,16 +1,16 @@
-import { SignJWT, jwtVerify, jwtDecrypt, EncryptJWT } from "jose";
+import { SignJWT, jwtVerify, jwtDecrypt, EncryptJWT, JWTPayload } from "jose";
 import keyManager, { KeyIndex } from "./KeyManager.js";
 
 const secretKey = new TextEncoder().encode(process.env.JWT);
 
 /**
  * Creates a JWT token, either encrypted or plain.
- * @param {Object} data - User data to include in the token.
- * @param {boolean|number|string} exp - Expiration time for the token; false means no expiration.
- * @param {boolean|number} encrypt - If true, the token is encrypted; if a number, selects a specific key pair for encryption.
- * @returns {Promise<string>} Returns an encrypted token (JWE) or a signed token (JWS).
+ * @param data - User data to include in the token.
+ * @param exp - Expiration time for the token; false means no expiration.
+ * @param encrypt - If true, the token is encrypted; if a number, selects a specific key pair for encryption.
+ * @returns Returns an encrypted token (JWE) or a signed token (JWS).
  */
-export async function create(data, exp: boolean|number|string=true, encrypt: boolean|number=false){
+export async function create(data: JWTPayload, exp: boolean|number|string=true, encrypt: boolean|KeyIndex=false){
     // Create the signed JWT token
     const jwt = new SignJWT(data)
         .setProtectedHeader({ alg: "HS256" })
@@ -48,11 +48,11 @@ export async function create(data, exp: boolean|number|string=true, encrypt: boo
 
 /**
  * Decrypts and verifies a JWT token.
- * @param {string} token - The JWT token to verify.
- * @param {number} keyIndex - Index of the key for decryption (for encrypted tokens).
- * @returns {Promise<Object|null>} Returns the token payload if valid; otherwise, null.
+ * @param token - The JWT token to verify.
+ * @param keyIndex - Index of the key for decryption (for encrypted tokens).
+ * @returns Returns the token payload if valid; otherwise, null.
  */
-export async function decode(token, keyIndex){
+export async function decode(token: string, keyIndex: KeyIndex | false=false){
     try{
         if(keyIndex){
             // If token is encrypted, decrypt it first

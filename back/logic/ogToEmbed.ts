@@ -1,6 +1,6 @@
 import ogs from "open-graph-scraper";
 
-function processOgsToEmbed(data, link){
+function processOgsToEmbed(data: any, link: string){
     const title = data.ogTitle || data.twitterTitle || data.title || "No title";
     const description = data.ogDescription || data.twitterDescription || data.description || "No description";
     const image = (data.ogImage && data.ogImage[0] && data.ogImage[0].url) || data.twitterImage || data.favicon || null;
@@ -29,7 +29,7 @@ function processOgsToEmbed(data, link){
     return embed;
 }
 
-async function ogsToEmbed(link){
+async function ogsToEmbed(link: string){
     const data = await ogs({ url: link });
     if(data.error) return null;
     return processOgsToEmbed(data.result, link);

@@ -8,7 +8,7 @@ import Db_Data from "../../../types/db/data.js";
 export const path = "account/delete";
 
 router.get("/get", async (req, res) => {
-    const { token } = req.query;
+    const { token } = req.query as { token: string };
     if(!token) return res.json({ err: true, msg: "token is required" });
 
     const tokenData = await decode(token, KeyIndex.GENERAL) as { user: string };

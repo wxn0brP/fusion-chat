@@ -1,13 +1,15 @@
+import Db_RealmConf from "../../types/db/realmConf.js";
 import valid from "../validData.js";
 
-function getNestedValue(obj, path){
+// TODO fix handle array
+function getNestedValue(obj: object, path: string){
     return path.split(".").reduce((acc, part) => {
         if(Array.isArray(acc) && part === "*") return acc;
         return acc && acc[part];
     }, obj);
 }
 
-export function processTemplate(template, data){
+export function processTemplate(template: string, data: object){
     return template.replace(/\$([a-zA-Z0-9_.\[\]*]+)/g, (match, path) => {
         if(path.includes("[*]")){
             const arrayPath = path.split("[*]")[0];
@@ -22,18 +24,18 @@ export function processTemplate(template, data){
     });
 }
 
-function checkRequiredFields(fields, data){
+function checkRequiredFields(fields: string[], data: object){
     return fields.every(field => {
       return getNestedValue(data, field) !== undefined;
     });
 }
 
-function ajvSchema(schema, data){
+function ajvSchema(schema: object, data: object){
     const ajv = valid.objAjv(schema);
     return ajv(data);
 }
 
-export function check(webhook, data){
+export function check(webhook: Db_RealmConf.webhook, data: object){
     let isValid = true;
 
     if(webhook.ajv && !ajvSchema(webhook.ajv, data)) isValid = false;

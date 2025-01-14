@@ -1,5 +1,5 @@
-export default {
-    register(code){
+const contents = {
+    register(code: number){
         return {
             subject: "Fusion Chat | Register",
             html: `
@@ -8,7 +8,7 @@ export default {
             `
         };
     },
-    resetPassword(code){
+    resetPassword(code: number){
         return {
             subject: "Fusion Chat | Reset Password",
             html: `
@@ -17,7 +17,7 @@ export default {
             `
         };
     },
-    login(name, device){
+    login(name: string, device: string){
         return {
             subject: "Fusion Chat | Account Login Alert",
             html: `
@@ -29,7 +29,7 @@ export default {
             `
         };
     },
-    confirmDeleteAccount(name, link, cancelLink){
+    confirmDeleteAccount(name: string, link: string, cancelLink: string){
         return {
             subject: "Fusion Chat | Confirm Delete Account",
             html: `
@@ -42,7 +42,7 @@ export default {
             `
         };
     },
-    deletedAccount(name){
+    deletedAccount(name: string){
         return {
             subject: "Fusion Chat | Account Deleted",
             html: `
@@ -54,3 +54,6 @@ export default {
         };
     }
 }
+
+export default contents;
+export type MailContents = keyof typeof contents;

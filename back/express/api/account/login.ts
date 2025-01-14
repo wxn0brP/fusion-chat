@@ -3,13 +3,14 @@ import { timingSafeEqual, createHash } from 'crypto';
 import { createUser } from "../../../logic/auth.js";
 import mailer from "../../../logic/mail.js";
 import db from '../../../dataBase.js';
+import Db_Data from '../../../types/db/data.js';
 const router = Router();
 
 router.post("/login", async (req, res) => {
-    const { name, password } = req.body;
+    const { name, password } = req.body as { name: string, password: string };
     if (!name || !password) return res.json({ err: true, msg: "Name and password are required" });
 
-    let user = await db.data.findOne("user", { name });
+    let user = await db.data.findOne<Db_Data.user>("user", { name });
     if(!user){
         user = await db.data.findOne("user", { email: name });
         if(!user){

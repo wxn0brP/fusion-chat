@@ -44,7 +44,7 @@ router.post("/upload", global.authenticateMiddleware, (req, res) => {
         try{
             const image = await Image.load(ReqFile.buffer);
             const processedImage = cropAndResizeProfile(image);
-            await processedImage.save(filePath, { format: "png", compressionLevel: 0 });
+            await processedImage.save(filePath, { format: "png" });
 
             res.json({ err: false, msg: "Profile picture uploaded successfully.", path: filePath });
         }catch(error){

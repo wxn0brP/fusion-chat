@@ -8,12 +8,14 @@ import {
     hasAllPermissionsNumber,
 } from "./permBD.js";
 import Logic_PermSys from "../../types/logic/perm-sys.js";
+import Db_RealmRoles from "../../types/db/realmRoles.js";
+import { Id } from "../../types/base.js";
 
 export default class PermissionSystem{
     realmRoles: CollectionManager;
     realmUser: CollectionManager;
 
-    constructor(workspaceCollection){
+    constructor(workspaceCollection: string){
         if(!workspaceCollection)
             throw new Error("Missing required parameter workspaceCollection");
 
@@ -41,7 +43,7 @@ export default class PermissionSystem{
         }
     }
 
-    async createRole(name, opts: Logic_PermSys.createRole__opts={}){
+    async createRole(name: string, opts: Logic_PermSys.createRole__opts={}){
         opts = {
             lvl: null,
             p: 0,
@@ -89,7 +91,7 @@ export default class PermissionSystem{
             }
         }
 
-        return await this.realmRoles.add({
+        return await this.realmRoles.add<Db_RealmRoles.role>({
             name,
             lvl,
             p,
@@ -97,7 +99,7 @@ export default class PermissionSystem{
         });
     }
 
-    async updateRole(roleId, updates, managerId=null){
+    async updateRole(roleId: Id, updates: Partial<Db_RealmRoles.role>, managerId: Id=null){
         const role = await this.getRole(roleId);
         if(!role) throw new Error("Role not found");
 
@@ -117,7 +119,7 @@ export default class PermissionSystem{
         return await this.realmRoles.updateOne({ _id: roleId }, updates);
     }
 
-    async deleteRole(roleId, managerId){
+    async deleteRole(roleId: Id, managerId: Id | false){
         let roles = await this.getAllRolesSorted();
 
         if(managerId){
@@ -141,7 +143,7 @@ export default class PermissionSystem{
         }, { roleId });
     }
 
-    async assignRoleToUser(userId, roleId, managerId){
+    async assignRoleToUser(userId: Id, roleId: Id, managerId: Id | false){
         const role = await this.getRole(roleId);
 
         if(!role) throw new Error("Role not found");
@@ -152,6 +154,7 @@ export default class PermissionSystem{
                 throw new Error("Insufficient permissions to assign this role");
         }
 
+        // TODO (to db) add to db predefined push to array and push + unique
         return await this.realmUser.updateOneOrAdd(
             { u: userId },
             (data, ctx) => {
@@ -164,7 +167,7 @@ export default class PermissionSystem{
         );
     }
 
-    async removeRoleFromUser(userId, roleId, managerId){
+    async removeRoleFromUser(userId: Id, roleId: Id, managerId: Id){
         const [role, managerRoles] = await Promise.all([
             this.getRole(roleId),
             this.getUserRolesSorted(managerId)
@@ -180,16 +183,16 @@ export default class PermissionSystem{
         }, { roleId });
     }
 
-    hasHigherRole(userRoles, targetLvl){
+    hasHigherRole(userRoles: Db_RealmRoles.role[], targetLvl: number){
         return userRoles && userRoles.some(role => role.lvl < targetLvl);
     }
 
-    calculateCombinedPermissions(roles){
+    calculateCombinedPermissions(roles: Db_RealmRoles.role[]){
         if(!roles || roles.length === 0) return resetPermissions();
         return roles.reduce((perms, role) => combinePermissions(perms, role.p), 0);
     }
 
-    async getRole(roleId){
+    async getRole(roleId: Id){
         return await this.realmRoles.findOne({ _id: roleId });
     }
 
@@ -198,7 +201,7 @@ export default class PermissionSystem{
         return roles.sort((a, b) => a.lvl - b.lvl);
     }
 
-    async getUserRolesSorted(userId){
+    async getUserRolesSorted(userId: Id){
         const userData = await this.realmUser.findOne({ u: userId });
         if(!userData) return [];
 
@@ -218,18 +221,18 @@ export default class PermissionSystem{
             .sort((a, b) => a.lvl - b.lvl);
     }
 
-    async getUserHighestRole(userId){
+    async getUserHighestRole(userId: Id){
         const roles = await this.getUserRolesSorted(userId);
         return roles.length > 0 ? roles[0] : null;
     }
 
-    async canUserPerformAction(userId, requiredPermission){
+    async canUserPerformAction(userId: Id, requiredPermission: number){
         const roles = await this.getUserRolesSorted(userId);
         const combinedPermissions = this.calculateCombinedPermissions(roles);
         return hasPermission(combinedPermissions, requiredPermission);
     }
 
-    async canUserPerformAllActions(userId, requiredPermissions){
+    async canUserPerformAllActions(userId: Id, requiredPermissions: number[]){
         const roles = await this.getUserRolesSorted(userId);
         const combinedPermissions = this.calculateCombinedPermissions(roles);
     
@@ -238,7 +241,7 @@ export default class PermissionSystem{
         );
     }
 
-    async canUserPerformAnyAction(userId, permissions){
+    async canUserPerformAnyAction(userId: Id, permissions: number[]){
         const roles = await this.getUserRolesSorted(userId);
         const combinedPermissions = this.calculateCombinedPermissions(roles);
     
@@ -247,7 +250,7 @@ export default class PermissionSystem{
         );
     }    
 
-    async canManageUser(managerId, targetUserId){
+    async canManageUser(managerId: Id, targetUserId: Id){
         const [managerHighestRole, targetHighestRole] = await Promise.all([
             this.getUserHighestRole(managerId),
             this.getUserHighestRole(targetUserId)
@@ -258,7 +261,7 @@ export default class PermissionSystem{
         return managerHighestRole.lvl < targetHighestRole.lvl;
     }
 
-    async getUserPermissions(userId){
+    async getUserPermissions(userId: Id){
         const roles = await this.getUserRolesSorted(userId);
         return this.calculateCombinedPermissions(roles);
     }

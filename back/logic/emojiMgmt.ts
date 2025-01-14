@@ -1,11 +1,14 @@
 import { createWriteStream, createReadStream, readFileSync, writeFileSync, existsSync, rmSync, unlinkSync } from "fs";
 import { join } from "path";
 import svg2ttf from "svg2ttf";
-import { SVGIcons2SVGFontStream } from "svgicons2svgfont";
+import { SVGIcons2SVGFontStream, SVGIcons2SVGFontStreamOptions } from "svgicons2svgfont";
 import db from "../dataBase.js";
+import { Id } from "../types/base.js";
+import Db_RealmConf from "../types/db/realmConf.js";
+import Logic_Emoji from "../types/logic/emoji.js";
 
 
-function createSVGFont(emojis, outputSVGFontPath, opts){
+function createSVGFont(emojis: Logic_Emoji.emoji_builder[], outputSVGFontPath: string, opts: SVGIcons2SVGFontStreamOptions){
     opts = {
         fontName: "FusionChatEmojiFont",
         fontHeight: 1000,
@@ -43,7 +46,7 @@ function createSVGFont(emojis, outputSVGFontPath, opts){
 }
 
 
-function createTTF(inputSvgFontPath, outputTTFPath){
+function createTTF(inputSvgFontPath: string, outputTTFPath: string){
     const svgFile = readFileSync(inputSvgFontPath, "utf8");
     const ttf = svg2ttf(svgFile, {
         description: "Fusion Chat emoji font",
@@ -51,32 +54,33 @@ function createTTF(inputSvgFontPath, outputTTFPath){
     writeFileSync(outputTTFPath, ttf.buffer);
 }
 
-export async function createFont(emojis, realmId){
+export async function createFont(emojis: Db_RealmConf.emoji[], realmId: Id){
     const basePath = join("userFiles", "realms", realmId);
     const emojiPath = join(basePath, "emojis");
 
-    emojis = emojis.map(emoji => {
+    const processedEmojis: Logic_Emoji.emoji_builder[] = emojis.map(emoji => {
         const svgPath = join(emojiPath, emoji.unicode.toString(16) + ".svg");
-        if(!existsSync(svgPath)) return false;
-        return {
+        if(!existsSync(svgPath)) return;
+        const data: Logic_Emoji.emoji_builder = {
             name: emoji.unicode.toString(16),
             unicode: [String.fromCharCode(emoji.unicode)],
             path: svgPath
         }
-    }).filter(emoji => !!emoji);
+        return data;
+    }).filter(Boolean);
 
     const svgFontPath = join(basePath, "emojiFont.svg");
     const ttfPath = join("userFiles", "emoji", realmId + ".ttf");
 
-    await createSVGFont(emojis, svgFontPath, {
+    await createSVGFont(processedEmojis, svgFontPath, {
         fontName: "FusionChatEmojiFont-" + realmId,
-    });
+    } as SVGIcons2SVGFontStreamOptions);
 
     createTTF(svgFontPath, ttfPath);
 }
 
-export async function manageRealmEmojis(realmId){
-    const emojis = await db.realmConf.find(realmId, { $exists: { unicode: true }});
+export async function manageRealmEmojis(realmId: Id){
+    const emojis = await db.realmConf.find<Db_RealmConf.emoji>(realmId, { $exists: { unicode: true }});
     if(emojis.length > 0){
         await createFont(emojis, realmId);
     }else{
@@ -86,10 +90,10 @@ export async function manageRealmEmojis(realmId){
     }
 }
 
-function deleteFile(path){
+function deleteFile(path: string){
     if(existsSync(path)) unlinkSync(path);
 }
 
-function deleteDir(path){
+function deleteDir(path: string){
     if(existsSync(path)) rmSync(path, { recursive: true });
 }

@@ -1,4 +1,5 @@
 import { Id } from "../base";
+import Db_Mess from "./mess";
 
 namespace Db_RealmConf {
     export interface set {
@@ -34,6 +35,7 @@ namespace Db_RealmConf {
         ajv: object;
         required: string[];
         token: string;
+        embed?:Db_Mess.Embed
     }
 
     export interface emoji {

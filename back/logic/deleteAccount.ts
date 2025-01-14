@@ -1,6 +1,7 @@
 import db from "../dataBase.js";
+import { Id } from "../types/base.js";
 
-export default async (id) => {
+export default async (id: Id) => {
     await db.data.removeOne("user", { _id: id });
     await db.data.add("rm", { _id: id });
     await db.data.remove("fireToken", { user: id });

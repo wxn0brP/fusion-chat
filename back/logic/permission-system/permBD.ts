@@ -16,121 +16,121 @@ export default Permissions;
 
 /**
  * Checks if a user has a specific permission
- * @param {number} userPermissions - Number representing the user's permissions
- * @param {number} permission - Permission to check
- * @returns {boolean} - true if the user has the permission
+ * @param userPermissions - Number representing the user's permissions
+ * @param permission - Permission to check
+ * @returns - true if the user has the permission
  */
-export function hasPermission(userPermissions, permission){
+export function hasPermission(userPermissions: number, permission: number): boolean {
     return (userPermissions & permission) !== 0;
 }
-
 /**
  * Adds a permission to the user's set of permissions
- * @param {number} userPermissions - Current number representing the user's permissions
- * @param {number} permission - Permission to be added
- * @returns {number} - Updated user's permissions
+ * @param userPermissions - Current number representing the user's permissions
+ * @param permission - Permission to be added
+ * @returns Updated user's permissions
  */
-export function addPermission(userPermissions, permission){
+export function addPermission(userPermissions: number, permission: number): number {
     return userPermissions | permission;
 }
 
 /**
  * Removes a permission from the user's set of permissions
- * @param {number} userPermissions - Current number representing the user's permissions
- * @param {number} permission - Permission to be removed
- * @returns {number} - Updated user's permissions
+ * @param userPermissions - Current number representing the user's permissions
+ * @param permission - Permission to be removed
+ * @returns Updated user's permissions
  */
-export function removePermission(userPermissions, permission){
+export function removePermission(userPermissions: number, permission: number): number {
     return userPermissions & ~permission;
 }
 
 /**
  * Combines multiple permissions into one
- * @param {...number} permissions - List of permissions to combine
- * @returns {number} - Number representing the combined permissions
+ * @param permissions - List of permissions to combine
+ * @returns Number representing the combined permissions
  */
-export function combinePermissions(...permissions){
+export function combinePermissions(...permissions: number[]): number {
     return permissions.reduce((acc, permission) => acc | permission, 0);
 }
 
 /**
  * Removes all user's permissions (sets to 0)
- * @returns {number} - Reset permissions
+ * @returns Reset permissions
  */
-export function resetPermissions(){
+export function resetPermissions(): number {
     return 0;
 }
 
 /**
  * Checks if a user has all required permissions
- * @param {number} userPermissions - Number representing the user's permissions
- * @param {Array<number>} requiredPermissions - List of permissions that the user must have
- * @returns {boolean} - true if the user has all required permissions
+ * @param userPermissions - Number representing the user's permissions
+ * @param requiredPermissions - List of permissions that the user must have
+ * @returns true if the user has all required permissions
  */
-export function hasAllPermissions(userPermissions, requiredPermissions){
-    if(requiredPermissions.length == 0) return true;
+export function hasAllPermissions(userPermissions: number, requiredPermissions: number[]): boolean {
+    if (requiredPermissions.length === 0) return true;
     return requiredPermissions.every(permission => (userPermissions & permission) !== 0);
 }
 
 /**
  * Checks if a user has all required permissions. This function is faster than
  * hasAllPermissions, but works only if requiredPermissions is a number.
- * @param {number} userPermissions - Number representing the user's permissions
- * @param {number} requiredPermissions - Number representing the required permissions
- * @returns {boolean} - true if the user has all required permissions
+ * @param userPermissions - Number representing the user's permissions
+ * @param requiredPermissions - Number representing the required permissions
+ * @returns true if the user has all required permissions
  */
-export function hasAllPermissionsNumber(userPermissions, requiredPermissions){
+export function hasAllPermissionsNumber(userPermissions: number, requiredPermissions: number): boolean {
     return (userPermissions & requiredPermissions) === requiredPermissions;
 }
 
 /**
  * Checks if a user has any of the required permissions
- * @param {number} userPermissions - Number representing the user's permissions
- * @param {Array<number>} requiredPermissions - List of permissions that the user must have
- * @returns {boolean} - true if the user has any of the required permissions
+ * @param userPermissions - Number representing the user's permissions
+ * @param requiredPermissions - List of permissions that the user must have
+ * @returns true if the user has any of the required permissions
  */
-export function hasAnyPermission(userPermissions, requiredPermissions){
-    if(requiredPermissions.length == 0) return true;
+export function hasAnyPermission(userPermissions: number, requiredPermissions: number[]): boolean {
+    if (requiredPermissions.length === 0) return true;
     return requiredPermissions.some(permission => (userPermissions & permission) !== 0);
 }
 
 /**
  * Checks if a user has any of the required permissions. This function is faster than
  * hasAnyPermission, but works only if requiredPermissions is a number.
- * @param {number} userPermissions - Number representing the user's permissions
- * @param {number} requiredPermissions - Number representing the required permissions
- * @returns {boolean} - true if the user has any of the required permissions
+ * @param userPermissions - Number representing the user's permissions
+ * @param requiredPermissions - Number representing the required permissions
+ * @returns true if the user has any of the required permissions
  */
-export function hasAnyPermissionNumber(userPermissions, requiredPermissions){
+export function hasAnyPermissionNumber(userPermissions: number, requiredPermissions: number): boolean {
     return (userPermissions & requiredPermissions) !== 0;
 }
 
 /**
  * Generates a number of permissions based on a list of permissions
- * @param {Array<number>} permissionsList - List of permissions to include
- * @returns {number} - Number representing the combined permissions
+ * @param permissionsList - List of permissions to include
+ * @returns Number representing the combined permissions
  */
-export function generatePermissions(permissionsList){
+export function generatePermissions(permissionsList: number[]): number {
     return permissionsList.reduce((acc, permission) => acc | permission, 0);
 }
 
 /**
  * Generates a number representing all permissions
- * @param {Object} permissions - Object of permissions
- * @returns {number} - Number representing all permissions
+ * @param permissions - Object of permissions
+ * @returns Number representing all permissions
  */
-export function getAllPermissions(permissions){
-    return Object.values(permissions).reduce((acc, perm) => (acc as number) | (perm as number), 0);
+export function getAllPermissions<T>(permissions: T): number {
+    return Object.values(permissions).filter(perm => typeof perm === "number").reduce((acc, perm) => acc | perm, 0) as number;
 }
 
 /**
  * Checks if a manager can apply the requested permission changes
- * @param {number} newPermissions - The new permissions value to be applied
- * @param {number} currentPermissions - The current permissions value
- * @param {number} managerPermissions - Permissions of the manager attempting the change
- * @returns {boolean} - true if the manager can make the requested changes
+ * @param newPermissions - The new permissions value to be applied
+ * @param currentPermissions - The current permissions value
+ * @param managerPermissions - Permissions of the manager attempting the change
+ * @returns true if the manager can make the requested changes
  */
-export function canChangePermissions(newPermissions, currentPermissions, managerPermissions){
+export function canChangePermissions(newPermissions: number, currentPermissions: number, managerPermissions: number): boolean {
     const difference = newPermissions ^ currentPermissions;
     return (difference & ~managerPermissions) === 0;
 }
+

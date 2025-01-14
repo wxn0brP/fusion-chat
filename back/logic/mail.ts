@@ -1,14 +1,16 @@
 import { createTransport } from 'nodemailer';
 import fs from 'fs';
-import contents from './mail/contents.js';
+import contents, { MailContents } from './mail/contents.js';
 const config = JSON.parse(fs.readFileSync("config/mailConfig.json", "utf8"));
 
-export default (type, to, ...params) => {
+export default (type: MailContents, to: string, ...params: any[]) => {
     try{
         const smtpTransport = createTransport(config);
 
         const content = contents[type];
         if(!content) return false;
+        // @ts-ignore
+        // TODO Fix type
         const { subject, html } = content(...params);
 
         const mailOptions = {
@@ -33,7 +35,7 @@ export default (type, to, ...params) => {
     return true;
 }
 
-function wrapHtmlContent(title, content){
+function wrapHtmlContent(title: string, content: string){
     return `
         <!DOCTYPE html>
         <html lang="en">

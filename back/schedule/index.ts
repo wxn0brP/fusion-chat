@@ -1,14 +1,16 @@
 import schedule from "node-schedule";
-import actions from "./actions/index.js";
+import actions, { Actions } from "./actions/index.js";
 import db from "../dataBase.js";
+import { Id } from "../types/base.js";
+import Db_System from "../types/db/system.js";
 
-function performTask(actionType, data, taskId){
+function performTask(actionType: Actions, data: any, taskId: Id){
 	const action = actions[actionType];
 	if(!action) return console.log(`Unknown action type: ${actionType}`);
 	action(data, taskId);
 }
 
-function scheduleOneTimeTask(task){
+function scheduleOneTimeTask(task: Db_System.task){
 	const { _id, type, sTime, data } = task;
 
 	let scheduledDate = new Date();
@@ -27,11 +29,11 @@ function scheduleOneTimeTask(task){
 	}
 }
 
-function processTask(task){
+function processTask(task: Db_System.task){
 	if(task.sType === "one-time")
 		scheduleOneTimeTask(task);
 }
 
-db.system.find("tasks", {}).then(tasks => {
+db.system.find<Db_System.task>("tasks", {}).then(tasks => {
 	tasks.forEach(task => processTask(task));
 })

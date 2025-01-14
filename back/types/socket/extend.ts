@@ -5,5 +5,10 @@ declare module "socket.io" {
     interface Socket {
         user: Socket_User;
         voiceRoom: Id;
+        logError: (e: Error) => void;
+        isShouldRefresh: boolean;
+        onLimit: (event: string, limit: number, fn: Function) => void;
+        timeOutMap: Map<string, {t: number, i: number}>
+
     }
 }

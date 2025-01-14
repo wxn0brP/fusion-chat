@@ -9,21 +9,21 @@ export const cache = new nodeCache({
     checkperiod: 15 * 60,
 });
 
-export async function createTokenPointer(user, token){
+export async function createTokenPointer(userId: Id, token: string){
     const random = randomBytes(32).toString("hex");
     const id = genId();
 
-    const pointer = await create({ id, random, user }, "2m", KeyIndex.TEMPORARY);
+    const pointer = await create({ id, random, user: userId }, "2m", KeyIndex.TEMPORARY);
     
     cache.set(id, token);
     return pointer;
 }
 
-export async function getTokenFromPointer(pointerToken){
+export async function getTokenFromPointer(pointerToken: string){
     const data = await decode(pointerToken, KeyIndex.TEMPORARY) as { id: Id, user: Id };
     if(!data) return null;
 
-    const userToken = cache.get(data.id);
+    const userToken = cache.get(data.id) as string;
     if(!userToken) return null;
 
     const userTokenData = await decode(userToken, KeyIndex.USER_TOKEN);

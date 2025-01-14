@@ -10,6 +10,7 @@ import friends from "./friends.js";
 import other from "./other.js";
 import db from "../../dataBase.js";
 import { Socket_User } from "../../types/socket/user.js";
+import { Socket } from "socket.io";
 
 const tmpBan = new Map();
 
@@ -39,7 +40,7 @@ global.io.of("/").use(async (socket, next) => {
     next();
 });
 
-global.io.of("/").on("connection", (socket) => {
+global.io.of("/").on("connection", (socket: Socket) => {
     socket.logError = (e) => {
         lo("Error: ", e);
         db.logs.add("socket.io", {
@@ -115,7 +116,7 @@ global.io.of("/").on("connection", (socket) => {
         if(socket.isShouldRefresh){
             const oldToken = socket.handshake.auth.token;
             const newToken = await createUser({ _id: socket.user._id });
-            socket.emit("system.refreshToken", newToken, function confirm(confirm){
+            socket.emit("system.refreshToken", newToken, function confirm(confirm: boolean){
                 if(!confirm) return;
                 db.data.updateOne("token", { token: oldToken }, { token: newToken });
             });

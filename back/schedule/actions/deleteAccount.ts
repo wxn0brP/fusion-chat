@@ -1,9 +1,10 @@
 import db from "../../dataBase.js";
 import deleteAccount from "../../logic/deleteAccount.js";
 import sendMail from "../../logic/mail.js";
+import { Id } from "../../types/base.js";
 import Db_Data from "../../types/db/data.js";
 
-export default async (data, taskId) => {
+export default async (data: { user: string }, taskId: Id) => {
     const uid = data.user;
     const user = await db.data.findOne<Db_Data.user>("user", { _id: uid });
     if(!user) return;

@@ -1,7 +1,8 @@
 import { generateKeyPair, exportSPKI, exportPKCS8, importSPKI, importPKCS8 } from "jose";
 import db from "../../dataBase.js";
+import { DataBase } from "@wxn0brp/db";
 
-enum KeyIndex {    
+enum KeyIndex {
     GENERAL,
     TEMPORARY,
     USER_TOKEN,
@@ -10,12 +11,10 @@ enum KeyIndex {
 };
 
 class KeyManager{
-    db;
-    keys;
+    db: DataBase;
 
     constructor(){
         this.db = db.system;
-        this.keys = KeyIndex;
     }
 
     async getKeyPair(index = KeyIndex.GENERAL){
@@ -28,7 +27,7 @@ class KeyManager{
         };
     }
 
-    async addKeyPair(index){
+    async addKeyPair(index: KeyIndex){
         const { publicKey, privateKey } = await generateKeyPair("RSA-OAEP-256");
         const publicKeyPEM = await exportSPKI(publicKey);
         const privateKeyPEM = await exportPKCS8(privateKey);
@@ -42,6 +41,7 @@ class KeyManager{
 
     async initKeyPairs(){
         for(const index of Object.values(KeyIndex)){
+            if(typeof index !== "number") continue;
             const exists = await this.db.findOne("encryptionKeys", { index });
             if(exists) continue;
             await this.addKeyPair(index);

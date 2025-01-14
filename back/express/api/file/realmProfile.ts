@@ -54,7 +54,7 @@ router.post("/realm/profile/upload", global.authenticateMiddleware, async (req, 
         try{
             const image = await Image.load(ReqFile.buffer);
             const processedImage = cropAndResizeProfile(image);
-            await processedImage.save(filePath, { format: "png", compressionLevel: 0 });
+            await processedImage.save(filePath, { format: "png" });
 
             await db.realmConf.updateOne(realmId, { _id: "set"}, { img: true });
 

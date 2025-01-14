@@ -7,7 +7,7 @@ import { Id } from "../../../types/base.js";
 export const path = "iv/bot";
 
 router.get("/", global.authenticateMiddleware, async (req, res) => {
-    const { id, realm } = req.query;
+    const { id, realm } = req.query as { id: Id, realm: Id };
     const { err, msg } = await invite(req.user, id, realm);
 
     res.json({ err, msg });

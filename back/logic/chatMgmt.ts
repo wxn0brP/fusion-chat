@@ -2,15 +2,16 @@ import { genId } from "@wxn0brp/db";
 import PermissionSystem from "./permission-system/index.js";
 import Permissions, { getAllPermissions } from "./permission-system/permBD.js";
 import db from "../dataBase.js";
+import { Id } from "../types/base.js";
 
 /**
  * A function to combine two user ids into a new chat id.
  *
- * @param {string} id_1 - The first user id
- * @param {string} id_2 - The second user id
- * @return {string} The combined chat id
+ * @param id_1 - The first user id
+ * @param id_2 - The second user id
+ * @return The combined chat id
  */
-export function combineId(id_1, id_2){
+export function combineId(id_1: Id, id_2: Id): Id{
     const [id1, id2] = [id_1, id_2].sort();
 
     // Extract prefixes from user ids
@@ -31,21 +32,21 @@ export function combineId(id_1, id_2){
 /**
  * Check if a chat exists.
  *
- * @param {string} chatId - the ID of the chat to check
- * @return {boolean} true if the chat exists, false otherwise
+ * @param chatId - the ID of the chat to check
+ * @return true if the chat exists, false otherwise
  */
-export async function chatExists(chatId){
+export async function chatExists(chatId: Id){
     return await db.realmConf.issetCollection(chatId);
 }
 
 /**
  * Asynchronously creates a chat with the given name and ownerId.
  *
- * @param {string} name - The name of the chat
- * @param {string} ownerId - The ID of the chat owner
- * @return {string} The ID of the newly created chat
+ * @param name - The name of the chat
+ * @param ownerId - The ID of the chat owner
+ * @return The ID of the newly created chat
  */
-export async function createChat(name, ownerId){
+export async function createChat(name: string, ownerId: Id): Promise<Id>{
     const chatId = genId();
     
     await db.realmConf.add(chatId, {
@@ -56,7 +57,7 @@ export async function createChat(name, ownerId){
     });
     
     const permSys = new PermissionSystem(chatId);
-    const rootRole = await permSys.createRole("root", getAllPermissions(Permissions));
+    const rootRole = await permSys.createRole("root", { p: getAllPermissions(Permissions) });
 
     const categoryId = genId();
     await db.realmConf.add(chatId, {
@@ -93,12 +94,12 @@ export async function createChat(name, ownerId){
 /**
  * Adds a user to a chat.
  *
- * @param {string} chatId - The ID of the chat
- * @param {string} userId - The ID of the user to add
- * @param {string[]} roles - The roles to assign to the user
- * @return {Promise<void>} A Promise that resolves when the user is added to the chat
+ * @param chatId - The ID of the chat
+ * @param userId - The ID of the user to add
+ * @param roles - The roles to assign to the user
+ * @return A Promise that resolves when the user is added to the chat
  */
-export async function addUserToChat(chatId, userId, roles=[]){
+export async function addUserToChat(chatId: Id, userId: Id, roles: Id[]=[]){
     await db.realmUser.add(chatId, {
         u: userId,
         r: roles
@@ -112,11 +113,11 @@ export async function addUserToChat(chatId, userId, roles=[]){
 /**
  * Removes/exits a user from the chat.
  *
- * @param {string} chatId - The ID of the chat
- * @param {string} userId - The ID of the user to be removed
- * @return {Promise<void>} A promise that resolves when the user is removed from the chat
+ * @param chatId - The ID of the chat
+ * @param userId - The ID of the user to be removed
+ * @return A promise that resolves when the user is removed from the chat
  */
-export async function exitChat(chatId, userId){
+export async function exitChat(chatId: Id, userId: Id){
     await db.realmUser.removeOne(chatId, { uid: userId });
     await db.userData.removeOne(userId, { realm: chatId });
 }
@@ -125,11 +126,10 @@ export async function exitChat(chatId, userId){
 /**
  * A function to create a privilege for two users.
  *
- * @param {type} toId - the ID of the user receiving the privilege
- * @param {type} fromId - the ID of the user granting the privilege
- * @return {type} 
+ * @param toId - the ID of the user receiving the privilege
+ * @param fromId - the ID of the user granting the privilege
  */
-export async function createPriv(toId, fromId){
+export async function createPriv(toId: Id, fromId: Id){
     await db.userData.add(toId, {
         priv: fromId
     }, false);

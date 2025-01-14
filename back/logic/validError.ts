@@ -7,13 +7,13 @@ export default class ValidError {
         this.module = module;
     }
 
-    valid(...err): Socket_StandardRes {
+    valid(...err: any[]): Socket_StandardRes {
         return {
             err: ["error.valid", this.module, ...err]
         }
     }
 
-    err(...err): Socket_StandardRes {
+    err(...err: any[]): Socket_StandardRes {
         return {
             err: ["error", this.module, ...err]
         }

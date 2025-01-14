@@ -1,4 +1,5 @@
 import NodeCache from "node-cache";
+import { Id } from "../types/base";
 
 const defTTL = 2 * 60;
 const h2 = 2 * 60 * 60 * 1000; //2 hours in ms
@@ -8,7 +9,8 @@ export const cache = new NodeCache({
     checkperiod: 15 * 60 // 15min
 });
 
-export function setCache(userId, state){
+// TODO add type
+export function setCache(userId: Id, state){
     let endTime = state.endTime;
     if(state.endTime){
         if(state.endTime < Date.now()) return 1;

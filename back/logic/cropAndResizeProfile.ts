@@ -1,4 +1,6 @@
-export default function cropAndResizeProfile(image){
+import Image from "image-js";
+
+export default function cropAndResizeProfile(image: Image){
     function getTargetSize(){
         const minDimension = Math.min(image.width, image.height);
         const powersOfTwo = [512, 256, 128];

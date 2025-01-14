@@ -1,13 +1,16 @@
 import { Router } from "express";
 import { handleCustom } from "../../../logic/webhooks/index.js";
 import valid from "../../../logic/validData.js";
+import Logic_Webhook from "../../../types/logic/webhook.js";
 const router = Router();
 
 router.post("/custom", async (req, res) => {
-    const { query, body } = req;
-    if(!valid.str(query.token)) return res.status(400).send("Token is required");
+    const { query, body } = req as { query: object, body: object };
+    const queryData = query as Logic_Webhook.webhook_query;
 
-    const { code, msg } = await handleCustom(query, body);
+    if(!valid.str(queryData.token)) return res.status(400).send("Token is required");
+
+    const { code, msg } = await handleCustom(queryData, body);
     res.status(code).send(msg);
 });
 

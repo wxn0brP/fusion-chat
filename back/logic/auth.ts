@@ -9,7 +9,7 @@ import { create, decode, KeyIndex } from "./token/index.js";
  * @param {string} token - The token to be authenticated
  * @return The authenticated user if successful, otherwise false
  */
-export async function authUser(token, tokenDecoded={ data: null }): Promise<boolean|Socket_User>{
+export async function authUser(token: string, tokenDecoded={ data: null }): Promise<boolean|Socket_User>{
     try{
         const data = await decode(token, KeyIndex.USER_TOKEN) as { id: Id };
         if(!data) return false;
@@ -33,10 +33,10 @@ export async function authUser(token, tokenDecoded={ data: null }): Promise<bool
 /**
  * Creates a JWT token for the given user.
  *
- * @param {Object} user - the user object
- * @return {string} the JWT token
+ * @param user - the user object
+ * @return the JWT token
  */
-export async function createUser(user){
+export async function createUser(user: { _id: Id }) {
     const pay = {
         id: user._id,
     }

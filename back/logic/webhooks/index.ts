@@ -5,11 +5,13 @@ import { decode, create, KeyIndex } from "../../logic/token/index.js";
 import db from "../../dataBase.js";
 import { Id } from "../../types/base.js";
 import { Socket_StandardRes_Error } from "../../types/socket/res.js";
+import Db_RealmConf from "../../types/db/realmConf.js";
+import Logic_Webhook from "../../types/logic/webhook.js";
 
-export async function addCustom(webhookInfo){
+export async function addCustom(webhookInfo: Logic_Webhook.webhook_builder){
     const { chat, chnl, name, template, ajv, required } = webhookInfo;
     
-    const webhook = {
+    const webhook: Db_RealmConf.webhook = {
         whid: genId(),
         name,
         template,
@@ -29,12 +31,12 @@ export async function addCustom(webhookInfo){
     await db.realmConf.add(chat, webhook, false);
 }
 
-export async function handleCustom(query, body){
+export async function handleCustom(query: Logic_Webhook.webhook_query, body: object){
     const token = await decode(query.token, KeyIndex.WEBHOOK_TOKEN) as { chat: Id, id: Id };
     
     if(!token) return { code: 400, msg: "Invalid token" };
 
-    const wh = await db.realmConf.findOne(token.chat, { whid: token.id });
+    const wh = await db.realmConf.findOne<Db_RealmConf.webhook>(token.chat, { whid: token.id });
     if(!wh) return { code: 404, msg: "Webhook not found" };
 
     const isValid = customWebhookUtils.check(wh, body);
