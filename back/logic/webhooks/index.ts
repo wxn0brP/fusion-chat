@@ -84,10 +84,11 @@ export async function handleCustom(query: Logic_Webhook.webhook_query, body: obj
     );
 
     if(res.err){
-        if(res.err[0] === "error.valid"){
+        const err = res.err as Socket_StandardRes_Error;
+        if(err[0] === "error.valid"){
             return { code: 400, msg: "Invalid data" };
         }else{
-            return { code: 400, msg: "Invalid data: "+(res.err as Socket_StandardRes_Error[]).slice(1).join(", ") };
+            return { code: 400, msg: "Invalid data: "+err.slice(1).join(", ") };
         }
     }
 

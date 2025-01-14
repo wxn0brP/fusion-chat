@@ -5,6 +5,7 @@ import Permissions, * as PermissionFunctions from "../../../../logic/permission-
 import setRealmSettingsData from "../../valid/realmsSettings.js";
 import cpu from "./set/cpu.js";
 import db from "../../../../dataBase.js";
+import { Socket_StandardRes } from "../../../../types/socket/res.js";
 
 const sect_req_perms = {
     meta: [Permissions.admin],
@@ -17,7 +18,7 @@ const sect_req_perms = {
     banUsers: [Permissions.admin, Permissions.banUser]
 };
 
-// setctions that require get db data
+// sections that require get db data
 const db_data_req_sect = [
     "categories", "channels",
     "banUsers", "emojis",
@@ -34,7 +35,7 @@ const setRealmSettingsSchema = valid.objAjv(setRealmSettingsData);
  * @param {Object} data - Settings data to update. Valid sections and properties are defined in setRealmSettingsData
  * @returns {Promise<Object>} Error message on failure or confirmation of success
  */
-export default async function realm_settings_set(suser, id, data){
+export default async function realm_settings_set(suser, id, data): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.settings.set");
     
     // Validate basic input

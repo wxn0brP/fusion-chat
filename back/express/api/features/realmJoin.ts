@@ -38,10 +38,11 @@ router.get("/", global.authenticateMiddleware, async (req, res) => {
         name: undefined,
         email: undefined
     };
-    const { err } = await realm_join(suser, id);
-    if(err){
-        if(err[0] == "valid.error") return res.status(400).json({ err: true, msg: err[2] });
-        else return res.json({ err: true, msg: (err as Socket_StandardRes_Error[]).slice(2) });
+    const data = await realm_join(suser, id);
+    if(data.err){
+        const err = data.err as Socket_StandardRes_Error;
+        if(err[0] == "error.valid") return res.status(400).json({ err: true, msg: err[2] });
+        else return res.json({ err: true, msg: err.slice(2) });
     }
 
     res.json({ err: false, msg: "ok" });

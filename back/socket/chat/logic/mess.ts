@@ -13,6 +13,7 @@ import Db_RealmData from "../../../types/db/realmData.js";
 import Socket__Mess from "../../../types/socket/chat/mess.js";
 import { Socket_User } from "../../../types/socket/user.js";
 import { Id } from "../../../types/base.js";
+import { Socket_StandardRes } from "../../../types/socket/res.js";
 
 const messageSearchSchemat = valid.objAjv(messageSearchData);
 
@@ -22,7 +23,7 @@ export async function message_edit(
     _id: Id,
     msg: string,
     options: Socket__Mess.message_edit__opts = {}
-) {
+): Promise<Socket_StandardRes> {
     options = {
         minMsg: 0,
         maxMsg: 2000,
@@ -58,7 +59,7 @@ export async function message_edit(
     return { err: false };
 }
 
-export async function message_delete(suser: Socket_User, chatId: Id, _id: Id) {
+export async function message_delete(suser: Socket_User, chatId: Id, _id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("message.delete");
     if (!valid.id(chatId)) return validE.valid("chatId");
     if (!valid.id(_id)) return validE.valid("_id");
@@ -92,7 +93,7 @@ export async function message_delete(suser: Socket_User, chatId: Id, _id: Id) {
     return { err: false };
 }
 
-export async function messages_delete(suser: Socket_User, chatId: Id, ids: Id[]) {
+export async function messages_delete(suser: Socket_User, chatId: Id, ids: Id[]): Promise<Socket_StandardRes> {
     const validE = new ValidError("messages.delete");
     if (!valid.id(chatId)) return validE.valid("chatId");
     if (!valid.arrayId(ids)) return validE.valid("ids");
@@ -134,7 +135,7 @@ export async function message_fetch(
     chnl: Id,
     start: number,
     end: number
-) {
+): Promise<Socket_StandardRes> {
     const validE = new ValidError("message.fetch");
     if (!valid.id(chatId)) return validE.valid("chatId");
     if (!validChannelId(chnl)) return validE.valid("chnl");
@@ -155,7 +156,7 @@ export async function message_fetch(
     return { err: false, res };
 }
 
-export async function message_fetch_id(suser: Socket_User, chatId: Id, chnl: Id, mess_id: Id) {
+export async function message_fetch_id(suser: Socket_User, chatId: Id, chnl: Id, mess_id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("message.fetch.id");
     if (!valid.id(chatId)) return validE.valid("chatId");
     if (!valid.id(mess_id)) return validE.valid("mess_id");
@@ -173,7 +174,7 @@ export async function message_fetch_id(suser: Socket_User, chatId: Id, chnl: Id,
     return { err: false, res };
 }
 
-export async function message_mark_read(suser: Socket_User, chatId: Id, chnl: Id, mess_id: Id) {
+export async function message_mark_read(suser: Socket_User, chatId: Id, chnl: Id, mess_id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("message.mark.read");
     if (!valid.id(chatId)) return validE.valid("to");
     if (!validChannelId(chnl)) return validE.valid("chnl");
@@ -208,7 +209,7 @@ export async function message_mark_read(suser: Socket_User, chatId: Id, chnl: Id
     return { err: false, res };
 }
 
-export async function message_react(suser: Socket_User, chatId: Id, msgId: Id, react: string) {
+export async function message_react(suser: Socket_User, chatId: Id, msgId: Id, react: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("message.react");
     if (!valid.id(chatId)) return validE.valid("chatId");
     if (!valid.id(msgId)) return validE.valid("msgId");
@@ -247,7 +248,7 @@ export async function message_react(suser: Socket_User, chatId: Id, msgId: Id, r
     return { err: false };
 }
 
-export async function message_search(suser: Socket_User, chatId: Id, chnl: Id, query: Socket__Mess.MessageQuery) {
+export async function message_search(suser: Socket_User, chatId: Id, chnl: Id, query: Socket__Mess.MessageQuery): Promise<Socket_StandardRes> {
     const validE = new ValidError("message.search");
     if (!valid.id(chatId)) return validE.valid("realm");
     if (!validChannelId(chnl)) return validE.valid("chnl");
@@ -264,7 +265,7 @@ export async function message_search(suser: Socket_User, chatId: Id, chnl: Id, q
     return { err: false, res };
 }
 
-export async function message_pin(suser: Socket_User, chatId: Id, chnl: Id, msg_id: Id, pin: boolean) {
+export async function message_pin(suser: Socket_User, chatId: Id, chnl: Id, msg_id: Id, pin: boolean): Promise<Socket_StandardRes> {
     const validE = new ValidError("message.pin");
     if (!valid.id(chatId)) return validE.valid("realm");
     if (!validChannelId(chnl)) return validE.valid("chnl");
@@ -292,7 +293,7 @@ export async function message_pin(suser: Socket_User, chatId: Id, chnl: Id, msg_
     return { err: false };
 }
 
-export async function message_fetch_pinned(suser: Socket_User, chatId: Id, chnl: Id) {
+export async function message_fetch_pinned(suser: Socket_User, chatId: Id, chnl: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("message.get.pinned");
     if (!valid.id(chatId)) return validE.valid("realm");
     if (!validChannelId(chnl)) return validE.valid("chnl");
@@ -308,7 +309,7 @@ export async function message_fetch_pinned(suser: Socket_User, chatId: Id, chnl:
     return { err: false, res };
 }
 
-function filterMessages(query: Socket__Mess.MessageQuery, mess: Db_Mess.Message) {
+function filterMessages(query: Socket__Mess.MessageQuery, mess: Db_Mess.Message): boolean {
     const time = extractTimeFromId(mess._id) * 1000;
 
     if (query.from && mess.fr !== query.from) return false;

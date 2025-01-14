@@ -11,6 +11,7 @@ import other from "./other.js";
 import db from "../../dataBase.js";
 import { Socket_User } from "../../types/socket/user.js";
 import { Socket } from "socket.io";
+import { Socket_StandardRes, Socket_StandardRes_Error } from "../../types/socket/res.js";
 
 const tmpBan = new Map();
 
@@ -100,6 +101,14 @@ global.io.of("/").on("connection", (socket: Socket) => {
             socket.timeOutMap.set(evt, { t: currentTime, i: 0 });
             cb(...data);
         });
+    }
+    socket.processSocketError = (res: Socket_StandardRes) => {
+        const err = res.err;
+        if(!Array.isArray(err)) return false;
+
+        const [event, ...args] = err as Socket_StandardRes_Error;
+        socket.emit(event, ...args);
+        return true;
     }
 
     mess(socket);

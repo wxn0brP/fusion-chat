@@ -50,7 +50,7 @@ export function voice_getUsers(socket: Socket): Socket_StandardRes<Id[]> {
     return { err: false, res: [...new Set(users)] };
 }
 
-export async function call_dm_init(suser: Socket_User, id: Id) {
+export async function call_dm_init(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("call.dm.init");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -75,7 +75,7 @@ export async function call_dm_init(suser: Socket_User, id: Id) {
     return { err: false };
 }
 
-export async function call_dm_answer(suser: Socket_User, id: string, answer: boolean) {
+export async function call_dm_answer(suser: Socket_User, id: string, answer: boolean): Promise<Socket_StandardRes> {
     const validE = new ValidError("call.dm.answer");
     if (!valid.id(id)) return validE.valid("id");
     if (!valid.bool(answer)) return validE.valid("answer");

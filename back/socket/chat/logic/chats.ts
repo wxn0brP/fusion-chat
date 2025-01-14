@@ -57,7 +57,7 @@ export async function dm_get(suser: Socket_User): Promise<Socket_StandardRes> {
     return { err: false, res: [privs, blocked] };
 }
 
-export async function realm_create(suser: Socket_User, name: string) {
+export async function realm_create(suser: Socket_User, name: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.create");
     if (!valid.str(name, 0, 30)) return validE.valid("name");
 
@@ -65,7 +65,7 @@ export async function realm_create(suser: Socket_User, name: string) {
     return { err: false };
 }
 
-export async function realm_exit(suser: Socket_User, id: string) {
+export async function realm_exit(suser: Socket_User, id: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.exit");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -74,7 +74,7 @@ export async function realm_exit(suser: Socket_User, id: string) {
     return { err: false };
 }
 
-export async function dm_create(suser: Socket_User, nameOrId: string) {
+export async function dm_create(suser: Socket_User, nameOrId: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("dm.create");
     if (!valid.str(nameOrId, 0, 30) && !valid.id(nameOrId)) return validE.valid("nameOrId");
     if (nameOrId == suser._id || nameOrId == suser.name) return validE.err("can't add yourself");
@@ -105,7 +105,7 @@ export async function dm_create(suser: Socket_User, nameOrId: string) {
     return { err: false };
 }
 
-export async function realm_join(suser: Socket_User, id: Id) {
+export async function realm_join(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.join");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -120,7 +120,7 @@ export async function realm_join(suser: Socket_User, id: Id) {
     return { err: false };
 }
 
-export async function realm_mute(suser: Socket_User, id: Id, time: number) {
+export async function realm_mute(suser: Socket_User, id: Id, time: number): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.mute");
     if (!valid.id(id)) return validE.valid("id");
     if (!valid.num(time, -1)) return validE.valid("time");
@@ -132,7 +132,7 @@ export async function realm_mute(suser: Socket_User, id: Id, time: number) {
     return { err: false };
 }
 
-export async function dm_block(suser: Socket_User, id: Id, blocked: boolean) {
+export async function dm_block(suser: Socket_User, id: Id, blocked: boolean): Promise<Socket_StandardRes> {
     const validE = new ValidError("dm.block");
     if (!valid.id(id)) return validE.valid("id");
     if (!valid.bool(blocked)) return validE.valid("blocked");

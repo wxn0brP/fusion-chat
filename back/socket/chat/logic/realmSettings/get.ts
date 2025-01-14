@@ -6,6 +6,7 @@ import Permissions, * as PermissionFunctions from "../../../../logic/permission-
 import db from "../../../../dataBase.js";
 import Db_RealmData from "../../../../types/db/realmData.js";
 import Db_RealmConf from "../../../../types/db/realmConf.js";
+import { Socket_StandardRes } from "../../../../types/socket/res.js";
 
 const DEFAULT_SECTIONS = [
     "meta",
@@ -36,7 +37,7 @@ const REQUIRED_PERMISSIONS = {
  * @param {string[]} sections - Sections to retrieve
  * @returns {Promise<Object>} Settings data or error
  */
-export default async function realm_settings_get(suser, id, sections=[]){
+export default async function realm_settings_get(suser, id, sections=[]): Promise<Socket_StandardRes> {
     const validator = new ValidError("realm.settings.get");
     if(!valid.id(id)) return validator.valid("id");
     if(!valid.arrayString(sections)) return validator.valid("sections");

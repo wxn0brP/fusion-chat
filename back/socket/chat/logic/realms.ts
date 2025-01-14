@@ -14,7 +14,7 @@ import { Socket_StandardRes } from "../../../types/socket/res.js";
 import { Socket_User } from "../../../types/socket/user.js";
 import { Id } from "../../../types/base.js";
 
-export async function realm_setup(suser: Socket_User, id: Id) {
+export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.setup");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -65,7 +65,7 @@ export async function realm_setup(suser: Socket_User, id: Id) {
     return { err: false, res: [id, name, buildChannels, isOwnEmoji, userPermissions] };
 }
 
-export async function realm_users_sync(id: Id) {
+export async function realm_users_sync(id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.users.sync");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -91,7 +91,7 @@ export async function realm_users_sync(id: Id) {
     return { err: false, res: [usersData, rolesData] };
 }
 
-export async function realm_users_activity_sync(id: Id) {
+export async function realm_users_activity_sync(id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.users.activity.sync");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -121,7 +121,7 @@ export async function realm_users_activity_sync(id: Id) {
     return { err: false, res: [res] };
 }
 
-export async function realm_delete(suser: Socket_User, id: Id, name: string) {
+export async function realm_delete(suser: Socket_User, id: Id, name: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.delete");
     if (!valid.id(id)) return validE.valid("id");
     if (!valid.str(name, 0, 30)) return validE.valid("name");
@@ -146,7 +146,7 @@ export async function realm_delete(suser: Socket_User, id: Id, name: string) {
     return { err: false };
 }
 
-export async function realm_user_kick(suser: Socket_User, realmId: Id, uid: Id, ban: boolean = false) {
+export async function realm_user_kick(suser: Socket_User, realmId: Id, uid: Id, ban: boolean = false): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.user.kick");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(uid)) return validE.valid("uid");
@@ -172,7 +172,7 @@ export async function realm_user_kick(suser: Socket_User, realmId: Id, uid: Id, 
     return { err: false };
 }
 
-export async function realm_user_unban(suser: Socket_User, realmId: Id, uid: Id) {
+export async function realm_user_unban(suser: Socket_User, realmId: Id, uid: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.user.unban");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(uid)) return validE.valid("uid");
@@ -188,7 +188,7 @@ export async function realm_user_unban(suser: Socket_User, realmId: Id, uid: Id)
     return { err: false };
 }
 
-export async function realm_emojis_sync(realmId: Id) {
+export async function realm_emojis_sync(realmId: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.emojis.sync");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
@@ -202,7 +202,7 @@ export async function realm_event_channel_subscribe(
     sourceChannelId: Id,
     targetRealmId: Id,
     targetChannelId: Id
-) {
+): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.event.channel.subscribe");
     if (!valid.id(sourceRealmId)) return validE.valid("sourceRealmId");
     if (!valid.id(sourceChannelId)) return validE.valid("sourceChannelId");
@@ -235,7 +235,7 @@ export async function realm_event_channel_unsubscribe(
     sourceChannelId: Id,
     targetRealmId: Id,
     targetChannelId: Id
-) {
+): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.event.channel.unsubscribe");
     if (!valid.id(sourceRealmId)) return validE.valid("sourceRealmId");
     if (!valid.id(sourceChannelId)) return validE.valid("sourceChannelId");
@@ -270,7 +270,7 @@ export async function realm_event_channel_available(suser: Socket_User): Promise
     return { err: false, res: realmsWithAdmin };
 }
 
-export async function realm_event_channel_list(suser: Socket_User, realmId: Id) {
+export async function realm_event_channel_list(suser: Socket_User, realmId: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.event.channel.list");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
@@ -306,7 +306,13 @@ export async function realm_event_channel_list(suser: Socket_User, realmId: Id) 
     return { err: false, res: channels };
 }
 
-export async function realm_thread_create(suser: Socket_User, realmId: Id, channelId: Id, name: string, replyMsgId: Id = null) {
+export async function realm_thread_create(
+    suser: Socket_User,
+    realmId: Id,
+    channelId: Id,
+    name: string,
+    replyMsgId: Id = null
+): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.thread.create");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(channelId)) return validE.valid("channelId");
@@ -328,7 +334,7 @@ export async function realm_thread_create(suser: Socket_User, realmId: Id, chann
     return { err: false, res: thread._id };
 }
 
-export async function realm_thread_delete(suser: Socket_User, realmId: Id, threadId: Id) {
+export async function realm_thread_delete(suser: Socket_User, realmId: Id, threadId: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.thread.delete");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(threadId)) return validE.valid("threadId");
@@ -352,7 +358,7 @@ export async function realm_thread_delete(suser: Socket_User, realmId: Id, threa
     return { err: false };
 }
 
-export async function realm_thread_list(suser: Socket_User, realmId: Id, channelId: Id) {
+export async function realm_thread_list(suser: Socket_User, realmId: Id, channelId: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.thread.list");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(channelId)) return validE.valid("channelId");

@@ -1,5 +1,5 @@
+import { Socket } from "socket.io";
 import { Id } from "../../types/base.js";
-import { Socket_StandardRes_Error } from "../../types/socket/res.js";
 import {
     voice_getUsers,
     voice_join,
@@ -9,12 +9,12 @@ import {
     call_dm_init,
 } from "./logic/voice.js";
 
-export default (socket) => {
+export default (socket: Socket) => {
     socket.voiceRoom = null;
     socket.onLimit("voice.join", 100, async (to: Id) => {
         try {
-            const { err } = await voice_join(socket, to);
-            if (err) return socket.emit(...err as Socket_StandardRes_Error[]);
+            const data = await voice_join(socket, to);
+            socket.processSocketError(data);
         } catch (e) {
             socket.logError(e);
         }
@@ -46,10 +46,10 @@ export default (socket) => {
 
     socket.onLimit("voice.get.users", 100, (cb?: Function) => {
         try {
-            const { err, res } = voice_getUsers(socket);
-            if (err) return socket.emit(...err as Socket_StandardRes_Error[]);
-            if (cb) cb(res);
-            else socket.emit("voice.get.users", res);
+            const data = voice_getUsers(socket);
+            if (socket.processSocketError(data)) return;
+            if (cb) cb(data.res);
+            else socket.emit("voice.get.users", data.res);
         } catch (e) {
             socket.logError(e);
         }
@@ -57,10 +57,10 @@ export default (socket) => {
 
     socket.onLimit("call.dm.init", 100, async (id: Id, cb?: Function) => {
         try {
-            const { err, res } = await call_dm_init(socket.user, id);
-            if (err) return socket.emit(...err as Socket_StandardRes_Error[]);
+            const data = await call_dm_init(socket.user, id);
+            if (socket.processSocketError(data)) return;
 
-            if (!res) return;
+            if (!data.res) return;
             if (cb) cb(id, true);
             else socket.emit("call.dm.init", id, true);
         } catch (e) {
@@ -70,8 +70,8 @@ export default (socket) => {
 
     socket.onLimit("call.dm.answer", 100, async (id: Id, answer: boolean = false) => {
         try {
-            const { err } = await call_dm_answer(socket.user, id, answer);
-            if (err) return socket.emit(...err as Socket_StandardRes_Error[]);
+            const data = await call_dm_answer(socket.user, id, answer);
+            socket.processSocketError(data);
         } catch (e) {
             socket.logError(e);
         }

@@ -15,7 +15,7 @@ enum friendStatusEnum {
     REQUEST_RECEIVED,
 }
 
-export async function friend_request(suser: Socket_User, nameOrId: string) {
+export async function friend_request(suser: Socket_User, nameOrId: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("friend.request");
     if (!valid.str(nameOrId, 0, 30) && !valid.id(nameOrId)) return validE.valid("nameOrId");
 
@@ -50,7 +50,7 @@ export async function friend_request(suser: Socket_User, nameOrId: string) {
     return { err: false };
 }
 
-export async function friend_response(suser: Socket_User, id: Id, accept: boolean) {
+export async function friend_response(suser: Socket_User, id: Id, accept: boolean): Promise<Socket_StandardRes> {
     const validE = new ValidError("friend.response");
     if (!valid.id(id)) return validE.valid("id");
     if (!valid.bool(accept)) return validE.valid("accept");
@@ -72,7 +72,7 @@ export async function friend_response(suser: Socket_User, id: Id, accept: boolea
     return { err: false };
 }
 
-export async function friend_request_remove(suser: Socket_User, id: Id) {
+export async function friend_request_remove(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("friend.request.remove");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -82,7 +82,7 @@ export async function friend_request_remove(suser: Socket_User, id: Id) {
     return { err: false };
 }
 
-export async function friend_remove(suser: Socket_User, id: Id) {
+export async function friend_remove(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("friend.remove");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -130,7 +130,7 @@ export async function friend_requests_get(suser: Socket_User): Promise<Socket_St
     return { err: false, res: friendRequests };
 }
 
-export async function user_profile(suser: Socket_User, id: Id) {
+export async function user_profile(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("user.profile");
     if (!valid.id(id)) return validE.valid("id");
 
