@@ -1,16 +1,10 @@
 {
-    "ignore": [
-        "front",
-        "front-app",
-        "app",
-        "data",
-        "fc-index",
-        "fc-app",
-        "app-test",
-        "bots",
-        "back/db/remote/server/gui"
+    "watch": [
+        "back"
     ],
+    "ext": "ts",
     "events": {
         "restart": "clear"
-    }
+    },
+    "exec": "yarn build && yarn start"
 }

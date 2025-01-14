@@ -22,10 +22,6 @@ export interface Options {
     frPrefix?: string; // Optional prefix for the message author.
 }
 
-export interface Response {
-    err: false | string[]; // The error message or array of error messages if any.
-}
-
 export interface Message {
     _id?: Id;
     fr?: Id;

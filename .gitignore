@@ -9,6 +9,7 @@ userFiles
 # dist
 front/app/css
 front-app/dist
+dist-back
 
 # ide
 .vscode

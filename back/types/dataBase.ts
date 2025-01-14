@@ -1,7 +1,7 @@
 import db from "@wxn0brp/db/dist/esm/database.js";
 import graph from "@wxn0brp/db/dist/esm/graph.js";
 
-export interface dbs {
+export interface FC_DataBases {
     data?: db,
     dataGraph?: graph,
     system?: db,

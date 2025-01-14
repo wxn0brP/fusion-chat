@@ -27,6 +27,7 @@ namespace Db_RealmData {
         name: string;
         author: Id;
         reply?: Id;
+        _id?: Id;
     }
 }
 

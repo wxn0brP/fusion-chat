@@ -9,7 +9,7 @@ namespace Db_Data {
     }
 
     export interface friendRequest {
-        fr: Id;
+        from: Id;
         to: Id;
     }
 
