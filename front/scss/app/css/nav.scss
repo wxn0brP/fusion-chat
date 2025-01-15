@@ -91,6 +91,8 @@ nav {
 #navs__realms {
     width: 100%;
     height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
 }
 
 #navs__user {
@@ -130,23 +132,28 @@ nav {
     }
 }
 
-#navs__realms__channels details {
-    summary {
-        text-align: left;
-        padding-left: 1rem;
-        font-size: 1.2rem;
-    }
+#navs__realms__channels {
+    overflow-y: scroll;
+    flex-grow: 1;
 
-    div {
-        text-align: left;
-        padding-left: 1rem;
-        cursor: pointer;
-        margin-block: 0.5rem;
-        font-size: 1.1rem;
-        transition: margin-left 0.5s;
+    details {
+        summary {
+            text-align: left;
+            padding-left: 1rem;
+            font-size: 1.2rem;
+        }
 
-        &:hover {
-            margin-left: 0.5rem;
+        div {
+            text-align: left;
+            padding-left: 1rem;
+            cursor: pointer;
+            margin-block: 0.5rem;
+            font-size: 1.1rem;
+            transition: margin-left 0.5s;
+
+            &:hover {
+                margin-left: 0.5rem;
+            }
         }
     }
 }
@@ -154,7 +161,7 @@ nav {
 #navs__realms__users {
     text-align: left;
     overflow-y: scroll;
-    max-height: calc(100vh - 60px - 50px);
+    flex-grow: 1;
 
     img {
         width: 32px;
@@ -162,19 +169,19 @@ nav {
         border-radius: 50%;
         object-fit: cover;
     }
-}
 
-#navs__realms__users>div {
-    margin-block: 0.1rem;
-    padding: 0.3rem;
-    padding-left: 1rem;
-    border-radius: 1rem;
+    &>div {
+        margin-block: 0.1rem;
+        padding: 0.3rem;
+        padding-left: 1rem;
+        border-radius: 1rem;
 
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
 
-    cursor: pointer;
+        cursor: pointer;
+    }
 }
 
 .realm_user_div:hover .realm_user_name {
@@ -200,11 +207,6 @@ nav {
     display: flex;
     align-items: center;
     gap: 15px;
-}
-
-#navs__main {
-    display: flex;
-    flex-direction: column;
 }
 
 #navs__priv {

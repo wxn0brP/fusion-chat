@@ -83,7 +83,7 @@ const coreFunc = {
         } else {
             document.querySelector("title").innerHTML = staticData.baseTitle + " | " + apis.www.changeChat(id);
             navHTML.main.style.display = "none";
-            navHTML.realms.style.display = "block";
+            navHTML.realms.style.display = "";
             messHTML.nav_priv.style.display = "none";
             messHTML.nav_realm.style.display = "";
             vars.chat.chnl = chnl;
