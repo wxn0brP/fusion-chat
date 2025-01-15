@@ -11,7 +11,10 @@ export const LangRef:
 const LangPkg: Lang_Pkg = {};
 
 export function langFunc(text: string, ...data: any[]): string {
-    return text.replace(/\$/g, () => data.shift().toString() || '$')
+    return text.replace(/\\\$|(?<!\\)\$/g, (match) => {
+        if (match === "\\$") return "$";
+        return data.shift()?.toString() || "$";
+    });
 }
 
 export async function init_translate() {
