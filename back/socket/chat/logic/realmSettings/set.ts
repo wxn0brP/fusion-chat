@@ -91,8 +91,8 @@ async function validatePermissions(userId, realmId, data){
 function validateData(data, schema){
     if(!schema(data)){
         if(process.env.NODE_ENV === "development"){
-            console.log("Validation errors:", schema.errors);
-            console.log("Invalid data:", data);
+            lo("Validation errors:", schema.errors);
+            lo("Invalid data:", data);
         }
         return false;
     }

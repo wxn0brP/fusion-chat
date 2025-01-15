@@ -100,7 +100,7 @@ export default {
                     whid: { type: "string", validId: true },
                     name: { type: "string" },
                     chnl: { type: "string", validId: true },
-                    template: { type: "string", minLength: 1, maxLength: 500 },
+                    template: { type: "string", maxLength: 500 },
                     required: { type: "array", items: { type: "string" } },
                     ajv: { type: "object", additionalProperties: true },
                     token: { type: "string" },
@@ -113,14 +113,38 @@ export default {
                             image: { type: "string" },
                             customFields: {
                                 type: "object",
-                                additionalProperties: { type: "string"},
+                                additionalProperties: { type: "string" },
                             }
                         },
-                        required: ["title"],
                         additionalProperties: false
                     }
                 },
-                required: ["whid", "name", "chnl", "template", "required", "ajv"],
+                required: ["whid", "name", "chnl", "required", "ajv"],
+                allOf: [
+                    {
+                        if: {
+                            not: { required: ["embed"] }
+                        },
+                        then: {
+                            properties: {
+                                template: {
+                                    type: "string",
+                                    minLength: 1,
+                                    pattern: ".*\\S.*"
+                                }
+                            },
+                            required: ["template"]
+                        }
+                    },
+                    {
+                        if: {
+                            required: ["embed"]
+                        },
+                        then: {
+                            required: ["template"]
+                        }
+                    }
+                ],
                 additionalProperties: false
             }
         }
