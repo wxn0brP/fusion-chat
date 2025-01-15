@@ -194,7 +194,7 @@ export function realm_thread_list(data: Vars_realm__thread[]) {
 
         if (t.reply) {
             const mess = document.querySelector<HTMLDivElement>("#mess__" + t.reply);
-            messInteract.thread(t, mess);
+            if (mess) messInteract.thread(t, mess);
         }
     })
 }

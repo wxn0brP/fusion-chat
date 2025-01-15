@@ -145,6 +145,7 @@ const messInteract = {
 
     thread(thread: Vars_realm__thread, messDiv: HTMLDivElement) {
         if (!thread) return;
+        if (!messDiv) return;
         const { _id, name, author } = thread;
 
         if (messDiv.querySelector("#thread__" + _id)) return;
