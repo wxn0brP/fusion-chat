@@ -1,45 +1,44 @@
 import Db_RealmConf from "../../types/db/realmConf.js";
 import valid from "../validData.js";
 
-// TODO fix handle array
-function getNestedValue(obj: object, path: string){
-    return path.split(".").reduce((acc, part) => {
-        if(Array.isArray(acc) && part === "*") return acc;
-        return acc && acc[part];
+function getNestedValue(obj: object, path: string) {
+    return path.split('.').reduce((current, part) => {
+        if (part.includes('[') && part.includes(']')) {
+            const [arrayName, indexStr] = part.split('[');
+            const index = parseInt(indexStr.replace(']', ''));
+            return current[arrayName][index];
+        }
+        return current[part];
     }, obj);
-}
+};
 
-export function processTemplate(template: string, data: object){
-    return template.replace(/\$([a-zA-Z0-9_.\[\]*]+)/g, (match, path) => {
-        if(path.includes("[*]")){
-            const arrayPath = path.split("[*]")[0];
-            const fieldPath = path.split("[*]")[1].slice(1);
-            const arrayData = getNestedValue(data, arrayPath);
-            if(Array.isArray(arrayData)){
-                return arrayData.map(item => getNestedValue(item, fieldPath)).join(", ");
-            }
-        }else{
-            return getNestedValue(data, path) || "";
+export function processTemplate(template: string, obj: object) {
+    return template.replace(/\$([a-zA-Z0-9\[\]._]+)/g, (match, path) => {
+        try {
+            const value = getNestedValue(obj, path);
+            return value !== undefined ? value : match;
+        } catch (error) {
+            return match;
         }
     });
 }
 
-function checkRequiredFields(fields: string[], data: object){
+function checkRequiredFields(fields: string[], data: object) {
     return fields.every(field => {
-      return getNestedValue(data, field) !== undefined;
+        return getNestedValue(data, field) !== undefined;
     });
 }
 
-function ajvSchema(schema: object, data: object){
+function ajvSchema(schema: object, data: object) {
     const ajv = valid.objAjv(schema);
     return ajv(data);
 }
 
-export function check(webhook: Db_RealmConf.webhook, data: object){
+export function check(webhook: Db_RealmConf.webhook, data: object) {
     let isValid = true;
 
-    if(webhook.ajv && !ajvSchema(webhook.ajv, data)) isValid = false;
-    if(webhook.required.length > 0 && !checkRequiredFields(webhook.required, data)) isValid = false;
+    if (webhook.ajv && !ajvSchema(webhook.ajv, data)) isValid = false;
+    if (webhook.required.length > 0 && !checkRequiredFields(webhook.required, data)) isValid = false;
 
     return isValid;
 }
