@@ -52,10 +52,11 @@ export default (socket: Socket) => {
         }
     });
 
-    socket.onLimit("dm.create", 1000, async (name: string) => {
+    socket.onLimit("dm.create", 1000, async (name: string, cb?: Function) => {
         try {
             const data = await dm_create(socket.user, name);
-            socket.processSocketError(data);
+            if(socket.processSocketError(data, cb)) return;
+            if (cb) cb(false);
         } catch (e) {
             socket.logError(e);
         }

@@ -10,6 +10,6 @@ declare module "socket.io" {
         isShouldRefresh: boolean;
         onLimit: (event: string, limit: number, fn: Function) => void;
         timeOutMap: Map<string, {t: number, i: number}>
-        processSocketError: (err: Socket_StandardRes) => boolean
+        processSocketError: (err: Socket_StandardRes, cb?: Function) => boolean
     }
 }

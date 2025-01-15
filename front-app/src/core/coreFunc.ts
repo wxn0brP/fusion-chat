@@ -13,9 +13,10 @@ import { customEmoji } from "../ui/components/emoji";
 import { navHTML, coreHTML, messHTML, mainViewHTML, mglVar } from "../var/html";
 import staticData from "../var/staticData";
 import LangPkg from "../utils/translate";
+import render_dm from "../ui/render/dm";
 
 const coreFunc = {
-    changeChat(id: Id, chnl: Id | "main" | null = null) {
+    async changeChat(id: Id, chnl: Id | "main" | null = null) {
         messHTML.div.innerHTML = "";
         coreHTML.emojiStyle.innerHTML = "";
         customEmoji.categories = [];
@@ -57,6 +58,19 @@ const coreFunc = {
             navHTML.main.style.display = "block";
             navHTML.realms.style.display = "none";
             vars.chat.chnl = "main";
+
+            if (!vars.privs.includes(id.substring(1))) {
+                const rawId = id.substring(1);
+                const data = await new Promise(res => {
+                    socket.emit("dm.create", rawId, () => {
+                        socket.emit("dm.get", (data, blocked) => {
+                            res([data, blocked]);
+                        });
+                    });
+                })
+                render_dm.dm_get(data[0], data[1]);
+            }
+
             coreFunc.loadChat();
             socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
             vars.realm.users = [];
@@ -181,10 +195,10 @@ const coreFunc = {
         }
 
         const toBlocked = vars.blocked.some(block => block.block == id);
-        if(toBlocked) return set(LangPkg.ui.message.block_placeholder.block + "!", true);
+        if (toBlocked) return set(LangPkg.ui.message.block_placeholder.block + "!", true);
 
         const frBlocked = vars.blocked.some(block => block.blocked == id);
-        if(frBlocked) return set(LangPkg.ui.message.block_placeholder.blocked + "!", true);
+        if (frBlocked) return set(LangPkg.ui.message.block_placeholder.blocked + "!", true);
 
         set(LangPkg.ui.message.placeholder + "...", false);
     }

@@ -8,6 +8,7 @@ import renderUtils from "./utils";
 import utils from "../../utils/utils";
 import apis from "../../api/apis";
 import socket from "../../core/socket/socket";
+import { Core_socket__blocked, Core_socket__dm } from "../../types/core/socket";
 
 const render_dm = {
     chats() {
@@ -62,6 +63,23 @@ const render_dm = {
 
             unreadPriv ? cl.add("unreadPriv") : cl.remove("unreadPriv");
         });
+    },
+
+    dm_get(data: Core_socket__dm[], blocked: Core_socket__blocked[]){
+        data.forEach((priv) => {
+            const id = "$" + priv.priv;
+    
+            vars.lastMess[id] = vars.lastMess[id] || {};
+            vars.lastMess[id].main = {
+                read: priv.last?.main ?? null,
+                mess: priv.lastMessId ?? null,
+            }
+        })
+        vars.privs = data.map(d => d.priv);
+        render_dm.chats();
+    
+        vars.blocked = blocked;
+        if(vars.chat.to.startsWith("$")) coreFunc.dmPlaceholder(vars.chat.to.substring(1));
     },
 }
 

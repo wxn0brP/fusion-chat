@@ -102,12 +102,13 @@ global.io.of("/").on("connection", (socket: Socket) => {
             cb(...data);
         });
     }
-    socket.processSocketError = (res: Socket_StandardRes) => {
+    socket.processSocketError = (res: Socket_StandardRes, cb?: Function) => {
         const err = res.err;
         if(!Array.isArray(err)) return false;
 
         const [event, ...args] = err as Socket_StandardRes_Error;
-        socket.emit(event, ...args);
+        if(cb) cb(...args);
+        else socket.emit(event, ...args);
         return true;
     }
 
