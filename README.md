@@ -10,6 +10,14 @@ Fusion Chat is an innovative communication application that allows for text conv
 
 ## Installation and Setup
 
+Requirements:
+
+* [Node.js](https://nodejs.org/en/download/)
+* [Yarn](https://yarnpkg.com/en/docs/install)
+* [Git](https://git-scm.com/downloads)
+* [TypeScript compiler](https://www.npmjs.com/package/typescript) (`tsc`)
+* [TypeScript alias compiler](https://www.npmjs.com/package/tsc-alias) (`tsc-alias`)
+
 ### Server
 
 1. Clone the repository:
@@ -23,18 +31,23 @@ cd fusion-chat
 yarn install
 ```
 
-3. Copy the configuration file `.env.txt` to `.env` and edit accordingly:
+3. Compile the TypeScript code:
+```bash
+yarn build
+```
+
+4. Copy the configuration file `.env.txt` to `.env` and edit accordingly:
 ```bash
 cp .env.txt .env
 nano .env
 ```
 
-4. Start the server:
+5. Start the server:
 ```bash
 yarn start
 ```
 
-5. After the first launch, configuration files will be created in the `config/` directory. Edit these files to customize the configuration:
+6. After the first launch, configuration files will be created in the `config/` directory. Edit these files to customize the configuration:
 ```bash
 nano config/databases.json
 nano config/mailConfig.json
@@ -43,7 +56,7 @@ nano config/file.js
 nano config/firebase.json
 ```
 
-6. For detailed explanations of configuration options, refer to the files in the docs/config directory.
+7. For detailed explanations of configuration options, refer to the files in the docs/config directory.
 
 ### Frontend (Web Client) Compilation
 
