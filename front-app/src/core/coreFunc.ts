@@ -28,7 +28,7 @@ const coreFunc = {
             messHTML.bar.style.display = "none";
             document.querySelector("title").innerHTML = staticData.baseTitle;
 
-            navHTML.main.style.display = "block";
+            navHTML.main.style.display = "";
             navHTML.realms.style.display = "none";
             navHTML.main__call.style.display = "none";
             messHTML.nav.style.display = "none";
@@ -55,7 +55,7 @@ const coreFunc = {
 
         if (id.startsWith("$")) {
             document.querySelector("title").innerHTML = staticData.baseTitle + " | " + apis.www.changeUserID(id.substring(1));
-            navHTML.main.style.display = "block";
+            navHTML.main.style.display = "";
             navHTML.realms.style.display = "none";
             vars.chat.chnl = "main";
 

@@ -202,11 +202,21 @@ nav {
     gap: 15px;
 }
 
-#navs__priv img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+#navs__main {
+    display: flex;
+    flex-direction: column;
 }
+
+#navs__priv {
+    overflow-y: scroll;
+    flex-grow: 1;
+
+    img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+    }
+} 
 
 #navs .channel_textActive {
     color: var(--accent);
