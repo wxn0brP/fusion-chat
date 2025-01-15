@@ -12,6 +12,12 @@ import LangPkg from "../../../utils/translate";
 import debugFunc from "../../../core/debug";
 import socket from "../../../core/socket/socket";
 
+const webhook_available_channels_type = [
+    "text",
+    "open_event",
+    "realm_event",
+]
+
 export const renderWebhooks = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
@@ -111,7 +117,7 @@ export const renderWebhookEdit = function (id: Id) {
 
             channels
                 .filter(item => item.category === category.cid)
-                .filter(item => item.type === "text")
+                .filter(item => webhook_available_channels_type.includes(item.type))
                 .sort((a, b) => a.i - b.i)
                 .forEach(channel => {
                     const option = document.createElement("option");
