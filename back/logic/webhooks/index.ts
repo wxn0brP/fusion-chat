@@ -1,7 +1,7 @@
 import { genId } from "@wxn0brp/db";
 import * as customWebhookUtils from "./custom.js"; 
 import sendMessage from "../sendMessage.js";
-import { decode, create, KeyIndex } from "../../logic/token/index.js";
+import { decode, KeyIndex } from "../../logic/token/index.js";
 import db from "../../dataBase.js";
 import { Id } from "../../types/base.js";
 import { Socket_StandardRes_Error } from "../../types/socket/res.js";
@@ -17,16 +17,8 @@ export async function addCustom(webhookInfo: Logic_Webhook.webhook_builder){
         template,
         chnl,
         ajv: ajv || {},
-        required: required || [],
-        token: undefined
+        required: required || []
     }
-
-    const token = await create({
-        id: webhook.whid,
-        chat,
-    }, false, KeyIndex.WEBHOOK_TOKEN);
-
-    webhook.token = token;
 
     await db.realmConf.add(chat, webhook, false);
 }

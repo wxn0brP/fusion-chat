@@ -34,8 +34,7 @@ namespace Db_RealmConf {
         chnl: string;
         ajv: object;
         required: string[];
-        token: string;
-        embed?:Db_Mess.Embed
+        embed?: Db_Mess.Embed;
     }
 
     export interface emoji {

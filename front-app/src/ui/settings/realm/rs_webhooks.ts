@@ -10,6 +10,7 @@ import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Webhook } fro
 import Id from "../../../types/Id";
 import LangPkg from "../../../utils/translate";
 import debugFunc from "../../../core/debug";
+import socket from "../../../core/socket/socket";
 
 export const renderWebhooks = function () {
     const rs_data = rs_dataF();
@@ -35,7 +36,7 @@ export const renderWebhooks = function () {
             return null;
         }
 
-        const id = genId();
+        const id = "$" + genId();
         const chnl = findFirstTextChannel(settings.categories, settings.channels);
         if (!chnl) return uiFunc.uiMsgT(LangPkg.settings_realm.no_channels);
 
@@ -76,14 +77,16 @@ export const renderWebhookEdit = function (id: Id) {
     const webhook = settings.webhooks.find(w => w.whid == id);
     if (!webhook) return uiFunc.uiMsgT(LangPkg.settings_realm.webhooks.not_found);
 
-    if (webhook.token) {
-        const webhookUrl = `${window.location.origin}/api/webhook/custom?token=${webhook.token}`;
+    if (!webhook.whid.startsWith("$")) {
         const webhookUrlCopy = document.createElement("button");
         webhookUrlCopy.innerHTML = "URL (POST) " + LangPkg.uni.copy;
         webhookUrlCopy.onclick = () => {
-            utils.writeToClipboard(webhookUrl).then(ok => {
-                if (ok) uiFunc.uiMsgT(LangPkg.ui.copied);
-            });
+            socket.emit("realm.webhook.token.get", rs_data.realmId, webhook.whid, (token: Id) => {
+                const webhookUrl = `${window.location.origin}/api/webhook/custom?token=${token}`;
+                utils.writeToClipboard(webhookUrl).then(ok => {
+                    if (ok) uiFunc.uiMsgT(LangPkg.ui.copied);
+                });
+            })
         }
         container.appendChild(webhookUrlCopy);
     } else {
@@ -98,7 +101,7 @@ export const renderWebhookEdit = function (id: Id) {
     addSeparator(container, 5);
     const template = initInputText(container, webhookLang.template, webhook.template);
 
-    function renderChnls(categories, channels) {
+    function renderChnls(categories: Settings_rs__Category[], channels: Settings_rs__Channel[]) {
         const select = document.createElement("select");
 
         categories = categories.sort((a, b) => a.i - b.i);
@@ -239,7 +242,7 @@ export const renderWebhookEdit = function (id: Id) {
     initButton(container, LangPkg.uni.cancel, () => {
         container.fadeOut();
         // @ts-ignore
-        if (!webhook.embed.title) webhook.embed = undefined;
+        if (!webhook.embed?.title) webhook.embed = undefined;
     });
 
     initButton(container, LangPkg.uni.delete, () => {

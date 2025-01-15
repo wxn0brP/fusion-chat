@@ -47,7 +47,6 @@ export interface Settings_rs__Webhook {
     chnl: Id;
     ajv: Record<string, any>; // additional JSON validation
     required: string[];
-    token?: string;
     embed?: {
         title: string;
         description: string;

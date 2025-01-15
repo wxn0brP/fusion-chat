@@ -1,12 +1,13 @@
 import { Socket } from "socket.io";
-import { Socket_StandardRes_Error } from "../../types/socket/res.js";
 import {
     realm_settings_get,
     realm_settings_set,
+    realm_webhook_token_get
 } from "./logic/realmSettings.js";
+import { Id } from "../../types/base.js";
 
 export default (socket: Socket) => {
-    socket.onLimit("realm.settings.get", 5_000, async (id, sections, cb) => {
+    socket.onLimit("realm.settings.get", 5_000, async (id: Id, sections, cb: Function) => {
         try {
             if (typeof sections == "function" && !cb) {
                 cb = sections;
@@ -21,7 +22,7 @@ export default (socket: Socket) => {
         }
     });
 
-    socket.onLimit("realm.settings.set", 5_000, async (id, data, cb) => {
+    socket.onLimit("realm.settings.set", 5_000, async (id: Id, data, cb: Function) => {
         try {
             const event_data = await realm_settings_set(socket.user, id, data);
             if (cb) {
@@ -29,6 +30,17 @@ export default (socket: Socket) => {
                 return cb(...event_data.err);
             }
             socket.processSocketError(event_data);
+        } catch (e) {
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.webhook.token.get", 5_000, async (realmId: Id, tokenId: Id, cb: Function) => {
+        try {
+            const data = await realm_webhook_token_get(socket.user, realmId, tokenId);
+            if (socket.processSocketError(data)) return;
+            if (cb) cb(data.res);
+            else socket.emit("realm.webhook.token.get", data.res);
         } catch (e) {
             socket.logError(e);
         }
