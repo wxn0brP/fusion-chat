@@ -1,5 +1,6 @@
 import hub from "../../hub";
 import LangPkg from "../../utils/translate";
+import { mglInt } from "../../var/html";
 hub("components/media");
 
 // TODO add types
@@ -395,3 +396,4 @@ function createMediaPopup(media, options={}){
 
 export default createMediaPopup;
 export { MediaPopup };
+mglInt.createMediaPopup = createMediaPopup;

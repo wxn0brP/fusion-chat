@@ -27,7 +27,7 @@ const render_user = {
 
         renderHTML.userProfile.innerHTML = `
             <div id="userProfileInfo">
-                <img src="${imgLink}" onclick="createMediaPopup('${imgLink}')" alt="User logo">
+                <img src="${imgLink}" onclick="mglInt.createMediaPopup('${imgLink}')" alt="User logo">
                 <div>
                     <h1>${data.name}</h1>
                     <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
