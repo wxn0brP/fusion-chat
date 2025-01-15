@@ -72,6 +72,7 @@ const ui: Lang_UI = {
         unblock: "Unblock",
         request_received: "Request received (click to view)",
         request_sent: "Friend request sent (click to cancel)",
+        open_dm: "Open DM",
     },
     call: {
         call: "Call",

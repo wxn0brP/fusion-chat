@@ -66,7 +66,8 @@ const render_user = {
                 break;
             }
             friendBtn.innerHTML = friendBtnText;
-            renderHTML.userProfile.querySelector("#userProfileBtns").appendChild(friendBtn);
+            const btns = renderHTML.userProfile.querySelector("#userProfileBtns");
+            btns.appendChild(friendBtn);
             
             const blockBtn = document.createElement("button");
             blockBtn.classList.add("btn");
@@ -76,7 +77,16 @@ const render_user = {
                 data.isBlocked = !data.isBlocked;
                 socket.emit("dm.block", data._id, data.isBlocked);
             }
-            renderHTML.userProfile.querySelector("#userProfileBtns").appendChild(blockBtn);
+            btns.appendChild(blockBtn);
+
+            const openDmBtn = document.createElement("button");
+            openDmBtn.classList.add("btn");
+            openDmBtn.style.marginLeft = "10px";
+            openDmBtn.innerHTML = LangPkg.ui.friend.open_dm;
+            openDmBtn.onclick = () => {
+                coreFunc.changeChat("$" + data._id);
+            }
+            btns.appendChild(openDmBtn);
         }
 
         const activityDiv = renderHTML.userProfile.querySelector("#userProfileActivity");

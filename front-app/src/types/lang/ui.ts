@@ -69,6 +69,7 @@ export interface Lang_UI {
         request_received: string;
         unblock: string;
         block: string;
+        open_dm: string;
     }
     call: {
         call: string;
