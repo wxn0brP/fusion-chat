@@ -182,10 +182,7 @@ export async function message_mark_read(suser: Socket_User, chatId: Id, chnl: Id
 
     const isDmChat = chatId.startsWith("$");
 
-    const search = {
-        priv: undefined,
-        realm: undefined
-    };
+    const search: { priv?: Id; realm?: Id } = {};
     if (isDmChat) search.priv = chatId.replace("$", "");
     else search.realm = chatId;
 
@@ -194,8 +191,7 @@ export async function message_mark_read(suser: Socket_User, chatId: Id, chnl: Id
     if (mess_id == "last") {
         const dbChatId = isDmChat ? combineId(suser._id, chatId.replace("$", "")) : chatId;
         const lastIdMess = await db.mess.find<Db_Mess.Message>(dbChatId, { chnl }, {}, { reverse: true, max: 1 });
-        if (lastIdMess.length == 0) return { err: false, res: "no messages in this channel" };
-
+        if (lastIdMess.length == 0) return { err: false, res: 0 };
         mess_id = lastIdMess[0]._id;
         res = mess_id;
     }
