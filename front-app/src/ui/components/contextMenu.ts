@@ -31,7 +31,7 @@ const contextMenu = {
     realm(e: MouseEvent, id: Id) {
         const ele = document.querySelector<HTMLElement>("#realm_context_menu");
 
-        setDisplayByDataId(ele, "settings", canUserManageRealm());
+        setDisplayByDataId(ele, "settings", canUserManageRealm(id));
 
         this.showMenu(e, ele, id);
     },
@@ -127,7 +127,7 @@ function setDisplayByDataId(ele: HTMLElement, id: string, display: boolean) {
     getByDataIdStyle(ele, id).display = display ? "" : "none";
 }
 
-function canUserManageRealm() {
+function canUserManageRealm(id: Id) {
     const requiredPermissions = [
         PermissionFlags.Admin,
         PermissionFlags.ManageChannels,
@@ -136,7 +136,8 @@ function canUserManageRealm() {
         PermissionFlags.ManageEmojis,
     ];
 
-    return permissionFunc.hasAnyPermission(vars.realm.permission, requiredPermissions);
+    const perm = vars.realms.find((realm) => realm.realm === id)?.p || 0;
+    return permissionFunc.hasAnyPermission(perm, requiredPermissions);
 }
 
 export default contextMenu;

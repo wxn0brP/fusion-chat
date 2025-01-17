@@ -130,6 +130,7 @@ export interface Vars_realms {
         [id: Id]: Id;
     }
     muted?: number;
+    p: number;
 }
 
 export interface Vars_realm__chnlPerm {

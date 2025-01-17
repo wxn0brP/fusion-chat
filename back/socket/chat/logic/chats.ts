@@ -11,15 +11,22 @@ import Db_UserData from "../../../types/db/userData.js";
 import { Socket_StandardRes } from "../../../types/socket/res.js";
 import { Socket_User } from "../../../types/socket/user.js";
 import { friend_remove } from "./friends.js";
+import { PermissionSystem } from "./realmSettings/set/imports.js";
 
 export async function realm_get(suser: Socket_User): Promise<Socket_StandardRes> {
     const realms = await db.userData.find<Db_UserData.realm>(suser._id, r => !!r.realm);
     if (realms.length == 0) return { err: false, res: [] };
 
     for (let i = 0; i < realms.length; i++) {
-        const realm = realms[i] as Db_UserData.realm & { img: boolean };
-        const realmSet = await db.realmConf.findOne<Db_RealmConf.set>(realm.realm, { _id: 'set' });
+        const realm = realms[i] as Db_UserData.realm & { img: boolean, p: number };
+        const id = realm.realm;
+
+        const realmSet = await db.realmConf.findOne<Db_RealmConf.set>(id, { _id: 'set' });
         realm.img = realmSet.img || false;
+
+        const permSys = new PermissionSystem(realm.realm);
+        const userPerm = await permSys.getUserPermissions(suser._id);
+        realm.p = userPerm;
     }
 
     return { err: false, res: realms };
