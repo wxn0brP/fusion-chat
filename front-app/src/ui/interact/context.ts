@@ -17,7 +17,7 @@ import LangPkg, { langFunc } from "../../utils/translate";
 
 const contextFunc = {
     message(type: Context__message) {
-        const id = document.querySelector("#mesage_context_menu").getAttribute("_id");
+        const id = document.querySelector("#message_context_menu").getAttribute("_id");
         switch (type) {
             case "copy":
                 const message = document.querySelector("#mess__" + id + " .mess_content").getAttribute("_plain");

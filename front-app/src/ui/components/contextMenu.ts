@@ -16,7 +16,7 @@ const contextMenu = {
     },
 
     message(e: MouseEvent, id: Id, opts: Ui_contextMenu__messageOptions) {
-        const ele = document.querySelector<HTMLElement>("#mesage_context_menu");
+        const ele = document.querySelector<HTMLElement>("#message_context_menu");
 
         setDisplayByDataId(ele, "pin", opts.pin);
         setDisplayByDataId(ele, "unpin", !opts.pin);
