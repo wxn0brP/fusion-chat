@@ -4,6 +4,8 @@ import db from "../dataBase.js";
 import { Id } from "../types/base.js";
 import Db_System from "../types/db/system.js";
 
+export const activeTasks = new Map<Id, schedule.Job>();
+
 function performTask(actionType: Actions, data: any, taskId: Id){
 	const action = actions[actionType];
 	if(!action) return console.log(`Unknown action type: ${actionType}`);
@@ -23,9 +25,14 @@ function scheduleOneTimeTask(task: Db_System.task){
 	if(timeDiff <= 10000){ // if < 10s or space the time run now
 		performTask(type, data, _id);
 	}else{
-		schedule.scheduleJob(_id, scheduledDate, () => {
+		const job = schedule.scheduleJob(_id, scheduledDate, () => {
+			if(!activeTasks.has(_id)) return;
+
 			performTask(type, data, _id);
+			activeTasks.delete(_id);
 		});
+
+		activeTasks.set(_id, job);
 	}
 }
 
@@ -36,4 +43,11 @@ function processTask(task: Db_System.task){
 
 db.system.find<Db_System.task>("tasks", {}).then(tasks => {
 	tasks.forEach(task => processTask(task));
-})
+});
+
+export function cancelTask(taskId: Id){
+	if(!activeTasks.has(taskId)) return;
+	activeTasks.delete(taskId);
+	const task = activeTasks.get(taskId)
+	task.cancel();
+}

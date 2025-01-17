@@ -4,6 +4,7 @@ import { decode, KeyIndex } from "../../../logic/token/index.js";
 import { comparePasswords, randomDelay } from "./login.js";
 import db from "../../../dataBase.js";
 import Db_Data from "../../../types/db/data.js";
+import { cancelTask } from "../../../schedule/index.js";
 
 export const path = "account/delete";
 
@@ -59,12 +60,12 @@ router.post("/undo", async (req, res) => {
     const tokenData = await decode(token, KeyIndex.GENERAL);
     if(!tokenData) return res.json({ err: true, msg: "invalid token" });
 
-    const rm = await db.system.removeOne("tasks", { type: "deleteAccount", data: { user: tokenData.user } });
-    res.json(
-        rm ?
-        { err: false, msg: "successfully remove pending to be deleted" } :
-        { err: true, msg: "pending process is not found" }
-    );
+    const task = await db.system.findOne("tasks", { type: "deleteAccount", data: { user: tokenData.user } });
+    if(!task) return res.json({ err: true, msg: "pending process is not found" });
+
+    await db.system.removeOne("tasks", { type: "deleteAccount", data: { user: tokenData.user } });
+    cancelTask(task._id);
+    res.json({ err: false, msg: "successfully remove pending to be deleted" });
 });
 
 export default router;
