@@ -86,8 +86,8 @@ function getChannelTypeEmoticon(type: Channel_Type) {
     switch (type) {
         case "text": return "📝";
         case "voice": return "🎤";
-        case "realm_event": return "🎉";
-        case "open_event": return "🎉";
+        case "announcement": return "📣";
+        case "open_announcement": return "📣";
         default:
             const n: never = type;
             console.error(n);
@@ -95,7 +95,7 @@ function getChannelTypeEmoticon(type: Channel_Type) {
 }
 
 function handleChannelClick(type: Channel_Type, cid: Id, sid: Id) {
-    if (type === "text" || type === "realm_event" || type === "open_event") {
+    if (type === "text" || type === "announcement" || type === "open_announcement") {
         coreFunc.changeChnl(cid);
     } else if (type === "voice") {
         handleVoiceChannelJoin(cid, sid);

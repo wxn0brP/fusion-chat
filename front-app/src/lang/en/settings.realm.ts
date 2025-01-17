@@ -48,8 +48,8 @@ const sr: Lang_Settings__Realm = {
     channel_types: {
         text: "Text",
         voice: "Voice",
-        open_event: "Open event",
-        realm_event: "Realm event"
+        open_announcement: "Open announcement",
+        announcement: "Announcement",
     },
     unsubscribe_channel: "Unsubscribe",
     confirm_unsubscribe: "Are you sure you want to unsubscribe from $",

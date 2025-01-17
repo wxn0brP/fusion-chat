@@ -22,7 +22,7 @@ const subscribeEventChnl = {
         const _this = this;
         this.channels.innerHTML = "";
 
-        socket.emit("realm.event.channel.list", realm, (data) => {
+        socket.emit("realm.announcement.channel.list", realm, (data) => {
             data.forEach((channel) => {
                 const option = document.createElement("option");
                 option.value = channel.chid;
@@ -36,7 +36,7 @@ const subscribeEventChnl = {
         this.realms.innerHTML = "";
         this.realms.onchange = () => this.loadChannels();
         const _this = this;
-        socket.emit("realm.event.channel.available", (data) => {
+        socket.emit("realm.announcement.channel.available", (data) => {
             data.forEach((realm) => {
                 const option = document.createElement("option");
                 option.value = realm;
@@ -50,7 +50,7 @@ const subscribeEventChnl = {
             const realm = this.realms.value;
             const channel = this.channels.value;
             if (realm && channel) {
-                socket.emit("realm.event.channel.subscribe", sourceRealmId, sourceChannelId, realm, channel);
+                socket.emit("realm.announcement.channel.subscribe", sourceRealmId, sourceChannelId, realm, channel);
                 this.popup.fadeOut();
             }
         }

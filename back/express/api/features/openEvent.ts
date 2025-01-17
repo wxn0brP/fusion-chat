@@ -15,7 +15,7 @@ router.get("/open-event", async (req, res) => {
 
     const chnlData = await db.realmConf.findOne(realm, { chid: chnl });
     if(!chnlData) return res.json({ err: true, msg: "channel is not open event" });
-    if(chnlData.type != "open_event") return res.json({ err: true, msg: "channel is not open event" });
+    if(chnlData.type != "open_announcement") return res.json({ err: true, msg: "channel is not open announcement" });
 
     let data = await db.mess.find(realm, { chnl }, {}, { reverse: true, max: end+start })
     data = data

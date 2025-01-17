@@ -1,1 +1,1 @@
-export type Channel_Type = "text" | "voice" | "realm_event" | "open_event";
+export type Channel_Type = "text" | "voice" | "announcement" | "open_announcement";

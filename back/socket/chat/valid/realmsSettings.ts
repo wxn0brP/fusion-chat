@@ -31,7 +31,7 @@ export default {
                 properties: {
                     chid: { type: "string", validId: true },
                     name: { type: "string" },
-                    type: { type: "string", enum: ["text", "voice", "realm_event", "open_event"] },
+                    type: { type: "string", enum: ["text", "voice", "announcement", "open_announcement"] },
                     category: { type: "string" },
                     i: { type: "number" },
                     rp: {

@@ -196,14 +196,14 @@ export async function realm_emojis_sync(realmId: Id): Promise<Socket_StandardRes
     return { err: false, res: emojis };
 }
 
-export async function realm_event_channel_subscribe(
+export async function realm_announcement_channel_subscribe(
     suser: Socket_User,
     sourceRealmId: Id,
     sourceChannelId: Id,
     targetRealmId: Id,
     targetChannelId: Id
 ): Promise<Socket_StandardRes> {
-    const validE = new ValidError("realm.event.channel.subscribe");
+    const validE = new ValidError("realm.announcement.channel.subscribe");
     if (!valid.id(sourceRealmId)) return validE.valid("sourceRealmId");
     if (!valid.id(sourceChannelId)) return validE.valid("sourceChannelId");
     if (!valid.id(targetRealmId)) return validE.valid("targetRealmId");
@@ -229,14 +229,14 @@ export async function realm_event_channel_subscribe(
     return { err: false };
 }
 
-export async function realm_event_channel_unsubscribe(
+export async function realm_announcement_channel_unsubscribe(
     suser: Socket_User,
     sourceRealmId: Id,
     sourceChannelId: Id,
     targetRealmId: Id,
     targetChannelId: Id
 ): Promise<Socket_StandardRes> {
-    const validE = new ValidError("realm.event.channel.unsubscribe");
+    const validE = new ValidError("realm.announcement.channel.unsubscribe");
     if (!valid.id(sourceRealmId)) return validE.valid("sourceRealmId");
     if (!valid.id(sourceChannelId)) return validE.valid("sourceChannelId");
     if (!valid.id(targetRealmId)) return validE.valid("targetRealmId");
@@ -258,7 +258,7 @@ export async function realm_event_channel_unsubscribe(
     return { err: false };
 }
 
-export async function realm_event_channel_available(suser: Socket_User): Promise<Socket_StandardRes> {
+export async function realm_announcement_channel_available(suser: Socket_User): Promise<Socket_StandardRes> {
     const userRealms = await db.userData.find<Db_UserData.realm>(suser._id, { $exists: { realm: true } });
     const realmsWithAdmin = [];
     for (const userRealmId of userRealms) {
@@ -270,8 +270,8 @@ export async function realm_event_channel_available(suser: Socket_User): Promise
     return { err: false, res: realmsWithAdmin };
 }
 
-export async function realm_event_channel_list(suser: Socket_User, realmId: Id): Promise<Socket_StandardRes> {
-    const validE = new ValidError("realm.event.channel.list");
+export async function realm_announcement_channel_list(suser: Socket_User, realmId: Id): Promise<Socket_StandardRes> {
+    const validE = new ValidError("realm.announcement.channel.list");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
     const permSys = new permissionSystem(realmId);
@@ -286,7 +286,7 @@ export async function realm_event_channel_list(suser: Socket_User, realmId: Id):
                 chid: true
             },
             $in: {
-                type: ["text", "realm_event", "open_event"]
+                type: ["text", "announcement", "open_announcement"]
             }
         },
         {},

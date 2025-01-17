@@ -43,7 +43,7 @@ const contextMenu = {
         }
         const ele = document.querySelector<HTMLElement>("#channel_context_menu");
 
-        setDisplayByDataId(ele, "subscribe", ["realm_event", "open_event"].includes(opts.type));
+        setDisplayByDataId(ele, "subscribe", ["announcement", "open_announcement"].includes(opts.type));
         setDisplayByDataId(ele, "create_thread", vars.realm.chnlPerms[vars.chat.chnl]?.threadCreate);
 
         this.showMenu(e, ele, id);

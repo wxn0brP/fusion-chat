@@ -19,7 +19,7 @@ namespace Db_RealmConf {
         chid: Id;
         category: Id;
         name: string;
-        type: 'text' | 'voice' | 'realm_event' | 'open_event';
+        type: 'text' | 'voice' | 'announcement' | 'open_announcement';
         i: number;
         rp: RolePermission[];
         desc?: string;

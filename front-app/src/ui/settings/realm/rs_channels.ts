@@ -70,11 +70,11 @@ export const renderChannels = function () {
 
         initButton(categoryDiv, LangPkg.settings_realm.add_channel, async () => {
             const name = await uiFunc.prompt(LangPkg.settings_realm.enter_name);
-            const { text, voice, realm_event, open_event } = LangPkg.settings_realm.channel_types;
+            const { text, voice, announcement, open_announcement } = LangPkg.settings_realm.channel_types;
             const type = await uiFunc.selectPrompt(
                 LangPkg.settings_realm.select_type,
-                [text, voice, realm_event, open_event],
-                ["text", "voice", "realm_event", "open_event"]
+                [text, voice, announcement, open_announcement],
+                ["text", "voice", "announcement", "open_announcement"]
             ) as Channel_Type;
 
             const newChannel: Settings_rs__Channel = {
@@ -215,7 +215,7 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
             unsubscribe.addEventListener("click", () => {
                 const conf = confirm(langFunc(LangPkg.settings_realm.confirm_unsubscribe, apis.www.changeChat(sub.sr) + " - " + sub.name) + "?");
                 if (!conf) return;
-                socket.emit("realm.event.channel.unsubscribe", sub.sr, sub.sc, rs_data.realmId, sub.tc);
+                socket.emit("realm.announcement.channel.unsubscribe", sub.sr, sub.sc, rs_data.realmId, sub.tc);
                 settings.addons.subscribedChannels = settings.addons.subscribedChannels.filter(s => s !== sub);
                 li.remove();
             });

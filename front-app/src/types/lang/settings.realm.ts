@@ -45,8 +45,8 @@ export interface Lang_Settings__Realm {
     channel_types: {
         text: string;
         voice: string;
-        realm_event: string;
-        open_event: string;
+        announcement: string;
+        open_announcement: string;
     }
     category: string;
     unsubscribe_channel: string;

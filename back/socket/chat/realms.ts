@@ -7,10 +7,10 @@ import {
     realm_setup,
     realm_user_kick,
     realm_user_unban,
-    realm_event_channel_subscribe,
-    realm_event_channel_unsubscribe,
-    realm_event_channel_available,
-    realm_event_channel_list,
+    realm_announcement_channel_subscribe,
+    realm_announcement_channel_unsubscribe,
+    realm_announcement_channel_available,
+    realm_announcement_channel_list,
     realm_thread_create,
     realm_thread_delete,
     realm_thread_list,
@@ -89,41 +89,41 @@ export default (socket: Socket) => {
         }
     });
 
-    socket.onLimit("realm.event.channel.subscribe", 1000, async (sourceRealmId: Id, sourceChannelId: Id, targetRealmId: Id, targetChannelId: Id) => {
+    socket.onLimit("realm.announcement.channel.subscribe", 1000, async (sourceRealmId: Id, sourceChannelId: Id, targetRealmId: Id, targetChannelId: Id) => {
         try {
-            const data = await realm_event_channel_subscribe(socket.user, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId);
+            const data = await realm_announcement_channel_subscribe(socket.user, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId);
             socket.processSocketError(data);
         } catch (e) {
             socket.logError(e);
         }
     });
 
-    socket.onLimit("realm.event.channel.unsubscribe", 1000, async (sourceRealmId: Id, sourceChannelId: Id, targetRealmId: Id, targetChannelId: Id) => {
+    socket.onLimit("realm.announcement.channel.unsubscribe", 1000, async (sourceRealmId: Id, sourceChannelId: Id, targetRealmId: Id, targetChannelId: Id) => {
         try {
-            const data = await realm_event_channel_unsubscribe(socket.user, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId);
+            const data = await realm_announcement_channel_unsubscribe(socket.user, sourceRealmId, sourceChannelId, targetRealmId, targetChannelId);
             socket.processSocketError(data);
         } catch (e) {
             socket.logError(e);
         }
     });
 
-    socket.onLimit("realm.event.channel.available", 5000, async (cb?: Function) => {
+    socket.onLimit("realm.announcement.channel.available", 5000, async (cb?: Function) => {
         try {
-            const data = await realm_event_channel_available(socket.user);
+            const data = await realm_announcement_channel_available(socket.user);
             if (socket.processSocketError(data)) return;
             if (cb) cb(data.res);
-            else socket.emit("realm.event.channel.available", data.res);
+            else socket.emit("realm.announcement.channel.available", data.res);
         } catch (e) {
             socket.logError(e);
         }
     });
 
-    socket.onLimit("realm.event.channel.list", 5000, async (realmId: Id, cb?: Function) => {
+    socket.onLimit("realm.announcement.channel.list", 5000, async (realmId: Id, cb?: Function) => {
         try {
-            const data = await realm_event_channel_list(socket.user, realmId);
+            const data = await realm_announcement_channel_list(socket.user, realmId);
             if (socket.processSocketError(data)) return;
             if (cb) cb(data.res);
-            else socket.emit("realm.event.channel.list", data.res);
+            else socket.emit("realm.announcement.channel.list", data.res);
         } catch (e) {
             socket.logError(e);
         }

@@ -14,8 +14,8 @@ import socket from "../../../core/socket/socket";
 
 const webhook_available_channels_type = [
     "text",
-    "open_event",
-    "realm_event",
+    "open_announcement",
+    "announcement",
 ]
 
 export const renderWebhooks = function () {
