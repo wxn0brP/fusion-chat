@@ -10,8 +10,8 @@ const formatFunc = {
         let mess = formatFunc.changeText(mess_plain);
         div.innerHTML = mess;
 
-        const elemensts = formatFunc.getElements(mess_plain);
-        for (const element of elemensts) {
+        const elements = formatFunc.getElements(mess_plain);
+        for (const element of elements) {
             div.appendChild(document.createElement("br"));
             div.appendChild(element);
         }
@@ -117,7 +117,7 @@ const formatFunc = {
     mediaPreview(link: string) {
         if (!link) return;
 
-        function chcek(link) {
+        function check(link) {
             const xhr = new XMLHttpRequest();
             xhr.open("HEAD", link, false);
             xhr.send();
@@ -125,7 +125,7 @@ const formatFunc = {
         }
 
         if (/\.(mp3|wav|ogg|.m4a)$/i.test(link)) {
-            if (!chcek(link)) return;
+            if (!check(link)) return;
             const ele = document.createElement("audio");
             ele.src = link;
             ele.controls = true;
@@ -133,7 +133,7 @@ const formatFunc = {
         }
 
         if (/\.(mp4|mkv|webm|avi)$/i.test(link)) {
-            if (!chcek(link)) return;
+            if (!check(link)) return;
             const ele = document.createElement("video");
             ele.src = link;
             ele.controls = true;
@@ -146,7 +146,7 @@ const formatFunc = {
         }
 
         if (/\.(png|jpg|gif|ico|jpeg|webp|svg)$/i.test(link)) {
-            if (!chcek(link)) return;
+            if (!check(link)) return;
             const ele = document.createElement("img");
             ele.src = link;
             ele.style.maxWidth = "100%";
