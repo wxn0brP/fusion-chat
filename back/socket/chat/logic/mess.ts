@@ -196,11 +196,13 @@ export async function message_mark_read(suser: Socket_User, chatId: Id, chnl: Id
         res = mess_id;
     }
 
-    await db.userData.updateOne(suser._id, search, (data, context) => {
-        if (!data.last) data.last = {};
-        data.last[context.chnl] = context.mess_id;
-        return data;
-    }, { chnl, mess_id });
+    await db.userData.updateOne(suser._id, search, {
+        $merge: {
+            last: {
+                [chnl]: mess_id
+            }
+        }
+    })
 
     return { err: false, res };
 }

@@ -152,15 +152,11 @@ export default class PermissionSystem{
                 throw new Error("Insufficient permissions to assign this role");
         }
 
-        // TODO (to db) add to db predefined push to array and push + unique
         return await this.realmUser.updateOneOrAdd(
             { u: userId },
-            (data, ctx) => {
-                data.r.push(ctx.roleId);
-                data.r = [...new Set(data.r)];
-            },
-            { r: [] },
-            { roleId },
+            { $pushset: { r: roleId } },
+            {},
+            {},
             false
         );
     }
