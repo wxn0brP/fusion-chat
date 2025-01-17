@@ -49,14 +49,44 @@ export default function processDbChanges<T extends Item>(
  * @param params - the properties to check
  * @returns true if the objects are equal on all given properties
  */
-function areObjectsEqual(obj1: Item, obj2: Item, params: string[]): boolean {
+export function areObjectsEqual(obj1: Item, obj2: Item, params: string[]): boolean {
     return params.every(param => {
-        if (Array.isArray(obj1[param])) {
-            return Array.isArray(obj1[param]) && Array.isArray(obj2[param]) &&
-                obj1[param].length === obj2[param].length &&
-                obj1[param].every(value => obj2[param].includes(value));
+        const val1 = obj1[param];
+        const val2 = obj2[param];
+
+        if (Array.isArray(val1) && Array.isArray(val2)) {
+            return arrayDeepEqual(val1, val2);
         }
-        return obj1[param] === obj2[param];
+
+        if (typeof val1 === 'object' && val1 !== null && typeof val2 === 'object' && val2 !== null) {
+            return areObjectsEqual(val1, val2, Object.keys(val1));
+        }
+
+        return val1 === val2;
+    });
+}
+
+/**
+ * Checks if two arrays are deeply equal.
+ * @param arr1 - the first array
+ * @param arr2 - the second array
+ * @returns true if the arrays are deeply equal
+ */
+function arrayDeepEqual(arr1: any[], arr2: any[]): boolean {
+    if (arr1.length !== arr2.length) return false;
+
+    return arr1.every((item, index) => {
+        const otherItem = arr2[index];
+
+        if (Array.isArray(item) && Array.isArray(otherItem)) {
+            return arrayDeepEqual(item, otherItem);
+        }
+
+        if (typeof item === 'object' && item !== null && typeof otherItem === 'object' && otherItem !== null) {
+            return areObjectsEqual(item, otherItem, Object.keys(item));
+        }
+
+        return item === otherItem;
     });
 }
 
