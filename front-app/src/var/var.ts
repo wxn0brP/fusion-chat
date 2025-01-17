@@ -1,6 +1,6 @@
 import hub from "../hub";
 import Vars, { Vars_realm } from "../types/var";
-import { mglVar } from "./html";
+import { mglVar } from "./mgl";
 hub("var");
 
 const vars: Vars = {

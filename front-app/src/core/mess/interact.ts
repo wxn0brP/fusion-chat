@@ -10,7 +10,8 @@ import socket from "../socket/socket";
 import uiFunc from "../../ui/helpers/uiFunc";
 import { Vars_realm__thread } from "../../types/var";
 import messCmd, { messCmds, setCurrentCmd } from "./cmd";
-import { emojiHTML, messHTML, mglInt } from "../../var/html";
+import { emojiHTML, messHTML } from "../../var/html";
+import { mglInt } from "../../var/mgl";
 import emojiFunc, { customEmoji } from "../../ui/components/emoji";
 import LangPkg from "../../utils/translate";
 

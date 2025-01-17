@@ -4,7 +4,7 @@ hub("apis");
 import debugFunc from "../core/debug";
 import uiFunc from "../ui/helpers/uiFunc";
 import vars from "../var/var";
-import { mglVar } from "../var/html";
+import { mglVar } from "../var/mgl";
 import cw from "../core";
 import Id from "../types/Id";
 import LangPkg from "../utils/translate";

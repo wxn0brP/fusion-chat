@@ -2,7 +2,7 @@ import hub from "../../hub";
 hub("settings");
 
 import Id from "../../types/Id";
-import { mglInt } from "../../var/html";
+import { mglInt } from "../../var/mgl";
 import { Settings } from "./realm/types";
 import debugFunc from "../../core/debug";
 import settingsData from "./settingsData";

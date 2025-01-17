@@ -1,7 +1,8 @@
 import hub from "../../hub";
 hub("components/voice");
 
-import { mglVar, voiceHTML } from "../../var/html";
+import { voiceHTML } from "../../var/html";
+import { mglVar } from "../../var/mgl";
 import socket from "../../core/socket/socket";
 import apis from "../../api/apis";
 import uiFunc from "../helpers/uiFunc";

@@ -1,6 +1,6 @@
 import hub from "../../hub";
 import LangPkg from "../../utils/translate";
-import { mglInt } from "../../var/html";
+import { mglInt } from "../../var/mgl";
 hub("components/media");
 
 // TODO add types

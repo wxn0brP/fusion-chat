@@ -1,5 +1,4 @@
 import hub from "../hub";
-import { MglInt, MglVar } from "../types/html";
 hub("var/html");
 
 function qd(selector: string, container?: HTMLElement) {
@@ -95,76 +94,6 @@ function emoji() {
         nav: qd("#emoji__nav"),
     }
 }
-
-const messInput = new Proxy(document.querySelector("#mess-input"), {
-    get(target, prop) {
-        if (prop === "value") {
-            const data = Array.from(target.childNodes)
-                .map((node) => {
-                    if (node.nodeType === Node.TEXT_NODE) return node.textContent;
-                    if (node.nodeName === "BR") return "\n";
-                    if (node.nodeName === "DIV") return node.textContent + "\n";
-                    return "";
-                })
-                .join("")
-            return data;
-        } else
-            if (prop === "selectionStart" || prop === "selectionEnd") {
-                const selection = window.getSelection();
-                if (selection.rangeCount === 0 || !target.contains(selection.anchorNode)) {
-                    return 0;
-                }
-                const range = selection.getRangeAt(0);
-                const preCaretRange = range.cloneRange();
-                preCaretRange.selectNodeContents(target);
-                preCaretRange.setEnd(range.startContainer, range.startOffset);
-                return preCaretRange.toString().length;
-            } else
-                if (prop === "setSelectionRange") {
-                    return (start, end) => {
-                        const range = document.createRange();
-                        const selection = window.getSelection();
-                        let charIndex = 0;
-                        const nodeStack = [target];
-                        let node, foundStart = false, stop = false;
-
-                        while ((node = nodeStack.pop()) && !stop) {
-                            if (node.nodeType === Node.TEXT_NODE) {
-                                const nextCharIndex = charIndex + node.length;
-                                if (!foundStart && start >= charIndex && start <= nextCharIndex) {
-                                    range.setStart(node, start - charIndex);
-                                    foundStart = true;
-                                }
-                                if (foundStart && end >= charIndex && end <= nextCharIndex) {
-                                    range.setEnd(node, end - charIndex);
-                                    stop = true;
-                                }
-                                charIndex = nextCharIndex;
-                            } else {
-                                for (let i = node.childNodes.length - 1; i >= 0; i--) {
-                                    nodeStack.push(node.childNodes[i]);
-                                }
-                            }
-                        }
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    };
-                }
-        return target[prop];
-    },
-    set(target, prop, value) {
-        if (prop === "value") {
-            target.innerHTML = value
-                .split("\n")
-                .map((line) => (line === "" ? "<br>" : line))
-                .join("");
-            return true;
-        }
-        target[prop] = value;
-        return true;
-    },
-});
-
 export const messHTML = mess();
 export const navHTML = nav();
 export const coreHTML = core();
@@ -185,10 +114,4 @@ export const mglHTML = { // magistral for html variables
     emoji: emojiHTML
 }
 
-export const mglInt: MglInt = {} // magistral for interactions functions
-
-export const mglVar: MglVar = {} // magistral for variables
-
 window.mglHTML = mglHTML;
-window.mglInt = mglInt;
-window.mglVar = mglVar;

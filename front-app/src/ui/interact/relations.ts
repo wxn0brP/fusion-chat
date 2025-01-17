@@ -4,7 +4,8 @@ hub("interact/relations");
 import Id from "../../types/Id";
 import uiFunc from "../helpers/uiFunc";
 import socket from "../../core/socket/socket";
-import { otherHTML, mglVar } from "../../var/html";
+import { otherHTML } from "../../var/html";
+import { mglVar } from "../../var/mgl";
 
 const makeRealmDiv = otherHTML.makeRealm;
 

@@ -1,5 +1,5 @@
 import hub from "../../hub";
-import { mglVar } from "../../var/html";
+import { mglVar } from "../../var/mgl";
 hub("socket");
 
 import type SocketIOClient from "socket.io-client";

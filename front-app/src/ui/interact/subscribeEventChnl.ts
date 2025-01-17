@@ -2,7 +2,7 @@ import hub from "../../hub";
 hub("interact/subscribeEventChnl");
 
 import apis from "../../api/apis";
-import { mglInt } from "../../var/html";
+import { mglInt } from "../../var/mgl";
 import socket from "../../core/socket/socket";
 
 const subscribeEventChnl = {
