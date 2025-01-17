@@ -61,7 +61,7 @@ export default class PermissionSystem{
 
         if(managerId){
             const userHighestRole = await this.getUserHighestRole(managerId);
-            if(userHighestRole.lvl <= lvl)
+            if(userHighestRole.lvl >= lvl)
                 throw new Error("Invalid lvl - would break chain with user's highest role");
             
             const userPerms = await this.getUserPermissions(managerId);
@@ -137,10 +137,7 @@ export default class PermissionSystem{
             _this.realmRoles.updateOne({ _id: role._id }, { lvl: i });
         });
 
-        await this.realmUser.update({}, (user, ctx) => {
-            user.r = user.r.filter(r => r !== ctx.roleId);
-            user.r = [...new Set(user.r)];
-        }, { roleId });
+        return await this.realmUser.update({}, { $pull: { r: roleId } });
     }
 
     async assignRoleToUser(userId: Id, roleId: Id, managerId: Id | false){
@@ -178,9 +175,7 @@ export default class PermissionSystem{
         if(!this.hasHigherRole(managerRoles, role.lvl))
             throw new Error("Insufficient permissions to remove this role");
 
-        return await this.realmUser.updateOne({ u: userId }, (data, ctx) => {
-            data.r = data.r.filter(r => r !== ctx.roleId);
-        }, { roleId });
+        return await this.realmUser.updateOne({ u: userId }, { $pull: { r: roleId } });
     }
 
     hasHigherRole(userRoles: Db_RealmRoles.role[], targetLvl: number){
