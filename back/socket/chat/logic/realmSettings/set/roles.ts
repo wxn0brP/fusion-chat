@@ -12,7 +12,16 @@ export default async (id, data, suser) => {
     processRoleUpdate(oldRoles, itemsToUpdate);
     
     for(const role of itemsToRemove){
-        await permSys.deleteRole(role._id, suser._id);
+        await permSys.deleteRole(role._id, suser._id);        
+    }
+
+    if(itemsToRemove.length > 0 && data.users){
+        const rids = itemsToRemove.map(role => role._id);
+        for(const user of data.users){
+            for(const rid of rids){
+                user.r = user.r.filter(r => r !== rid);
+            }
+        }
     }
 
     for(const role of itemsToAdd){

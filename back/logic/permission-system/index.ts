@@ -137,7 +137,8 @@ export default class PermissionSystem{
             _this.realmRoles.updateOne({ _id: role._id }, { lvl: i });
         });
 
-        return await this.realmUser.update({}, { $pull: { r: roleId } });
+        await this.realmRoles.removeOne({ _id: roleId });
+        await this.realmUser.update({ $arrinc: { r: [roleId] }}, { $pull: { r: roleId } });
     }
 
     async assignRoleToUser(userId: Id, roleId: Id, managerId: Id | false){
