@@ -3,7 +3,7 @@ import valid, { validChannelId } from "../../../logic/validData.js";
 import db from "../../../dataBase.js";
 const router = Router();
 
-router.get("/open-event", async (req, res) => {
+router.get("/announcement", async (req, res) => {
     let { realm, chnl, start: startStr, end: endStr } = req.query as { realm: string, chnl: string, start: string, end: string };
     const start = parseInt(startStr);
     const end = parseInt(endStr);

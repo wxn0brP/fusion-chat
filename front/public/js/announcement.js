@@ -33,7 +33,7 @@ function loadMessages(realm, chnl, start, end){
         start,
         end
     }
-    const path = "/api/open-event?";
+    const path = "/api/announcement?";
     const url = path + new URLSearchParams(sendData);
     fetch(url, {
         headers: {
@@ -72,7 +72,7 @@ function renderMessage(msg){
     section.appendChild(author);
 
     const message = document.createElement("article");
-    format.formatMess(msg.msg, message);
+    formatFunc.formatMess(msg.msg, message);
     section.appendChild(message);
 
     messages.insertBefore(section, messages.firstChild);
