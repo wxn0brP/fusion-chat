@@ -255,7 +255,7 @@
     width: 600px;
 
     #realmEvents__container {
-        max-height: 90vh;
+        max-height: 60vh;
         overflow-y: scroll;
     }
 
@@ -289,6 +289,16 @@
         &:not(:last-child) {
             margin-bottom: 1rem;
         }
+    }
+
+    input, select {
+        width: 50%;
+        border-radius: 1rem;
+        padding: 7px 12px;
+        border: 2px solid var(--accent);
+        background-color: var(--back);
+        color: var(--txt);
+        margin-top: 5px;
     }
 }
 

@@ -114,69 +114,146 @@ const render_events = {
         if (vars.chat.to == "main" || vars.chat.to.startsWith("$")) return;
         if (!permissionFunc.isAdmin()) return;
 
-        const topic = await uiFunc.prompt(LangPkg.ui.event.topic);
-        if (!topic) return;
+        const container = renderHTML.events__container;
+        container.innerHTML = "";
 
-        const time = await uiFunc.promptTime(LangPkg.ui.event.time, "datetime-local", Date.now() + 60_000);
-        if (!time) return;
-        const diff = new Date(time).getTime() - new Date().getTime();
-        if (diff <= 60_000) return;
+        function createLabel(text: string, forId: string) {
+            const label = document.createElement("label");
+            label.textContent = text;
+            label.htmlFor = forId;
+            label.style.marginRight = "1rem";
+            container.appendChild(label);
+            container.appendChild(document.createElement("br"));
+        }
 
-        const desc = await uiFunc.prompt(LangPkg.ui.event.desc);
+        function br() {
+            container.appendChild(document.createElement("br"));
+            container.appendChild(document.createElement("br"));
+        }
 
-        const type = await uiFunc.selectPrompt<"custom" | "voice">(
-            LangPkg.ui.event.type,
-            [LangPkg.ui.event.type_custom, LangPkg.ui.event.type_voice],
-            ["custom", "voice"]
-        );
-        let where: Id | string;
-        if (type == "custom") {
-            where = await uiFunc.prompt(LangPkg.ui.event.where);
-            if (!where) return;
-        } else if (type == "voice") {
-            const categories = [];
-            const vc_ids = [];
-            const vc_names = [];
+        createLabel(LangPkg.ui.event.topic, "event-topic");
+        const topic = document.createElement("input");
+        topic.type = "text";
+        topic.placeholder = LangPkg.ui.event.topic;
+        topic.id = "event-topic";
+        container.appendChild(topic);
+        br();
 
+        createLabel(LangPkg.ui.event.time, "event-time");
+        const time = document.createElement("input");
+        time.type = "datetime-local";
+        time.id = "event-time";
+        container.appendChild(time);
+        br();
+
+        createLabel(LangPkg.ui.event.desc, "event-desc");
+        const desc = document.createElement("input");
+        desc.type = "text";
+        desc.placeholder = LangPkg.ui.event.desc;
+        desc.id = "event-desc";
+        container.appendChild(desc);
+        br();
+
+        createLabel(LangPkg.ui.event.type, "event-type");
+        const type = document.createElement("select");
+        type.id = "event-type";
+        [
+            {
+                name: LangPkg.ui.event.type_custom,
+                type: "custom",
+            },
+            {
+                name: LangPkg.ui.event.type_voice,
+                type: "voice",
+            }
+        ].forEach(t => {
+            const option = document.createElement("option");
+            option.value = t.type;
+            option.textContent = t.name;
+            type.appendChild(option);
+        });
+        type.addEventListener("change", whereRender);
+        container.appendChild(type);
+        br();
+
+        createLabel(LangPkg.ui.event.where, "event-where");
+        const where = document.createElement("div");
+        container.appendChild(where);
+        br();
+
+        const whereOptions = document.createElement("select");
+        whereOptions.id = "event-where";
+        renderWhereOptions();
+
+        function whereRender() {
+            where.innerHTML = "";
+            if (type.value == "custom") {
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = LangPkg.ui.event.where;
+                input.id = "event-where";
+                where.appendChild(input);
+            } else if (type.value == "voice") {
+                where.appendChild(whereOptions);
+            }
+        }
+
+        function renderWhereOptions() {
             navHTML.realm__channels.querySelectorAll<HTMLDivElement>(".channel_voice:not(details .channel_voice)").forEach(chnl => {
                 const id = chnl.id.replace("channel_", "");
                 const name = chnl.textContent.replace(getChannelTypeEmoticon("voice") + " | ", "");
-                vc_ids.push(id);
-                vc_names.push(name);
+                const option = document.createElement("option");
+                option.value = id;
+                option.textContent = name;
+                whereOptions.appendChild(option);
             });
 
             navHTML.realm__channels.querySelectorAll<HTMLDetailsElement>("details").forEach(details => {
                 const name = details.querySelector("summary").textContent;
-                const category_ids = [];
-                const category_names = [];
+                const category = document.createElement("optgroup");
+                category.label = name;
+                whereOptions.appendChild(category);
+
                 details.querySelectorAll<HTMLDivElement>(".channel_voice").forEach(chnl => {
                     const id = chnl.id.replace("channel_", "");
                     const name = chnl.textContent.replace(getChannelTypeEmoticon("voice") + " | ", "");
-                    category_ids.push(id);
-                    category_names.push(name);
+                    const option = document.createElement("option");
+                    option.value = id;
+                    option.textContent = name;
+                    category.appendChild(option);
                 });
-                categories.push({ name, options: category_names, values: category_ids });
             });
-
-            where = await uiFunc.selectPrompt(LangPkg.ui.event.type_voice, vc_names, vc_ids, categories);
-            if (!where) return;
         }
 
-        const img = await uiFunc.prompt(LangPkg.ui.event.img);
+        whereRender();
 
-        const req = {
-            topic,
-            time: Math.floor(new Date(time).getTime() / 1000),
-            desc,
-            type,
-            where,
-            img,
-        }
+        createLabel(LangPkg.ui.event.img, "event-img");
+        const img = document.createElement("input");
+        img.type = "text";
+        img.placeholder = LangPkg.ui.event.img;
+        img.id = "event-img";
+        container.appendChild(img);
+        br();
 
-        socket.emit("realm.event.create", vars.chat.to, req);
-        setTimeout(() => {
-            render_events.show();
-        }, 100);
+        const submit = document.createElement("button");
+        submit.textContent = LangPkg.uni.add;
+        submit.clA("btn");
+        submit.addEventListener("click", () => {
+            const req = {
+                topic: topic.value,
+                time: Math.floor(new Date(time.value).getTime() / 1000),
+                desc: desc.value,
+                type: type.value,
+                where: where.querySelector<HTMLSelectElement | HTMLInputElement>("select, input").value,
+                img: img.value,
+            }
+            socket.emit("realm.event.create", vars.chat.to, req);
+            setTimeout(() => {
+                render_events.show();
+            }, 100)
+        });
+        container.appendChild(submit);
+        br();
     }
 }
 
