@@ -34,9 +34,10 @@ function nav() {
         main__call: qd("#navs__main__call"),
         user__name: qd("#navs__user__name"),
         user__status: qd("#navs__user__status"),
-        realms__name: qd("#navs__realms__name"),
-        realms__channels: qd("#navs__realms__channels"),
-        realms__users: qd("#navs__realms__users"),
+        realm__name: qd("#navs__realm__name"),
+        realm__panel: qd("#navs__realm__panel"),
+        realm__channels: qd("#navs__realm__channels"),
+        realm__users: qd("#navs__realms__users"),
     }
 }
 
@@ -48,10 +49,14 @@ function core() {
 }
 
 function render() {
+    const events = qd("#realmEvents");
     return {
         navs__priv: qd("#navs__priv"),
         realms__content: qd("#realms__content"),
         userProfile: qd("#userProfile"),
+        events,
+        events__container: qd("#realmEvents__container", events),
+        events__add: qd("#realmEvents__add", events),
     }
 }
 

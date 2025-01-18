@@ -89,8 +89,8 @@ const coreFunc = {
             messHTML.nav_realm.style.display = "";
             vars.chat.chnl = chnl;
             renderState.chnl_user = false;
-            navHTML.realms__channels.style.display = "";
-            navHTML.realms__users.style.display = "none";
+            navHTML.realm__channels.style.display = "";
+            navHTML.realm__users.style.display = "none";
             socket.emit("realm.setup", id);
             socket.emit("realm.users.sync", id);
             socket.emit("realm.users.activity.sync", id);

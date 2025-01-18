@@ -110,4 +110,15 @@ export interface Lang_UI {
         channel: string;
         no_permission: string;
     }
+    author: string;
+    event: {
+        topic: string;
+        time: string;
+        desc: string;
+        where: string;
+        type: string;
+        type_voice: string;
+        type_custom: string;
+        img: string;
+    }
 }

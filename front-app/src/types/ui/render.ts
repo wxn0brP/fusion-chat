@@ -20,3 +20,14 @@ export interface Ui_render__category{
     chnls: Ui_render__channel[];
     id: Id;
 }
+
+export interface Ui_render__event{
+    _id: Id;
+    author: Id;
+    type: "voice" | "custom";
+    where: Id | string;
+    topic: string;
+    time: number;
+    desc?: string;
+    img?: string;
+}

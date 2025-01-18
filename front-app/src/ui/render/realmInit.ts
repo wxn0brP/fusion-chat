@@ -12,6 +12,8 @@ import { coreHTML, navHTML } from "../../var/html";
 import contextMenu from "../components/contextMenu";
 import { Ui_render__category, Ui_render__channel } from "../../types/ui/render";
 import LangPkg from "../../utils/translate";
+import socket from "../../core/socket/socket";
+import render_events from "./event";
 
 function initRealmState(permission: number = 0) {
     vars.realm = {
@@ -26,13 +28,13 @@ function initRealmState(permission: number = 0) {
 }
 
 function createRealmNameSection(name: string, sid: Id) {
-    navHTML.realms__name.innerHTML = "";
+    navHTML.realm__name.innerHTML = "";
 
     const nameText = document.createElement("div");
     nameText.innerHTML = name;
     nameText.title = name;
-    nameText.id = "navs__realms__name__text";
-    navHTML.realms__name.appendChild(nameText);
+    nameText.id = "navs__realm__name__text";
+    navHTML.realm__name.appendChild(nameText);
 
     addUsersDisplayButton();
     addMenuButton(sid);
@@ -43,13 +45,13 @@ function addUsersDisplayButton() {
     usersDisplayBtn.innerHTML = "👥";
     usersDisplayBtn.classList.add("realm_nav_btn");
     usersDisplayBtn.addEventListener("click", toggleUserDisplay);
-    navHTML.realms__name.appendChild(usersDisplayBtn);
+    navHTML.realm__name.appendChild(usersDisplayBtn);
 }
 
 function toggleUserDisplay() {
     renderState.chnl_user = !renderState.chnl_user;
-    navHTML.realms__channels.style.display = renderState.chnl_user ? "none" : "";
-    navHTML.realms__users.style.display = renderState.chnl_user ? "" : "none";
+    navHTML.realm__channels.style.display = renderState.chnl_user ? "none" : "";
+    navHTML.realm__users.style.display = renderState.chnl_user ? "" : "none";
 }
 
 function addMenuButton(sid: Id) {
@@ -61,7 +63,7 @@ function addMenuButton(sid: Id) {
             contextMenu.realm(e, sid);
         }, 20); // wait for click event end
     });
-    navHTML.realms__name.appendChild(menuBtn);
+    navHTML.realm__name.appendChild(menuBtn);
 }
 
 function createChannel(channel: Ui_render__channel, root: HTMLElement, sid: Id) {
@@ -82,7 +84,7 @@ function createChannel(channel: Ui_render__channel, root: HTMLElement, sid: Id) 
     vars.realm.desc[cid] = desc;
 }
 
-function getChannelTypeEmoticon(type: Channel_Type) {
+export function getChannelTypeEmoticon(type: Channel_Type) {
     switch (type) {
         case "text": return "📝";
         case "voice": return "🎤";
@@ -152,26 +154,47 @@ function findFirstTextChannel(categories: Ui_render__category[]) {
     return null;
 }
 
+function downPanel() {
+    const downPanel = navHTML.realm__panel;
+    downPanel.innerHTML = "";
+    downPanel_events(downPanel);
+
+}
+
+function downPanel_events(panel: HTMLElement) {
+    const events = document.createElement("button");
+    events.innerHTML = "🪇";
+    events.title = "Events";
+    events.id = "navs__realm__events";
+    events.clA("btn");
+    events.addEventListener("click", render_events.show);
+    panel.appendChild(events);
+
+    socket.emit("realm.event.list", vars.chat.to, true, (len: number) => {
+        events.setAttribute("data-count", len.toString());
+    });
+}
+
 function realmInit(sid: Id, name: string, categories: Ui_render__category[], isOwnEmoji: boolean, permission: number) {
     initRealmState(permission);
     createRealmNameSection(name, sid);
 
-    navHTML.realms__channels.innerHTML = "";
+    navHTML.realm__channels.innerHTML = "";
     if (categories.length === 0 || categories.every(category => category.chnls.length === 0)) {
-        navHTML.realms__channels.innerHTML = "No channels in this realm";
+        navHTML.realm__channels.innerHTML = "No channels in this realm";
         vars.chat.chnl = null;
         return;
     }
 
-    categories.forEach(category => createCategory(category, navHTML.realms__channels, sid));
+    categories.forEach(category => createCategory(category, navHTML.realm__channels, sid));
+
+    downPanel();
 
     if (vars.chat.chnl === null)
         vars.chat.chnl = findFirstTextChannel(categories);
 
     coreFunc.changeChnl(vars.chat.chnl);
     if (isOwnEmoji) setupCustomEmoji(sid);
-    // TODO whats do this code?
-    // vars.realm.users.forEach(u => render_realm.usersInChat(u.uid));
 }
 
 export default realmInit;

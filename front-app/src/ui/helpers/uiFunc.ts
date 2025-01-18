@@ -47,7 +47,7 @@ const uiFunc = {
         }
 
         div.addEventListener("click", end);
-        if(opts.onClick) div.addEventListener("click", opts.onClick);
+        if (opts.onClick) div.addEventListener("click", opts.onClick);
 
         errMessesDiv.appendChild(div);
         await delay(100);
@@ -128,7 +128,7 @@ const uiFunc = {
         });
     },
 
-    selectPrompt<T>(text, options, optionsValues = []): Promise<string | T> {
+    selectPrompt<T>(text, options, optionsValues = [], categories: { name: string; options: T[], value?: T }[] = []): Promise<string | T> {
         return new Promise((resolve) => {
             function end() {
                 resolve(select.value);
@@ -143,6 +143,18 @@ const uiFunc = {
             div.classList.add("prompt");
             div.innerHTML = "<p>" + text + "<p><br />";
             const select = document.createElement("select");
+            for (let i = 0; i < categories.length; i++) {
+                const category = categories[i];
+                const selectElement = document.createElement("optgroup");
+                selectElement.label = category.name;
+                for (let j = 0; j < category.options.length; j++) {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = category.options[j] as string || category.options[j] as string;
+                    optionElement.innerHTML = category.options[j] as string;
+                    selectElement.appendChild(optionElement);
+                }
+                select.appendChild(selectElement);
+            }
             for (let i = 0; i < options.length; i++) {
                 const optionElement = document.createElement("option");
                 optionElement.value = optionsValues[i] || options[i];
@@ -163,6 +175,52 @@ const uiFunc = {
             div.fadeIn();
         });
     },
+
+    promptTime(
+        text: string,
+        inputType: "time" | "date" | "datetime" | "datetime-local" = "datetime-local",
+        min?: number,
+        max?: number
+    ): Promise<string> {
+        return new Promise((resolve) => {
+            function end() {
+                resolve(input.value);
+                div.fadeOut();
+                setTimeout(() => {
+                    div.remove();
+                }, 2000);
+            }
+
+            const div = document.createElement("div");
+            div.style.opacity = "0";
+            div.classList.add("prompt");
+            div.innerHTML = "<p>" + text + "<p><br />";
+
+            const input = document.createElement("input");
+            input.type = inputType;
+            input.value = "00:00";
+            if (min) input.min = new Date(min).toISOString();
+            if (max) input.max = new Date(max).toISOString();
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key == "Enter") end();
+            })
+            div.appendChild(input);
+            setTimeout(() => {
+                input.focus();
+            }, 100);
+
+            div.appendChild(document.createElement("br"));
+
+            const btn = document.createElement("button");
+            btn.innerHTML = "OK";
+            div.appendChild(btn);
+            btn.addEventListener("click", end);
+
+            promptDiv.appendChild(div);
+            div.fadeIn();
+        });
+    }
 }
 
 export default uiFunc;

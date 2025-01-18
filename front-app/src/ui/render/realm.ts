@@ -41,7 +41,7 @@ const render_realm = {
     },
 
     usersInChat() {
-        navHTML.realms__users.innerHTML = "";
+        navHTML.realm__users.innerHTML = "";
         const roles = vars.realm.roles;
         const users = vars.realm.users;
         const userColor = new Map();
@@ -95,7 +95,7 @@ const render_realm = {
             textContainer.appendChild(activityDiv);
 
             userDiv.appendChild(textContainer);
-            navHTML.realms__users.appendChild(userDiv);
+            navHTML.realm__users.appendChild(userDiv);
             render_realm._realmUserStatus(userID);
         });
     },

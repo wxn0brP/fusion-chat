@@ -113,6 +113,17 @@ const ui: Lang_UI = {
         channel: "Channel",
         no_permission: "You can't have permission to join this voice channel",
     },
+    author: "Author",
+    event: {
+        desc: "Description",
+        topic: "Topic",
+        time: "Time",
+        where: "Where",
+        type: "Type",
+        type_custom: "Custom",
+        type_voice: "Voice",
+        img: "Image URL or empty",
+    }
 }
 
 export default ui;

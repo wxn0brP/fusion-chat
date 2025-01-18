@@ -62,3 +62,13 @@
     <button onclick="mglInt.subscribeEventChnl.exit()" translate class="btn" id="subscribeEventChnl_exit">uni.cancel</button>
     <button onclick="mglInt.subscribeEventChnl.subscribe()" translate class="btn" id="subscribeEventChnl_subscribe">ui.subscribe_channel</button>
 </div>
+
+<div id="realmEvents" style="display: none;">
+    <div id="realmEvents__exit">
+        <button onclick="mglInt.realmEvents.exit()" class="btn">X</button>
+    </div>
+    <div style="text-align: left; margin-bottom: 1rem;">
+        <button id="realmEvents__add" translate class="btn" onclick="mglInt.realmEvents.create()">uni.add</button>
+    </div>
+    <div id="realmEvents__container"></div>
+</div>

@@ -101,16 +101,7 @@ nav {
     background-color: var(--userProfile);
 }
 
-#navs__realms__name {
-    padding: 10px;
-    width: 100%;
-    height: 3.4rem;
-    text-align: center;
-    font-size: 1.6rem;
-    font-weight: bold;
-}
-
-#navs__realms__name__text {
+#navs__realm__name__text {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -120,7 +111,14 @@ nav {
     float: left;
 }
 
-#navs__realms__name {
+#navs__realm__name {
+    padding: 10px;
+    width: 100%;
+    height: 3.4rem;
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: bold;
+
     .realm_nav_btn {
         font-size: 1.4rem;
         cursor: pointer;
@@ -132,7 +130,36 @@ nav {
     }
 }
 
-#navs__realms__channels {
+#navs__realm__panel {
+    margin-top: -1rem;
+    text-align: left;
+}
+
+#navs #navs__realm__panel button {
+    width: 1em;
+    font-size: 1.4rem;
+}
+
+#navs button#navs__realm__events {
+    position: relative;
+
+    &::after {
+        content: attr(data-count);
+        position: absolute;
+        top: 1.3rem;
+        left: 1.5rem;
+        background-color: rgba(var(--accentRGB), .3);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+        color: var(--txt);
+    }
+}
+
+#navs__realm__channels {
     overflow-y: scroll;
     flex-grow: 1;
 

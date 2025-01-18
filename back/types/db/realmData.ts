@@ -29,6 +29,18 @@ namespace Db_RealmData {
         reply?: Id;
         _id?: Id;
     }
+
+    export interface event {
+        _id: Id;
+        evt: true;
+        author: Id;
+        type: string;
+        where: Id | string;
+        topic: string;
+        time: number;
+        desc?: string;
+        img?: string;
+    }
 }
 
 export default Db_RealmData;

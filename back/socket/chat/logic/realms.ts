@@ -13,6 +13,10 @@ import Db_RealmData from "../../../types/db/realmData.js";
 import { Socket_StandardRes } from "../../../types/socket/res.js";
 import { Socket_User } from "../../../types/socket/user.js";
 import { Id } from "../../../types/base.js";
+import Socket__Realms from "../../../types/socket/chat/realms.js";
+import eventCreateData from "../valid/event.js";
+
+const eventCreateSchemat = valid.objAjv(eventCreateData);
 
 export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.setup");
@@ -368,4 +372,64 @@ export async function realm_thread_list(suser: Socket_User, realmId: Id, channel
 
     const threads = await db.realmData.find(realmId, { thread: channelId });
     return { err: false, res: threads };
+}
+
+export async function realm_event_create(suser: Socket_User, realmId: Id, req: Socket__Realms.Event__req): Promise<Socket_StandardRes> {
+    const validE = new ValidError("realm.event.create");
+    if (!valid.id(realmId)) return validE.valid("realmId");
+
+    if (!eventCreateSchemat(req)) return validE.valid("req");
+    if (req.type === "voice") {
+        if (!valid.id(req.where)) return validE.valid("req.where");
+        const chnl = await db.realmConf.findOne<Db_RealmConf.channel>(realmId, { chid: req.where });
+        if (!chnl) return validE.valid("req.where");
+        if (chnl.type !== "voice") return validE.valid("req.where");
+    }
+
+    const actualTime = Date.now();
+    // check if time is in the future or 1 minute in the past
+    if(req.time * 1000 <= actualTime + 60_000) return validE.valid("req.time");
+
+    const permSys = new permissionSystem(realmId);
+    const canAdmin = await permSys.canUserPerformAction(suser._id, Permissions.admin);
+    if (!canAdmin) return validE.err("You don't have permission to edit this realm");
+
+    const data: Omit<Db_RealmData.event, "_id"> = {
+        evt: true,
+        type: req.type,
+        where: req.where,
+        time: req.time,
+        author: suser._id,
+        topic: req.topic,
+    }
+    if (req.desc) data.desc = req.desc;
+    if (req.img) data.img = req.img;
+
+    await db.realmData.add(realmId, data);
+
+    return { err: false };
+}
+
+export async function realm_event_delete(suser: Socket_User, realmId: Id, eventId: Id): Promise<Socket_StandardRes> {
+    const validE = new ValidError("realm.event.delete");
+    if (!valid.id(realmId)) return validE.valid("realmId");
+    if (!valid.id(eventId)) return validE.valid("eventId");
+
+    const permSys = new permissionSystem(realmId);
+    const canAdmin = await permSys.canUserPerformAction(suser._id, Permissions.admin);
+    if (!canAdmin) return validE.err("You don't have permission to edit this realm");
+
+    await db.realmData.removeOne(realmId, { _id: eventId, evt: true });
+
+    return { err: false };
+}
+
+export async function realm_event_list(suser: Socket_User, realmId: Id, len: boolean = false): Promise<Socket_StandardRes> {
+    const validE = new ValidError("realm.event.list");
+    if (!valid.id(realmId)) return validE.valid("realmId");
+
+    // TODO check is user in realm, add cache
+
+    const data = await db.realmData.find<Db_RealmData.event>(realmId, { evt: true });
+    return { err: false, res: len ? data.length : data };
 }

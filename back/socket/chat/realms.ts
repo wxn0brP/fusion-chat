@@ -15,7 +15,11 @@ import {
     realm_thread_delete,
     realm_thread_list,
     realm_users_activity_sync,
+    realm_event_create,
+    realm_event_delete,
+    realm_event_list
 } from "./logic/realms.js";
+import Socket__Realms from "../../types/socket/chat/realms.js";
 
 export default (socket: Socket) => {
     socket.onLimit("realm.setup", 100, async (id: Id, cb?: Function) => {
@@ -155,6 +159,35 @@ export default (socket: Socket) => {
             if (socket.processSocketError(data)) return;
             if (cb) cb(data.res);
             else socket.emit("realm.thread.list", data.res);
+        } catch (e) {
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.event.create", 1000, async (realmId: Id, req: Socket__Realms.Event__req) => {
+        try {
+            const data = await realm_event_create(socket.user, realmId, req);
+            socket.processSocketError(data);
+        } catch (e) {
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.event.delete", 1000, async (realmId: Id, eventId: Id) => {
+        try {
+            const data = await realm_event_delete(socket.user, realmId, eventId);
+            socket.processSocketError(data);
+        } catch (e) {
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.event.list", 1000, async (realmId: Id, len: boolean = false, cb?: Function) => {
+        try {
+            const data = await realm_event_list(socket.user, realmId, len);
+            if (socket.processSocketError(data)) return;
+            if (cb) cb(data.res);
+            else socket.emit("realm.event.list", data.res);
         } catch (e) {
             socket.logError(e);
         }

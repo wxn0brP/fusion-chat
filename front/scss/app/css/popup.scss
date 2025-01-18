@@ -100,7 +100,7 @@
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 10;
+    z-index: 99;
     background-color: var(--back);
     color: var(--txt);
     border: 2px solid var(--accent);
@@ -241,6 +241,57 @@
     }
 }
 
+#realmEvents {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9;
+    background-color: var(--back);
+    color: var(--txt);
+    border: 2px solid var(--accent);
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 600px;
+
+    #realmEvents__container {
+        max-height: 90vh;
+        overflow-y: scroll;
+    }
+
+    #realmEvents__exit {
+        position: relative;
+
+        button {
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            color: red;
+            background-color: var(--back);
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+        }
+    }
+
+    .realm_event {
+        display: flex;
+        gap: 5px;
+        text-align: left;
+
+        img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        &:not(:last-child) {
+            margin-bottom: 1rem;
+        }
+    }
+}
+
 @media screen and (max-width: 800px) {
     #errMesses div {
         width: 90vw;
@@ -263,6 +314,10 @@
     }
 
     #subscribeEventChnl {
+        width: 90vw;
+    }
+
+    #realmEvents {
         width: 90vw;
     }
 }
