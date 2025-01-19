@@ -18,6 +18,8 @@ import { Api_fileFunc_read__options } from "../../types/api";
 import permissionFunc, { PermissionFlags } from "../../utils/perm";
 import { Core_mess__dbMessage, Core_mess__sendMessage } from "../../types/core/mess";
 import staticData from "../../var/staticData";
+import { format_embed } from "./format/embed";
+import format_responeMess from "./format/respone";
 
 export const maxMessLen = 2000; 
 export const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
@@ -107,7 +109,7 @@ const messFunc = {
             messContentDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnix(parseInt(data.lastEdit, 36)));
         }
         if(data.embed)
-           formatFunc.embed(data.embed, messContentDiv);
+           format_embed(data.embed, messContentDiv);
 
         if(data.reacts){
             const reactsDiv = document.createElement("div");
@@ -134,7 +136,7 @@ const messFunc = {
         setTimeout(() => {
             const errMargin = 70; // (px)
             const isScrollAtBottom = messHTML.div.scrollTop + messHTML.div.clientHeight + messDiv.clientHeight + errMargin >= messHTML.div.scrollHeight;
-            if(data.res) formatFunc.responeMess(data.res, messDiv);
+            if(data.res) format_responeMess(data.res, messDiv);
             if(scroll && isScrollAtBottom){
                 messDiv.scrollIntoView({behavior: "smooth"});
             }

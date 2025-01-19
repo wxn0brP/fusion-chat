@@ -6,6 +6,13 @@ const required = [
     "warning",
 //  core
     // mess
+        // format
+            "mess/format/embed",
+            "mess/format/list",
+            "mess/format/media",
+            "mess/format/respone",
+            "mess/format/table",
+            "mess/format/text",
         "mess/cmd",
         "mess/format",
         "mess/interact",
