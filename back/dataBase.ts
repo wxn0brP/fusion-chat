@@ -1,5 +1,5 @@
 // @ts-ignore
-import config from "../config/database";
+import config from "../config/database.js";
 import { DataBase, Graph, DataBaseRemote, GraphRemote } from "@wxn0brp/db";
 import { FC_DataBases } from "./types/dataBase";
 
