@@ -55,6 +55,9 @@ jobs:
 
           mkdir -p dist
           mkdir -p dist/front-app
+
+          ls
+
           cp -R ./dist-back/* dist/
           cp -R ./front-app/dist/* dist/front-app/dist/
           cp -R ./front/* dist/front/
