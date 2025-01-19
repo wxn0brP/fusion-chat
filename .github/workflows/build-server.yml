@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-server:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,6 +44,13 @@ jobs:
           npm install
           npm run build
 
+      # Upload artifacts to GitHub
+      - name: Upload files to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: .
+          
       # Prepare dist branch
       - name: Deploy to Dist
         run: |
