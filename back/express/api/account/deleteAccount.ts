@@ -4,7 +4,7 @@ import { decode, KeyIndex } from "../../../logic/token/index.js";
 import { comparePasswords, randomDelay } from "./login.js";
 import db from "../../../dataBase.js";
 import Db_Data from "../../../types/db/data.js";
-import { cancelTask } from "../../../schedule/index.js";
+import { addTask, cancelTask } from "../../../schedule/index.js";
 
 export const path = "account/delete";
 
@@ -41,14 +41,14 @@ router.post("/confirm", async (req, res) => {
 
     const removeTime = new Date().getTime() + 1000 * 60 * 60 * 24; // 1 day
 
-    db.system.add("tasks", {
+    await addTask({
         type: "deleteAccount",
         sType: "one-time",
         sTime: Math.floor(removeTime / 1000),
         data: {
             user: user._id,
         }
-    })
+    });
 
     res.json({ err: false, msg: "account pending to be deleted" });
 });

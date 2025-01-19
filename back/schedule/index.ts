@@ -51,3 +51,8 @@ export function cancelTask(taskId: Id){
 	const task = activeTasks.get(taskId)
 	task.cancel();
 }
+
+export async function addTask(taskReq: Omit<Db_System.task, "_id">) {
+	const task = await db.system.add<Db_System.task>("tasks", taskReq);
+	processTask(task);
+}
