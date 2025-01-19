@@ -1,9 +1,9 @@
 import NodeCache from "node-cache";
-import db from "../../dataBase.js";
-import { combineId } from "../chatMgmt.js";
-import { Id } from "../../types/base.js";
-import ValidError from "../validError.js";
-import { Socket_StandardRes } from "../../types/socket/res.js";
+import db from "../../dataBase";
+import { combineId } from "../chatMgmt";
+import { Id } from "../../types/base";
+import ValidError from "../validError";
+import { Socket_StandardRes } from "../../types/socket/res";
 
 const blockedCache = new NodeCache();
 const userDmCache = new NodeCache();

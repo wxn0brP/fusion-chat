@@ -1,5 +1,5 @@
-import db from "../../../../../dataBase.js";
-import { processDbChanges } from "./imports.js";
+import db from "../../../../../dataBase";
+import { processDbChanges } from "./imports";
 
 export default async(id, data) => {
     const old_data = await db.realmUser.find(id, {});

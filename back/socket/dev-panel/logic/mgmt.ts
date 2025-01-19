@@ -1,10 +1,10 @@
-import db from "../../../dataBase.js";
-import valid from "../../../logic/validData.js";
-import ValidError from "../../../logic/validError.js";
+import db from "../../../dataBase";
+import valid from "../../../logic/validData";
+import ValidError from "../../../logic/validError";
 import { genId } from "@wxn0brp/db";
-import Db_BotData from "../../../types/db/botData.js";
-import { Socket_StandardRes } from "../../../types/socket/res.js";
-import { Id } from "../../../types/base.js";
+import Db_BotData from "../../../types/db/botData";
+import { Socket_StandardRes } from "../../../types/socket/res";
+import { Id } from "../../../types/base";
 
 export async function bots_get(suser){
     const botsData = await db.userData.find(suser._id, { $exists: { botID: true } });

@@ -3,8 +3,8 @@ import {
     realm_settings_get,
     realm_settings_set,
     realm_webhook_token_get
-} from "./logic/realmSettings.js";
-import { Id } from "../../types/base.js";
+} from "./logic/realmSettings";
+import { Id } from "../../types/base";
 
 export default (socket: Socket) => {
     socket.onLimit("realm.settings.get", 5_000, async (id: Id, sections, cb: Function) => {

@@ -8,7 +8,7 @@ import {
     friend_request_remove,
     user_profile
 } from "./logic/friends.js"
-import { Id } from "../../types/base.js";
+import { Id } from "../../types/base";
 
 export default (socket: Socket) => {
     socket.onLimit("friend.request", 1_000, async (nameOrId: string) => {

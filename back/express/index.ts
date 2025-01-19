@@ -1,16 +1,16 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import crypto from 'crypto';
-import { authUser } from '../logic/auth.js';
-import cors from 'cors';
-import { expressMiddleware as bannedIp } from '../bannedIp.js';
-import { Socket_User } from '../types/socket/user.js';
+import express from "express";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import crypto from "crypto";
+import { authUser } from "../logic/auth";
+import cors from "cors";
+import { expressMiddleware as bannedIp } from "../bannedIp";
+import { Socket_User } from "../types/socket/user";
 
 const app = express();
 global.app = app;
-app.set('view engine', 'ejs');
-app.set('views', 'front');
+app.set("view engine", "ejs");
+app.set("views", "front");
 
 app.use(bannedIp);
 app.use(cors({
@@ -51,8 +51,8 @@ app.use((req, res, next) => {
     const sessionId = req.cookies.session;
     let session = global.sessions[sessionId];
     if(!session){
-        const id = crypto.randomBytes(64).toString('hex');
-        res.cookie("session", id, { sameSite: 'strict' });
+        const id = crypto.randomBytes(64).toString("hex");
+        res.cookie("session", id, { sameSite: "strict" });
         session = global.sessions[id] = {};
     }
     req.session = session;
@@ -60,20 +60,20 @@ app.use((req, res, next) => {
 });
 
 global.authenticateMiddleware = async (req, res, next) => {
-    const token = req.headers['authorization'];
+    const token = req.headers["authorization"];
     if(!token){
-        return res.status(401).json({ err: true, msg: 'Access denied. No token provided.' });
+        return res.status(401).json({ err: true, msg: "Access denied. No token provided." });
     }
 
     try{
         const user = await authUser(token) as Socket_User;
         if(!user){
-            return res.status(401).json({ err: true, msg: 'Invalid token.' });
+            return res.status(401).json({ err: true, msg: "Invalid token." });
         }
         req.user = user._id;
         next();
     }catch(err){
-        res.status(500).json({ err: true, msg: 'An error occurred during authentication.' });
+        res.status(500).json({ err: true, msg: "An error occurred during authentication." });
     }
 };
 

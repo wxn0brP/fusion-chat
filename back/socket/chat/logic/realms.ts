@@ -1,20 +1,20 @@
-import valid from "../../../logic/validData.js";
-import permissionSystem from "../../../logic/permission-system/index.js";
-import Permissions from "../../../logic/permission-system/permBD.js";
+import valid from "../../../logic/validData";
+import permissionSystem from "../../../logic/permission-system/index";
+import Permissions from "../../../logic/permission-system/permBD";
 import { existsSync } from "fs";
-import ValidError from "../../../logic/validError.js";
-import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
-import getChnlPerm from "../../../logic/chnlPermissionCache.js";
-import { clearEventCache } from "../../../logic/sendMessageUtils/eventChnl.js";
-import db from "../../../dataBase.js";
-import Db_RealmConf from "../../../types/db/realmConf.js";
-import Db_UserData from "../../../types/db/userData.js";
-import Db_RealmData from "../../../types/db/realmData.js";
-import { Socket_StandardRes } from "../../../types/socket/res.js";
-import { Socket_User } from "../../../types/socket/user.js";
-import { Id } from "../../../types/base.js";
-import Socket__Realms from "../../../types/socket/chat/realms.js";
-import eventCreateData from "../valid/event.js";
+import ValidError from "../../../logic/validError";
+import { getCache as statusMgmtGetCache } from "../../../logic/status";
+import getChnlPerm from "../../../logic/chnlPermissionCache";
+import { clearEventCache } from "../../../logic/sendMessageUtils/eventChnl";
+import db from "../../../dataBase";
+import Db_RealmConf from "../../../types/db/realmConf";
+import Db_UserData from "../../../types/db/userData";
+import Db_RealmData from "../../../types/db/realmData";
+import { Socket_StandardRes } from "../../../types/socket/res";
+import { Socket_User } from "../../../types/socket/user";
+import { Id } from "../../../types/base";
+import Socket__Realms from "../../../types/socket/chat/realms";
+import eventCreateData from "../valid/event";
 
 const eventCreateSchemat = valid.objAjv(eventCreateData);
 

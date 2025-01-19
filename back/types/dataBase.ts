@@ -1,5 +1,5 @@
-import db from "@wxn0brp/db/dist/esm/database.js";
-import graph from "@wxn0brp/db/dist/esm/graph.js";
+import db from "@wxn0brp/db/dist/esm/database";
+import graph from "@wxn0brp/db/dist/esm/graph";
 
 export interface FC_DataBases {
     data?: db,

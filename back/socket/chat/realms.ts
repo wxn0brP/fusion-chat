@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Id } from "../../types/base.js";
+import { Id } from "../../types/base";
 import {
     realm_delete,
     realm_emojis_sync,
@@ -20,8 +20,8 @@ import {
     realm_event_list,
     realm_event_join,
     realm_event_leave
-} from "./logic/realms.js";
-import Socket__Realms from "../../types/socket/chat/realms.js";
+} from "./logic/realms";
+import Socket__Realms from "../../types/socket/chat/realms";
 
 export default (socket: Socket) => {
     socket.onLimit("realm.setup", 100, async (id: Id, cb?: Function) => {

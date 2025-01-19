@@ -1,10 +1,10 @@
 import NodeCache from "node-cache";
-import db from "../../dataBase.js";
-import { combineId } from "../chatMgmt.js";
-import sendMessage from "../sendMessage.js";
-import { Id } from "../../types/base.js";
-import { Message } from "../../types/sendMessage.js";
-import Db_RealmData from "../../types/db/realmData.js";
+import db from "../../dataBase";
+import { combineId } from "../chatMgmt";
+import sendMessage from "../sendMessage";
+import { Id } from "../../types/base";
+import { Message } from "../../types/sendMessage";
+import Db_RealmData from "../../types/db/realmData";
 
 const eventSubscribeCache = new NodeCache();
 

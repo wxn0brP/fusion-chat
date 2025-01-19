@@ -1,5 +1,5 @@
 import { unlinkSync } from "fs";
-import db from "../../../../../dataBase.js";
+import db from "../../../../../dataBase";
 
 export default async (id, data) => {
     await db.realmConf.updateOne(id, { _id: "set" }, data.meta);

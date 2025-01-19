@@ -1,6 +1,6 @@
 import { Router } from "express";
-import db from "../../../dataBase.js";
-import { Id } from "../../../types/base.js";
+import db from "../../../dataBase";
+import { Id } from "../../../types/base";
 const router = Router();
 
 router.get("/id/chat", async (req, res) => {

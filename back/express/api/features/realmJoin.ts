@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { realm_join } from '../../../socket/chat/logic/chats.js';
-import db from '../../../dataBase.js';
-import Db_RealmConf from '../../../types/db/realmConf.js';
-import { Id } from '../../../types/base.js';
-import { Socket_StandardRes_Error } from '../../../types/socket/res.js';
-import { Socket_User } from '../../../types/socket/user.js';
+import { Router } from "express";
+import { realm_join } from "../../../socket/chat/logic/chats";
+import db from "../../../dataBase";
+import Db_RealmConf from "../../../types/db/realmConf";
+import { Id } from "../../../types/base";
+import { Socket_StandardRes_Error } from "../../../types/socket/res";
+import { Socket_User } from "../../../types/socket/user";
 const router = Router();
 
 export const path = "realm/join";

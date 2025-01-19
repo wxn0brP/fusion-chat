@@ -1,9 +1,9 @@
 import { Router } from "express";
 import NodeCache from "node-cache";
-import db from "../../../dataBase.js";
-import valid from "../../../logic/validData.js";
-import { combineId } from "../../../logic/chatMgmt.js";
-import { Id } from "../../../types/base.js";
+import db from "../../../dataBase";
+import valid from "../../../logic/validData";
+import { combineId } from "../../../logic/chatMgmt";
+import { Id } from "../../../types/base";
 
 const router = Router();
 const cache = new NodeCache();

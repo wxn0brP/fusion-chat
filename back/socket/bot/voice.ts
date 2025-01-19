@@ -1,10 +1,10 @@
-import { Socket_StandardRes_Error } from "../../types/socket/res.js";
+import { Socket_StandardRes_Error } from "../../types/socket/res";
 import {
     voice_getUsers,
     voice_join,
     voice_sendData,
     leaveVoiceChannel,
-} from "../chat/logic/voice.js";
+} from "../chat/logic/voice";
 
 export default (socket) => {
     socket.voiceRoom = null;

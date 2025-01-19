@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Id } from "../../types/base.js";
+import { Id } from "../../types/base";
 import {
     realm_create,
     realm_exit,
@@ -9,7 +9,7 @@ import {
     dm_block,
     dm_create,
     dm_get,
-} from "./logic/chats.js";
+} from "./logic/chats";
 
 export default (socket: Socket) => {
     socket.onLimit("realm.get", 100, async (cb?: Function) => {

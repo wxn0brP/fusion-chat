@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Id } from "../../types/base.js";
+import { Id } from "../../types/base";
 import {
     voice_getUsers,
     voice_join,
@@ -7,7 +7,7 @@ import {
     leaveVoiceChannel,
     call_dm_answer,
     call_dm_init,
-} from "./logic/voice.js";
+} from "./logic/voice";
 
 export default (socket: Socket) => {
     socket.voiceRoom = null;

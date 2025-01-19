@@ -1,6 +1,6 @@
-import { createTransport } from 'nodemailer';
-import fs from 'fs';
-import contents, { MailContents } from './mail/contents.js';
+import { createTransport } from "nodemailer";
+import fs from "fs";
+import contents, { MailContents } from "./mail/contents";
 const config = JSON.parse(fs.readFileSync("config/mailConfig.json", "utf8"));
 
 export default (type: MailContents, to: string, ...params: any[]) => {

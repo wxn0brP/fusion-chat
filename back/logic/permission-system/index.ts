@@ -1,15 +1,15 @@
-import CollectionManager from "@wxn0brp/db/dist/esm/CollectionManager.js";
-import db from "../../dataBase.js";
+import CollectionManager from "@wxn0brp/db/dist/esm/CollectionManager";
+import db from "../../dataBase";
 import {
     hasPermission,
     combinePermissions,
     resetPermissions,
     canChangePermissions,
     hasAllPermissionsNumber,
-} from "./permBD.js";
-import Logic_PermSys from "../../types/logic/perm-sys.js";
-import Db_RealmRoles from "../../types/db/realmRoles.js";
-import { Id } from "../../types/base.js";
+} from "./permBD";
+import Logic_PermSys from "../../types/logic/perm-sys";
+import Db_RealmRoles from "../../types/db/realmRoles";
+import { Id } from "../../types/base";
 
 export default class PermissionSystem{
     realmRoles: CollectionManager;

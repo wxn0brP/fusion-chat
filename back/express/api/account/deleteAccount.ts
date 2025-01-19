@@ -1,10 +1,10 @@
 import { Router } from "express";
 const router = Router();
-import { decode, KeyIndex } from "../../../logic/token/index.js";
-import { comparePasswords, randomDelay } from "./login.js";
-import db from "../../../dataBase.js";
-import Db_Data from "../../../types/db/data.js";
-import { addTask, cancelTask } from "../../../schedule/index.js";
+import { decode, KeyIndex } from "../../../logic/token/index";
+import { comparePasswords, randomDelay } from "./login";
+import db from "../../../dataBase";
+import Db_Data from "../../../types/db/data";
+import { addTask, cancelTask } from "../../../schedule/index";
 
 export const path = "account/delete";
 

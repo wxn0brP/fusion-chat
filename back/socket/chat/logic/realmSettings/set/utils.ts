@@ -1,4 +1,4 @@
-import db from "../../../../../dataBase.js";
+import db from "../../../../../dataBase";
 
 /**
  * Save database changes

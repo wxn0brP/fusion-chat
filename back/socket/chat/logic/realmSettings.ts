@@ -1,15 +1,15 @@
-import db from "../../../dataBase.js";
-import { create } from "../../../logic/token/index.js";
-import { KeyIndex } from "../../../logic/token/KeyManager.js";
-import valid from "../../../logic/validData.js";
-import ValidError from "../../../logic/validError.js";
-import { Id } from "../../../types/base.js";
-import Db_RealmConf from "../../../types/db/realmConf.js";
-import { Socket_StandardRes } from "../../../types/socket/res.js";
-import { Socket_User } from "../../../types/socket/user.js";
-import realm_settings_get from "./realmSettings/get.js";
-import realm_settings_set from "./realmSettings/set.js";
-import { Permissions, PermissionSystem } from "./realmSettings/set/imports.js";
+import db from "../../../dataBase";
+import { create } from "../../../logic/token/index";
+import { KeyIndex } from "../../../logic/token/KeyManager";
+import valid from "../../../logic/validData";
+import ValidError from "../../../logic/validError";
+import { Id } from "../../../types/base";
+import Db_RealmConf from "../../../types/db/realmConf";
+import { Socket_StandardRes } from "../../../types/socket/res";
+import { Socket_User } from "../../../types/socket/user";
+import realm_settings_get from "./realmSettings/get";
+import realm_settings_set from "./realmSettings/set";
+import { Permissions, PermissionSystem } from "./realmSettings/set/imports";
 
 export {
     realm_settings_get,

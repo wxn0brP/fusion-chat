@@ -1,8 +1,8 @@
-import db from "../../../../../dataBase.js";
-import { addCustom } from "../../../../../logic/webhooks/index.js";
-import Logic_Webhook from "../../../../../types/logic/webhook.js";
-import { processDbChanges } from "./imports.js";
-import { saveDbChanges } from "./utils.js";
+import db from "../../../../../dataBase";
+import { addCustom } from "../../../../../logic/webhooks/index";
+import Logic_Webhook from "../../../../../types/logic/webhook";
+import { processDbChanges } from "./imports";
+import { saveDbChanges } from "./utils";
 
 export default async (id, data, suser, dbData) => {
     const oldWebhooks = dbData.filter(d => !!d.whid);

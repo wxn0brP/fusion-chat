@@ -1,9 +1,9 @@
-import db from "../../dataBase.js";
-import deleteAccount from "../../logic/deleteAccount.js";
-import sendMail from "../../logic/mail.js";
-import { Id } from "../../types/base.js";
-import Db_Data from "../../types/db/data.js";
-import { activeTasks } from "../index.js";
+import db from "../../dataBase";
+import deleteAccount from "../../logic/deleteAccount";
+import sendMail from "../../logic/mail";
+import { Id } from "../../types/base";
+import Db_Data from "../../types/db/data";
+import { activeTasks } from "../index";
 
 export default async (data: { user: string }, taskId: Id) => {
     if(!activeTasks.has(taskId)) return;

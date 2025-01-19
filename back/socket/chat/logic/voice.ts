@@ -1,11 +1,11 @@
 import { Socket } from "socket.io";
-import db from "../../../dataBase.js";
-import valid from "../../../logic/validData.js";
-import ValidError from "../../../logic/validError.js";
-import { Id } from "../../../types/base.js";
-import { Socket_StandardRes } from "../../../types/socket/res.js";
-import Db_Data from "../../../types/db/data.js";
-import { Socket_User } from "../../../types/socket/user.js";
+import db from "../../../dataBase";
+import valid from "../../../logic/validData";
+import ValidError from "../../../logic/validError";
+import { Id } from "../../../types/base";
+import { Socket_StandardRes } from "../../../types/socket/res";
+import Db_Data from "../../../types/db/data";
+import { Socket_User } from "../../../types/socket/user";
 
 const roomPrefix = "voice-";
 

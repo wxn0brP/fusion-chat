@@ -4,12 +4,12 @@ import { writeFileSync, unlinkSync, existsSync, mkdirSync } from "fs";
 import { Image } from "image-js";
 import { join } from "path";
 import { trace } from "potrace";
-import valid from "../../../logic/validData.js";
-import permissionSystem from "../../../logic/permission-system/index.js";
-import Permissions from "../../../logic/permission-system/permBD.js";
-import { manageRealmEmojis } from "../../../logic/emojiMgmt.js";
-import db from "../../../dataBase.js";
-import { Id } from "../../../types/base.js";
+import valid from "../../../logic/validData";
+import permissionSystem from "../../../logic/permission-system/index";
+import Permissions from "../../../logic/permission-system/permBD";
+import { manageRealmEmojis } from "../../../logic/emojiMgmt";
+import db from "../../../dataBase";
+import { Id } from "../../../types/base";
 
 const router = Router();
 

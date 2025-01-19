@@ -1,12 +1,12 @@
-import db from "../../dataBase.js";
-import { decode, KeyIndex } from "../../logic/token/index.js";
-import { Id } from "../../types/base.js";
-import Db_BotData from "../../types/db/botData.js";
-import mess from "./mess.js";
-import other from "./other.js";
-import realms from "./realms.js";
-import realmSettings from "./realmSettings.js";
-import voice from "./voice.js";
+import db from "../../dataBase";
+import { decode, KeyIndex } from "../../logic/token/index";
+import { Id } from "../../types/base";
+import Db_BotData from "../../types/db/botData";
+import mess from "./mess";
+import other from "./other";
+import realms from "./realms";
+import realmSettings from "./realmSettings";
+import voice from "./voice";
 
 const tmpBan = new Map();
 

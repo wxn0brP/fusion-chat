@@ -1,4 +1,4 @@
-import { Socket_StandardRes_Error } from "../../types/socket/res.js";
+import { Socket_StandardRes_Error } from "../../types/socket/res";
 import {
     realm_delete,
     realm_emojis_sync,
@@ -6,7 +6,7 @@ import {
     realm_setup,
     realm_user_kick,
     realm_user_unban,
-} from "../chat/logic/realms.js";
+} from "../chat/logic/realms";
 
 export default (socket) => {
     socket.onLimit("realm.setup", 100, async (id, cb) => {

@@ -1,8 +1,8 @@
 import { Socket } from "socket.io";
-import db from "../../dataBase.js";
-import { Id } from "../../types/base.js";
-import Db_Mess from "../../types/db/mess.js";
-import Status from "../../types/socket/chat/status.js";
+import db from "../../dataBase";
+import { Id } from "../../types/base";
+import Db_Mess from "../../types/db/mess";
+import Status from "../../types/socket/chat/status";
 import {
     get_ogs,
     send_embed_og,
@@ -13,7 +13,7 @@ import {
     status_activity_gets,
     status_activity_remove,
     user_delete
-} from "./logic/other.js";
+} from "./logic/other";
 
 export default (socket: Socket) => {
     socket.onLimit("get.ogs", 1_000, async (link: string, cb: Function) => {

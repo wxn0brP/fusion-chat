@@ -1,7 +1,7 @@
 import { Router } from "express";
-import valid from "../../../logic/validData.js";
-import db from "../../../dataBase.js";
-import { Id } from "../../../types/base.js";
+import valid from "../../../logic/validData";
+import db from "../../../dataBase";
+import { Id } from "../../../types/base";
 const router = Router();
 
 router.get("/id/u", async (req, res) => {

@@ -1,5 +1,5 @@
-import { processDbChanges } from "./imports.js";
-import { saveDbChanges } from "./utils.js";
+import { processDbChanges } from "./imports";
+import { saveDbChanges } from "./utils";
 import { permissionCache } from "../../../../../logic/chnlPermissionCache.js"
 
 export default async (id, data, suser, dbData) => {

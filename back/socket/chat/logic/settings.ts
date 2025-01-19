@@ -1,10 +1,10 @@
-import valid from "../../../logic/validData.js";
-import ValidError from "../../../logic/validError.js";
-import { getCache as statusMgmtGetCache } from "../../../logic/status.js";
-import db from "../../../dataBase.js";
-import Db_UserData from "../../../types/db/userData.js";
-import { Socket_StandardRes } from "../../../types/socket/res.js";
-import { Socket_User } from "../../../types/socket/user.js";
+import valid from "../../../logic/validData";
+import ValidError from "../../../logic/validError";
+import { getCache as statusMgmtGetCache } from "../../../logic/status";
+import db from "../../../dataBase";
+import Db_UserData from "../../../types/db/userData";
+import { Socket_StandardRes } from "../../../types/socket/res";
+import { Socket_User } from "../../../types/socket/user";
 
 export async function self_status_update(suser: Socket_User, status: string, text: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("status.update");

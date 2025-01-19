@@ -1,5 +1,5 @@
-import db from "../dataBase.js";
-import { Id } from "../types/base.js";
+import db from "../dataBase";
+import { Id } from "../types/base";
 
 export default async (id: Id) => {
     await db.data.removeOne("user", { _id: id });

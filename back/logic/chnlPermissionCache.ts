@@ -1,9 +1,9 @@
 import NodeCache from "node-cache";
-import PermissionSystem from "./permission-system/index.js";
-import rolePermissions, { hasPermission, getAllPermissions } from "./permission-system/permBD.js";
-import db from "../dataBase.js";
-import Db_RealmConf from "../types/db/realmConf.js";
-import { Id } from "../types/base.js";
+import PermissionSystem from "./permission-system/index";
+import rolePermissions, { hasPermission, getAllPermissions } from "./permission-system/permBD";
+import db from "../dataBase";
+import Db_RealmConf from "../types/db/realmConf";
+import { Id } from "../types/base";
 
 export const cache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache TTL 10 min
 export const channelPermissionsCache = new NodeCache({ stdTTL: 300, checkperiod: 60 }); // Cache TTL 5 min

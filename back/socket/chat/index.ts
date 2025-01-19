@@ -1,17 +1,17 @@
-import { authUser, createUser } from "../../logic/auth.js";
-import mess from "./mess.js";
-import realms from "./realms.js";
-import realmSettings from "./realmSettings.js";
-import voice from "./voice.js";
-import settings from "./settings.js";
-import chats from "./chats.js";
-import evt from "./evt.js";
-import friends from "./friends.js";
-import other from "./other.js";
-import db from "../../dataBase.js";
-import { Socket_User } from "../../types/socket/user.js";
+import { authUser, createUser } from "../../logic/auth";
+import mess from "./mess";
+import realms from "./realms";
+import realmSettings from "./realmSettings";
+import voice from "./voice";
+import settings from "./settings";
+import chats from "./chats";
+import evt from "./evt";
+import friends from "./friends";
+import other from "./other";
+import db from "../../dataBase";
+import { Socket_User } from "../../types/socket/user";
 import { Socket } from "socket.io";
-import { Socket_StandardRes, Socket_StandardRes_Error } from "../../types/socket/res.js";
+import { Socket_StandardRes, Socket_StandardRes_Error } from "../../types/socket/res";
 
 const tmpBan = new Map();
 

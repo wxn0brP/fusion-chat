@@ -1,4 +1,4 @@
-import botPerm from "./botPerm.js";
+import botPerm from "./botPerm";
 
 export default {
     type: "object",

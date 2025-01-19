@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
-import { authUser, createUser } from "../logic/auth.js";
-import { Socket_User } from "../types/socket/user.js";
+import { authUser, createUser } from "../logic/auth";
+import { Socket_User } from "../types/socket/user";
 
 global.io.of("/qrCodeLogin", async (socket) => {
     const auth = socket.handshake.auth;

@@ -1,10 +1,10 @@
-import valid from "../../../logic/validData.js";
-import ValidError from "../../../logic/validError.js";
-import editSchematData from "../valid/edit.js";
-import { create, KeyIndex } from "../../../logic/token/index.js";
+import valid from "../../../logic/validData";
+import ValidError from "../../../logic/validError";
+import editSchematData from "../valid/edit";
+import { create, KeyIndex } from "../../../logic/token/index";
 import { genId } from "@wxn0brp/db";
-import db from "../../../dataBase.js";
-import Db_UserData from "../../../types/db/userData.js";
+import db from "../../../dataBase";
+import Db_UserData from "../../../types/db/userData";
 const editSchemat = valid.objAjv(editSchematData);
 
 export async function bot_edit(suser, id, data){

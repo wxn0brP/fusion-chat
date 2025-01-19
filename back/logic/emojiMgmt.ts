@@ -2,10 +2,10 @@ import { createWriteStream, createReadStream, readFileSync, writeFileSync, exist
 import { join } from "path";
 import svg2ttf from "svg2ttf";
 import { SVGIcons2SVGFontStream, SVGIcons2SVGFontStreamOptions } from "svgicons2svgfont";
-import db from "../dataBase.js";
-import { Id } from "../types/base.js";
-import Db_RealmConf from "../types/db/realmConf.js";
-import Logic_Emoji from "../types/logic/emoji.js";
+import db from "../dataBase";
+import { Id } from "../types/base";
+import Db_RealmConf from "../types/db/realmConf";
+import Logic_Emoji from "../types/logic/emoji";
 
 
 function createSVGFont(emojis: Logic_Emoji.emoji_builder[], outputSVGFontPath: string, opts: SVGIcons2SVGFontStreamOptions){

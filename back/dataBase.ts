@@ -1,6 +1,6 @@
-import config from "../config/database.js";
+import config from "../config/database";
 import { DataBase, Graph, DataBaseRemote, GraphRemote } from "@wxn0brp/db";
-import { FC_DataBases } from "./types/dataBase.js";
+import { FC_DataBases } from "./types/dataBase";
 
 const db: FC_DataBases = {};
 

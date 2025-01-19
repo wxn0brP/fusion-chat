@@ -1,12 +1,12 @@
-import valid from "../../../../logic/validData.js";
-import ValidError from "../../../../logic/validError.js";
+import valid from "../../../../logic/validData";
+import ValidError from "../../../../logic/validError";
 
-import permissionSystem from "../../../../logic/permission-system/index.js";
-import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permBD.js";
-import db from "../../../../dataBase.js";
-import Db_RealmData from "../../../../types/db/realmData.js";
-import Db_RealmConf from "../../../../types/db/realmConf.js";
-import { Socket_StandardRes } from "../../../../types/socket/res.js";
+import permissionSystem from "../../../../logic/permission-system/index";
+import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permBD";
+import db from "../../../../dataBase";
+import Db_RealmData from "../../../../types/db/realmData";
+import Db_RealmConf from "../../../../types/db/realmConf";
+import { Socket_StandardRes } from "../../../../types/socket/res";
 
 const DEFAULT_SECTIONS = [
     "meta",

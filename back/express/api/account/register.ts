@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import { createHash } from 'crypto';
-import mailer from "../../../logic/mail.js";
-import db from '../../../dataBase.js';
+import { Router } from "express";
+import { createHash } from "crypto";
+import mailer from "../../../logic/mail";
+import db from "../../../dataBase";
 const router = Router();
 
 router.post("/register", async function(req, res){
@@ -70,7 +70,7 @@ router.post("/register/verify", async function(req, res){
 });
 
 function generateHash(password){
-    return createHash('sha256').update(password).digest("hex");
+    return createHash("sha256").update(password).digest("hex");
 }
 
 function generateVerificationCode(){

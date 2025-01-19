@@ -1,17 +1,17 @@
-import db from "../../../dataBase.js";
-import { combineId, createChat, exitChat, createPriv, addUserToChat } from "../../../logic/chatMgmt.js";
-import { clearBlockedCache, clearUserDmCache } from "../../../logic/sendMessageUtils/dm.js";
-import valid from "../../../logic/validData.js";
-import ValidError from "../../../logic/validError.js";
-import { Id } from "../../../types/base.js";
-import Db_Data from "../../../types/db/data.js";
-import Db_Mess from "../../../types/db/mess.js";
-import Db_RealmConf from "../../../types/db/realmConf.js";
-import Db_UserData from "../../../types/db/userData.js";
-import { Socket_StandardRes } from "../../../types/socket/res.js";
-import { Socket_User } from "../../../types/socket/user.js";
-import { friend_remove } from "./friends.js";
-import { PermissionSystem } from "./realmSettings/set/imports.js";
+import db from "../../../dataBase";
+import { combineId, createChat, exitChat, createPriv, addUserToChat } from "../../../logic/chatMgmt";
+import { clearBlockedCache, clearUserDmCache } from "../../../logic/sendMessageUtils/dm";
+import valid from "../../../logic/validData";
+import ValidError from "../../../logic/validError";
+import { Id } from "../../../types/base";
+import Db_Data from "../../../types/db/data";
+import Db_Mess from "../../../types/db/mess";
+import Db_RealmConf from "../../../types/db/realmConf";
+import Db_UserData from "../../../types/db/userData";
+import { Socket_StandardRes } from "../../../types/socket/res";
+import { Socket_User } from "../../../types/socket/user";
+import { friend_remove } from "./friends";
+import { PermissionSystem } from "./realmSettings/set/imports";
 
 export async function realm_get(suser: Socket_User): Promise<Socket_StandardRes> {
     const realms = await db.userData.find<Db_UserData.realm>(suser._id, r => !!r.realm);

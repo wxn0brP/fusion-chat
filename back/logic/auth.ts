@@ -1,7 +1,7 @@
-import db from "../dataBase.js";
-import { Id } from "../types/base.js";
-import { Socket_User } from "../types/socket/user.js";
-import { create, decode, KeyIndex } from "./token/index.js";
+import db from "../dataBase";
+import { Id } from "../types/base";
+import { Socket_User } from "../types/socket/user";
+import { create, decode, KeyIndex } from "./token/index";
 
 /**
  * Asynchronously authenticates a token and returns the corresponding user.

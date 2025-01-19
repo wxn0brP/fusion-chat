@@ -2,8 +2,8 @@ await import("./setUp.js");
 import { configDotenv } from "dotenv";
 configDotenv();
 await import("./env.js");
-import sourceMapSupport from 'source-map-support'
-sourceMapSupport.install()
+import sourceMapSupport from "source-map-support";
+sourceMapSupport.install();
 
 global.dir = "file://" + process.cwd() + "/";
 await import("./global.js");

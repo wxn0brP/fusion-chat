@@ -1,17 +1,17 @@
 // @ts-check
-import { chatExists as _chatExists, combineId } from "./chatMgmt.js";
-import valid, { validChannelId } from "./validData.js";
-import ValidError from "./validError.js";
-import getChnlPerm from "./chnlPermissionCache.js";
-import db from "../dataBase.js";
-import checkDmChat from "./sendMessageUtils/dm.js";
-import eventChnl from "./sendMessageUtils/eventChnl.js";
-import Db_RealmConf from "../types/db/realmConf.js";
-import Db_UserData from "../types/db/userData.js";
-import Db_RealmUser from "../types/db/realmUser.js";
-import { Message, Options, Request, User } from "../types/sendMessage.js";
-import { Socket_StandardRes } from "../types/socket/res.js";
-import { Id } from "../types/base.js";
+import { chatExists as _chatExists, combineId } from "./chatMgmt";
+import valid, { validChannelId } from "./validData";
+import ValidError from "./validError";
+import getChnlPerm from "./chnlPermissionCache";
+import db from "../dataBase";
+import checkDmChat from "./sendMessageUtils/dm";
+import eventChnl from "./sendMessageUtils/eventChnl";
+import Db_RealmConf from "../types/db/realmConf";
+import Db_UserData from "../types/db/userData";
+import Db_RealmUser from "../types/db/realmUser";
+import { Message, Options, Request, User } from "../types/sendMessage";
+import { Socket_StandardRes } from "../types/socket/res";
+import { Id } from "../types/base";
 
 const validE = new ValidError("mess");
 

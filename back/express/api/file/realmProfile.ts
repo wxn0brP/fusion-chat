@@ -2,11 +2,11 @@ import { Router } from "express";
 import multer, { memoryStorage } from "multer";
 import { Image } from "image-js";
 import { join } from "path";
-import cropAndResizeProfile from "../../../logic/cropAndResizeProfile.js";
-import permissionSystem from "../../../logic/permission-system/index.js";
-import Permissions from "../../../logic/permission-system/permBD.js";
-import db from "../../../dataBase.js";
-import { Id } from "../../../types/base.js";
+import cropAndResizeProfile from "../../../logic/cropAndResizeProfile";
+import permissionSystem from "../../../logic/permission-system/index";
+import Permissions from "../../../logic/permission-system/permBD";
+import db from "../../../dataBase";
+import { Id } from "../../../types/base";
 
 const router = Router();
 const MAX_FILE_SIZE = global.fileConfig.maxRealmProfileFileSize;

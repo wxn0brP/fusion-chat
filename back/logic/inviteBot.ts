@@ -1,8 +1,8 @@
-import db from "../dataBase.js";
-import { Id } from "../types/base.js";
-import Db_BotData from "../types/db/botData.js";
-import permissionSystem from "./permission-system/index.js";
-import Permissions from "./permission-system/permBD.js";
+import db from "../dataBase";
+import { Id } from "../types/base";
+import Db_BotData from "../types/db/botData";
+import permissionSystem from "./permission-system/index";
+import Permissions from "./permission-system/permBD";
 
 export async function invite(userID: Id, botID: Id, realmID: Id) {
     const permSys = new permissionSystem(realmID);

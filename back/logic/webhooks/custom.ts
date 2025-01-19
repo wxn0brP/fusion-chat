@@ -1,5 +1,5 @@
-import Db_RealmConf from "../../types/db/realmConf.js";
-import valid from "../validData.js";
+import Db_RealmConf from "../../types/db/realmConf";
+import valid from "../validData";
 
 function getNestedValue(obj: object, path: string) {
     return path.split('.').reduce((current, part) => {

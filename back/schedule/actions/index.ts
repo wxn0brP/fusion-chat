@@ -1,4 +1,4 @@
-import deleteAccount from "./deleteAccount.js";
+import deleteAccount from "./deleteAccount";
 
 const actions = {
     deleteAccount

@@ -1,4 +1,4 @@
-import { processDbChanges, PermissionSystem } from "./imports.js";
+import { processDbChanges, PermissionSystem } from "./imports";
 
 export default async (id, data, suser) => {
     const permSys = new PermissionSystem(id);

@@ -1,9 +1,9 @@
-import { Socket_StandardRes_Error } from "../../types/socket/res.js";
+import { Socket_StandardRes_Error } from "../../types/socket/res";
 import {
     get_ogs,
     send_embed_og,
     send_embed_data,
-} from "../chat/logic/other.js";
+} from "../chat/logic/other";
 
 export default (socket) => {
     socket.onLimit("get.ogs", 1_000, async (link, cb) => {

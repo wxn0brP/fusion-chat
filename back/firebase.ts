@@ -1,6 +1,6 @@
 import admin from "firebase-admin";
 import fs from "fs";
-import db from "./dataBase.js";
+import db from "./dataBase";
 
 try{
     const serviceAccount = JSON.parse(fs.readFileSync("config/firebase.json", "utf8"));

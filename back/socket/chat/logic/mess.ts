@@ -1,19 +1,19 @@
-import { combineId } from "../../../logic/chatMgmt.js";
-import valid, { validChannelId } from "../../../logic/validData.js";
-import permissionSystem from "../../../logic/permission-system/index.js";
-import Permissions from "../../../logic/permission-system/permBD.js";
-import { extractTimeFromId } from "../../../logic/utils.js";
-import messageSearchData from "../valid/messageSearch.js";
-import ValidError from "../../../logic/validError.js";
-import { realm_thread_delete } from "./realms.js";
-import getChnlPerm from "../../../logic/chnlPermissionCache.js";
-import db from "../../../dataBase.js";
-import Db_Mess from "../../../types/db/mess.js";
-import Db_RealmData from "../../../types/db/realmData.js";
-import Socket__Mess from "../../../types/socket/chat/mess.js";
-import { Socket_User } from "../../../types/socket/user.js";
-import { Id } from "../../../types/base.js";
-import { Socket_StandardRes } from "../../../types/socket/res.js";
+import { combineId } from "../../../logic/chatMgmt";
+import valid, { validChannelId } from "../../../logic/validData";
+import permissionSystem from "../../../logic/permission-system/index";
+import Permissions from "../../../logic/permission-system/permBD";
+import { extractTimeFromId } from "../../../logic/utils";
+import messageSearchData from "../valid/messageSearch";
+import ValidError from "../../../logic/validError";
+import { realm_thread_delete } from "./realms";
+import getChnlPerm from "../../../logic/chnlPermissionCache";
+import db from "../../../dataBase";
+import Db_Mess from "../../../types/db/mess";
+import Db_RealmData from "../../../types/db/realmData";
+import Socket__Mess from "../../../types/socket/chat/mess";
+import { Socket_User } from "../../../types/socket/user";
+import { Id } from "../../../types/base";
+import { Socket_StandardRes } from "../../../types/socket/res";
 
 const messageSearchSchemat = valid.objAjv(messageSearchData);
 

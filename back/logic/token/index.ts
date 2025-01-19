@@ -1,5 +1,5 @@
 import { SignJWT, jwtVerify, jwtDecrypt, EncryptJWT, JWTPayload } from "jose";
-import keyManager, { KeyIndex } from "./KeyManager.js";
+import keyManager, { KeyIndex } from "./KeyManager";
 
 const secretKey = new TextEncoder().encode(process.env.JWT);
 

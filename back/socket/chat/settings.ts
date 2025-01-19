@@ -3,7 +3,7 @@ import {
     self_status_get,
     self_status_update,
     profile_set_nickname,
-} from "./logic/settings.js";
+} from "./logic/settings";
 
 export default (socket: Socket) => {
     socket.onLimit("self.status.update", 1000, async (status: string, text: string) => {

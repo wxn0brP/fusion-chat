@@ -1,6 +1,6 @@
-import db from "../../../../../dataBase.js";
-import { manageRealmEmojis } from "../../../../../logic/emojiMgmt.js";
-import { processDbChanges } from "./imports.js";
+import db from "../../../../../dataBase";
+import { manageRealmEmojis } from "../../../../../logic/emojiMgmt";
+import { processDbChanges } from "./imports";
 import fs from "fs";
 
 export default async (id, data, suser, dbData) => {

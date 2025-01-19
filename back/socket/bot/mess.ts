@@ -1,8 +1,8 @@
-import sendMessage from "../../logic/sendMessage.js";
-import { Id } from "../../types/base.js";
-import { Request } from "../../types/sendMessage.js";
-import Socket__Mess from "../../types/socket/chat/mess.js";
-import { Socket_StandardRes_Error } from "../../types/socket/res.js";
+import sendMessage from "../../logic/sendMessage";
+import { Id } from "../../types/base";
+import { Request } from "../../types/sendMessage";
+import Socket__Mess from "../../types/socket/chat/mess";
+import { Socket_StandardRes_Error } from "../../types/socket/res";
 import {
     message_delete,
     message_edit,
@@ -13,7 +13,7 @@ import {
     message_search,
     message_fetch_id,
     messages_delete,
-} from "../chat/logic/mess.js";
+} from "../chat/logic/mess";
 
 export default (socket) => {
     socket.onLimit("mess", 200, async (req: Request) => {

@@ -1,9 +1,9 @@
-import { Socket_StandardRes_Error } from "../../types/socket/res.js";
+import { Socket_StandardRes_Error } from "../../types/socket/res";
 import {
     bots_get,
     bots_create,
     bots_delete
-} from "./logic/mgmt.js";
+} from "./logic/mgmt";
 
 export default (socket) => {
     socket.onLimit("bots.get", 1_000, async (cb) => {

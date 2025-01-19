@@ -1,6 +1,6 @@
 import { Router } from "express";
-import valid, { validChannelId } from "../../../logic/validData.js";
-import db from "../../../dataBase.js";
+import valid, { validChannelId } from "../../../logic/validData";
+import db from "../../../dataBase";
 const router = Router();
 
 router.get("/announcement", async (req, res) => {

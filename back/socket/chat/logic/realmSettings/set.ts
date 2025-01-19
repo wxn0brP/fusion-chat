@@ -1,11 +1,11 @@
-import valid from "../../../../logic/validData.js";
-import ValidError from "../../../../logic/validError.js";
-import permissionSystem from "../../../../logic/permission-system/index.js";
-import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permBD.js";
-import setRealmSettingsData from "../../valid/realmsSettings.js";
-import cpu from "./set/cpu.js";
-import db from "../../../../dataBase.js";
-import { Socket_StandardRes } from "../../../../types/socket/res.js";
+import valid from "../../../../logic/validData";
+import ValidError from "../../../../logic/validError";
+import permissionSystem from "../../../../logic/permission-system/index";
+import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permBD";
+import setRealmSettingsData from "../../valid/realmsSettings";
+import cpu from "./set/cpu";
+import db from "../../../../dataBase";
+import { Socket_StandardRes } from "../../../../types/socket/res";
 
 const sect_req_perms = {
     meta: [Permissions.admin],

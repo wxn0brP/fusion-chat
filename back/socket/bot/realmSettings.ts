@@ -1,8 +1,8 @@
-import { Socket_StandardRes_Error } from "../../types/socket/res.js";
+import { Socket_StandardRes_Error } from "../../types/socket/res";
 import { 
     realm_settings_get,
     realm_settings_set,
-} from "../chat/logic/realmSettings.js";
+} from "../chat/logic/realmSettings";
 
 export default (socket) => {
     socket.onLimit("realm.settings.get", 5_000, async (id, sections, cb) => {

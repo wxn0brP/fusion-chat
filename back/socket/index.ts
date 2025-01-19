@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
-import db from "../dataBase.js";
-import { socketIoMiddleware } from "../bannedIp.js";
-import Db_RealmUser from "../types/db/realmUser.js";
+import db from "../dataBase";
+import { socketIoMiddleware } from "../bannedIp";
+import Db_RealmUser from "../types/db/realmUser";
 global.io = new Server(global.server);
 
 global.getSocket = (to, room = "") => {

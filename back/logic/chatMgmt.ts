@@ -1,8 +1,8 @@
 import { genId } from "@wxn0brp/db";
-import PermissionSystem from "./permission-system/index.js";
-import Permissions, { getAllPermissions } from "./permission-system/permBD.js";
-import db from "../dataBase.js";
-import { Id } from "../types/base.js";
+import PermissionSystem from "./permission-system/index";
+import Permissions, { getAllPermissions } from "./permission-system/permBD";
+import db from "../dataBase";
+import { Id } from "../types/base";
 
 /**
  * A function to combine two user ids into a new chat id.

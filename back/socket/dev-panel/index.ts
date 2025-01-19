@@ -1,8 +1,8 @@
-import db from "../../dataBase.js";
-import { authUser } from "../../logic/auth.js";
-import { Socket_User } from "../../types/socket/user.js";
-import botsMgmt from "./botsMgmt.js";
-import editBot from "./editBot.js";
+import db from "../../dataBase";
+import { authUser } from "../../logic/auth";
+import { Socket_User } from "../../types/socket/user";
+import botsMgmt from "./botsMgmt";
+import editBot from "./editBot";
 
 const tmpBan = new Map();
 
