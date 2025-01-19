@@ -70,6 +70,7 @@ jobs:
           shopt -s extglob
           rm -rf !(dist)
           rm .gitignore
+          rm -r .github
           mv dist/* ./
           rm -rf dist
           ls -al
