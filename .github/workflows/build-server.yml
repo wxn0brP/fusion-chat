@@ -46,37 +46,40 @@ jobs:
 
       # Upload artifacts to GitHub
       - name: Upload files to artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: .
+          path: |
+            .
+            !**/node_modules/**
+
+      # # Prepare dist branch
+      # - name: Deploy to Dist
+      #   run: |
+      #     exit 0
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      #     # Checkout or create empty dist branch
+      #     git checkout --orphan dist
+
+      #     mkdir -p dist
+      #     cp -R ./dist-back/* dist/
+      #     cp -R ./front-app/dist/* dist/front-app/dist/
+      #     cp -R ./front/* dist/front/
+      #     cp ./index.js dist/index.js
+      #     cp ./app.js dist/app.js
+      #     cp ./package.json dist/package.json
+      #     cp ./LICENSE dist/LICENSE
+      #     cp ./.env.txt dist/.env.txt
           
-      # Prepare dist branch
-      - name: Deploy to Dist
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      #     shopt -s extglob
+      #     rm -rf !(dist)
+      #     mv dist/* ./
+      #     rm -rf dist
 
-          # Checkout or create empty dist branch
-          git checkout --orphan dist
+      #     git add .
 
-          mkdir -p dist
-          cp -R ./dist-back/* dist/
-          cp -R ./front-app/dist/* dist/front-app/dist/
-          cp -R ./front/* dist/front/
-          cp ./index.js dist/index.js
-          cp ./app.js dist/app.js
-          cp ./package.json dist/package.json
-          cp ./LICENSE dist/LICENSE
-          cp ./.env.txt dist/.env.txt
-          
-          shopt -s extglob
-          rm -rf !(dist)
-          mv dist/* ./
-          rm -rf dist
-
-          git add .
-
-          git commit -m "Deploy build output to dist branch"
-          git push origin dist --force
+      #     git commit -m "Deploy build output to dist branch"
+      #     git push origin dist --force
 
