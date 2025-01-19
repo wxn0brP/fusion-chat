@@ -9,7 +9,9 @@ global.lo = function(...data){
 
 global.delay = ms => new Promise(res => setTimeout(res, ms));
 
-global.fileConfig = await import("../config/file.js").then(module => module.default);
-global.logsConfig = await import("../config/logs.js").then(module => module.default);
+// @ts-ignore
+global.fileConfig = await import("../config/file.js").then(module => module.default) as typeof global.fileConfig;
+// @ts-ignore
+global.logsConfig = await import("../config/logs.js").then(module => module.default) as typeof global.logsConfig;
 
 export {}
