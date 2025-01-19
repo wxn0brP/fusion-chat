@@ -1,4 +1,4 @@
-name: Build and Deploy to Dist
+name: Build and Deploy Server to Dist
 
 on:
   push:
@@ -24,6 +24,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22'
+
+      # Install global dependencies
+      - name: Install dependencies
+        run: |
+          npm install -g typescript tsc-alias
 
       # Build root directory
       - name: Install and Build (Root)
