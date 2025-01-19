@@ -69,9 +69,10 @@ jobs:
           
           shopt -s extglob
           rm -rf !(dist)
+          rm .gitignore
           mv dist/* ./
           rm -rf dist
-          ls
+          ls -al
 
           git add .
 
