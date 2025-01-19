@@ -14,7 +14,9 @@ const uni: Lang_uni = {
     update: "Update",
     copy: "Copy",
     close: "Close",
-    ok: "OK"
+    ok: "OK",
+    join: "Join",
+    leave: "Leave",
 }
 
 export default uni;

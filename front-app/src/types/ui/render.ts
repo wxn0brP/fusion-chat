@@ -30,4 +30,5 @@ export interface Ui_render__event{
     time: number;
     desc?: string;
     img?: string;
+    users: Id[];
 }

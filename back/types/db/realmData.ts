@@ -41,6 +41,11 @@ namespace Db_RealmData {
         desc?: string;
         img?: string;
     }
+
+    export interface event_user {
+        uevt: Id;
+        u: Id;
+    }
 }
 
 export default Db_RealmData;

@@ -1,16 +1,17 @@
-import apis from "../../api/apis";
-import formatFunc from "../../core/mess/format";
-import socket from "../../core/socket/socket";
-import Id from "../../types/Id";
-import { Ui_render__event } from "../../types/ui/render";
-import permissionFunc from "../../utils/perm";
-import LangPkg from "../../utils/translate";
-import { navHTML, renderHTML } from "../../var/html";
-import { mglInt } from "../../var/mgl";
+import hub from "../../hub";
+hub("render/event");
+
 import vars from "../../var/var";
+import apis from "../../api/apis";
+import { mglInt } from "../../var/mgl";
 import voiceFunc from "../components/voice";
-import uiFunc from "../helpers/uiFunc";
+import LangPkg from "../../utils/translate";
+import socket from "../../core/socket/socket";
+import permissionFunc from "../../utils/perm";
+import formatFunc from "../../core/mess/format";
+import { navHTML, renderHTML } from "../../var/html";
 import { getChannelTypeEmoticon } from "./realmInit";
+import { Ui_render__event } from "../../types/ui/render";
 
 const render_events = {
     show() {
@@ -40,6 +41,18 @@ const render_events = {
                 <p>${LangPkg.ui.author}: ${apis.www.changeUserID(author)}</p>
                 <p>${new Date(time).toLocaleString()} (<span data-id="cutdown"></span>)</p>
             </div>
+            <div class="realm_event__users">
+                <button data-id="users-join" class="btn">${LangPkg.uni.join}</button>
+                <div>
+                    <p>
+                        ${LangPkg.ui.users}:
+                        <span data-id="users-count"></span>
+                        <button data-id="users-show" class="btn">${LangPkg.uni.show}</button>
+                    </p>
+                    <br />
+                    <div data-id="users" style="display: none;" class="realm_event__users__list"></div>
+                </div>
+            </div>
         `;
         const info = eventDiv.querySelector(".realm_event__info");
 
@@ -53,14 +66,21 @@ const render_events = {
             button.innerHTML = LangPkg.uni.delete;
             button.clA("btn");
             button.addEventListener("click", () => {
+                const conf = confirm(LangPkg.ui.confirm.sure + "?");
+                if (!conf) return;
                 socket.emit("realm.event.delete", vars.chat.to, _id);
                 setTimeout(() => {
                     render_events.show();
                 }, 100);
             });
             const div = document.createElement("div");
+            div.clA("realm_event__delete");
             div.appendChild(button);
             eventDiv.appendChild(div);
+        }
+
+        function addZero(num: number) {
+            return num < 10 ? "0" + num : num;
         }
 
         const cutdown = eventDiv.querySelector("[data-id='cutdown']");
@@ -92,7 +112,7 @@ const render_events = {
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                cutdown.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                cutdown.textContent = `${addZero(hours)}h ${addZero(minutes)}m ${addZero(seconds)}s`;
             }
         };
 
@@ -100,6 +120,51 @@ const render_events = {
             interval = setInterval(updateCutdown, 1000);
         }
         updateCutdown();
+
+        const joinBtn = eventDiv.querySelector<HTMLButtonElement>("[data-id='users-join']");
+        let isUserJoined = event.users.includes(vars.user._id);
+        joinBtn.textContent = isUserJoined ? LangPkg.uni.leave : LangPkg.uni.join;
+        joinBtn.addEventListener("click", () => {
+            if (isUserJoined) {
+                socket.emit("realm.event.leave", vars.chat.to, _id);
+                isUserJoined = false;
+                joinBtn.textContent = LangPkg.uni.join;
+                event.users = event.users.filter((u) => u != vars.user._id);
+            } else {
+                socket.emit("realm.event.join", vars.chat.to, _id);
+                isUserJoined = true;
+                joinBtn.textContent = LangPkg.uni.leave;
+                event.users.push(vars.user._id);
+            }
+            renderJoinedUsers();
+        });
+
+        const usersCount = eventDiv.querySelector<HTMLSpanElement>("[data-id='users-count']");
+        const usersShow = eventDiv.querySelector<HTMLButtonElement>("[data-id='users-show']");
+        const users = eventDiv.querySelector<HTMLDivElement>("[data-id='users']");
+        usersShow.addEventListener("click", () => {
+            if (users.style.display != "none") {
+                users.style.display = "none";
+                usersShow.innerHTML = LangPkg.uni.show;
+            } else {
+                users.style.display = "";
+                usersShow.innerHTML = LangPkg.uni.hide;
+            }
+        });
+        function renderJoinedUsers() {
+            users.innerHTML = "";
+            usersCount.textContent = event.users.length.toString();
+            for (const user of event.users) {
+                const userDiv = document.createElement("div");
+                userDiv.textContent = apis.www.changeUserID(user);
+                userDiv.style.cursor = "pointer";
+                userDiv.addEventListener("click", () => {
+                     socket.emit("user.profile", user);
+                });
+                users.appendChild(userDiv);
+            }
+        }
+        renderJoinedUsers();
 
         renderHTML.events__container.appendChild(eventDiv);
     },

@@ -430,6 +430,42 @@ export async function realm_event_list(suser: Socket_User, realmId: Id, len: boo
 
     // TODO check is user in realm, add cache
 
-    const data = await db.realmData.find<Db_RealmData.event>(realmId, { evt: true });
-    return { err: false, res: len ? data.length : data };
+    const events = await db.realmData.find<Db_RealmData.event>(realmId, { evt: true });
+    if(len) return { err: false, res: events.length };
+
+    const eventsUsers = await db.realmData.find<Db_RealmData.event_user>(realmId, { $exists: { uevt: true } });
+    const data = [];
+
+    for (const event of events) {
+        const users = eventsUsers.filter((ev) => ev.uevt === event._id);
+        data.push({
+            ...event,
+            users: users.map((ev) => ev.u),
+        });
+    }
+
+    return { err: false, res: data };
+}
+
+export async function realm_event_join(suser: Socket_User, realmId: Id, eventId: Id): Promise<Socket_StandardRes> {
+    const validE = new ValidError("realm.event.join");
+    if (!valid.id(realmId)) return validE.valid("realmId");
+    if (!valid.id(eventId)) return validE.valid("eventId");
+    
+    const joined = await db.realmData.findOne<Db_RealmData.event_user>(realmId, { u: suser._id, uevt: eventId });
+    if (joined) return validE.err("You already joined this event");
+
+    await db.realmData.add(realmId, { u: suser._id, uevt: eventId });
+
+    return { err: false };
+}
+
+export async function realm_event_leave(suser: Socket_User, realmId: Id, eventId: Id): Promise<Socket_StandardRes> {
+    const validE = new ValidError("realm.event.leave");
+    if (!valid.id(realmId)) return validE.valid("realmId");
+    if (!valid.id(eventId)) return validE.valid("eventId");
+
+    await db.realmData.removeOne(realmId, { u: suser._id, uevt: eventId });
+
+    return { err: false };
 }

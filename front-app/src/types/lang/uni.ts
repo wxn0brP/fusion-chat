@@ -13,4 +13,6 @@ export interface Lang_uni{
     copy: string;
     close: string;
     ok: string;
+    join: string;
+    leave: string;
 }

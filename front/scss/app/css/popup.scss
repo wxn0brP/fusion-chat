@@ -278,6 +278,7 @@
         display: flex;
         gap: 5px;
         text-align: left;
+        margin-bottom: 1rem;
 
         img {
             width: 100px;
@@ -285,13 +286,10 @@
             border-radius: 50%;
             object-fit: cover;
         }
-
-        &:not(:last-child) {
-            margin-bottom: 1rem;
-        }
     }
 
-    input, select {
+    input,
+    select {
         width: 50%;
         border-radius: 1rem;
         padding: 7px 12px;
@@ -299,6 +297,30 @@
         background-color: var(--back);
         color: var(--txt);
         margin-top: 5px;
+    }
+
+    .realm_event__info {
+        width: 250px;
+    }
+
+    .realm_event__users {
+        width: 150px;
+
+        .realm_event__users__list {
+            padding: 5px;
+            border: 2px solid var(--accent);
+            border-radius: 5px;
+            overflow-y: scroll;
+            max-height: 100px;
+            width: 90%;
+        }
+    }
+
+    .realm_event__delete {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
     }
 }
 
@@ -329,5 +351,25 @@
 
     #realmEvents {
         width: 90vw;
+
+        .realm_event {
+            flex-direction: column;
+
+            .realm_event__info,
+            .realm_event__users,
+            .realm_event__delete {
+                width: 100%;
+            }
+
+            .realm_event__delete {
+                justify-content: left;
+            }
+        }
+    }
+
+    input,
+    button,
+    select {
+        width: 90%;
     }
 }

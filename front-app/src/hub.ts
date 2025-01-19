@@ -47,6 +47,7 @@ const required = [
         "interact/ui",
     // render
         "render/dm",
+        "render/event",
         "render/realm",
         "render/realmInit",
         "render/socket",

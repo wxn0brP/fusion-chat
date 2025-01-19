@@ -17,7 +17,9 @@ import {
     realm_users_activity_sync,
     realm_event_create,
     realm_event_delete,
-    realm_event_list
+    realm_event_list,
+    realm_event_join,
+    realm_event_leave
 } from "./logic/realms.js";
 import Socket__Realms from "../../types/socket/chat/realms.js";
 
@@ -188,6 +190,24 @@ export default (socket: Socket) => {
             if (socket.processSocketError(data)) return;
             if (cb) cb(data.res);
             else socket.emit("realm.event.list", data.res);
+        } catch (e) {
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.event.join", 1000, async (realmId: Id, eventId: Id) => {
+        try {
+            const data = await realm_event_join(socket.user, realmId, eventId);
+            socket.processSocketError(data);
+        } catch (e) {
+            socket.logError(e);
+        }
+    });
+
+    socket.onLimit("realm.event.leave", 1000, async (realmId: Id, eventId: Id) => {
+        try {
+            const data = await realm_event_leave(socket.user, realmId, eventId);
+            socket.processSocketError(data);
         } catch (e) {
             socket.logError(e);
         }
