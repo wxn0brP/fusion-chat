@@ -1,0 +1,69 @@
+name: Build and Deploy to Dist
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup Node.js environment (node > 22)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      # Build root directory
+      - name: Install and Build (Root)
+        working-directory: .
+        run: |
+          npm install
+          npm run build
+
+      # Build front-app directory
+      - name: Install and Build (Front-App)
+        working-directory: ./front-app
+        run: |
+          npm install
+          npm run build
+
+      # Prepare dist branch
+      - name: Deploy to Dist
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Checkout or create empty dist branch
+          git checkout --orphan dist
+
+          # Remove all files
+          git rm -rf . --ignore-unmatch
+
+          # Add required files and directories
+          cp -R ./dist-back ./dist-back
+          cp -R ./front-app/dist ./front-app/dist
+          cp -R ./front ./front
+          cp ./index.js ./index.js
+          cp ./app.js ./app.js
+          cp ./package.json ./package.json
+          cp ./LICENSE ./LICENSE
+          cp ./.env.txt ./.env.txt
+
+          # Stage the changes
+          git add dist-back front-app/dist front index.js app.js package.json LICENSE .env.txt
+
+          # Commit and push to dist branch
+          git commit -m "Deploy build output to dist branch"
+          git push origin dist --force
