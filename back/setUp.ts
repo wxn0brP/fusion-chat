@@ -1,12 +1,12 @@
 import fs from "fs";
 
-function dir(path){
+function dir(path: string){
     if(!fs.existsSync(path)) fs.mkdirSync(path);
 }
-function file(path, value="", prefix="config/"){
+function file(path: string, value: string="", prefix: string="config/"){
     if(!fs.existsSync(prefix+path)) fs.writeFileSync(prefix+path, value);
 }
-function preFile(path, pre, prefix="config/"){
+function preFile(path: string, pre: string, prefix: string="config/"){
     if(!fs.existsSync(prefix+path+".js")) fs.copyFileSync("back/config-base/"+pre+".js", prefix+path+".js");
 }
 

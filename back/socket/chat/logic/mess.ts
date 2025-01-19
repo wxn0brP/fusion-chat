@@ -46,7 +46,7 @@ export async function message_edit(
         return validE.err("not authorized");
     }
 
-    const time = global.getTime();
+    const time = Math.floor(new Date().getTime() / 1000).toString(36);
     await db.mess.updateOne(dbChatId, { _id }, { msg, lastEdit: time });
 
     if (isDmChat) {

@@ -9,10 +9,6 @@ global.lo = function(...data){
 
 global.delay = ms => new Promise(res => setTimeout(res, ms));
 
-global.getTime = () => {
-    return Math.floor(new Date().getTime() / 1000).toString(36);
-}
-
 global.fileConfig = await import("../config/file.js").then(module => module.default);
 global.logsConfig = await import("../config/logs.js").then(module => module.default);
 
