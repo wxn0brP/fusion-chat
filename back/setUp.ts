@@ -7,7 +7,7 @@ function file(path: string, value: string="", prefix: string="config/"){
     if(!fs.existsSync(prefix+path)) fs.writeFileSync(prefix+path, value);
 }
 function preFile(path: string, pre: string, prefix: string="config/"){
-    if(!fs.existsSync(prefix+path+".js")) fs.copyFileSync("back/config-base/"+pre+".js", prefix+path+".js");
+    if(!fs.existsSync(prefix+path+".js")) fs.copyFileSync("dist-back/config-base/"+pre+".js", prefix+path+".js");
 }
 
 dir("data");
