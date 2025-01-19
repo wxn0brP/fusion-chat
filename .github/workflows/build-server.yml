@@ -58,9 +58,9 @@ jobs:
 
           ls
 
-          cp -R ./dist-back/* dist/
-          cp -R ./front-app/dist/* dist/front-app/dist/
-          cp -R ./front/* dist/front/
+          cp -R ./dist-back/ dist/
+          cp -R ./front-app/dist/ dist/front-app/dist/
+          cp -R ./front/ dist/front/
           cp ./index.js dist/index.js
           cp ./app.js dist/app.js
           cp ./package.json dist/package.json
