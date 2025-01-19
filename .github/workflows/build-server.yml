@@ -53,22 +53,23 @@ jobs:
           # Checkout or create empty dist branch
           git checkout --orphan dist
 
-          # Remove all files
-          git rm -rf . --ignore-unmatch
+          mkdir -p dist
+          cp -R ./dist-back/* dist/
+          cp -R ./front-app/dist/* dist/front-app/dist/
+          cp -R ./front/* dist/front/
+          cp ./index.js dist/index.js
+          cp ./app.js dist/app.js
+          cp ./package.json dist/package.json
+          cp ./LICENSE dist/LICENSE
+          cp ./.env.txt dist/.env.txt
+          
+          shopt -s extglob
+          rm -rf !(dist)
+          mv dist/* ./
+          rm -rf dist
 
-          # Add required files and directories
-          cp -R ./dist-back ./dist-back
-          cp -R ./front-app/dist ./front-app/dist
-          cp -R ./front ./front
-          cp ./index.js ./index.js
-          cp ./app.js ./app.js
-          cp ./package.json ./package.json
-          cp ./LICENSE ./LICENSE
-          cp ./.env.txt ./.env.txt
+          git add .
 
-          # Stage the changes
-          git add dist-back front-app/dist front index.js app.js package.json LICENSE .env.txt
-
-          # Commit and push to dist branch
           git commit -m "Deploy build output to dist branch"
           git push origin dist --force
+
