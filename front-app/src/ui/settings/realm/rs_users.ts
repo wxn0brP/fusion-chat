@@ -1,0 +1,108 @@
+import hub from "../../../hub";
+hub("rs/users");
+
+import apis from "../../../api/apis";
+import vars from "../../../var/var";
+import socket from "../../../core/socket/socket";
+import debugFunc from "../../../core/debug";
+import rs_dataF from "./rs_var";
+import { addSeparator, initButton, initCheckbox } from "./rs_utils";
+import { Settings_rs__User } from "./types";
+import LangPkg, { langFunc } from "../../../utils/translate";
+
+export const renderUserRoleManager = function () {
+    const rs_data = rs_dataF();
+    const settings = rs_data.settings;
+    if (!settings || !settings.users) return debugFunc.msg(LangPkg.settings_realm.no_data);
+
+    const container = rs_data.html.usersManager;
+    container.innerHTML = `<h1>${LangPkg.settings_realm.users_manager}</h1>`;
+    const users = settings.users;
+    const roles = settings.roles;
+
+    /**
+     * Creates a HTML representation for a user in the users manager.
+     */
+    function renderUser(user: Settings_rs__User) {
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.innerHTML = apis.www.changeUserID(user.u);
+        details.appendChild(summary);
+        const div = document.createElement("div");
+
+        const userRoles = user.r;
+        const checkboxs = [];
+
+        roles.forEach(role => {
+            if (!role._id) return;
+            const checkbox = initCheckbox(div, role.name, userRoles.includes(role._id));
+            checkboxs.push({ id: role._id, checkbox });
+        });
+
+        addSeparator(div, 10);
+        initButton(div, LangPkg.uni.update, () => {
+            const newRoles = [];
+            checkboxs.forEach(c => {
+                const { id, checkbox } = c;
+                if (checkbox.checked) newRoles.push(id);
+            })
+            settings.users.find(u => u === user).r = newRoles;
+            renderUserRoleManager();
+        });
+
+        if (user.u != vars.user._id) {
+            addSeparator(div, 10);
+            initButton(div, LangPkg.settings_realm.role_permissions.kick_user, () => {
+                const result = confirm(langFunc(LangPkg.settings_realm.user_mgmt_confirms.kick_sure, apis.www.changeUserID(user.u)) + "?");
+                if (!result) return;
+
+                settings.users = settings.users.filter(u => u.u !== user.u);
+                socket.emit("realm.user.kick", rs_data.realmId, user.u);
+                renderUserRoleManager();
+            });
+
+            initButton(div, LangPkg.settings_realm.role_permissions.ban_user, () => {
+                const result = confirm(langFunc(LangPkg.settings_realm.user_mgmt_confirms.ban_sure, apis.www.changeUserID(user.u)) + "?");
+                if (!result) return;
+
+                settings.users = settings.users.filter(u => u.u !== user.u);
+                socket.emit("realm.user.kick", rs_data.realmId, user.u, true);
+                renderUserRoleManager();
+            });
+        }
+
+        details.appendChild(div);
+        addSeparator(details, 10);
+        return details;
+    }
+
+    users.forEach(user => {
+        container.appendChild(renderUser(user));
+        addSeparator(container, 10);
+    });
+
+    if (settings.banUsers.length > 0) {
+        const banUsersDetails = document.createElement("details");
+
+        const banUsersSummary = document.createElement("summary");
+        banUsersSummary.innerHTML = LangPkg.settings_realm.banned_users;
+        banUsersDetails.appendChild(banUsersSummary);
+
+        settings.banUsers.forEach(u => {
+            const userName = document.createElement("span");
+            userName.innerHTML = apis.www.changeUserID(u);
+            banUsersDetails.appendChild(userName);
+
+            initButton(banUsersDetails, LangPkg.settings_realm.unban_user, () => {
+                const result = confirm(langFunc(LangPkg.settings_realm.user_mgmt_confirms.unban_sure, apis.www.changeUserID(u)) + "?");
+                if (!result) return;
+
+                settings.banUsers = settings.banUsers.filter(u => u !== u);
+                socket.emit("realm.user.unban", rs_data.realmId, u);
+                renderUserRoleManager();
+            });
+        });
+
+        container.appendChild(banUsersDetails);
+    }
+}

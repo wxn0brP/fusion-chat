@@ -1,0 +1,83 @@
+/// { "title": "Fusion Chat | Open Announcement Viewer" }
+
+<form>
+    <h1>Open Announcement Viewer</h1>
+    <div class="input-container">
+        <label for="realm">Realm:</label>
+        <input type="text" id="realm" name="realm" required>
+    </div>
+    <div class="input-container">
+        <label for="channel">Channel:</label>
+        <input type="text" id="channel" name="channel" required>
+    </div>
+    <button type="submit">View</button>
+    <button id="loadMore" type="button" disabled>Load more</button>
+</form>
+
+<div id="messages"></div>
+<div id="mediaPopup"></div>
+
+<script src="/core.js"></script>
+<script src="/js/announcement-format.js"></script>
+<script src="/js/announcement.js"></script>
+
+<style>
+    body{
+        height: 99vh;
+    }
+
+    #messages{
+        display: flex;
+        flex-direction: column;
+        overflow-y: scroll;
+        height: 80%;
+        width: 80%;
+        border: 2px solid var(--accent);
+        border-radius: 10px;
+        padding: 10px;
+        gap: 5px;
+        text-align: left;
+        margin-inline: auto;
+    }
+
+    input, button{
+        margin: 5px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid var(--border);
+        background-color: var(--back);
+        color: var(--txt);
+    }
+
+    button:disabled{
+        background-color: red;
+    }
+
+    #messages h3{
+        font-style: italic;
+        color: var(--accent);
+    }
+
+    @media screen and (max-width: 800px){
+        #messages{
+            border-radius: 0;
+            border-inline: none;
+            width: 100%;
+        }
+    }
+
+    .spoiler{
+        cursor: pointer;
+        background-color: #333;
+        color: transparent;
+        padding: 3px;
+        border-radius: 5px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .spoiler__show{
+        color: inherit;
+    }
+</style>
+<link rel="stylesheet" href="/app/css/media.css">

@@ -39,7 +39,7 @@ cw.proto = {
         }
     },
 
-    atrib(att, arg=null){
+    attrib(att, arg=null){
         if(arg){
             this.setAttribute(att, arg);
         }else{
@@ -103,7 +103,7 @@ cw.proto = {
     },
 
     fade: true,
-    fadeToogle(){
+    fadeToggle(){
         if(this.fade){
             this.fadeOut();
         }else{
@@ -127,31 +127,6 @@ cw.init = function(){
     Object.assign(HTMLElement.prototype, this.proto);
 }
 cw.init();
-
-
-cw.grid = function(doc=document.body){
-    function getSize(className, size){
-        const match = className.match(new RegExp(`${size}_(\\d+)`));
-        return match ? parseInt(match[0].replace(size+"_","")) : 12;
-    }
-    function add(ele, start, size){
-        for(let i=start; i<prefixes.length; i++){
-            ele.classList.add(prefixes[i] + "_" + size);
-        }
-    }
-    const prefixes = "smlu";
-    const elementy = doc.querySelectorAll(".s, [class^='s_']");
-    elementy.forEach(ele => {
-        const cm = ele.className;
-        let foundPrefix = 0;
-        for(let i=0; i<prefixes.length; i++){
-            if(!cm.includes(prefixes[i] + "_")) continue;
-            foundPrefix = i;
-        }
-        const size = getSize(cm, prefixes[foundPrefix])
-        add(ele, foundPrefix, size);
-    });
-}
 
 cw.rand = function(min, max){
 	return Math.round(Math.random() * (max-min) + min);

@@ -1,4 +1,4 @@
-## GET /api/open-event
+## GET /api/announcement
 
 ### Description
 Get message from open event channel.

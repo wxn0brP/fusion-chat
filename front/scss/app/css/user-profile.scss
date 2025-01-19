@@ -1,6 +1,7 @@
-#navs__user{
+#navs__user {
     position: relative;
-    img{
+
+    img {
         position: absolute;
         left: 8px;
         top: 8px;
@@ -11,7 +12,7 @@
 }
 
 
-#navs__user__name{
+#navs__user__name {
     position: absolute;
     left: 65px;
     top: 11px;
@@ -20,7 +21,7 @@
     text-align: left;
 }
 
-#navs__user__status{
+#navs__user__status {
     position: absolute;
     left: 65px;
     top: 32px;
@@ -30,10 +31,10 @@
     text-wrap: nowrap;
 }
 
-#navs__user__setting{
+#navs__user__setting {
     position: absolute;
     left: 194px;
     top: 19px;
-    font-size: 1.6rem;    
+    font-size: 1.6rem;
     cursor: pointer;
 }

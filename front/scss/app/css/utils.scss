@@ -1,11 +1,11 @@
-.noneselect{
+.noneselect {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
 
-.btn{
+.btn {
     --pad_radius: 5px;
     --border: 2px;
     --bg: transparent;
@@ -19,10 +19,10 @@
     background-color: var(--bg);
 }
 
-.checkbox_switch{
+.checkbox_switch {
     --w: 2rem;
     --h: 1rem;
-    
+
     appearance: none;
     -webkit-appearance: none;
     width: var(--w);
@@ -33,7 +33,7 @@
     cursor: pointer;
     transition: background-color 0.4s;
 
-    &::before{
+    &::before {
         content: '';
         position: absolute;
         height: calc(var(--h) - 6px);
@@ -45,27 +45,27 @@
         top: 3px;
     }
 
-    &:checked{
+    &:checked {
         background-color: var(--green, #4CAF50);
 
-        &::before{
+        &::before {
             transform: translateX(calc(var(--w) - var(--h)));
         }
     }
 
-    &:not(:checked){
+    &:not(:checked) {
         background-color: var(--red, #f44336);
     }
 }
 
-@media screen and (max-width: 800px){
-    .only_desktop{
-        display: none;  
+@media screen and (max-width: 800px) {
+    .only_desktop {
+        display: none;
     }
 }
 
-@media screen and (min-width: 800px){
-    .only_mobile{
+@media screen and (min-width: 800px) {
+    .only_mobile {
         display: none;
     }
 }

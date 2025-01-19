@@ -1,13 +1,19 @@
 # dir
 node_modules
-data
-config
-.vscode
 app-test
+config
+data
 userFiles
-serverDB
-front/app/css
 !docs/**
+
+# dist
+front/app/css
+front-app/dist
+dist-back
+
+# ide
+.vscode
+.idea
 
 # files
 *.env

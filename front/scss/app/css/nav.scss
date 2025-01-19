@@ -1,16 +1,16 @@
-#app{
+#app {
     display: flex;
     height: 100vh;
 }
 
-nav{
+nav {
     width: 290px;
     min-width: 290px;
     height: 100%;
     background-color: var(--panel);
 }
 
-#nav__toggle{
+#nav__toggle {
     position: absolute;
     right: 15px;
     top: 2.2rem;
@@ -24,7 +24,7 @@ nav{
     font-size: 1.6rem;
 }
 
-#realms{
+#realms {
     width: 60px;
     height: 100vh;
     float: left;
@@ -32,7 +32,7 @@ nav{
     padding-inline: 6px;
 }
 
-.realm{
+.realm {
     width: 48px;
     height: 48px;
     margin: 2px;
@@ -43,8 +43,8 @@ nav{
     margin-bottom: 5px;
     cursor: pointer;
     position: relative;
-    
-    img{
+
+    img {
         height: 50px;
         object-fit: cover;
         border-radius: 50%;
@@ -53,7 +53,7 @@ nav{
     }
 }
 
-.realm_chatActive::after{
+.realm_chatActive::after {
     content: "";
     position: absolute;
     width: 3px;
@@ -63,50 +63,45 @@ nav{
     background-color: var(--accent);
 }
 
-#realms__main__img{
+#realms__main__img {
     object-fit: fill;
 }
 
-#navs{
+#navs {
     float: left;
     width: 230px;
     height: 100vh;
 
-    button{
+    button {
         --pad_radius: 7px;
         --borderColor: transparent;
         --bg: var(--panel);
-    
+
         width: 90%;
         transition: border-color 0.5s;
         margin-block: 3px;
     }
-    button:hover{
+
+    button:hover {
         text-decoration: underline;
     }
 }
 
-#navs__main, #navs__realms{
+#navs__main,
+#navs__realms {
     width: 100%;
     height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
 }
 
-#navs__user{
+#navs__user {
     width: 100%;
     height: 60px;
     background-color: var(--userProfile);
 }
 
-#navs__realms__name{
-    padding: 10px;
-    width: 100%;
-    height: 3.4rem;
-    text-align: center;
-    font-size: 1.6rem;
-    font-weight: bold;
-}
-
-#navs__realms__name__text{
+#navs__realm__name__text {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -116,113 +111,159 @@ nav{
     float: left;
 }
 
-#navs__realms__name{
-    .realm_nav_btn{
+#navs__realm__name {
+    padding: 10px;
+    width: 100%;
+    height: 3.4rem;
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: bold;
+
+    .realm_nav_btn {
         font-size: 1.4rem;
         cursor: pointer;
         float: right;
     }
 
-    .realm_nav_btn:not(:first-of-type){
+    .realm_nav_btn:not(:first-of-type) {
         margin-right: 5px;
     }
 }
 
-#navs__realms__channels details{
-    summary{
-        text-align: left;
-        padding-left: 1rem;
-        font-size: 1.2rem;
+#navs__realm__panel {
+    margin-top: -1rem;
+    text-align: left;
+}
+
+#navs #navs__realm__panel button {
+    width: 1em;
+    font-size: 1.4rem;
+}
+
+#navs button#navs__realm__events {
+    position: relative;
+
+    &::after {
+        content: attr(data-count);
+        position: absolute;
+        top: 1.3rem;
+        left: 1.5rem;
+        background-color: rgba(var(--accentRGB), .3);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+        color: var(--txt);
     }
+}
 
-    div{
-        text-align: left;
-        padding-left: 1rem;
-        cursor: pointer;
-        margin-block: 0.5rem;
-        font-size: 1.1rem;
-        transition: margin-left 0.5s;
+#navs__realm__channels {
+    overflow-y: scroll;
+    flex-grow: 1;
 
-        &:hover{
-            margin-left: 0.5rem;
+    details {
+        summary {
+            text-align: left;
+            padding-left: 1rem;
+            font-size: 1.2rem;
+        }
+
+        div {
+            text-align: left;
+            padding-left: 1rem;
+            cursor: pointer;
+            margin-block: 0.5rem;
+            font-size: 1.1rem;
+            transition: margin-left 0.5s;
+
+            &:hover {
+                margin-left: 0.5rem;
+            }
         }
     }
 }
 
-#navs__realms__users{
+#navs__realms__users {
     text-align: left;
     overflow-y: scroll;
-    max-height: calc(100vh - 60px - 50px);
-    
-    img{
+    flex-grow: 1;
+
+    img {
         width: 32px;
         height: 32px;
         border-radius: 50%;
         object-fit: cover;
     }
+
+    &>div {
+        margin-block: 0.1rem;
+        padding: 0.3rem;
+        padding-left: 1rem;
+        border-radius: 1rem;
+
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        cursor: pointer;
+    }
 }
 
-#navs__realms__users > div{
-    margin-block: 0.1rem;
-    padding: 0.3rem;
-    padding-left: 1rem;
-    border-radius: 1rem;
-
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-
-    cursor: pointer;
-}
-
-.realm_user_div:hover .realm_user_name{
+.realm_user_div:hover .realm_user_name {
     text-decoration: underline;
     font-style: italic;
 }
 
-.realm_user_status{
+.realm_user_status {
     font-size: 0.8rem;
 }
 
 
-#navs .unreadPriv{
+#navs .unreadPriv {
     border-color: var(--accent);
     font-weight: bold;
 }
 
-#navs .priv_chatActive{
+#navs .priv_chatActive {
     color: var(--accent);
 }
 
-.priv_chat div{
+.priv_chat div {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-#navs__priv img{
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-}
+#navs__priv {
+    overflow-y: scroll;
+    flex-grow: 1;
 
-#navs .channel_textActive{
+    img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+    }
+} 
+
+#navs .channel_textActive {
     color: var(--accent);
 }
 
-#realms__create{
+#realms__create {
     font-size: 2.5rem;
     color: green;
 }
 
-@media screen and (max-width: 800px){
-    nav{
+@media screen and (max-width: 800px) {
+    nav {
         position: absolute;
         left: -360px;
         transition: 0.5s;
     }
 
-    #nav__toggle{
+    #nav__toggle {
         display: block;
     }
 }

@@ -1,0 +1,10 @@
+{
+    "ext": "ts",
+    "watch": [
+        "src"
+    ],
+    "exec": "yarn build",
+    "events": {
+        "restart": "clear"
+    }
+}

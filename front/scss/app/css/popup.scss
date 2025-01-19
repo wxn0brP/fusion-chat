@@ -1,4 +1,4 @@
-#errMesses div{
+#errMesses div {
     position: absolute;
     max-width: 70%;
     top: -10rem;
@@ -13,15 +13,15 @@
     cursor: pointer;
 }
 
-.uiMsgClass{
+.uiMsgClass {
     backdrop-filter: blur(5px);
     background-color: rgba(var(--accentRGB), .2);
     border: 3px solid var(--accent);
     box-shadow: 0 0 10px 5px rgba(var(--accentRGB), .5);
 }
 
-#prompt{
-    div{
+#prompt {
+    div {
         position: absolute;
         min-width: 200px;
         max-width: 70%;
@@ -35,11 +35,13 @@
         backdrop-filter: blur(4px);
     }
 
-    p{
+    p {
         font-size: 1.2rem;
     }
 
-    input, button, select{
+    input,
+    button,
+    select {
         border-radius: 1rem;
         padding: 7px 12px;
         border: 2px solid var(--accent);
@@ -48,22 +50,22 @@
         margin-top: 5px;
     }
 
-    option{
+    option {
         background-color: var(--back);
         color: var(--txt);
     }
 
-    button{
+    button {
         transition: background-color 0.3s;
         cursor: pointer;
 
-        &:hover{
+        &:hover {
             background-color: rgba(var(--accentRGB), 0.5);
         }
     }
 }
 
-#userProfile{
+#userProfile {
     position: absolute;
     top: 40%;
     left: 50%;
@@ -80,12 +82,12 @@
 
     text-align: left;
 
-    #userProfileInfo{
+    #userProfileInfo {
         display: flex;
         gap: 1rem;
     }
 
-    img{
+    img {
         width: 100px;
         height: 100px;
         border-radius: 50%;
@@ -93,12 +95,12 @@
     }
 }
 
-#linkClick{
+#linkClick {
     position: absolute;
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 10;
+    z-index: 99;
     background-color: var(--back);
     color: var(--txt);
     border: 2px solid var(--accent);
@@ -106,13 +108,13 @@
     padding: 1rem;
     width: 600px;
 
-    #linkClick_btns{
+    #linkClick_btns {
         width: 100%;
         display: flex;
         justify-content: space-around;
     }
 
-    button{
+    button {
         width: 35%;
         border-radius: 1rem;
         padding: 7px 12px;
@@ -123,12 +125,12 @@
         cursor: pointer;
     }
 
-    span{
+    span {
         color: red;
     }
 }
 
-#makeRealm{
+#makeRealm {
     position: absolute;
     top: 40%;
     left: 50%;
@@ -142,7 +144,7 @@
     width: 300px;
 }
 
-#emojiDiv{
+#emojiDiv {
     position: absolute;
     right: 2rem;
     bottom: 4rem;
@@ -159,7 +161,7 @@
     display: none;
 }
 
-#emojiDiv__struct{
+#emojiDiv__struct {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -167,55 +169,55 @@
     position: relative;
 }
 
-#emojiDiv__close{
+#emojiDiv__close {
     cursor: pointer;
     position: absolute;
     color: red;
 }
 
-#emoji__search{
+#emoji__search {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 5px;
 
-    label{
+    label {
         font-size: 1.5rem;
         cursor: pointer;
     }
 
-    input:where(:active, :focus){
+    input:where(:active, :focus) {
         outline: none;
     }
 }
 
-#emoji__nav{
+#emoji__nav {
     display: grid;
     gap: 5px;
     grid-template-columns: repeat(4, 1fr);
 }
 
-#emoji__container{
+#emoji__container {
     flex-grow: 1;
     overflow-y: scroll;
 }
 
-#emoji__container div > h1{
+#emoji__container div>h1 {
     text-transform: uppercase;
 }
 
-.emoji__category{
+.emoji__category {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     gap: 5px;
 }
 
-.emoji__item{
+.emoji__item {
     cursor: pointer;
     font-size: 2rem;
 }
 
-#subscribeEventChnl{
+#subscribeEventChnl {
     position: absolute;
     top: 40%;
     left: 50%;
@@ -228,7 +230,7 @@
     padding: 1rem;
     width: 300px;
 
-    select{
+    select {
         width: 70%;
         border-radius: 1rem;
         padding: 7px 12px;
@@ -239,28 +241,135 @@
     }
 }
 
-@media screen and (max-width: 800px){
-    #errMesses div{
+#realmEvents {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9;
+    background-color: var(--back);
+    color: var(--txt);
+    border: 2px solid var(--accent);
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 600px;
+
+    #realmEvents__container {
+        max-height: 60vh;
+        overflow-y: scroll;
+    }
+
+    #realmEvents__exit {
+        position: relative;
+
+        button {
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            color: red;
+            background-color: var(--back);
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+        }
+    }
+
+    .realm_event {
+        display: flex;
+        gap: 5px;
+        text-align: left;
+        margin-bottom: 1rem;
+
+        img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    }
+
+    input,
+    select {
+        width: 50%;
+        border-radius: 1rem;
+        padding: 7px 12px;
+        border: 2px solid var(--accent);
+        background-color: var(--back);
+        color: var(--txt);
+        margin-top: 5px;
+    }
+
+    .realm_event__info {
+        width: 250px;
+    }
+
+    .realm_event__users {
+        width: 150px;
+
+        .realm_event__users__list {
+            padding: 5px;
+            border: 2px solid var(--accent);
+            border-radius: 5px;
+            overflow-y: scroll;
+            max-height: 100px;
+            width: 90%;
+        }
+    }
+
+    .realm_event__delete {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    #errMesses div {
         width: 90vw;
         max-width: none;
     }
 
-    #linkClick{
+    #linkClick {
         width: 90vw;
     }
 
-    #emojiDiv{
+    #emojiDiv {
         width: 90vw;
         right: 5vw;
         height: 70vh;
     }
 
-    #emoji__nav{
+    #emoji__nav {
         grid-template-columns: repeat(2, 1fr);
         gap: 7px;
     }
 
-    #subscribeEventChnl{
+    #subscribeEventChnl {
         width: 90vw;
+    }
+
+    #realmEvents {
+        width: 90vw;
+
+        .realm_event {
+            flex-direction: column;
+
+            .realm_event__info,
+            .realm_event__users,
+            .realm_event__delete {
+                width: 100%;
+            }
+
+            .realm_event__delete {
+                justify-content: left;
+            }
+        }
+    }
+
+    input,
+    button,
+    select {
+        width: 90%;
     }
 }
