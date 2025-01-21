@@ -59,7 +59,7 @@ export const renderMeta = function () {
             LangPkg.settings_realm.delete_realm_confirm.w3
         ];
         for (const text of warns) {
-            const result = confirm(text + end);
+            const result = await uiFunc.confirm(text + end);
             if (!result) return;
         }
 

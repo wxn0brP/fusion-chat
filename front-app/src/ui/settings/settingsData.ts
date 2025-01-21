@@ -147,10 +147,10 @@ const settingsData: SettingsData = {
                     name: "Logout",
                     txt: LangPkg.settings_user.logout,
                     type: "button",
-                    onclick: () => {
+                    onclick: async () => {
                         const confText = LangPkg.settings_user.confirm_logout + "?";
-                        if (!confirm(confText)) return;
-                        if (!confirm(confText + " (" + LangPkg.settings_user.double_check + ")")) return;
+                        if (!await uiFunc.confirm(confText)) return;
+                        if (!await uiFunc.confirm(confText + " (" + LangPkg.settings_user.double_check + ")")) return;
 
                         localStorage.removeItem("user_id");
                         localStorage.removeItem("from");
@@ -167,10 +167,10 @@ const settingsData: SettingsData = {
                     name: "Delete Account",
                     txt: LangPkg.settings_user.delete,
                     type: "button",
-                    onclick: () => {
-                        if (!confirm(LangPkg.settings_user.confirm_delete.w1 + "?")) return;
-                        if (!confirm(LangPkg.settings_user.confirm_delete.w2 + "?")) return;
-                        if (!confirm(LangPkg.settings_user.confirm_delete.w3 + "?")) return;
+                    onclick: async () => {
+                        if (!await uiFunc.confirm(LangPkg.settings_user.confirm_delete.w1 + "?")) return;
+                        if (!await uiFunc.confirm(LangPkg.settings_user.confirm_delete.w2 + "?")) return;
+                        if (!await uiFunc.confirm(LangPkg.settings_user.confirm_delete.w3 + "?")) return;
 
                         socket.emit("user.delete", () => {
                             localStorage.removeItem("user_id");

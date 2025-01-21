@@ -71,10 +71,10 @@ const uiInteract = {
         });
     },
 
-    deleteMess(id: Id) {
+    async deleteMess(id: Id) {
         const keys = KeyState.shift || KeyState.ctrl; // if shift or ctrl is pressed skip confirmation
         if (!keys) {
-            const conf = confirm(LangPkg.ui.confirm.delete_message + "?"); // TODO rm mess confirm make better (popup with content) 
+            const conf = await uiFunc.confirm(LangPkg.ui.confirm.delete_message + "?"); // TODO rm mess confirm make better (popup with content) 
             if (!conf) return;
         }
         socket.emit("message.delete", vars.chat.to, id);

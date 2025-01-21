@@ -109,11 +109,11 @@ const voiceFunc = {
         }
     },
 
-    startCall() {
+    async startCall() {
         const id = vars.chat.to.replace("$", "");
         if (id == "main") return;
 
-        const isConfirm = confirm(langFunc(LangPkg.ui.confirm.call_to, apis.www.changeUserID(id)) + "?");
+        const isConfirm = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.call_to, apis.www.changeUserID(id)) + "?");
         if (!isConfirm) return;
 
         socket.emit("call.dm.init", id);

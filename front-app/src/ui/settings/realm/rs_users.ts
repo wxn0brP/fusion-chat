@@ -9,6 +9,7 @@ import rs_dataF from "./rs_var";
 import { addSeparator, initButton, initCheckbox } from "./rs_utils";
 import { Settings_rs__User } from "./types";
 import LangPkg, { langFunc } from "../../../utils/translate";
+import uiFunc from "../../helpers/uiFunc";
 
 export const renderUserRoleManager = function () {
     const rs_data = rs_dataF();
@@ -52,18 +53,20 @@ export const renderUserRoleManager = function () {
 
         if (user.u != vars.user._id) {
             addSeparator(div, 10);
-            initButton(div, LangPkg.settings_realm.role_permissions.kick_user, () => {
-                const result = confirm(langFunc(LangPkg.settings_realm.user_mgmt_confirms.kick_sure, apis.www.changeUserID(user.u)) + "?");
-                if (!result) return;
+            initButton(div, LangPkg.settings_realm.role_permissions.kick_user, async () => {
+                const text = langFunc(LangPkg.settings_realm.user_mgmt_confirms.kick_sure, apis.www.changeUserID(user.u)) + "?";
+                const conf = await uiFunc.confirm(text); 
+                if (!conf) return;
 
                 settings.users = settings.users.filter(u => u.u !== user.u);
                 socket.emit("realm.user.kick", rs_data.realmId, user.u);
                 renderUserRoleManager();
             });
 
-            initButton(div, LangPkg.settings_realm.role_permissions.ban_user, () => {
-                const result = confirm(langFunc(LangPkg.settings_realm.user_mgmt_confirms.ban_sure, apis.www.changeUserID(user.u)) + "?");
-                if (!result) return;
+            initButton(div, LangPkg.settings_realm.role_permissions.ban_user, async () => {
+                const text = langFunc(LangPkg.settings_realm.user_mgmt_confirms.ban_sure, apis.www.changeUserID(user.u)) + "?";
+                const conf = await uiFunc.confirm(text);
+                if (!conf) return;
 
                 settings.users = settings.users.filter(u => u.u !== user.u);
                 socket.emit("realm.user.kick", rs_data.realmId, user.u, true);
@@ -93,9 +96,10 @@ export const renderUserRoleManager = function () {
             userName.innerHTML = apis.www.changeUserID(u);
             banUsersDetails.appendChild(userName);
 
-            initButton(banUsersDetails, LangPkg.settings_realm.unban_user, () => {
-                const result = confirm(langFunc(LangPkg.settings_realm.user_mgmt_confirms.unban_sure, apis.www.changeUserID(u)) + "?");
-                if (!result) return;
+            initButton(banUsersDetails, LangPkg.settings_realm.unban_user, async () => {
+                const text = langFunc(LangPkg.settings_realm.user_mgmt_confirms.unban_sure, apis.www.changeUserID(u)) + "?";
+                const conf = await uiFunc.confirm(text);
+                if (!conf) return;
 
                 settings.banUsers = settings.banUsers.filter(u => u !== u);
                 socket.emit("realm.user.unban", rs_data.realmId, u);

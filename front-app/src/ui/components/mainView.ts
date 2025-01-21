@@ -133,22 +133,22 @@ const mainView = {
         });
     },
 
-    removeFriend(friend: Id) {
+    async removeFriend(friend: Id) {
         if (!friend) return;
 
-        const conf = confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
+        const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
         if (!conf) return;
-        const conf2 = confirm(langFunc(LangPkg.ui.confirm.sure, apis.www.changeUserID(friend)) + "?");
+        const conf2 = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.sure, apis.www.changeUserID(friend)) + "?");
         if (!conf2) return;
 
         socket.emit("friend.remove", friend);
         socket.emit("friend.get.all");
     },
 
-    removeFriendRequest(friend: Id) {
+    async removeFriendRequest(friend: Id) {
         if (!friend) return;
 
-        const conf = confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
+        const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
         if (!conf) return;
 
         socket.emit("friend.request.remove", friend);

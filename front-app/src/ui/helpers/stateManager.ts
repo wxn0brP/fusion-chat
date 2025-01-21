@@ -93,9 +93,9 @@ const stateManagerFunc = {
         coreFunc.changeChat(chat as Id, chnl as Id);
     },
 
-    call(id: string){
+    async call(id: string){
         if(!utils.validId(id)) return;
-        const conf = confirm(langFunc(LangPkg.ui.confirm.call_to, apis.www.changeUserID(id as Id)));
+        const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.call_to, apis.www.changeUserID(id as Id)));
         if(!conf) return;
         socket.emit("call.dm.init", id);
     }

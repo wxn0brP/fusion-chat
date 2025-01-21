@@ -212,8 +212,9 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
             const unsubscribe = document.createElement("button");
             unsubscribe.style.marginLeft = "1rem";
             unsubscribe.innerHTML = LangPkg.settings_realm.unsubscribe_channel;
-            unsubscribe.addEventListener("click", () => {
-                const conf = confirm(langFunc(LangPkg.settings_realm.confirm_unsubscribe, apis.www.changeChat(sub.sr) + " - " + sub.name) + "?");
+            unsubscribe.addEventListener("click", async () => {
+                const text = langFunc(LangPkg.settings_realm.confirm_unsubscribe, apis.www.changeChat(sub.sr) + " - " + sub.name) + "?";
+                const conf = await uiFunc.confirm(text);
                 if (!conf) return;
                 socket.emit("realm.announcement.channel.unsubscribe", sub.sr, sub.sc, rs_data.realmId, sub.tc);
                 settings.addons.subscribedChannels = settings.addons.subscribedChannels.filter(s => s !== sub);
