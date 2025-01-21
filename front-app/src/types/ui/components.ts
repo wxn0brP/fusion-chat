@@ -28,3 +28,34 @@ export interface Ui_EmojiData {
         [key: string]: Ui_EmojiData_emoji;
     }
 }
+
+export interface Ui_Media__Options {
+    maxScale?: number;
+    minScale?: number;
+    scaleStep?: number;
+    rotationStep?: number;
+    doubleTapDelay?: number;
+    isVideo?: boolean | "auto";
+}
+
+export interface Ui_Media__State {
+    scale: number;
+    rotation: number;
+    position: { x: number, y: number };
+    brightness: number;
+    contrast: number;
+    saturation: number;
+    blur: number;
+    isDragging: boolean;
+    dragStart: { x: number, y: number };
+    lastTap: number;
+    lastTapPosition: { x: number, y: number };
+    initialPinchDistance: number | null;
+    initialRotation: number | null;
+    previousTouches: {
+        identifier: number,
+        pageX: number,
+        pageY: number
+    }[] | null;
+    isAnimating: boolean;
+}

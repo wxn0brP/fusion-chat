@@ -74,19 +74,6 @@ const voiceFunc = {
         mediaRecorder.start(100);
     },
 
-    // addMediaHtml(stream, id){
-    //     const audio = document.createElement("audio");
-    //     audio.srcObject = stream;
-    //     audio.id = "audio_call_"+id;
-    //     audio.setAttribute("controls", "");
-    //     audio.setAttribute("autoplay", "");
-    //     audio.style.display = "none";
-
-    //     voiceHTML.mediaContainer.appendChild(audio);
-
-    //     return audio;
-    // },
-
     endCall() {
         if (this.sending) clearInterval(this.sending);
         this.sending = false;
@@ -135,31 +122,42 @@ const voiceFunc = {
         voiceHTML.muteMic.innerHTML = voiceFuncVar.muteMic ? LangPkg.ui.mute.unmute : LangPkg.ui.mute.mute;
     },
 
-    async getStream(audio = true, video = false) {
-        if (apis.app.apiType == "rn") {
-            // @ts-ignore
-            // TODO fix type
-            return await processMediaRN.getStream();
+    async getStream(audio: boolean = true, video: boolean = false): Promise<MediaStream> {
+        if (apis.app.apiType === "rn") {
+            // React Native only
+            return await (window as any).processMediaRN.getStream() as MediaStream;
         }
+
         const stream = new MediaStream();
 
-        async function getUserMedia(options: { audio?: { deviceId?: string } | boolean, video?: { deviceId?: string } | boolean }) {
-            // TODO fix type
+        async function getUserMedia(options: {
+            audio?: { deviceId?: string } | boolean,
+            video?: { deviceId?: string } | boolean
+        }): Promise<MediaStream | undefined> {
             if (navigator.mediaDevices?.getUserMedia) {
                 return await navigator.mediaDevices.getUserMedia(options);
-                // @ts-ignore
-            } else if (navigator.webkitGetUserMedia) {
-                // @ts-ignore
-                return await navigator.webkitGetUserMedia(options);
-                // @ts-ignore
-            } else if (navigator.mozGetUserMedia) {
-                // @ts-ignore
-                return await navigator.mozGetUserMedia(options);
+            } else if ("webkitGetUserMedia" in navigator) {
+                const webkitGetUserMedia = (navigator as any).webkitGetUserMedia.bind(navigator);
+                return new Promise<MediaStream>((resolve, reject) => {
+                    webkitGetUserMedia(options, resolve, reject);
+                });
+            } else if ("mozGetUserMedia" in navigator) {
+                const mozGetUserMedia = (navigator as any).mozGetUserMedia.bind(navigator);
+                return new Promise<MediaStream>((resolve, reject) => {
+                    mozGetUserMedia(options, resolve, reject);
+                });
             }
         }
 
-        async function selectDevice(devices, prompt) {
-            const labels = devices.map(device => device.label);
+        async function selectDevice(
+            devices: MediaDeviceInfo[],
+            prompt: string
+        ): Promise<string | undefined> {
+            if (devices.length === 0) {
+                uiFunc.uiMsgT('No devices found');
+                return undefined;
+            }
+            const labels = devices.map(device => device.label || "Unknown Device");
             const deviceIds = devices.map(device => device.deviceId);
             const selectedIndex = await uiFunc.selectPrompt(prompt, labels, deviceIds) as number;
             return deviceIds[selectedIndex];
@@ -168,27 +166,35 @@ const voiceFunc = {
         try {
             const permissions = await getUserMedia({ audio, video });
             if (!permissions) {
-                uiFunc.uiMsgT('Error getting stream');
+                uiFunc.uiMsgT('Error getting temporary stream');
                 return stream;
             }
+
             setTimeout(() => {
                 permissions.getTracks().forEach(track => track.stop());
-            }, 100);
+            }, 200);
 
             const devices = await navigator.mediaDevices.enumerateDevices();
             const audioDevices = devices.filter(device => device.kind === 'audioinput');
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-            const audioOptions = audio ? { deviceId: await selectDevice(audioDevices, LangPkg.ui.call.select_audio_device) } : false;
-            const videoOptions = video ? { deviceId: await selectDevice(videoDevices, LangPkg.ui.call.select_video_device) } : false;
+            const audioOptions = audio
+                ? { deviceId: await selectDevice(audioDevices, LangPkg.ui.call.select_audio_device) }
+                : false;
+
+            const videoOptions = video
+                ? { deviceId: await selectDevice(videoDevices, LangPkg.ui.call.select_video_device) }
+                : false;
 
             const mediaStream = await getUserMedia({ audio: audioOptions, video: videoOptions });
-            if (mediaStream)
-                stream.addTrack(mediaStream.getAudioTracks()[0]);
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => stream.addTrack(track));
+            }
 
             return stream;
         } catch (error) {
-            console.error(`Error getting stream: ${error.message}`);
+            console.error(`Error getting stream: ${(error as Error).message}`);
+            uiFunc.uiMsgT('An error occurred while getting the stream');
             return stream;
         }
     },

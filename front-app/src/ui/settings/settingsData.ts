@@ -51,7 +51,7 @@ const settingsData: SettingsData = {
             type: "fn",
             settings: () => {
                 const div = document.createElement("div");
-                const tmpData = {
+                const tmpData: { img: File | null } = {
                     img: null
                 };
                 div.innerHTML = `
@@ -67,12 +67,13 @@ const settingsData: SettingsData = {
                 const imgSel = document.createElement('input');
                 imgSel.type = 'file';
                 imgSel.accept = staticData.uploadImgTypes.join(', ');
-                imgSel.addEventListener("change", e => {
-                    // TODO fix types
-                    // @ts-ignore
-                    tmpData.img = e.target.files[0];
-                    // @ts-ignore
-                    imgPrev.src = URL.createObjectURL(e.target.files[0]);
+                imgSel.addEventListener("change", (e: Event) => {
+                    const target = e.target as HTMLInputElement;
+                    if (target.files && target.files[0]) {
+                        const file = target.files[0];
+                        tmpData.img = file;
+                        imgPrev.src = URL.createObjectURL(file);
+                    }
                 });
                 container.appendChild(imgSel);
 

@@ -1,28 +1,22 @@
 import hub from "../../hub";
+import { Ui_Media__Options, Ui_Media__State } from "../../types/ui/components";
 import LangPkg from "../../utils/translate";
 import { mglInt } from "../../var/mgl";
 hub("components/media");
 
-// TODO add types
+const mediaPopupDiv = document.querySelector<HTMLElement>("#mediaPopup");
 
-const mediaPopupDiv = document.querySelector("#mediaPopup");
+class MediaPopup {
+    private container: HTMLElement;
+    private url: string;
+    private options: Required<Ui_Media__Options>;
+    private state: Ui_Media__State;
+    private overlay: HTMLElement;
+    private content: HTMLElement;
+    private media: HTMLImageElement | HTMLVideoElement;
+    private controlsResets: (() => void)[] = [];
 
-class MediaPopup{
-    container;
-    url;
-    options;
-    state;
-    overlay;
-    content;
-    media;
-    video;
-    image;
-    actions;
-    controls;
-    isVideo;
-    controlsResets;
-
-    constructor(container, url, options){
+    constructor(container: HTMLElement, url: string, options: Ui_Media__Options) {
         this.container = container;
         this.url = url;
         this.options = {
@@ -56,7 +50,7 @@ class MediaPopup{
         this.init();
     }
 
-    init(){
+    private init() {
         this.overlay = document.createElement("div");
         this.overlay.className = "media-popup-overlay";
         this.overlay.fadeIn("");
@@ -64,13 +58,14 @@ class MediaPopup{
         this.content = document.createElement("div");
         this.content.className = "media-popup-content";
 
-        let isVideo = this.options.isVideo || "auto";
-        if(isVideo === "auto") isVideo = /\.(mp4|webm|ogg|mkv|webm|avi)$/i.test(this.url);
+        let isVideo = this.options.isVideo;
+        if (isVideo === "auto") isVideo = /\.(mp4|webm|ogg|mkv|webm|avi)$/i.test(this.url);
 
         this.media = document.createElement(isVideo ? "video" : "img");
         this.media.className = "media-popup-media";
         this.media.src = this.url;
-        if(isVideo) this.media.controls = true;
+        // @ts-ignore if isVideo media will be video
+        if (isVideo) this.media.controls = true;
 
         const controls = document.createElement("div");
         controls.className = "media-popup-controls";
@@ -78,10 +73,10 @@ class MediaPopup{
         this.controlsResets = [];
         const lang = LangPkg.media;
         this.addControlGroup(controls, [
-            { icon: lang.zoom+"+", action: () => this.zoom(1 + this.options.scaleStep), title: lang.zoom_in},
-            { icon: lang.zoom+"-", action: () => this.zoom(1 - this.options.scaleStep), title: lang.zoom_out },
-            { icon: lang.rotate+" <", action: () => this.rotate(-this.options.rotationStep), title: lang.rotate_left },
-            { icon: lang.rotate+" >", action: () => this.rotate(this.options.rotationStep), title: lang.rotate_right },
+            { icon: lang.zoom + "+", action: () => this.zoom(1 + this.options.scaleStep), title: lang.zoom_in },
+            { icon: lang.zoom + "-", action: () => this.zoom(1 - this.options.scaleStep), title: lang.zoom_out },
+            { icon: lang.rotate + " <", action: () => this.rotate(-this.options.rotationStep), title: lang.rotate_left },
+            { icon: lang.rotate + " >", action: () => this.rotate(this.options.rotationStep), title: lang.rotate_right },
             { icon: lang.flip, action: () => this.flip(), title: lang.flip },
             { icon: lang.reset, action: () => this.resetTransforms(), title: lang.reset_transforms },
             { icon: "✖", action: () => this.close(), title: LangPkg.uni.close }
@@ -106,7 +101,7 @@ class MediaPopup{
         this.updateTransform();
     }
 
-    addControlGroup(container, controls){
+    private addControlGroup(container: HTMLElement, controls: { icon: string, action: () => void, title: string }[]) {
         const group = document.createElement("div");
         group.className = "media-popup-control-group";
 
@@ -122,7 +117,7 @@ class MediaPopup{
         container.appendChild(group);
     }
 
-    addSlider(container, property, icon, min, max){
+    private addSlider(container: HTMLElement, property: string, icon: string, min: number, max: number) {
         const sliderContainer = document.createElement("div");
         sliderContainer.className = "media-popup-slider-container";
 
@@ -132,8 +127,8 @@ class MediaPopup{
         const slider = document.createElement("input");
         slider.type = "range";
         slider.className = "media-popup-slider";
-        slider.min = min;
-        slider.max = max;
+        slider.min = min.toString();
+        slider.max = max.toString();
         const defaultValue = this.state[property] ?? 100;
         slider.value = defaultValue;
         this.controlsResets.push(() => slider.value = defaultValue);
@@ -142,12 +137,12 @@ class MediaPopup{
         value.className = "media-popup-value";
         value.textContent = slider.value;
 
-        // TODO: fix type
-        slider.oninput = (e: any) => {
-            this.state[property] = e.target.value;
-            value.textContent = e.target.value;
+        slider.addEventListener("input", (e) => {
+            const target = e.target as HTMLInputElement;
+            this.state[property] = target.value;
+            value.textContent = target.value;
             this.updateFilters();
-        };
+        });
 
         sliderContainer.appendChild(iconSpan);
         sliderContainer.appendChild(slider);
@@ -155,19 +150,19 @@ class MediaPopup{
         container.appendChild(sliderContainer);
     }
 
-    setupEventListeners(){
-        this.content.addEventListener("wheel", (e) => {
+    private setupEventListeners() {
+        this.content.addEventListener("wheel", (e: WheelEvent) => {
             e.preventDefault();
             const delta = e.deltaY > 0 ? -this.options.scaleStep : this.options.scaleStep;
             this.zoom(1 + delta);
         });
 
-        document.addEventListener("keydown", (e) => {
-            if(e.key === "Escape") this.close();
-            if(e.key === "+") this.zoom(1 + this.options.scaleStep);
-            if(e.key === "-") this.zoom(1 - this.options.scaleStep);
-            if(e.key === "ArrowLeft") this.rotate(-this.options.rotationStep);
-            if(e.key === "ArrowRight") this.rotate(this.options.rotationStep);
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
+            if (e.key === "Escape") this.close();
+            if (e.key === "+") this.zoom(1 + this.options.scaleStep);
+            if (e.key === "-") this.zoom(1 - this.options.scaleStep);
+            if (e.key === "ArrowLeft") this.rotate(-this.options.rotationStep);
+            if (e.key === "ArrowRight") this.rotate(this.options.rotationStep);
         });
 
         this.media.addEventListener("mousedown", this.handleMouseDown.bind(this));
@@ -180,7 +175,7 @@ class MediaPopup{
         this.media.addEventListener("touchcancel", this.handleTouchEnd.bind(this));
     }
 
-    handleMouseDown(e){
+    private handleMouseDown(e: MouseEvent) {
         e.preventDefault();
         this.state.isDragging = true;
         this.state.dragStart = {
@@ -189,8 +184,8 @@ class MediaPopup{
         };
     }
 
-    handleMouseMove(e){
-        if(!this.state.isDragging) return;
+    private handleMouseMove(e: MouseEvent) {
+        if (!this.state.isDragging) return;
 
         this.state.position = {
             x: e.clientX - this.state.dragStart.x,
@@ -200,11 +195,11 @@ class MediaPopup{
         this.updateTransform();
     }
 
-    handleMouseUp(){
+    private handleMouseUp() {
         this.state.isDragging = false;
     }
 
-    handleTouchStart(e: TouchEvent){
+    private handleTouchStart(e: TouchEvent) {
         e.preventDefault();
         const touches = e.touches;
         this.state.previousTouches = Array.from(touches).map(t => ({
@@ -213,17 +208,17 @@ class MediaPopup{
             pageY: t.pageY
         }));
 
-        if(touches.length === 1){
+        if (touches.length === 1) {
             const touch = touches[0];
             const now = Date.now();
             const lastTap = this.state.lastTap;
             const lastTapPosition = this.state.lastTapPosition;
 
-            if(now - lastTap < this.options.doubleTapDelay &&
+            if (now - lastTap < this.options.doubleTapDelay &&
                 this.getDistance(
                     { x: touch.pageX, y: touch.pageY },
                     lastTapPosition
-                ) < 30){
+                ) < 30) {
                 this.handleDoubleTap(touch);
             }
 
@@ -231,32 +226,32 @@ class MediaPopup{
             this.state.lastTapPosition = { x: touch.pageX, y: touch.pageY };
             this.startDrag(touch);
 
-        }else if(touches.length === 2){
+        } else if (touches.length === 2) {
             this.state.initialPinchDistance = this.getPinchDistance(touches);
             this.state.initialRotation = this.getRotationAngle(touches);
             this.state.isDragging = false;
         }
     }
 
-    handleTouchMove(e: TouchEvent){
+    private handleTouchMove(e: TouchEvent) {
         e.preventDefault();
         const touches = e.touches;
 
-        if(!this.state.previousTouches) return;
+        if (!this.state.previousTouches) return;
 
-        if(touches.length === 1 && this.state.isDragging){
+        if (touches.length === 1 && this.state.isDragging) {
             this.drag(touches[0]);
 
-        }else if(touches.length === 2){
+        } else if (touches.length === 2) {
             const currentDistance = this.getPinchDistance(touches);
             const currentRotation = this.getRotationAngle(touches);
 
-            if(this.state.initialPinchDistance > 0){
+            if (this.state.initialPinchDistance > 0) {
                 const scale = currentDistance / this.state.initialPinchDistance;
                 this.handlePinch(scale);
             }
 
-            if(this.state.initialRotation !== null){
+            if (this.state.initialRotation !== null) {
                 const rotation = currentRotation - this.state.initialRotation;
                 this.handleRotation(rotation);
             }
@@ -269,10 +264,10 @@ class MediaPopup{
         }
     }
 
-    handleTouchEnd(e){
+    private handleTouchEnd(e: TouchEvent) {
         e.preventDefault();
 
-        if(e.touches.length === 0){
+        if (e.touches.length === 0) {
             this.state.isDragging = false;
             this.state.initialPinchDistance = null;
             this.state.initialRotation = null;
@@ -280,12 +275,12 @@ class MediaPopup{
         }
     }
 
-    handleDoubleTap(touch){
+    private handleDoubleTap(touch: Touch) {
         const zoomFactor = this.state.scale > 1 ? 1 : 2;
         this.zoom(zoomFactor, touch.pageX, touch.pageY);
     }
 
-    startDrag(touch){
+    private startDrag(touch: Touch) {
         this.state.isDragging = true;
         this.state.dragStart = {
             x: touch.pageX - this.state.position.x,
@@ -293,7 +288,7 @@ class MediaPopup{
         };
     }
 
-    drag(touch){
+    private drag(touch: Touch) {
         this.state.position = {
             x: touch.pageX - this.state.dragStart.x,
             y: touch.pageY - this.state.dragStart.y
@@ -301,21 +296,21 @@ class MediaPopup{
         this.updateTransform();
     }
 
-    handlePinch(scale){
+    private handlePinch(scale: number) {
         this.zoom(scale);
     }
 
-    handleRotation(angle){
+    private handleRotation(angle: number) {
         this.state.rotation = angle;
         this.updateTransform();
     }
 
-    zoom(scaleFactor, centerX: number | undefined = undefined, centerY: number | undefined = undefined){
+    private zoom(scaleFactor: number, centerX: number | undefined = undefined, centerY: number | undefined = undefined) {
         const newScale = this.state.scale * scaleFactor;
 
-        if(newScale < this.options.minScale || newScale > this.options.maxScale) return;
+        if (newScale < this.options.minScale || newScale > this.options.maxScale) return;
 
-        if(centerX !== undefined && centerY !== undefined){
+        if (centerX !== undefined && centerY !== undefined) {
             this.state.position.x += (this.media.clientWidth / 2 - centerX) * (1 - scaleFactor);
             this.state.position.y += (this.media.clientHeight / 2 - centerY) * (1 - scaleFactor);
         }
@@ -324,17 +319,17 @@ class MediaPopup{
         this.updateTransform();
     }
 
-    rotate(angle){
+    private rotate(angle: number) {
         this.state.rotation += angle;
         this.updateTransform();
     }
 
-    flip(){
+    private flip() {
         this.state.rotation += 180;
         this.updateTransform();
     }
 
-    resetTransforms(){
+    private resetTransforms() {
         this.state = {
             ...this.state,
             scale: 1,
@@ -350,7 +345,7 @@ class MediaPopup{
         this.controlsResets.forEach(r => r());
     }
 
-    updateTransform(){
+    private updateTransform() {
         this.media.style.transform = `
         translate(${this.state.position.x}px, ${this.state.position.y}px)
         scale(${this.state.scale})
@@ -358,7 +353,7 @@ class MediaPopup{
       `;
     }
 
-    updateFilters(){
+    private updateFilters() {
         this.media.style.filter = `
         brightness(${this.state.brightness}%)
         contrast(${this.state.contrast}%)
@@ -367,30 +362,30 @@ class MediaPopup{
       `;
     }
 
-    close(){
+    private close() {
         const _this = this;
         this.overlay.fadeOut(() => _this.container.removeChild(_this.overlay));
     }
 
-    getPinchDistance(touches){
+    private getPinchDistance(touches: TouchList) {
         const dx = touches[0].pageX - touches[1].pageX;
         const dy = touches[0].pageY - touches[1].pageY;
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    getRotationAngle(touches){
+    private getRotationAngle(touches: TouchList) {
         return Math.atan2(
             touches[1].pageY - touches[0].pageY,
             touches[1].pageX - touches[0].pageX
         ) * (180 / Math.PI);
     }
 
-    getDistance(p1, p2){
+    private getDistance(p1: { x: number, y: number }, p2: { x: number, y: number }) {
         return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
     }
 }
 
-function createMediaPopup(media, options={}){
+function createMediaPopup(media: string, options = {}) {
     return new MediaPopup(mediaPopupDiv, media, options);
 }
 
