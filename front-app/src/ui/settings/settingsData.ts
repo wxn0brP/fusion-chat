@@ -57,12 +57,12 @@ const settingsData: SettingsData = {
                 div.innerHTML = `
                     <div id="_1" style="display: flex; align-items: center; column-gap: 2rem;"></div>
                 `.trim();
-                const conteiner = div.querySelector('#_1');
+                const container = div.querySelector('#_1');
 
                 const imgPrev = document.createElement('img');
                 imgPrev.src = "/api/profile/img?id=" + vars.user._id + "&t=" + Date.now();
                 imgPrev.css("width: 128px; height: 128px; object-fit: cover;");
-                conteiner.appendChild(imgPrev);
+                container.appendChild(imgPrev);
 
                 const imgSel = document.createElement('input');
                 imgSel.type = 'file';
@@ -74,7 +74,7 @@ const settingsData: SettingsData = {
                     // @ts-ignore
                     imgPrev.src = URL.createObjectURL(e.target.files[0]);
                 });
-                conteiner.appendChild(imgSel);
+                container.appendChild(imgSel);
 
                 return [div, tmpData];
             },
