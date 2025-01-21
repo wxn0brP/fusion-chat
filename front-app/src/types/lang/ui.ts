@@ -120,5 +120,6 @@ export interface Lang_UI {
         type_voice: string;
         type_custom: string;
         img: string;
+        notif: string;
     }
 }

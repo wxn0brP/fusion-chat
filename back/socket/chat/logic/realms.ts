@@ -15,6 +15,8 @@ import { Socket_User } from "../../../types/socket/user";
 import { Id } from "../../../types/base";
 import Socket__Realms from "../../../types/socket/chat/realms";
 import eventCreateData from "../valid/event";
+import Db_System from "../../../types/db/system";
+import { addTask, cancelTask } from "../../../schedule";
 
 const eventCreateSchemat = valid.objAjv(eventCreateData);
 
@@ -388,7 +390,7 @@ export async function realm_event_create(suser: Socket_User, realmId: Id, req: S
 
     const actualTime = Date.now();
     // check if time is in the future or 1 minute in the past
-    if(req.time * 1000 <= actualTime + 60_000) return validE.valid("req.time");
+    if (req.time * 1000 <= actualTime + 60_000) return validE.valid("req.time");
 
     const permSys = new permissionSystem(realmId);
     const canAdmin = await permSys.canUserPerformAction(suser._id, Permissions.admin);
@@ -405,7 +407,18 @@ export async function realm_event_create(suser: Socket_User, realmId: Id, req: S
     if (req.desc) data.desc = req.desc;
     if (req.img) data.img = req.img;
 
-    await db.realmData.add(realmId, data);
+    const { _id } = await db.realmData.add(realmId, data) as Db_RealmData.event;
+
+    const task: Omit<Db_System.task, "_id"> = {
+        type: "event",
+        data: {
+            realm: realmId,
+            evt: _id
+        },
+        sTime: req.time,
+        sType: "one-time",
+    };
+    addTask(task);
 
     return { err: false };
 }
@@ -419,7 +432,10 @@ export async function realm_event_delete(suser: Socket_User, realmId: Id, eventI
     const canAdmin = await permSys.canUserPerformAction(suser._id, Permissions.admin);
     if (!canAdmin) return validE.err("You don't have permission to edit this realm");
 
+    const taskId = await db.system.findOne<Db_System.task>("tasks", { type: "event", data: { evt: eventId } });
+    if (taskId) await cancelTask(taskId._id);
     await db.realmData.removeOne(realmId, { _id: eventId, evt: true });
+    await db.realmData.remove(realmId, { uevt: eventId });
 
     return { err: false };
 }
@@ -431,7 +447,7 @@ export async function realm_event_list(suser: Socket_User, realmId: Id, len: boo
     // TODO check is user in realm, add cache
 
     const events = await db.realmData.find<Db_RealmData.event>(realmId, { evt: true });
-    if(len) return { err: false, res: events.length };
+    if (len) return { err: false, res: events.length };
 
     const eventsUsers = await db.realmData.find<Db_RealmData.event_user>(realmId, { $exists: { uevt: true } });
     const data = [];
@@ -451,7 +467,7 @@ export async function realm_event_join(suser: Socket_User, realmId: Id, eventId:
     const validE = new ValidError("realm.event.join");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(eventId)) return validE.valid("eventId");
-    
+
     const joined = await db.realmData.findOne<Db_RealmData.event_user>(realmId, { u: suser._id, uevt: eventId });
     if (joined) return validE.err("You already joined this event");
 
@@ -468,4 +484,15 @@ export async function realm_event_leave(suser: Socket_User, realmId: Id, eventId
     await db.realmData.removeOne(realmId, { u: suser._id, uevt: eventId });
 
     return { err: false };
+}
+
+export async function realm_event_get_topic(suser: Socket_User, realmId: Id, eventId: Id): Promise<Socket_StandardRes> {
+    const validE = new ValidError("realm.event.get.topic");
+    if (!valid.id(realmId)) return validE.valid("realmId");
+    if (!valid.id(eventId)) return validE.valid("eventId");
+
+    const event = await db.realmData.findOne<Db_RealmData.event>(realmId, { _id: eventId, evt: true });
+    if (!event) return validE.err("event is not found");
+
+    return { err: false, res: event.topic };
 }

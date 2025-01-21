@@ -1,7 +1,9 @@
 import deleteAccount from "./deleteAccount";
+import event from "./event";
 
 const actions = {
-    deleteAccount
+    deleteAccount,
+    event,
 }
 
 export default actions;

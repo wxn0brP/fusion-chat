@@ -15,7 +15,7 @@ const uiFunc = {
             ...opts,
         }
         const div = document.createElement("div");
-        div.textContent = message;
+        div.innerHTML = message;
 
         div.style.top = `-${div.offsetHeight + 20}px`;
         if (opts.className) div.classList.add(opts.className);

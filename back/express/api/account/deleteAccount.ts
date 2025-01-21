@@ -64,7 +64,7 @@ router.post("/undo", async (req, res) => {
     if(!task) return res.json({ err: true, msg: "pending process is not found" });
 
     await db.system.removeOne("tasks", { type: "deleteAccount", data: { user: tokenData.user } });
-    cancelTask(task._id);
+    await cancelTask(task._id);
     res.json({ err: false, msg: "successfully remove pending to be deleted" });
 });
 

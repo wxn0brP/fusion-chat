@@ -123,6 +123,7 @@ const ui: Lang_UI = {
         type_custom: "Custom",
         type_voice: "Voice",
         img: "Image URL or empty",
+        notif: "Event $ on $ has started (click to open)",
     }
 }
 

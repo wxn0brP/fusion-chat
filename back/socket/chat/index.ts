@@ -18,10 +18,10 @@ const tmpBan = new Map();
 global.io.of("/").use(async (socket, next) => {
     const authData = socket.handshake.auth;
     if(!authData) return next(new Error("Authentication error: Missing authentication data."));
-
+    
     const token = authData.token;
     if(!token) return next(new Error("Authentication error: Missing authentication data."));
-
+    
     const tokenData = { data: null };
     const user = await authUser(token, tokenData) as Socket_User;
     if(!user) return next(new Error("Authentication error: Missing authentication data."));
