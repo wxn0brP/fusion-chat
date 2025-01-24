@@ -19,14 +19,14 @@ import Status from "../../../types/socket/chat/status";
 const embedDataSchemat = valid.objAjv(embedData);
 const statusDataSchemat = valid.objAjv(statusData);
 
-export async function get_ogs(link: string): Promise<Socket_StandardRes> {
+export async function get_ogs(suser: Socket_User, link: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("get.ogs");
     if (!valid.str(link, 0, 300)) return validE.valid("link");
     if (!/^https?:\/\//.test(link)) return validE.valid("link");
 
     const { error, result } = await ogs({ url: link });
     if (error) return validE.err(error);
-    return { err: false, res: result };
+    return { err: false, res: [result] };
 }
 
 export async function send_embed_og(suser: Socket_User, to: Id, chnl: Id, link: string): Promise<Socket_StandardRes> {
@@ -89,20 +89,20 @@ export async function status_activity_set(suser: Socket_User, status: Status): P
     return { err: false };
 }
 
-export async function status_activity_get(id: Id): Promise<Socket_StandardRes> {
+export async function status_activity_get(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("status.activity.get");
     if (!valid.id(id)) return validE.valid("id");
 
     const status = statusMgmt.getCache(id);
-    return { err: false, res: status };
+    return { err: false, res: [status] };
 }
 
-export async function status_activity_gets(ids: Id[]): Promise<Socket_StandardRes> {
+export async function status_activity_gets(suser: Socket_User, ids: Id[]): Promise<Socket_StandardRes> {
     const validE = new ValidError("status.activity.gets");
     if (!valid.arrayId(ids)) return validE.valid("ids");
 
     const states = ids.map(id => statusMgmt.getCache(id));
-    return { err: false, res: states };
+    return { err: false, res: [states] };
 }
 
 export async function status_activity_remove(suser: Socket_User): Promise<Socket_StandardRes> {

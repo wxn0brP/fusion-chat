@@ -105,7 +105,7 @@ function validData(req: Request, user: User, options: Options = {}) {
  * @param options - An object containing optional settings for the message processing.
  * @returns Returns an object with the processed recipient ID and chat type or an error if validation fails.
  */
-async function processIdAndPerm(req: Request, user: User, options: Options): Promise<Socket_StandardRes<{ to: string, privChat: boolean }>> {
+async function processIdAndPerm(req: Request, user: User, options: Options): Promise<Socket_StandardRes> {
     let { to, chnl } = req;
 
     const privChat = to.startsWith("$");
@@ -130,7 +130,7 @@ async function processIdAndPerm(req: Request, user: User, options: Options): Pro
         if (chnl.startsWith("&") && !perm.threadWrite) return validE.err("not perm to write");
     }
 
-    return { err: false, res: { to, privChat } };
+    return { err: false, res: [{ to, privChat }] };
 }
 
 async function sendReamNotification(to: Id, user: User, data: Message) {

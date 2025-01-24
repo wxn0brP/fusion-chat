@@ -153,7 +153,7 @@ export async function message_fetch(
     const responeAll = await db.mess.find(dbChatId, { chnl }, {}, { reverse: true, max: end + start });
     const res = responeAll.slice(start, end);
 
-    return { err: false, res };
+    return { err: false, res: [res] };
 }
 
 export async function message_fetch_id(suser: Socket_User, chatId: Id, chnl: Id, mess_id: Id): Promise<Socket_StandardRes> {
@@ -171,7 +171,7 @@ export async function message_fetch_id(suser: Socket_User, chatId: Id, chnl: Id,
     }
 
     const res = await db.mess.findOne(dbChatId, { _id: mess_id });
-    return { err: false, res };
+    return { err: false, res: [res] };
 }
 
 export async function message_mark_read(suser: Socket_User, chatId: Id, chnl: Id, mess_id: Id): Promise<Socket_StandardRes> {
@@ -191,7 +191,7 @@ export async function message_mark_read(suser: Socket_User, chatId: Id, chnl: Id
     if (mess_id == "last") {
         const dbChatId = isDmChat ? combineId(suser._id, chatId.replace("$", "")) : chatId;
         const lastIdMess = await db.mess.find<Db_Mess.Message>(dbChatId, { chnl }, {}, { reverse: true, max: 1 });
-        if (lastIdMess.length == 0) return { err: false, res: 0 };
+        if (lastIdMess.length == 0) return { err: false, res: [0] };
         mess_id = lastIdMess[0]._id;
         res = mess_id;
     }
@@ -204,7 +204,7 @@ export async function message_mark_read(suser: Socket_User, chatId: Id, chnl: Id
         }
     })
 
-    return { err: false, res };
+    return { err: false, res: [res] };
 }
 
 export async function message_react(suser: Socket_User, chatId: Id, msgId: Id, react: string): Promise<Socket_StandardRes> {
@@ -260,7 +260,7 @@ export async function message_search(suser: Socket_User, chatId: Id, chnl: Id, q
         return context.filterMessages(context.query, data);
     }, { query, filterMessages });
 
-    return { err: false, res };
+    return { err: false, res: [res] };
 }
 
 export async function message_pin(suser: Socket_User, chatId: Id, chnl: Id, msg_id: Id, pin: boolean): Promise<Socket_StandardRes> {
@@ -304,7 +304,7 @@ export async function message_fetch_pinned(suser: Socket_User, chatId: Id, chnl:
         return data.pinned === true;
     }, { chnl });
 
-    return { err: false, res };
+    return { err: false, res: [res] };
 }
 
 function filterMessages(query: Socket__Mess.MessageQuery, mess: Db_Mess.Message): boolean {

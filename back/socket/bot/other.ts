@@ -8,7 +8,7 @@ import {
 export default (socket) => {
     socket.onLimit("get.ogs", 1_000, async (link, cb) => {
         try{
-            const { err, res } = await get_ogs(link);
+            const { err, res } = await get_ogs(socket.user, link);
             if(err) return socket.emit(...err as Socket_StandardRes_Error[]);
             if(cb) cb(res);
             else socket.emit("get.ogs", res);

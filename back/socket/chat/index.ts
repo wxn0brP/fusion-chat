@@ -1,17 +1,12 @@
 import { authUser, createUser } from "../../logic/auth";
-import mess from "./mess";
-import realms from "./realms";
-import realmSettings from "./realmSettings";
-import voice from "./voice";
-import settings from "./settings";
-import chats from "./chats";
-import evt from "./evt";
-import friends from "./friends";
-import other from "./other";
 import db from "../../dataBase";
 import { Socket_User } from "../../types/socket/user";
 import { Socket } from "socket.io";
 import { Socket_StandardRes, Socket_StandardRes_Error } from "../../types/socket/res";
+import register from "./register";
+import voice from "./voice";
+import realmSettings from "./realmSettings";
+import evt from "./evt";
 
 const tmpBan = new Map();
 
@@ -112,15 +107,10 @@ global.io.of("/").on("connection", (socket: Socket) => {
         return true;
     }
 
-    mess(socket);
-    realms(socket);
+    register(socket);
     realmSettings(socket);
     voice(socket);
-    settings(socket);
-    chats(socket);
-    friends(socket);
     evt(socket);
-    other(socket);
 
     setTimeout(async () => {
         if(socket.isShouldRefresh){

@@ -97,7 +97,7 @@ export async function friend_remove(suser: Socket_User, id: Id): Promise<Socket_
 }
 
 // TODO fix type
-export async function friend_get_all(suser: Socket_User): Promise<Socket_StandardRes<{ _id: string, status?: string, text?: string }[]>> {
+export async function friend_get_all(suser: Socket_User): Promise<Socket_StandardRes> {
     const friendsGraph = await db.dataGraph.find("friends", suser._id);
     const friends = friendsGraph.map(f => {
         if (f.a == suser._id) return f.b;
@@ -121,13 +121,13 @@ export async function friend_get_all(suser: Socket_User): Promise<Socket_Standar
 
     const friendsStatus = await Promise.all(friendsStatusPromises);
 
-    return { err: false, res: friendsStatus };
+    return { err: false, res: [friendsStatus] };
 }
 
-export async function friend_requests_get(suser: Socket_User): Promise<Socket_StandardRes<Id[]>> {
+export async function friend_requests_get(suser: Socket_User): Promise<Socket_StandardRes> {
     const friendRequestsData = await db.data.find<Db_Data.friendRequest>("friendRequests", { to: suser._id }) as Db_Data.friendRequest[];
     const friendRequests = friendRequestsData.map(f => f.from);
-    return { err: false, res: friendRequests };
+    return { err: false, res: [friendRequests] };
 }
 
 export async function user_profile(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
@@ -177,5 +177,5 @@ export async function user_profile(suser: Socket_User, id: Id): Promise<Socket_S
         activity: statusMgmtGetCache(id) || {},
     }
 
-    return { err: false, res: userData };
+    return { err: false, res: [userData] };
 }

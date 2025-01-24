@@ -71,7 +71,7 @@ export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_St
     return { err: false, res: [id, name, buildChannels, isOwnEmoji, userPermissions] };
 }
 
-export async function realm_users_sync(id: Id): Promise<Socket_StandardRes> {
+export async function realm_users_sync(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.users.sync");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -97,7 +97,7 @@ export async function realm_users_sync(id: Id): Promise<Socket_StandardRes> {
     return { err: false, res: [usersData, rolesData] };
 }
 
-export async function realm_users_activity_sync(id: Id): Promise<Socket_StandardRes> {
+export async function realm_users_activity_sync(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.users.activity.sync");
     if (!valid.id(id)) return validE.valid("id");
 
@@ -194,12 +194,12 @@ export async function realm_user_unban(suser: Socket_User, realmId: Id, uid: Id)
     return { err: false };
 }
 
-export async function realm_emojis_sync(realmId: Id): Promise<Socket_StandardRes> {
+export async function realm_emojis_sync(suser: Socket_User, realmId: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.emojis.sync");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
     const emojis = await db.realmConf.find(realmId, { $exists: { unicode: true } });
-    return { err: false, res: emojis };
+    return { err: false, res: [emojis] };
 }
 
 export async function realm_announcement_channel_subscribe(
@@ -273,7 +273,7 @@ export async function realm_announcement_channel_available(suser: Socket_User): 
         if (userPerm) realmsWithAdmin.push(userRealmId.realm);
     }
 
-    return { err: false, res: realmsWithAdmin };
+    return { err: false, res: [realmsWithAdmin] };
 }
 
 export async function realm_announcement_channel_list(suser: Socket_User, realmId: Id): Promise<Socket_StandardRes> {
@@ -309,7 +309,7 @@ export async function realm_announcement_channel_list(suser: Socket_User, realmI
         }
         return availableChannels;
     });
-    return { err: false, res: channels };
+    return { err: false, res: [channels] };
 }
 
 export async function realm_thread_create(
@@ -342,7 +342,7 @@ export async function realm_thread_create(
 
     const thread = await db.realmData.add<Db_RealmData.thread>(realmId, threadObj, true);
 
-    return { err: false, res: thread._id };
+    return { err: false, res: [thread._id] };
 }
 
 export async function realm_thread_delete(suser: Socket_User, realmId: Id, threadId: Id): Promise<Socket_StandardRes> {
@@ -392,14 +392,14 @@ export async function realm_thread_list(suser: Socket_User, realmId: Id | null, 
         });
         const threadsWithPerms = await Promise.all(cpu_threads);
         const filtered = threadsWithPerms.filter(Boolean);
-        return { err: false, res: filtered };
+        return { err: false, res: [filtered] };
     }
 
     const perms = await getChnlPerm(suser._id, realmId, channelId);
     if (!perms.threadView) return validE.err("You don't have permission to edit this realm");
 
     const threads = await db.realmData.find(realmId, { thread: channelId });
-    return { err: false, res: threads };
+    return { err: false, res: [threads] };
 }
 
 export async function realm_event_create(suser: Socket_User, realmId: Id, req: Socket__Realms.Event__req): Promise<Socket_StandardRes> {
@@ -473,7 +473,7 @@ export async function realm_event_list(suser: Socket_User, realmId: Id, len: boo
     // TODO check is user in realm, add cache
 
     const events = await db.realmData.find<Db_RealmData.event>(realmId, { evt: true });
-    if (len) return { err: false, res: events.length };
+    if (len) return { err: false, res: [events.length] };
 
     const eventsUsers = await db.realmData.find<Db_RealmData.event_user>(realmId, { $exists: { uevt: true } });
     const data = [];
@@ -486,7 +486,7 @@ export async function realm_event_list(suser: Socket_User, realmId: Id, len: boo
         });
     }
 
-    return { err: false, res: data };
+    return { err: false, res: [data] };
 }
 
 export async function realm_event_join(suser: Socket_User, realmId: Id, eventId: Id): Promise<Socket_StandardRes> {
@@ -520,5 +520,5 @@ export async function realm_event_get_topic(suser: Socket_User, realmId: Id, eve
     const event = await db.realmData.findOne<Db_RealmData.event>(realmId, { _id: eventId, evt: true });
     if (!event) return validE.err("event is not found");
 
-    return { err: false, res: event.topic };
+    return { err: false, res: [event.topic] };
 }

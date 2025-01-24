@@ -68,7 +68,7 @@ export async function call_dm_init(suser: Socket_User, id: Id): Promise<Socket_S
                 data: [["call", suser._id]]
             }
         });
-        return { err: false, res: true };
+        return { err: false, res: [true] };
     }
 
     global.sendToSocket(id, "call.dm.init", suser._id);

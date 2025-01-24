@@ -22,7 +22,7 @@ export default (socket) => {
 
     socket.onLimit("realm.users.sync", 1000, async (id, cb) => {
         try{
-            const { err, res } = await realm_users_sync(id);
+            const { err, res } = await realm_users_sync(socket.user, id);
             if(err) return socket.emit(...err as Socket_StandardRes_Error[]);
             if(cb) cb(...res);
             else socket.emit("realm.users.sync", ...res);
@@ -60,7 +60,7 @@ export default (socket) => {
 
     socket.onLimit("realm.emojis.sync", 1000, async (realmId, cb) => {
         try{
-            const { err, res } = await realm_emojis_sync(realmId);
+            const { err, res } = await realm_emojis_sync(socket.user, realmId);
             if(err) return socket.emit(...err as Socket_StandardRes_Error[]);
             if(cb) cb(res);
             else socket.emit("realm.emojis.sync", res);

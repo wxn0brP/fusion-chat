@@ -34,5 +34,5 @@ export async function realm_webhook_token_get(suser: Socket_User, realmId: Id, w
         chat: realmId,
     }, false, KeyIndex.WEBHOOK_TOKEN);
 
-    return { err: false, res: token };
+    return { err: false, res: [token] };
 }

@@ -29,7 +29,7 @@ export async function realm_get(suser: Socket_User): Promise<Socket_StandardRes>
         realm.p = userPerm;
     }
 
-    return { err: false, res: realms };
+    return { err: false, res: [realms] };
 }
 
 export async function dm_get(suser: Socket_User): Promise<Socket_StandardRes> {

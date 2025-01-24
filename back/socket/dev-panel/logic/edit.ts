@@ -35,7 +35,7 @@ export async function bot_get(suser, id){
         perm: data.find(d => d._id == "perm").perm,
     };
 
-    return { err: false, res };
+    return { err: false, res: [res] };
 }
 
 export async function bot_generateToken(suser, id){
