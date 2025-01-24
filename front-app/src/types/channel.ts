@@ -1,1 +1,1 @@
-export type Channel_Type = "text" | "voice" | "announcement" | "open_announcement";
+export type Channel_Type = "text" | "voice" | "announcement" | "open_announcement" | "forum";

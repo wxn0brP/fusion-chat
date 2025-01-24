@@ -171,11 +171,16 @@ export function message_fetch_pinned(data: Vars_mess__pinned[]) {
 }
 
 export function realm_thread_list(data: Vars_realm__thread[]) {
-    vars.realm.threads = data;
-    const chnlDiv = document.querySelector("#channel_" + vars.chat.chnl);
-    if (!chnlDiv) return;
+    vars.realm.threads = [
+        ...new Set(
+            [...vars.realm.threads, ...data]
+        )
+    ];
 
     data.forEach(t => {
+        const chnlDiv = document.querySelector("#channel_" + t.thread);
+        if (!chnlDiv) return;
+
         const exists = document.querySelector("#channel_\\&" + t._id);
         if (!exists) {
             const div = document.createElement("div");

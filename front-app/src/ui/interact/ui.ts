@@ -63,7 +63,7 @@ const uiInteract = {
         if (to.startsWith("$")) return;
         if (!vars.realm.chnlPerms[chnl]?.threadCreate) return;
 
-        const name = await uiFunc.prompt("Name of the thread");
+        const name = await uiFunc.prompt(LangPkg.ui.create_thread_name);
         if (!name) return;
 
         socket.emit("realm.thread.create", to, chnl, name, messId, () => {

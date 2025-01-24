@@ -325,8 +325,13 @@ export async function realm_thread_create(
     if (!valid.str(name, 0, 30)) return validE.valid("name");
     if (replyMsgId && !valid.id(replyMsgId)) return validE.valid("replyMsgId");
 
-    const perms = await getChnlPerm(suser._id, realmId, channelId);
-    if (!perms.threadCreate) return validE.err("You don't have permission to edit this realm");
+    const chnlType = await db.realmConf.findOne<Db_RealmConf.channel>(realmId, { chid: channelId });
+    if (!chnlType) return validE.valid("channelId");
+
+    if (chnlType.type != "forum") {
+        const perms = await getChnlPerm(suser._id, realmId, channelId);
+        if (!perms.threadCreate) return validE.err("You don't have permission to edit this realm");
+    }
 
     const threadObj: Db_RealmData.thread = {
         thread: channelId,
@@ -364,10 +369,31 @@ export async function realm_thread_delete(suser: Socket_User, realmId: Id, threa
     return { err: false };
 }
 
-export async function realm_thread_list(suser: Socket_User, realmId: Id, channelId: Id): Promise<Socket_StandardRes> {
+export async function realm_thread_list(suser: Socket_User, realmId: Id | null, channelId: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.thread.list");
     if (!valid.id(realmId)) return validE.valid("realmId");
-    if (!valid.id(channelId)) return validE.valid("channelId");
+    if (!valid.id(channelId) && channelId != null) return validE.valid("channelId");
+
+    if (channelId === null) {
+        const threads = await db.realmData.find(realmId, { $exists: { thread: true } });
+        const chnlCache: Record<Id, Db_RealmConf.channel["type"]> = {};
+        const cpu_threads = threads.map(async t => {
+            async function getChnlType() {
+                if (t.thread in chnlCache) return chnlCache[t.thread] as Db_RealmConf.channel["type"];
+                const chnl = await db.realmConf.findOne<Db_RealmConf.channel>(realmId, { chid: t.thread });
+                chnlCache[t.thread] = chnl.type;
+                return chnl.type;
+            }
+
+            const type = await getChnlType();
+            if (type === "forum") return false;
+            const perms = await getChnlPerm(suser._id, realmId, t.thread);
+            return perms.threadView ? t : false;
+        });
+        const threadsWithPerms = await Promise.all(cpu_threads);
+        const filtered = threadsWithPerms.filter(Boolean);
+        return { err: false, res: filtered };
+    }
 
     const perms = await getChnlPerm(suser._id, realmId, channelId);
     if (!perms.threadView) return validE.err("You don't have permission to edit this realm");

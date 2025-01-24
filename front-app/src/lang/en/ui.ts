@@ -18,6 +18,7 @@ const ui: Lang_UI = {
     pin_message: "Pin Message",
     unpin_message: "Unpin Message",
     create_thread: "Create Thread",
+    create_thread_name: "Name of the thread",
     copy_invite: "Copy Invite",
     exit_from_realm: "Exit From Realm",
     subscribe_channel: "Subscribe",

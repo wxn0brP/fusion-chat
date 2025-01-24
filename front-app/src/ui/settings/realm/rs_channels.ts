@@ -70,11 +70,11 @@ export const renderChannels = function () {
 
         initButton(categoryDiv, LangPkg.settings_realm.add_channel, async () => {
             const name = await uiFunc.prompt(LangPkg.settings_realm.enter_name);
-            const { text, voice, announcement, open_announcement } = LangPkg.settings_realm.channel_types;
+            const { text, voice, announcement, open_announcement, forum } = LangPkg.settings_realm.channel_types;
             const type = await uiFunc.selectPrompt(
                 LangPkg.settings_realm.select_type,
-                [text, voice, announcement, open_announcement],
-                ["text", "voice", "announcement", "open_announcement"]
+                [text, voice, announcement, open_announcement, forum],
+                ["text", "voice", "announcement", "open_announcement", "forum"]
             ) as Channel_Type;
 
             const newChannel: Settings_rs__Channel = {

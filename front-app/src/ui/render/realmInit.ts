@@ -90,6 +90,7 @@ export function getChannelTypeEmoticon(type: Channel_Type) {
         case "voice": return "🎤";
         case "announcement": return "📣";
         case "open_announcement": return "📣";
+        case "forum": return "📜";
         default:
             const n: never = type;
             console.error(n);
@@ -101,6 +102,8 @@ function handleChannelClick(type: Channel_Type, cid: Id, sid: Id) {
         coreFunc.changeChnl(cid);
     } else if (type === "voice") {
         handleVoiceChannelJoin(cid, sid);
+    } else if (type === "forum") {
+        coreFunc.changeToForum(cid);
     }
 }
 
@@ -195,6 +198,8 @@ function realmInit(sid: Id, name: string, categories: Ui_render__category[], isO
 
     coreFunc.changeChnl(vars.chat.chnl);
     if (isOwnEmoji) setupCustomEmoji(sid);
+
+    socket.emit("realm.thread.list", sid, null);
 }
 
 export default realmInit;

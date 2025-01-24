@@ -20,7 +20,7 @@ import {
     realm_event_list,
     realm_event_join,
     realm_event_leave,
-    realm_event_get_topic
+    realm_event_get_topic,
 } from "./logic/realms";
 import Socket__Realms from "../../types/socket/chat/realms";
 
@@ -156,7 +156,7 @@ export default (socket: Socket) => {
         }
     });
 
-    socket.onLimit("realm.thread.list", 1000, async (realmId: Id, channelId: Id, cb?: Function) => {
+    socket.onLimit("realm.thread.list", 1000, async (realmId: Id, channelId: Id | null, cb?: Function) => {
         try {
             const data = await realm_thread_list(socket.user, realmId, channelId);
             if (socket.processSocketError(data)) return;

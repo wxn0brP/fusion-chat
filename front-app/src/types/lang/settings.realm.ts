@@ -47,6 +47,7 @@ export interface Lang_Settings__Realm {
         voice: string;
         announcement: string;
         open_announcement: string;
+        forum: string;
     }
     category: string;
     unsubscribe_channel: string;

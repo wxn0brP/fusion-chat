@@ -15,6 +15,8 @@ import { mglVar } from "../var/mgl";
 import staticData from "../var/staticData";
 import LangPkg from "../utils/translate";
 import render_dm from "../ui/render/dm";
+import render_forum from "../ui/render/forum";
+import { Vars_realm__thread } from "../types/var";
 
 const coreFunc = {
     async changeChat(id: Id, chnl: Id | "main" | null = null) {
@@ -124,7 +126,11 @@ const coreFunc = {
                 const chnl = vars.realm.chnlPerms[thread.thread];
                 permToWrite = chnl.threadWrite;
             }
-        } else {
+        }
+        else if (id.startsWith("^")) {
+            permToWrite = vars.realm.chnlPerms[id]?.threadWrite || false;
+        }
+        else {
             const chnl = vars.realm.chnlPerms[id];
             if (chnl) {
                 permToWrite = chnl.write;
@@ -202,6 +208,15 @@ const coreFunc = {
         if (frBlocked) return set(LangPkg.ui.message.block_placeholder.blocked + "!", true);
 
         set(LangPkg.ui.message.placeholder + "...", false);
+    },
+
+    async changeToForum(id: Id) {
+        vars.chat.chnl = "";
+        const forms = await new Promise(r => {
+            socket.emit("realm.thread.list", vars.chat.to, id, r);
+        }) as Vars_realm__thread[];
+        messHTML.div.innerHTML = "";
+        render_forum(forms, id);
     }
 }
 

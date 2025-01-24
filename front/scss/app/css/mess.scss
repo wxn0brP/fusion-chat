@@ -329,6 +329,18 @@ main {
     }
 }
 
+#forum_add {
+    margin-bottom: 10px;
+}
+
+.forum {
+    cursor: pointer;
+
+    .forum__author {
+        font-weight: bold;
+    }
+}
+
 
 @media screen and (max-width: 800px) {
     main {

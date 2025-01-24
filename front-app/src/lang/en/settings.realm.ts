@@ -50,6 +50,7 @@ const sr: Lang_Settings__Realm = {
         voice: "Voice",
         open_announcement: "Open announcement",
         announcement: "Announcement",
+        forum: "Forum",
     },
     unsubscribe_channel: "Unsubscribe",
     confirm_unsubscribe: "Are you sure you want to unsubscribe from $",
