@@ -76,6 +76,8 @@ import {
     self_status_update,
     profile_set_nickname,
 } from "./logic/settings";
+import { Request } from "../../types/sendMessage";
+import { Socket_User } from "../../types/socket/user";
 
 export default (socket: Socket) => {
     const engine = new SocketEventEngine(socket);
@@ -98,7 +100,11 @@ export default (socket: Socket) => {
         ["friend.requests.get", 1000, true, friend_requests_get],
         ["user.profile", 1000, true, user_profile],
 
-        ["mess", 200, false, sendMessage],
+        ["mess", 200, false,
+            async (suser: Socket_User, req: Request) => {
+                return await sendMessage(req, suser)
+            }
+        ],
         ["message.edit", 1000, false, message_edit],
         ["message.delete", 1000, false, message_delete],
         ["messages.delete", 1000, false, messages_delete],

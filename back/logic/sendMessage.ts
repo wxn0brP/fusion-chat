@@ -130,7 +130,7 @@ async function processIdAndPerm(req: Request, user: User, options: Options): Pro
         if (chnl.startsWith("&") && !perm.threadWrite) return validE.err("not perm to write");
     }
 
-    return { err: false, res: [{ to, privChat }] };
+    return { err: false, res: { to, privChat } };
 }
 
 async function sendReamNotification(to: Id, user: User, data: Message) {
