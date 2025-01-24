@@ -9,7 +9,7 @@ import { addSeparator, initButton, initInputText } from "./rs_utils";
 import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Webhook } from "./types";
 import Id from "../../../types/Id";
 import LangPkg from "../../../utils/translate";
-import debugFunc from "../../../core/debug";
+import debugFunc, { LogLevel } from "../../../core/debug";
 import socket from "../../../core/socket/socket";
 
 const webhook_available_channels_type = [
@@ -21,7 +21,7 @@ const webhook_available_channels_type = [
 export const renderWebhooks = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.webhooks) return debugFunc.msg(LangPkg.settings_realm.no_data);
+    if (!settings || !settings.webhooks) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
 
     const container = rs_data.html.webhook;
     container.innerHTML = `<h1>${LangPkg.settings_realm.webhooks.webhook}</h1>`;

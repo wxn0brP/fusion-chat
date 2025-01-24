@@ -1,7 +1,7 @@
 import hub from "../../hub";
 hub("helpers/uiFunc");
 
-import debugFunc from "../../core/debug";
+import debugFunc, { LogLevel } from "../../core/debug";
 import LangPkg, { langFunc } from "../../utils/translate";
 import { Ui_helper_uiMessage__opts, Ui_helper_uiMsg__opts } from "../../types/ui/helpers";
 
@@ -59,7 +59,7 @@ const uiFunc = {
     },
 
     uiMsg(data: string, opts: Ui_helper_uiMsg__opts = {}) {
-        debugFunc.msg("uiMsg:", data);
+        debugFunc.msg(LogLevel.INFO, "uiMsg:", data);
 
         opts = {
             extraTime: 0,

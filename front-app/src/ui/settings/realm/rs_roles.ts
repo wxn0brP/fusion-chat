@@ -5,7 +5,7 @@ import permissionFunc from "../../../utils/perm";
 import vars from "../../../var/var";
 import genId from "../../../utils/genId";
 import rs_dataF from "./rs_var";
-import debugFunc from "../../../core/debug";
+import debugFunc, { LogLevel } from "../../../core/debug";
 import { addSeparator, initButton, initCheckbox, initInputText } from "./rs_utils";
 import { Settings_rs__Role } from "./types";
 import LangPkg from "../../../utils/translate";
@@ -13,7 +13,7 @@ import LangPkg from "../../../utils/translate";
 export const renderRoles = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.roles) return debugFunc.msg(LangPkg.settings_realm.no_data);
+    if (!settings || !settings.roles) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
 
     const container = rs_data.html.role;
     container.innerHTML = `<h1>${LangPkg.settings_realm.roles}</h1>`;

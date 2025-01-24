@@ -2,7 +2,7 @@ import hub from "../hub";
 import Id from "../types/Id";
 import uiFunc from "../ui/helpers/uiFunc";
 import { Api_fileFunc_read__options } from "../types/api";
-import debugFunc from "../core/debug";
+import debugFunc, { LogLevel } from "../core/debug";
 import LangPkg from "../utils/translate";
 hub("file");
 
@@ -60,7 +60,7 @@ const fileFunc = {
         const opt: Api_fileFunc_read__options = {
             file,
             callback: () => {
-                debugFunc.msg(LangPkg.ui.file.uploaded);
+                debugFunc.msg(LogLevel.INFO, LangPkg.ui.file.uploaded);
             },
             maxSize: 4 * 1024 * 1024,
             maxName: 60,
@@ -74,7 +74,7 @@ const fileFunc = {
         const opt: Api_fileFunc_read__options = {
             file,
             callback: () => {
-                debugFunc.msg(LangPkg.ui.file.uploaded);
+                debugFunc.msg(LogLevel.INFO, LangPkg.ui.file.uploaded);
             },
             maxSize: 4 * 1024 * 1024,
             maxName: 60,
@@ -91,7 +91,7 @@ const fileFunc = {
         const opts: Api_fileFunc_read__options = {
             file: file,
             callback: () => {
-                debugFunc.msg(LangPkg.ui.file.uploaded);
+                debugFunc.msg(LogLevel.INFO, LangPkg.ui.file.uploaded);
             },
             maxSize: 4 * 1024 * 1024,
             maxName: 100,

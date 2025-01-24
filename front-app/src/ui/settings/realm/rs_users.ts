@@ -4,7 +4,7 @@ hub("rs/users");
 import apis from "../../../api/apis";
 import vars from "../../../var/var";
 import socket from "../../../core/socket/socket";
-import debugFunc from "../../../core/debug";
+import debugFunc, { LogLevel } from "../../../core/debug";
 import rs_dataF from "./rs_var";
 import { addSeparator, initButton, initCheckbox } from "./rs_utils";
 import { Settings_rs__User } from "./types";
@@ -14,7 +14,7 @@ import uiFunc from "../../helpers/uiFunc";
 export const renderUserRoleManager = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.users) return debugFunc.msg(LangPkg.settings_realm.no_data);
+    if (!settings || !settings.users) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
 
     const container = rs_data.html.usersManager;
     container.innerHTML = `<h1>${LangPkg.settings_realm.users_manager}</h1>`;

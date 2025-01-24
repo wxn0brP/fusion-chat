@@ -3,7 +3,7 @@ hub("rs/emoji");
 
 import socket from "../../../core/socket/socket";
 import fileFunc from "../../../api/file";
-import debugFunc from "../../../core/debug";
+import debugFunc, { LogLevel } from "../../../core/debug";
 import rs_dataF from "./rs_var";
 import { initButton, initInputText } from "./rs_utils";
 import { Settings_rs__Emoji } from "./types";
@@ -13,7 +13,7 @@ import LangPkg from "../../../utils/translate";
 export const renderEmojis = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.emojis) return debugFunc.msg(LangPkg.settings_realm.no_data);
+    if (!settings || !settings.emojis) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
     rs_data.html.emoji.innerHTML = `<h1>${LangPkg.settings_realm.emoji_manager}</h1>`;
 
     const uploadButton = document.createElement("button");

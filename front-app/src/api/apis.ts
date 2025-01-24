@@ -1,7 +1,7 @@
 import hub from "../hub";
 hub("apis");
 
-import debugFunc from "../core/debug";
+import debugFunc, { LogLevel } from "../core/debug";
 import uiFunc from "../ui/helpers/uiFunc";
 import vars from "../var/var";
 import { mglVar } from "../var/mgl";
@@ -83,7 +83,7 @@ const apis = {
             const data = JSON.parse(dataS);
             if (data.err) {
                 uiFunc.uiMsgT(LangPkg.api.error_fetch, ["."]);
-                debugFunc.msg(data);
+                debugFunc.msg(LogLevel.ERROR, data);
                 return null;
             }
             return data;
@@ -105,13 +105,13 @@ const apis = {
             this.apiType = path;
 
             apis.api = await import("./devices/" + path + ".js");
-            debugFunc.msg("load api: " + path);
+            debugFunc.msg(LogLevel.INFO, "load api: " + path);
         },
         apiType: "",
     },
     api: {
         send(data: any): void {
-            debugFunc.msg("default api: " + JSON.stringify(data));
+            debugFunc.msg(LogLevel.INFO, "default api: " + JSON.stringify(data));
         }
     }
 }

@@ -4,7 +4,7 @@ hub("socket/evt");
 import socket from "../socket";
 import Id from "../../../types/Id";
 import vars from "../../../var/var";
-import debugFunc from "../../debug";
+import debugFunc, { LogLevel } from "../../debug";
 import apis from "../../../api/apis";
 import coreFunc from "../../coreFunc";
 import render_dm from "../../../ui/render/dm";
@@ -18,20 +18,20 @@ import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
 import { Core_socket__refresh, Core_socket__user_status_type } from "../../../types/core/socket";
 
 export function connect() {
-    debugFunc.msg("connected to socket");
+    debugFunc.msg(LogLevel.INFO, "connected to socket");
     socket.emit("realm.get");
     socket.emit("self.status.get");
     socket.emit("dm.get");
 }
 
 export function error(evt_name: string, ...data: any[]) {
-    debugFunc.msg(evt_name, ...data)
+    debugFunc.msg(LogLevel.ERROR, evt_name, ...data)
     if (data.length > 0) uiFunc.uiMsg(data[0]);
 }
 
 export function error_valid(evt: string, name: string, ...data: any[]) {
     uiFunc.uiMsgT(LangPkg.socket.valid_error);
-    debugFunc.msg(`Valid error: ${evt} - ${name}`, ...data)
+    debugFunc.msg(LogLevel.ERROR, `Valid error: ${evt} - ${name}`, ...data)
 }
 
 export function error_spam(type: string, ...data: any[]) {
@@ -49,7 +49,7 @@ export function error_spam(type: string, ...data: any[]) {
 export function connect_error(data: Error) {
     if (!localStorage.getItem("token")) window.location.href = "/login?err=true";
 
-    debugFunc.msg(data);
+    debugFunc.msg(LogLevel.SOCKET_ERROR, data);
     const dataStr = data.toString();
     if (dataStr.includes("Error: Authentication error")) {
         window.location.href = "/login?err=true";

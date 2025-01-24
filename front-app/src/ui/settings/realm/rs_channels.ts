@@ -5,7 +5,7 @@ import rs_dataF from "./rs_var";
 import apis from "../../../api/apis";
 import genId from "../../../utils/genId";
 import uiFunc from "../../helpers/uiFunc";
-import debugFunc from "../../../core/debug";
+import debugFunc, { LogLevel } from "../../../core/debug";
 import socket from "../../../core/socket/socket";
 import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Role } from "./types";
 import { Channel_Type } from "../../../types/channel";
@@ -20,7 +20,7 @@ import {
 export const renderChannels = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.categories || !settings.channels) return debugFunc.msg(LangPkg.settings_realm.no_data);
+    if (!settings || !settings.categories || !settings.channels) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
 
     const categoriesContainer = rs_data.html.category;
     categoriesContainer.innerHTML = `<h1>${LangPkg.settings_realm.categories_and_channels}</h1>`;
@@ -283,7 +283,7 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
 export const renderEditCategory = function (category: Settings_rs__Category) {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.categories) return debugFunc.msg("No settings data");
+    if (!settings || !settings.categories) return debugFunc.msg(LogLevel.ERROR, "No settings data");
 
     const containerElement = rs_data.html.editChannel;
     containerElement.innerHTML = `<h1>${LangPkg.settings_realm.edit_category}</h1>`;
