@@ -4,5 +4,5 @@ export interface Api_fileFunc_read__options {
     maxSize: number;
     maxName: number;
     endpoint: string;
-    addionalFields?: (xhr: XMLHttpRequest, formData: FormData) => void;
+    additionalFields?: (xhr: XMLHttpRequest, formData: FormData) => void;
 }

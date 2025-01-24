@@ -49,7 +49,7 @@ const fileFunc = {
             xhr.setRequestHeader("Authorization", token);
             const formData = new FormData();
             formData.append("file", file);
-            if (options.addionalFields) options.addionalFields(xhr, formData);
+            if (options.additionalFields) options.additionalFields(xhr, formData);
             xhr.send(formData);
         };
 
@@ -79,7 +79,7 @@ const fileFunc = {
             maxSize: 4 * 1024 * 1024,
             maxName: 60,
             endpoint: "/api/realm/profile/upload",
-            addionalFields: (xhr: XMLHttpRequest) => {
+            additionalFields: (xhr: XMLHttpRequest) => {
                 xhr.setRequestHeader("realm", id);
             }
         }
@@ -96,7 +96,7 @@ const fileFunc = {
             maxSize: 4 * 1024 * 1024,
             maxName: 100,
             endpoint: "/api/emoji/upload",
-            addionalFields: (xhr: XMLHttpRequest) => {
+            additionalFields: (xhr: XMLHttpRequest) => {
                 xhr.setRequestHeader("realm", realmId);
             }
         };
