@@ -194,7 +194,12 @@ export default class PermissionSystem{
     }
 
     async getUserRolesSorted(userId: Id){
-        const userData = await this.realmUser.findOne({ u: userId });
+        const userData = await this.realmUser.findOne({
+            $or: [
+                { u: userId },
+                { bot: userId }
+            ]
+        });
         if(!userData) return [];
 
         const userRoles = userData.r;

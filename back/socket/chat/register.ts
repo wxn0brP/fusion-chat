@@ -90,11 +90,6 @@ export type Events = [
 export const generalEvents: Events[] = [
     ["user.profile", 1000, true, user_profile],
     
-    ["mess", 200, false,
-        async (suser: Socket_User, req: Request) => {
-            return await sendMessage(req, suser)
-        }
-    ],
     ["message.delete", 1000, false, message_delete],
     ["messages.delete", 1000, false, messages_delete],
     ["message.fetch", 300, true, message_fetch],
@@ -142,6 +137,11 @@ export const userEvents: Events[] = [
     ["friend.get.all", 1000, true, friend_get_all],
     ["friend.requests.get", 1000, true, friend_requests_get],
 
+    ["mess", 200, false,
+        async (suser: Socket_User, req: Request) => {
+            return await sendMessage(req, suser);
+        }
+    ],
     ["message.edit", 1000, false, message_edit],
     ["message.mark.read", 100, true, message_mark_read],
 
