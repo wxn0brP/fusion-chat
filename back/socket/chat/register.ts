@@ -80,7 +80,7 @@ import { Request } from "../../types/sendMessage";
 import { Socket_User } from "../../types/socket/user";
 import { Socket_StandardRes } from "../../types/socket/res";
 
-type Events = [
+export type Events = [
     string,
     number,
     boolean,
