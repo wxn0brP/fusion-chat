@@ -1,16 +1,15 @@
-import { authUser, createUser } from "../../logic/auth";
-import db from "../../dataBase";
-import { Socket_User } from "../../types/socket/user";
-import { Socket } from "socket.io";
-import { Socket_StandardRes, Socket_StandardRes_Error } from "../../types/socket/res";
-import register from "./register";
-import voice from "./voice";
-import realmSettings from "./realmSettings";
 import evt from "./evt";
+import voice from "./voice";
+import db from "../../dataBase";
+import register from "./register";
+import { Socket } from "socket.io";
+import realmSettings from "./realmSettings";
+import { Socket_User } from "../../types/socket/user";
+import { authUser, createUser } from "../../logic/auth";
+import SocketEventLimiter, { bannedUsers } from "./limiter";
+import { Socket_StandardRes, Socket_StandardRes_Error } from "../../types/socket/res";
 
-const tmpBan = new Map();
-
-global.io.of("/").use(async (socket, next) => {
+global.io.of("/").use(async (socket: Socket, next: Function) => {
     const authData = socket.handshake.auth;
     if(!authData) return next(new Error("Authentication error: Missing authentication data."));
     
@@ -21,13 +20,12 @@ global.io.of("/").use(async (socket, next) => {
     const user = await authUser(token, tokenData) as Socket_User;
     if(!user) return next(new Error("Authentication error: Missing authentication data."));
 
-    if(tmpBan.has(user._id)){
-        const remainingTime = tmpBan.get(user._id) - Date.now();
+    if(bannedUsers.has(user._id)){
+        const userTime = bannedUsers.get(user._id) as number;
+        const remainingTime = userTime - Date.now();
         if(remainingTime > 0){
-            const time = Math.ceil(remainingTime / 1000 / 60);
+            const time = Math.ceil(remainingTime / 1000 / 60) + 1;
             return next(new Error(`Ban: You are temporarily banned. Please try again after ${time} minutes.`));
-        }else{
-            tmpBan.delete(user._id);
         }
     }
 
@@ -45,58 +43,9 @@ global.io.of("/").on("connection", (socket: Socket) => {
         })
     }
 
-    socket.timeOutMap = new Map();
-    socket.onLimit = (evt, timeout, cb) => {
-        socket.on(evt, (...data) => {
-            if(!socket.user) return socket.emit("error", "not auth");
-            const currentTime = new Date().getTime();
-            const lastTime = socket.timeOutMap.get(evt);
-            const penalty = 20;
-        
-            if(lastTime && currentTime - lastTime.t < timeout){
-                socket.timeOutMap.set(evt, {
-                    t: currentTime,
-                    i: lastTime.i + 1
-                });
-                if(lastTime.i >= 5){
-                    socket.timeOutMap.set(evt, {
-                        t: currentTime + timeout * penalty,
-                        i: lastTime.i + 1
-                    });
-                    if(lastTime.i == 5){
-                        const t = Math.ceil(timeout/1000*penalty+1);
-                        socket.emit("error.spam", "last warning", t);
-                        db.logs.add("spam", {
-                            user: socket.user._id,
-                            evt,
-                        });
-                    }
-                    if(lastTime.i == 20){
-                        const banTime = currentTime + 10 * 60 * 1000;
-                        tmpBan.set(socket.user._id, banTime);
-                        const sockets = global.getSocket(socket.user._id);
-                        sockets.forEach(socket => {
-                            socket.emit("error.spam", "ban");
-                            socket.disconnect();
-                        });
-                        db.logs.add("spam", {
-                            user: socket.user._id,
-                            evt,
-                            ban: true,
-                        });
-                    }
-                }else if(lastTime.i == 2){
-                    socket.emit("error.spam", "warn");
-                }else if(lastTime.i == 0 || lastTime.i == 1){
-                    setTimeout(() => cb(...data), 100);
-                }
-                return;
-            }
-
-            socket.timeOutMap.set(evt, { t: currentTime, i: 0 });
-            cb(...data);
-        });
-    }
+    const limiter = new SocketEventLimiter(socket);
+    socket.onLimit = limiter.onLimit.bind(limiter);
+    
     socket.processSocketError = (res: Socket_StandardRes, cb?: Function) => {
         const err = res.err;
         if(!Array.isArray(err)) return false;

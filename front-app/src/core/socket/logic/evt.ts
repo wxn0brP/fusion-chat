@@ -59,7 +59,7 @@ export function connect_error(data: Error) {
             let text = "";
             let param = "";
             if (timeMath) {
-                text = "socket.ban";
+                text = LangPkg.socket.ban;
                 param = timeMath[1];
             } else {
                 text = dataStr;
