@@ -75,9 +75,9 @@ export async function send_embed_data(suser: Socket_User, to: Id, chnl: Id, embe
     return { err: false };
 }
 
-export async function fireToken_get(suser: Socket_User, userToken: string) {
+export async function fireToken_get(suser: Socket_User, userToken: string): Promise<Socket_StandardRes> {
     const pointer = await createTokenPointer(suser._id, userToken);
-    return pointer;
+    return { err: false, res: [pointer] };
 }
 
 export async function status_activity_set(suser: Socket_User, status: Status): Promise<Socket_StandardRes> {
