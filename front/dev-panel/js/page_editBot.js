@@ -10,7 +10,7 @@ const editBot = {
         const _this = this;
         socket.emit("bot.get", id, (data) => {
             _this.botData = data;
-            _this.botData.permMap = editBotCPU.inPerm(data.perm);
+            _this.botData.permMap = editBotCPU.inPerm(data[0].perm);
             _this.render();
         });
     },
