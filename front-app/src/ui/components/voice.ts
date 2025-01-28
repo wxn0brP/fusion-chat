@@ -13,7 +13,7 @@ import Id from "../../types/Id";
 interface voiceFuncVar {
     local_stream: null | MediaStream;
     muteMic: boolean;
-    sending: boolean | number;
+    sending: boolean | NodeJS.Timeout;
     joined: boolean | string;
 }
 
@@ -28,7 +28,7 @@ const voiceFunc = {
     async initCall() {
         try {
             voiceHTML.voiceShow.style.display = "";
-            if (this.local_stream) return;
+            if (voiceFuncVar.local_stream) return;
             const stream = await this.getStream(true, false);
             voiceFuncVar.local_stream = stream;
             voiceHTML.div.fadeIn();
@@ -39,18 +39,17 @@ const voiceFunc = {
 
     async joinToVoiceChannel(to: Id) {
         await this.initCall();
-        this.joined = to;
+        voiceFuncVar.joined = to;
         socket.emit("voice.join", to);
         socket.emit("voice.get.users");
         voiceHTML.muteMic.innerHTML = voiceFuncVar.muteMic ? LangPkg.ui.mute.unmute : LangPkg.ui.mute.mute;
     },
 
     send() {
-        if (this.sending) return;
-        const _this = this;
+        if (voiceFuncVar.sending) return;
 
         let buffer = [];
-        const mediaRecorder = new MediaRecorder(this.local_stream, { mimeType: "video/webm; codecs=vp8,opus" });
+        const mediaRecorder = new MediaRecorder(voiceFuncVar.local_stream, { mimeType: "video/webm; codecs=vp8,opus" });
         mediaRecorder.ondataavailable = (event) => {
             if (event.data.size == 0) return;
             buffer.push(event.data);
@@ -63,10 +62,10 @@ const voiceFunc = {
             buffer = [];
         };
 
-        this.sending = setInterval(() => {
+        voiceFuncVar.sending = setInterval(() => {
             mediaRecorder.stop();
             setTimeout(() => {
-                if (!_this.sending) return;
+                if (!voiceFuncVar.sending) return;
                 mediaRecorder.start();
             }, 10);
         }, 100);
@@ -75,9 +74,9 @@ const voiceFunc = {
     },
 
     endCall() {
-        if (this.sending) clearInterval(this.sending);
-        this.sending = false;
-        this.joined = false;
+        if (typeof voiceFuncVar.sending === "number") clearInterval(voiceFuncVar.sending);
+        voiceFuncVar.sending = false;
+        voiceFuncVar.joined = false;
         socket.emit("voice.leave");
 
         voiceHTML.div.fadeOut();
@@ -229,7 +228,8 @@ socket.on("voice.get.users", (users: Id[]) => {
     if (users.length > 1) {
         voiceFunc.send();
     } else if (users.length == 1) {
-        clearInterval(voiceFuncVar.sending as number);
+        if (typeof voiceFuncVar.sending === "number")
+            clearInterval(voiceFuncVar.sending);
         voiceFuncVar.sending = false;
     }
 });
