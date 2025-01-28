@@ -5,13 +5,14 @@ import Db_RealmConf from "../../../types/db/realmConf";
 import { Id } from "../../../types/base";
 import { Socket_StandardRes_Error } from "../../../types/socket/res";
 import { Socket_User } from "../../../types/socket/user";
+import InternalCode from "../../../codes";
 const router = Router();
 
 export const path = "realm/join";
 
 router.get("/meta", global.authenticateMiddleware, async (req, res) => {
     const { id } = req.query as { id: Id };
-    if(!id) return res.json({ err: true, msg: "id is required" });
+    if(!id) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "id" });
 
     const userExists = await db.userData.findOne(req.user, { realm: id });
     if(userExists) return res.json({ err: false, state: 1 });
@@ -41,8 +42,8 @@ router.get("/", global.authenticateMiddleware, async (req, res) => {
     const data = await realm_join(suser, id);
     if(data.err){
         const err = data.err as Socket_StandardRes_Error;
-        if(err[0] == "error.valid") return res.status(400).json({ err: true, msg: err[2] });
-        else return res.json({ err: true, msg: err.slice(2) });
+        if(err[0] == "error.valid") return res.status(400).json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: err[2] });
+        else return res.json({ err: true, c: InternalCode.UserError.Express.RealmJoin, msg: err.slice(2) });
     }
 
     res.json({ err: false, msg: "ok" });

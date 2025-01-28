@@ -4,25 +4,27 @@ import { createUser } from "../../../logic/auth";
 import mailer from "../../../logic/mail";
 import db from "../../../dataBase";
 import Db_Data from "../../../types/db/data";
+import InternalCode from "../../../codes";
 const router = Router();
 
 router.post("/login", async (req, res) => {
     const { name, password } = req.body as { name: string, password: string };
-    if (!name || !password) return res.json({ err: true, msg: "Name and password are required" });
+    if (!name) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "name" });
+    if (!password) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "password" });
 
     let user = await db.data.findOne<Db_Data.user>("user", { name });
     if(!user){
         user = await db.data.findOne("user", { email: name });
         if(!user){
             await global.delay(randomDelay(500, 1500));
-            return res.json({ err: true, msg: "Invalid credentials" });
+            return res.json({ err: true, c: InternalCode.UserError.Express.Login_InvalidCredentials, msg: "Invalid credentials" });
         }
     }
 
     const isPasswordValid = comparePasswords(user.password, password);
     if(!isPasswordValid){
         await global.delay(randomDelay(500, 1500));
-        return res.json({ err: true, msg: "Invalid credentials" });
+        return res.json({ err: true, c: InternalCode.UserError.Express.Login_InvalidCredentials, msg: "Invalid credentials" });
     }
 
     const token = await createUser(user);

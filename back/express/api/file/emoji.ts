@@ -10,6 +10,7 @@ import Permissions from "../../../logic/permission-system/permBD";
 import { manageRealmEmojis } from "../../../logic/emojiMgmt";
 import db from "../../../dataBase";
 import { Id } from "../../../types/base";
+import InternalCode from "../../../codes";
 
 const router = Router();
 
@@ -57,7 +58,7 @@ function uploadEmoji(basePath, unicode, req, res){
         upload(req, res, async (err) => {
             if(err){
                 reject(err);
-                return res.status(400).json({ err: true, msg: err.message });
+                return res.status(400).json({ err: true, c: InternalCode.UserError.Express.UploadError, msg: err.message });
             }
             try{
                 const buffer = req.file.buffer;
@@ -79,7 +80,7 @@ function uploadEmoji(basePath, unicode, req, res){
                 resolve(svgPath);
             }catch(err){
                 reject(err);
-                res.json({ err: true, msg: "An error occurred" });
+                res.json({ err: true, c: InternalCode.ServerError.Express.UploadError, msg: "An error occurred" });
             }
         });
     })
@@ -88,14 +89,17 @@ function uploadEmoji(basePath, unicode, req, res){
 router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => {
     const userId = req.user;
     const realm = req.headers.realm as Id;
-    if(!realm) return res.status(400).json({ err: true, msg: "No realm id provided." });
-    if(!valid.id(realm)) return res.status(400).json({ err: true, msg: "Invalid realm id." });
+    if(!valid.id(realm)) return res.status(400).json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "realm" });
 
     try{
         const userPerm = await checkUserPermission(userId, realm);
-        if(!userPerm) return res.status(403).json({ err: true, msg: "You do not have permission to do that." });
+        if(!userPerm) return res.status(403).json({
+            err: true,
+            c: InternalCode.UserError.Express.EmojiUpload_NoPermissions,
+            msg: "You do not have permission to do that."
+        });
     }catch(err){
-        return res.status(500).json({ err: true, msg: "You do not have permission to do that." });
+        return res.status(500).json({ err: true, c: InternalCode.ServerError.Express.UploadError, msg: "Permission error." });
     }
 
     const realmEmoji = await getRealmEmoji(realm);
@@ -105,7 +109,7 @@ router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => 
     const availableUnicodes = emojiUnicodes.filter(unicode => !realmEmojiUnicode.includes(unicode));
 
     if(availableUnicodes.length === 0){
-        return res.status(400).json({ err: true, msg: "Emoji limit reached." });
+        return res.status(400).json({ err: true, c: InternalCode.UserError.Express.EmojiUpload_Limit, msg: "Emoji limit reached." });
     }
 
     const unicode = availableUnicodes[0];
@@ -116,7 +120,7 @@ router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => 
     }
 
     const svgPath = await uploadEmoji(basePath, unicode, req, res);
-    if(!svgPath) return res.status(400).json({ err: true, msg: "An error occurred" });
+    if(!svgPath) return res.status(400).json({ err: true, c: InternalCode.ServerError.Express.UploadError, msg: "An error occurred" });
 
     const newEmoji = {
         unicode,

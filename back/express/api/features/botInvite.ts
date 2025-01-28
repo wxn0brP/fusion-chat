@@ -3,6 +3,7 @@ const router = Router();
 import { invite } from "../../../logic/inviteBot";
 import db from "../../../dataBase";
 import { Id } from "../../../types/base";
+import InternalCode from "../../../codes";
 
 export const path = "iv/bot";
 
@@ -15,10 +16,10 @@ router.get("/", global.authenticateMiddleware, async (req, res) => {
 
 router.get("/meta", global.authenticateMiddleware, async (req, res) => {
     const { id } = req.query as { id: Id };
-    if(!id) return res.json({ err: true, msg: "id is required" });
+    if(!id) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "id" });
 
     const botExists = await db.botData.findOne(id, { _id: "owner" });
-    if(!botExists) return res.json({ err: true, msg: "bot not found" });
+    if(!botExists) return res.json({ err: true, c: InternalCode.UserError.Express.BotInvite_NotFound, msg: "bot not found" });
 
     const botRes = {
         name: undefined,

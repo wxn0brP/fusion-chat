@@ -1,14 +1,16 @@
 import { Router } from "express";
 import { getTokenFromPointer, cache } from "../../../logic/mobileNotif";
 import db from "../../../dataBase";
+import InternalCode from "../../../codes";
 const router = Router();
 
 router.post("/fireToken", async (req, res) => {
     const { fcToken, fireToken } = req.body;
-    if(!fcToken || !fireToken) return res.json({ err: true, msg: "fcToken and fireToken is required" });
+    if(!fcToken) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "fcToken" });
+    if(!fireToken) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "fireToken" });
     
     const userToken = await getTokenFromPointer(fcToken);
-    if(!userToken) return res.json({ err: true, msg: "invalid fcToken" });
+    if(!userToken) return res.json({ err: true, c: InternalCode.UserError.Express.FireToken_InvalidFcToken, msg: "invalid fcToken" });
 
     const pairIsset = await db.data.findOne("fireToken", {
         fc: userToken.token,

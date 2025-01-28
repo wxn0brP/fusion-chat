@@ -5,6 +5,7 @@ import { genId } from "@wxn0brp/db";
 import Db_BotData from "../../../types/db/botData";
 import { Socket_StandardRes } from "../../../types/socket/res";
 import { Id } from "../../../types/base";
+import InternalCode from "../../../codes";
 
 export async function bots_get(suser){
     const botsData = await db.userData.find(suser._id, { $exists: { botID: true } });
@@ -23,7 +24,7 @@ export async function bots_delete(suser, id){
     if(!valid.id(id)) return validE.valid("id");
 
     const botExists = await db.userData.findOne(suser._id, { botID: id });
-    if(!botExists) return validE.err("bot does not exist");
+    if(!botExists) return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
     const realms = await db.botData.find<Db_BotData.realm>(id, { $exists: { realm: true }});
     for(const realm of realms){

@@ -12,6 +12,7 @@ import Db_RealmUser from "../types/db/realmUser";
 import { Message, Options, Request, User } from "../types/sendMessage";
 import { Socket_StandardRes } from "../types/socket/res";
 import { Id } from "../types/base";
+import InternalCode from "../codes";
 
 const validE = new ValidError("mess");
 
@@ -81,7 +82,7 @@ function prepareOptions(options: Options) {
  * Validates the message data.
  */
 function validData(req: Request, user: User, options: Options = {}) {
-    if (!user) return validE.err("not auth");
+    if (!user) return validE.err(InternalCode.UserError.Socket.NotAuthorized);
     if (typeof req !== "object") return validE.valid("req");
 
     if (!valid.id(req.to)) return validE.valid("to");
@@ -120,14 +121,14 @@ async function processIdAndPerm(req: Request, user: User, options: Options): Pro
         await db.mess.checkCollection(to);
     } else {
         const chatExists = await _chatExists(to);
-        if (!chatExists) return validE.err("chat is not exists");
+        if (!chatExists) return validE.err(InternalCode.UserError.Socket.ChatIsNotFound);
     }
 
     if (!privChat && !options.system) {
         const perm = await getChnlPerm(user._id, to, chnl);
-        if (!perm.view) return validE.err("channel is not exists");
-        if (!perm.write) return validE.err("not perm to write");
-        if (chnl.startsWith("&") && !perm.threadWrite) return validE.err("not perm to write");
+        if (!perm.view) return validE.err(InternalCode.UserError.Socket.ChannelIsNotFound);
+        if (!perm.write) return validE.err(InternalCode.UserError.Socket.NoPermissionToWriteMessage);
+        if (chnl.startsWith("&") && !perm.threadWrite) return validE.err(InternalCode.UserError.Socket.NoPermissionToWriteMessage);
     }
 
     return { err: false, res: { to, privChat } };

@@ -6,6 +6,7 @@ import setRealmSettingsData from "../../valid/realmsSettings";
 import cpu from "./set/cpu";
 import db from "../../../../dataBase";
 import { Socket_StandardRes } from "../../../../types/socket/res";
+import InternalCode from "../../../../codes";
 
 const sect_req_perms = {
     meta: [Permissions.admin],
@@ -46,7 +47,7 @@ export default async function realm_settings_set(suser, id, data): Promise<Socke
 
     // Validate user permissions
     if(!await validatePermissions(suser._id, id, data)){
-        return validE.err("Insufficient permissions for requested changes");
+        return validE.err(InternalCode.UserError.Socket.RealmSettingsSet_InsufficientPermissions);
     }
 
     try{
@@ -58,7 +59,7 @@ export default async function realm_settings_set(suser, id, data): Promise<Socke
         return { err: false };
     }catch(error){
         console.error("Error in realm_settings_set:", error);
-        return validE.err("Failed to update settings");
+        return validE.err(InternalCode.ServerError.Socket.RealmSettingsSet_Failed);
     }
 }
 

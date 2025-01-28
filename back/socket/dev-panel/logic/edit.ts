@@ -5,6 +5,7 @@ import { create, KeyIndex } from "../../../logic/token/index";
 import { genId } from "@wxn0brp/db";
 import db from "../../../dataBase";
 import Db_UserData from "../../../types/db/userData";
+import InternalCode from "../../../codes";
 const editSchemat = valid.objAjv(editSchematData);
 
 export async function bot_edit(suser, id, data){
@@ -13,7 +14,7 @@ export async function bot_edit(suser, id, data){
     if(!editSchemat(data)) return validE.valid("data");
 
     const perm = await db.userData.findOne<Db_UserData.bot>(suser._id, { botID: id });
-    if(!perm) return validE.err("bot not found");
+    if(!perm) return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
     // @ts-ignore
     // TODO fix type
@@ -45,7 +46,7 @@ export async function bot_generateToken(suser, id){
     if(!valid.id(id)) return validE.valid("id");
 
     const perm = await db.userData.findOne(suser._id, { botID: id });
-    if(!perm) return validE.err("bot not found");
+    if(!perm) return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
     const payload = {
         rand: genId(),

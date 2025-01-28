@@ -15,6 +15,7 @@ import { Socket_User } from "../../../types/socket/user";
 import { Id } from "../../../types/base";
 import Db_Mess from "../../../types/db/mess";
 import Status from "../../../types/socket/chat/status";
+import InternalCode from "../../../codes";
 
 const embedDataSchemat = valid.objAjv(embedData);
 const statusDataSchemat = valid.objAjv(statusData);
@@ -37,7 +38,7 @@ export async function send_embed_og(suser: Socket_User, to: Id, chnl: Id, link: 
     if (!/^https?:\/\//.test(link)) return validE.valid("link");
 
     const embed = await ogsToEmbed(link);
-    if (!embed) return validE.err("ogToEmbed error");
+    if (!embed) return validE.err(InternalCode.ServerError.Socket.OgEmbed_ErrorFetching);
 
     const result = await sendMessage(
         {

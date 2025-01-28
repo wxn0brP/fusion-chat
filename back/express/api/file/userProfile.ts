@@ -4,6 +4,7 @@ import { Image } from "image-js";
 import { join } from "path";
 import { readFileSync, existsSync } from "fs";
 import cropAndResizeProfile from "../../../logic/cropAndResizeProfile";
+import InternalCode from "../../../codes";
 
 const router = Router();
 const MAX_FILE_SIZE = global.fileConfig.maxUserProfileFileSize;
@@ -30,12 +31,12 @@ export const path = "profile";
 router.post("/upload", global.authenticateMiddleware, (req, res) => {
     upload(req, res, async (err) => {
         if(err){
-            return res.status(400).json({ err: true, msg: err.message });
+            return res.status(400).json({ err: true, c: InternalCode.UserError.Express.UploadError, msg: err.message });
         }
 
         const ReqFile = (req as any)?.file;
         if(!ReqFile){
-            return res.status(400).json({ err: true, msg: "No file uploaded." });
+            return res.status(400).json({ err: true, c: InternalCode.UserError.Express.FileUpload_NoFile, msg: "No file uploaded." });
         }
 
         const userId = req.user;
@@ -48,7 +49,7 @@ router.post("/upload", global.authenticateMiddleware, (req, res) => {
 
             res.json({ err: false, msg: "Profile picture uploaded successfully.", path: filePath });
         }catch(error){
-            res.status(500).json({ err: true, msg: "An error occurred while processing the image." });
+            res.status(500).json({ err: true, c: InternalCode.ServerError.Express.UploadError, msg: "An error occurred while processing the image." });
         }
     });
 });

@@ -16,6 +16,7 @@ import { Ui_UserState } from "../../../types/ui/render";
 import LangPkg, { langFunc } from "../../../utils/translate";
 import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
 import { Core_socket__refresh, Core_socket__user_status_type } from "../../../types/core/socket";
+import changeCodeToString from "../../../utils/code";
 
 export function connect() {
     debugFunc.msg(LogLevel.INFO, "connected to socket");
@@ -25,8 +26,16 @@ export function connect() {
 }
 
 export function error(evt_name: string, ...data: any[]) {
-    debugFunc.msg(LogLevel.ERROR, evt_name, ...data)
-    if (data.length > 0) uiFunc.uiMsg(data[0]);
+    debugFunc.msg(LogLevel.ERROR, evt_name, ...data);
+    if (data.length == 0) return;
+
+    const first = data[0];
+    if (/^[1-5][0-2]\.\d{3}$/.test(first)) {
+        uiFunc.uiMsg(changeCodeToString(first));
+        return;
+    }
+
+    uiFunc.uiMsg(first);
 }
 
 export function error_valid(evt: string, name: string, ...data: any[]) {

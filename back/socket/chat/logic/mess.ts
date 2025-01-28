@@ -14,6 +14,7 @@ import Socket__Mess from "../../../types/socket/chat/mess";
 import { Socket_User } from "../../../types/socket/user";
 import { Id } from "../../../types/base";
 import { Socket_StandardRes } from "../../../types/socket/res";
+import InternalCode from "../../../codes";
 
 const messageSearchSchemat = valid.objAjv(messageSearchData);
 
@@ -40,10 +41,10 @@ export async function message_edit(
 
     const mess = await db.mess.findOne<Db_Mess.Message>(dbChatId, { _id });
     if (!mess) {
-        return validE.err("message does not exist");
+        return validE.err(InternalCode.UserError.Socket.MessageEdit_MessageNotFound);
     }
     if (mess.fr !== suser._id) {
-        return validE.err("not authorized");
+        return validE.err(InternalCode.UserError.Socket.MessageEdit_NotAuthorized);
     }
 
     const time = Math.floor(new Date().getTime() / 1000).toString(36);
@@ -69,13 +70,13 @@ export async function message_delete(suser: Socket_User, chatId: Id, _id: Id): P
 
     const mess = await db.mess.findOne<Db_Mess.Message>(dbChatId, { _id });
     if (!mess) {
-        return validE.err("message does not exist");
+        return validE.err(InternalCode.UserError.Socket.MessageDelete_MessageNotFound);
     }
     if (mess.fr !== suser._id) {
         const permSys = new permissionSystem(dbChatId);
         const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.manageMessages);
         if (!userPerm)
-            return validE.err("not authorized");
+            return validE.err(InternalCode.UserError.Socket.MessageDelete_NotAuthorized);
     }
 
     await db.mess.removeOne(dbChatId, { _id });
@@ -103,11 +104,11 @@ export async function messages_delete(suser: Socket_User, chatId: Id, ids: Id[])
 
     const messages = await db.mess.find<Db_Mess.Message>(dbChatId, { $in: { _id: ids } });
     if (messages.some(mess => mess.fr !== suser._id)) {
-        if (isDmChat) return validE.err("not authorized");
+        if (isDmChat) return validE.err(InternalCode.UserError.Socket.MessagesDelete_NotAuthorized);
         const permSys = new permissionSystem(dbChatId);
         const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.manageMessages);
         if (!userPerm)
-            return validE.err("not authorized");
+            return validE.err(InternalCode.UserError.Socket.MessagesDelete_NotAuthorized);
     }
 
     if (!isDmChat) {
@@ -147,7 +148,7 @@ export async function message_fetch(
 
     if (!isDmChat) {
         const perm = await getChnlPerm(suser._id, dbChatId, chnl);
-        if (!perm.view) return validE.err("channel is not exist");
+        if (!perm.view) return validE.err(InternalCode.UserError.Socket.MessageFetch_ChannelNotFound);
     }
 
     const responeAll = await db.mess.find(dbChatId, { chnl }, {}, { reverse: true, max: end + start });
@@ -167,7 +168,7 @@ export async function message_fetch_id(suser: Socket_User, chatId: Id, chnl: Id,
 
     if (!isDmChat) {
         const perm = await getChnlPerm(suser._id, dbChatId, chnl);
-        if (!perm.view) return validE.err("channel is not exist");
+        if (!perm.view) return validE.err(InternalCode.UserError.Socket.MessageFetchId_ChannelNotFound);
     }
 
     const res = await db.mess.findOne(dbChatId, { _id: mess_id });
@@ -218,11 +219,11 @@ export async function message_react(suser: Socket_User, chatId: Id, msgId: Id, r
     const dbChatId = isDmChat ? combineId(suser._id, chatId.replace("$", "")) : chatId;
 
     const msg = await db.mess.findOne<Db_Mess.Message>(dbChatId, { _id: msgId });
-    if (!msg) return validE.err("msg does not exist");
+    if (!msg) return validE.err(InternalCode.UserError.Socket.MessageReact_MessageNotFound);
 
     const chnl = msg.chnl;
     const perm = await getChnlPerm(suser._id, dbChatId, chnl);
-    if (!perm.react) return validE.err("not authorized");
+    if (!perm.react) return validE.err(InternalCode.UserError.Socket.MessageReact_NotAuthorized);
 
     const reacts = msg.reacts || {};
     if (!reacts[react]) reacts[react] = [];

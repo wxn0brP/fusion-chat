@@ -1,3 +1,4 @@
+import InternalCode from "../../../codes";
 import db from "../../../dataBase";
 import { combineId, createChat, exitChat, createPriv, addUserToChat } from "../../../logic/chatMgmt";
 import { clearBlockedCache, clearUserDmCache } from "../../../logic/sendMessageUtils/dm";
@@ -84,7 +85,7 @@ export async function realm_exit(suser: Socket_User, id: string): Promise<Socket
 export async function dm_create(suser: Socket_User, nameOrId: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("dm.create");
     if (!valid.str(nameOrId, 0, 30) && !valid.id(nameOrId)) return validE.valid("nameOrId");
-    if (nameOrId == suser._id || nameOrId == suser.name) return validE.err("can't add yourself");
+    if (nameOrId == suser._id || nameOrId == suser.name) return validE.err(InternalCode.UserError.Socket.Dm_CreateSelf);
 
     const user = await db.data.findOne<Db_Data.user>("user", {
         $or: [
@@ -92,8 +93,8 @@ export async function dm_create(suser: Socket_User, nameOrId: string): Promise<S
             { _id: nameOrId }
         ]
     });
-    if (user._id == suser._id) return validE.err("can't add yourself");
-    if (!user) return validE.err("user does not exist");
+    if (user._id == suser._id) return validE.err(InternalCode.UserError.Socket.Dm_CreateSelf);
+    if (!user) return validE.err(InternalCode.UserError.Socket.Dm_UserNotFound);
 
     const toId = user._id;
 
@@ -101,7 +102,7 @@ export async function dm_create(suser: Socket_User, nameOrId: string): Promise<S
         if (!r.priv) return false;
         if (r.priv == toId) return true;
     });
-    if (priv) return validE.err("already priv");
+    if (priv) return validE.err(InternalCode.UserError.Socket.Dm_AlreadyExists);
 
     await createPriv(toId, suser._id);
 
@@ -117,10 +118,10 @@ export async function realm_join(suser: Socket_User, id: Id): Promise<Socket_Sta
     if (!valid.id(id)) return validE.valid("id");
 
     const exists = await db.userData.findOne(suser._id, { realm: id });
-    if (exists) return validE.err("already in realm");
+    if (exists) return validE.err(InternalCode.UserError.Socket.RealmJoin_AlreadyJoined);
 
     const isBaned = await db.realmData.findOne(id, { ban: suser._id });
-    if (isBaned) return validE.err("user is baned");
+    if (isBaned) return validE.err(InternalCode.UserError.Socket.RealmJoin_UserIsBanned);
 
     await addUserToChat(id, suser._id);
     global.sendToSocket(suser._id, "refreshData", "realm.get");
@@ -133,7 +134,7 @@ export async function realm_mute(suser: Socket_User, id: Id, time: number): Prom
     if (!valid.num(time, -1)) return validE.valid("time");
 
     const exists = await db.userData.findOne(suser._id, { realm: id });
-    if (!exists) return validE.err("not in realm");
+    if (!exists) return validE.err(InternalCode.UserError.Socket.RealmMute_UserIsNotOnRealm);
 
     await db.userData.updateOne(suser._id, { realm: id }, { muted: time });
     return { err: false };
@@ -146,7 +147,7 @@ export async function dm_block(suser: Socket_User, id: Id, blocked: boolean): Pr
 
     if (blocked) {
         const exists = await db.userData.findOne("blocked", { fr: suser._id, to: id });
-        if (exists) return validE.err("already blocked");
+        if (exists) return validE.err(InternalCode.UserError.Socket.Dm_BlockAlreadyBlocked);
 
         await db.userData.add("blocked", { fr: suser._id, to: id }, false);
         await friend_remove(suser, id);

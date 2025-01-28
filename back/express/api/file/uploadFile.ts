@@ -3,6 +3,7 @@ import multer, { diskStorage, MulterError } from "multer";
 import { existsSync, readdirSync, mkdirSync } from "fs";
 import { join } from "path";
 import { genId } from "@wxn0brp/db";
+import InternalCode from "../../../codes";
 
 const { maxUserFiles, maxUserFileSize } = global.fileConfig;
 const router = Router();
@@ -17,7 +18,12 @@ const limitUploads = (req, res, next) => {
     if(existsSync(userDir)){
         const files = readdirSync(userDir);
         if(files.length >= maxUserFiles){
-            return res.status(400).json({ err: true, msg: "File upload limit exceeded. Maximum " + maxUserFiles + " files allowed." });
+            return res.status(400).json({
+                err: true,
+                c: InternalCode.UserError.Express.UserFile_FilesLimit,
+                msg: "File upload limit exceeded. Maximum " + maxUserFiles + " files allowed.",
+                data: maxUserFileSize
+            });
         }
     }
     next();
@@ -47,9 +53,14 @@ router.post("/file/upload", global.authenticateMiddleware, limitUploads, (req, r
     upload(req, res, (err) => {
         if(err){
             if(err instanceof MulterError && err.code === "LIMIT_FILE_SIZE"){
-                return res.status(400).json({ err: true, msg: "File size exceeds " + maxUserFileSize/1024/1024 + "MB limit." });
+                return res.status(400).json({
+                    err: true,
+                    c: InternalCode.UserError.Express.UserFile_SizeLimit,
+                    msg: "File size exceeds " + maxUserFileSize/1024/1024 + "MB limit.",
+                    data: maxUserFileSize
+                });
             }
-            return res.status(500).json({ err: true, msg: "An error occurred during the file upload." });
+            return res.status(500).json({ err: true, c: InternalCode.ServerError.Express.UploadError, msg: "An error occurred during the file upload." });
         }
 
         const file = (req as any).file;

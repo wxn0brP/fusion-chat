@@ -17,6 +17,7 @@ import Socket__Realms from "../../../types/socket/chat/realms";
 import eventCreateData from "../valid/event";
 import Db_System from "../../../types/db/system";
 import { addTask, cancelTask } from "../../../schedule";
+import InternalCode from "../../../codes";
 
 const eventCreateSchemat = valid.objAjv(eventCreateData);
 
@@ -25,7 +26,7 @@ export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_St
     if (!valid.id(id)) return validE.valid("id");
 
     const realmMeta = await db.realmConf.findOne<Db_RealmConf.set>(id, { _id: "set" });
-    if (!realmMeta) return validE.err("realm does not exist");
+    if (!realmMeta) return validE.err(InternalCode.UserError.Socket.RealmSetup_RealmNotFound);
 
     const name = realmMeta.name;
     const permSys = new permissionSystem(id);
@@ -137,7 +138,7 @@ export async function realm_delete(suser: Socket_User, id: Id, name: string): Pr
 
     const permSys = new permissionSystem(id);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if (!userPerm) return validE.err("You don't have permission to edit this realm");
+    if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     const users = await db.realmUser.find(id, {}).then(users => users.map(u => u.u));
     for (const user of users) await db.userData.removeOne(user, { realm: id });
@@ -164,7 +165,7 @@ export async function realm_user_kick(suser: Socket_User, realmId: Id, uid: Id, 
         Permissions.banUser,
         Permissions.kickUser
     ]);
-    if (!userPerm) return validE.err("You don't have permission to edit this realm");
+    if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     await db.userData.removeOne(uid, { realm: realmId });
     await db.realmUser.removeOne(realmId, { uid });
@@ -188,7 +189,7 @@ export async function realm_user_unban(suser: Socket_User, realmId: Id, uid: Id)
         Permissions.admin,
         Permissions.banUser
     ]);
-    if (!userPerm) return validE.err("You don't have permission to edit this realm");
+    if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     await db.realmUser.removeOne(realmId, { ban: uid });
     return { err: false };
@@ -217,7 +218,7 @@ export async function realm_announcement_channel_subscribe(
 
     const permSys = new permissionSystem(targetRealmId);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if (!userPerm) return validE.err("You don't have permission to edit this realm");
+    if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     const data = {
         sr: sourceRealmId,
@@ -227,7 +228,7 @@ export async function realm_announcement_channel_subscribe(
     }
 
     const exists = await db.realmData.findOne("events.channels", data);
-    if (exists) return validE.err("already exists");
+    if (exists) return validE.err(InternalCode.UserError.Socket.RealmAnnouncementSubscribe_AlreadySubscribed);
 
     await db.realmData.add("events.channels", data, false);
     clearEventCache(targetRealmId);
@@ -250,7 +251,7 @@ export async function realm_announcement_channel_unsubscribe(
 
     const permSys = new permissionSystem(targetRealmId);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if (!userPerm) return validE.err("You don't have permission to edit this realm");
+    if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     await db.realmData.removeOne("events.channels", {
         sr: sourceRealmId,
@@ -282,7 +283,7 @@ export async function realm_announcement_channel_list(suser: Socket_User, realmI
 
     const permSys = new permissionSystem(realmId);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if (!userPerm) return validE.err("You don't have permission to edit this realm");
+    if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     const subscribedChannels = await db.realmData.find<Db_RealmData.events_channels>("events.channels", { tr: realmId });
     const channels = await db.realmConf.find<Pick<Db_RealmConf.channel, "chid" | "name">>(
@@ -330,7 +331,7 @@ export async function realm_thread_create(
 
     if (chnlType.type != "forum") {
         const perms = await getChnlPerm(suser._id, realmId, channelId);
-        if (!perms.threadCreate) return validE.err("You don't have permission to edit this realm");
+        if (!perms.threadCreate) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
     }
 
     const threadObj: Db_RealmData.thread = {
@@ -351,15 +352,15 @@ export async function realm_thread_delete(suser: Socket_User, realmId: Id, threa
     if (!valid.id(threadId)) return validE.valid("threadId");
 
     const perms = await getChnlPerm(suser._id, realmId, threadId);
-    if (!perms.threadCreate) return validE.err("You don't have permission to edit this realm");
+    if (!perms.threadCreate) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     const thread = await db.realmData.findOne<Db_RealmData.thread>(realmId, { _id: threadId });
-    if (!thread) return validE.err("thread does not exist");
+    if (!thread) return validE.err(InternalCode.UserError.Socket.ThreadDelete_NotFound);
 
     if (thread.author != suser._id) {
         const permSys = new permissionSystem(realmId);
         const canAdmin = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-        if (!canAdmin) return validE.err("you are not the author"); // if admin, can delete any thread
+        if (!canAdmin) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized); // if admin, can delete any thread
     }
 
     await db.realmData.removeOne(realmId, { _id: threadId });
@@ -396,7 +397,7 @@ export async function realm_thread_list(suser: Socket_User, realmId: Id | null, 
     }
 
     const perms = await getChnlPerm(suser._id, realmId, channelId);
-    if (!perms.threadView) return validE.err("You don't have permission to edit this realm");
+    if (!perms.threadView) return validE.err(InternalCode.UserError.Socket.RealmThreadList_NotAuthorized);
 
     const threads = await db.realmData.find(realmId, { thread: channelId });
     return { err: false, res: [threads] };
@@ -420,7 +421,7 @@ export async function realm_event_create(suser: Socket_User, realmId: Id, req: S
 
     const permSys = new permissionSystem(realmId);
     const canAdmin = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if (!canAdmin) return validE.err("You don't have permission to edit this realm");
+    if (!canAdmin) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     const data: Omit<Db_RealmData.event, "_id"> = {
         evt: true,
@@ -456,7 +457,7 @@ export async function realm_event_delete(suser: Socket_User, realmId: Id, eventI
 
     const permSys = new permissionSystem(realmId);
     const canAdmin = await permSys.canUserPerformAction(suser._id, Permissions.admin);
-    if (!canAdmin) return validE.err("You don't have permission to edit this realm");
+    if (!canAdmin) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     const taskId = await db.system.findOne<Db_System.task>("tasks", { type: "event", data: { evt: eventId } });
     if (taskId) await cancelTask(taskId._id);
@@ -495,7 +496,7 @@ export async function realm_event_join(suser: Socket_User, realmId: Id, eventId:
     if (!valid.id(eventId)) return validE.valid("eventId");
 
     const joined = await db.realmData.findOne<Db_RealmData.event_user>(realmId, { u: suser._id, uevt: eventId });
-    if (joined) return validE.err("You already joined this event");
+    if (joined) return validE.err(InternalCode.UserError.Socket.RealmEventJoin_AlreadyJoined);
 
     await db.realmData.add(realmId, { u: suser._id, uevt: eventId });
 
@@ -518,7 +519,7 @@ export async function realm_event_get_topic(suser: Socket_User, realmId: Id, eve
     if (!valid.id(eventId)) return validE.valid("eventId");
 
     const event = await db.realmData.findOne<Db_RealmData.event>(realmId, { _id: eventId, evt: true });
-    if (!event) return validE.err("event is not found");
+    if (!event) return validE.err(InternalCode.UserError.Socket.RealmEventGetTopic_NotFound);
 
     return { err: false, res: [event.topic] };
 }
