@@ -18,7 +18,7 @@ import eventCreateData from "../valid/event";
 import Db_System from "../../../types/db/system";
 import { addTask, cancelTask } from "../../../schedule";
 import InternalCode from "../../../codes";
-import { checkIsUserInRealm } from "../../../logic/checkIsUserInRealm";
+import { checkIsUserOnRealm } from "../../../logic/checkIsUserOnRealm";
 
 const eventCreateSchemat = valid.objAjv(eventCreateData);
 
@@ -26,7 +26,7 @@ export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_St
     const validE = new ValidError("realm.setup");
     if (!valid.id(id)) return validE.valid("id");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, id);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, id);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     const realmMeta = await db.realmConf.findOne<Db_RealmConf.set>(id, { _id: "set" });
@@ -80,7 +80,7 @@ export async function realm_users_sync(suser: Socket_User, id: Id): Promise<Sock
     const validE = new ValidError("realm.users.sync");
     if (!valid.id(id)) return validE.valid("id");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, id);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, id);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     const permSys = new permissionSystem(id);
@@ -109,7 +109,7 @@ export async function realm_users_activity_sync(suser: Socket_User, id: Id): Pro
     const validE = new ValidError("realm.users.activity.sync");
     if (!valid.id(id)) return validE.valid("id");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, id);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, id);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     const users = await db.realmUser.find(id, {});
@@ -209,7 +209,7 @@ export async function realm_emojis_sync(suser: Socket_User, realmId: Id): Promis
     const validE = new ValidError("realm.emojis.sync");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, realmId);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, realmId);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     const emojis = await db.realmConf.find(realmId, { $exists: { unicode: true } });
@@ -240,10 +240,10 @@ export async function realm_announcement_channel_subscribe(
         tc: targetChannelId
     }
 
-    const exists = await db.realmData.findOne("events.channels", data);
+    const exists = await db.realmData.findOne("announcement.channels", data);
     if (exists) return validE.err(InternalCode.UserError.Socket.RealmAnnouncementSubscribe_AlreadySubscribed);
 
-    await db.realmData.add("events.channels", data, false);
+    await db.realmData.add("announcement.channels", data, false);
     clearEventCache(targetRealmId);
 
     return { err: false };
@@ -266,7 +266,7 @@ export async function realm_announcement_channel_unsubscribe(
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
     if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
-    await db.realmData.removeOne("events.channels", {
+    await db.realmData.removeOne("announcement.channels", {
         sr: sourceRealmId,
         sc: sourceChannelId,
         tr: targetRealmId,
@@ -294,14 +294,14 @@ export async function realm_announcement_channel_list(suser: Socket_User, realmI
     const validE = new ValidError("realm.announcement.channel.list");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, realmId);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, realmId);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     const permSys = new permissionSystem(realmId);
     const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.admin);
     if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
-    const subscribedChannels = await db.realmData.find<Db_RealmData.events_channels>("events.channels", { tr: realmId });
+    const subscribedChannels = await db.realmData.find<Db_RealmData.announcement_channels>("announcement.channels", { tr: realmId });
     const channels = await db.realmConf.find<Pick<Db_RealmConf.channel, "chid" | "name">>(
         realmId,
         {
@@ -391,7 +391,7 @@ export async function realm_thread_list(suser: Socket_User, realmId: Id | null, 
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(channelId) && channelId != null) return validE.valid("channelId");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, realmId);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, realmId);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     if (channelId === null) {
@@ -490,7 +490,7 @@ export async function realm_event_list(suser: Socket_User, realmId: Id, len: boo
     const validE = new ValidError("realm.event.list");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, realmId);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, realmId);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     const events = await db.realmData.find<Db_RealmData.event>(realmId, { evt: true });
@@ -515,7 +515,7 @@ export async function realm_event_join(suser: Socket_User, realmId: Id, eventId:
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(eventId)) return validE.valid("eventId");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, realmId);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, realmId);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     const joined = await db.realmData.findOne<Db_RealmData.event_user>(realmId, { u: suser._id, uevt: eventId });
@@ -531,7 +531,7 @@ export async function realm_event_leave(suser: Socket_User, realmId: Id, eventId
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(eventId)) return validE.valid("eventId");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, realmId);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, realmId);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     await db.realmData.removeOne(realmId, { u: suser._id, uevt: eventId });
@@ -544,7 +544,7 @@ export async function realm_event_get_topic(suser: Socket_User, realmId: Id, eve
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(eventId)) return validE.valid("eventId");
 
-    const isUserInRealm = await checkIsUserInRealm(suser._id, realmId);
+    const isUserInRealm = await checkIsUserOnRealm(suser._id, realmId);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     const event = await db.realmData.findOne<Db_RealmData.event>(realmId, { _id: eventId, evt: true });

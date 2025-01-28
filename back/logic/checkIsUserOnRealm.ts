@@ -5,7 +5,7 @@ import Db_RealmUser from "../types/db/realmUser";
 
 const cache = new NodeCache();
 
-export async function checkIsUserInRealm(userId: Id, realm: Id): Promise<boolean> {
+export async function checkIsUserOnRealm(userId: Id, realm: Id): Promise<boolean> {
     if(cache.has(`${userId}:${realm}`)) return cache.get<boolean>(`${userId}:${realm}`);
 
     const result = await db.realmUser.findOne<Db_RealmUser.user>(realm, { u: userId });

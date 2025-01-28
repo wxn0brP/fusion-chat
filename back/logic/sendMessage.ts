@@ -5,7 +5,7 @@ import ValidError from "./validError";
 import getChnlPerm from "./chnlPermissionCache";
 import db from "../dataBase";
 import checkDmChat from "./sendMessageUtils/dm";
-import eventChnl from "./sendMessageUtils/eventChnl";
+import eventChnl from "./sendMessageUtils/announcementChnl";
 import Db_RealmConf from "../types/db/realmConf";
 import Db_UserData from "../types/db/userData";
 import Db_RealmUser from "../types/db/realmUser";
