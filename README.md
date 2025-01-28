@@ -55,6 +55,7 @@ Fusion Chat is an innovative communication application designed to provide seaml
    nano config/mailConfig.json
    nano config/logs.js
    nano config/file.js
+   nano config/cache.js
    nano config/firebase.json
    ```
 
