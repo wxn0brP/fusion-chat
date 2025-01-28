@@ -2,8 +2,9 @@ import NodeCache from "node-cache";
 import { Id } from "../types/base";
 import db from "../dataBase";
 import Db_RealmUser from "../types/db/realmUser";
+import getCacheSettings from "./cacheSettings";
 
-const cache = new NodeCache();
+const cache = new NodeCache(getCacheSettings("UserOnRealm"));
 
 export async function checkIsUserOnRealm(userId: Id, realm: Id): Promise<boolean> {
     if(cache.has(`${userId}:${realm}`)) return cache.get<boolean>(`${userId}:${realm}`);

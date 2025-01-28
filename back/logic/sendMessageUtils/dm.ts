@@ -5,9 +5,10 @@ import { Id } from "../../types/base";
 import ValidError from "../validError";
 import { Socket_StandardRes } from "../../types/socket/res";
 import InternalCode from "../../codes";
+import getCacheSettings from "../cacheSettings";
 
-const blockedCache = new NodeCache();
-const userDmCache = new NodeCache();
+const blockedCache = new NodeCache(getCacheSettings("DmBlock"));
+const userDmCache = new NodeCache(getCacheSettings("UserDm"));
 
 async function blocked(fr: Id, to: Id, combined: Id): Promise<boolean> {
     if(blockedCache.has(combined)) return blockedCache.get(combined);

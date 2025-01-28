@@ -5,9 +5,10 @@ import valid from "../../../logic/validData";
 import { combineId } from "../../../logic/chatMgmt";
 import { Id } from "../../../types/base";
 import InternalCode from "../../../codes";
+import getCacheSettings from "../../../logic/cacheSettings";
 
 const router = Router();
-const cache = new NodeCache();
+const cache = new NodeCache(getCacheSettings("EventId"));
 
 router.get("/id/event", async (req, res) => {
     const { id } = req.query as { id: Id };

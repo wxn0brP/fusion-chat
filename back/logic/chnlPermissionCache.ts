@@ -4,9 +4,10 @@ import rolePermissions, { hasPermission, getAllPermissions } from "./permission-
 import db from "../dataBase";
 import Db_RealmConf from "../types/db/realmConf";
 import { Id } from "../types/base";
+import getCacheSettings from "./cacheSettings";
 
-export const cache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache TTL 10 min
-export const channelPermissionsCache = new NodeCache({ stdTTL: 300, checkperiod: 60 }); // Cache TTL 5 min
+export const cache = new NodeCache(getCacheSettings("ChnlPermission"));
+export const channelPermissionsCache = new NodeCache(getCacheSettings("ChnlPermission_Channels"));
 
 const generateCacheKey = (realm: Id, chnl: Id, userId: Id) => `${realm}:${chnl}:${userId}`;
 

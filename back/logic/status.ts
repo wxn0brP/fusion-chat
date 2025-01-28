@@ -1,14 +1,11 @@
 import NodeCache from "node-cache";
 import { Id } from "../types/base";
 import Status from "../types/socket/chat/status";
+import getCacheSettings from "./cacheSettings";
 
-const defTTL = 2 * 60;
 const h2 = 2 * 60 * 60 * 1000; //2 hours in ms
 
-export const cache = new NodeCache({
-    stdTTL: defTTL, // 2min
-    checkperiod: 15 * 60 // 15min
-});
+export const cache = new NodeCache(getCacheSettings("UserStatus"));
 
 export function setCache(userId: Id, state: Status){
     let endTime = state.endTime;
