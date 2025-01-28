@@ -36,11 +36,11 @@ async function eventChnl(realm: Id, data: Message){
  * @param chnl - Name of source channel.
  * @returns List of tr, tc.
  */
-async function getSubscribed(realm: Id, chnl: Id): Promise<Array<Pick<Db_RealmData.events_channels, "tr" | "tc">>>{
+async function getSubscribed(realm: Id, chnl: Id): Promise<Array<Pick<Db_RealmData.announcement_channels, "tr" | "tc">>>{
     let realmData = eventSubscribeCache.get(realm);
 
     if(!realmData){
-        const chnls = await db.realmData.find<Db_RealmData.events_channels>("events.channels", { sr: realm });
+        const chnls = await db.realmData.find<Db_RealmData.announcement_channels>("announcement.channels", { sr: realm });
 
         realmData = {};
         chnls.forEach(({ sr, sc, tr, tc }) => {

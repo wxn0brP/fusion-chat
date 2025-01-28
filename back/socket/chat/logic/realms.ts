@@ -5,7 +5,7 @@ import { existsSync } from "fs";
 import ValidError from "../../../logic/validError";
 import { getCache as statusMgmtGetCache } from "../../../logic/status";
 import getChnlPerm from "../../../logic/chnlPermissionCache";
-import { clearEventCache } from "../../../logic/sendMessageUtils/eventChnl";
+import { clearEventCache } from "../../../logic/sendMessageUtils/announcementChnl";
 import db from "../../../dataBase";
 import Db_RealmConf from "../../../types/db/realmConf";
 import Db_UserData from "../../../types/db/userData";

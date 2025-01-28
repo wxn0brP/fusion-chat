@@ -15,7 +15,7 @@ router.get("/id/event", async (req, res) => {
 
     let name = cache.get(id);
     if(!name){
-        const data = await db.realmData.findOne("events.channels", (data, ctx) => {
+        const data = await db.realmData.findOne("announcement.channels", (data, ctx) => {
             const { tr, tc } = data;
             return ctx.combineId(tr, tc) == ctx.id;
         }, { id, combineId: combineId });

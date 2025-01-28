@@ -185,8 +185,8 @@ async function getAdjustedRoles(realm, userId){
 }
 
 async function getSubscribedChannels(realmId){
-    const channels = await db.realmData.find<Db_RealmData.events_channels & { name: string }>(
-        "events.channels",
+    const channels = await db.realmData.find<Db_RealmData.announcement_channels & { name: string }>(
+        "announcement.channels",
         { tr: realmId },
         {},
         {},
