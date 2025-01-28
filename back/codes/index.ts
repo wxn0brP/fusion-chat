@@ -49,7 +49,7 @@ const InternalCode = {
             Dm_AlreadyExists: "41.009",
             RealmJoin_AlreadyJoined: "41.010",
             RealmJoin_UserIsBanned: "41.011",
-            RealmMute_UserIsNotOnRealm: "41.012",
+            UserNotOnRealm: "41.012",
             Dm_BlockAlreadyBlocked: "41.013",
             FriendRequest_UserNotFound: "41.014",
             FriendRequest_Self: "41.015",

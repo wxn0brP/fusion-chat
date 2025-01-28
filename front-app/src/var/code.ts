@@ -28,7 +28,7 @@ const InternalCode = {
             "41.009": "DM Already Exists",
             "41.010": "Realm Join Already Joined",
             "41.011": "Realm Join User Is Banned",
-            "41.012": "Realm Mute User Is Not On Realm",
+            "41.012": "User Is Not On Realm",
             "41.013": "DM Block Already Blocked",
             "41.014": "Friend Request User Not Found",
             "41.015": "Friend Request Self",
@@ -58,6 +58,7 @@ const InternalCode = {
             "41.039": "Realm Settings Set Insufficient Permissions",
             "41.040": "Dev Panel Bot Not Found",
             "41.041": "Get Threads list",
+            "41.042": "User Not In Realm",
         },
         Express: {
             "42.001": "IP Banned",

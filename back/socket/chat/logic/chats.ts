@@ -1,6 +1,7 @@
 import InternalCode from "../../../codes";
 import db from "../../../dataBase";
 import { combineId, createChat, exitChat, createPriv, addUserToChat } from "../../../logic/chatMgmt";
+import { checkIsUserInRealm, clearCache as userInRealmClearCache } from "../../../logic/checkIsUserInRealm";
 import { clearBlockedCache, clearUserDmCache } from "../../../logic/sendMessageUtils/dm";
 import valid from "../../../logic/validData";
 import ValidError from "../../../logic/validError";
@@ -79,6 +80,7 @@ export async function realm_exit(suser: Socket_User, id: string): Promise<Socket
 
     await exitChat(id, suser._id);
     global.sendToSocket(suser._id, "refreshData", "realm.get");
+    userInRealmClearCache(suser._id, id);
     return { err: false };
 }
 
@@ -125,6 +127,7 @@ export async function realm_join(suser: Socket_User, id: Id): Promise<Socket_Sta
 
     await addUserToChat(id, suser._id);
     global.sendToSocket(suser._id, "refreshData", "realm.get");
+    userInRealmClearCache(suser._id, id);
     return { err: false };
 }
 
@@ -133,8 +136,8 @@ export async function realm_mute(suser: Socket_User, id: Id, time: number): Prom
     if (!valid.id(id)) return validE.valid("id");
     if (!valid.num(time, -1)) return validE.valid("time");
 
-    const exists = await db.userData.findOne(suser._id, { realm: id });
-    if (!exists) return validE.err(InternalCode.UserError.Socket.RealmMute_UserIsNotOnRealm);
+    const isUserInRealm = await checkIsUserInRealm(suser._id, id);
+    if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
     await db.userData.updateOne(suser._id, { realm: id }, { muted: time });
     return { err: false };
