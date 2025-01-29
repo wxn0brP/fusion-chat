@@ -12,6 +12,8 @@ import contextMenu from "../components/contextMenu";
 import { Ui_UserState } from "../../types/ui/render";
 import { navHTML, renderHTML } from "../../var/html";
 import { Vars_user__activity } from "../../types/var";
+import { Core_socket__user_status_type } from "../../types/core/socket";
+import { updateUserProfileMarker } from "./userStatusMarker";
 
 const render_realm = {
     realms(data) {
@@ -46,7 +48,7 @@ const render_realm = {
         const users = vars.realm.users;
         const userColor = new Map();
 
-        function getColor(id) {
+        function getColor(id: Id) {
             if (userColor.has(id)) {
                 return userColor.get(id);
             }
@@ -69,6 +71,8 @@ const render_realm = {
             const isBot = userID[0] == "^";
             const userDiv = document.createElement("div");
             userDiv.classList.add("realm_user_div");
+            userDiv.classList.add("userStatusMarker");
+            userDiv.setAttribute("data-status-id", userID);
 
             if (!isBot) {
                 userDiv.addEventListener("click", () => {
@@ -97,6 +101,7 @@ const render_realm = {
             userDiv.appendChild(textContainer);
             navHTML.realm__users.appendChild(userDiv);
             render_realm._realmUserStatus(userID);
+            updateUserProfileMarker(userID, vars.apisTemp.user_status[userID]?.status.get());
         });
     },
 
@@ -104,24 +109,30 @@ const render_realm = {
         const ele = document.querySelector("#user_status_" + utils.escape(id));
         if (!ele) return;
         const data = vars.apisTemp.user_status[id];
-        if (!data) return;
+        if (!data){
+            updateUserProfileMarker(id, "offline");
+            return;
+        }
+        
+        updateUserProfileMarker(id, data.status.get() || "offline");
 
         const act = data.activity.get();
         if (!act?.state) {
-            ele.innerHTML = data.status.get() || "";
+            ele.innerHTML = data.statusText.get() || "";
             return;
         }
         ele.innerHTML = act.state + " | " + act.name;
     },
 
     realmUserStatus(id: Id, state: Ui_UserState) {
-        let { status, activity } = state;
+        let { status, statusText, activity } = state;
         const temp = vars.apisTemp.user_status;
         if (!temp[id]) {
             const reRender = () => render_realm._realmUserStatus(id);
 
             temp[id] = {
-                status: renderUtils.createUpdater<string>(reRender, status ?? ""),
+                status: renderUtils.createUpdater<Core_socket__user_status_type>(reRender, status ?? "offline"),
+                statusText: renderUtils.createUpdater<string>(reRender, statusText ?? ""),
                 activity: renderUtils.createUpdater<Vars_user__activity | null>(reRender, activity ?? null),
             };
         }

@@ -36,7 +36,8 @@ interface Vars {
         };
         user_status: {
             [id: Id]: {
-                status: Utils_updater<string>;
+                status: Utils_updater<Core_socket__user_status_type>;
+                statusText: Utils_updater<string>;
                 activity: Utils_updater<Vars_user__activity | null>;
             }
         };
@@ -145,7 +146,7 @@ export interface Vars_realm__chnlPerm {
 
 export interface Vars_mainView__friend {
     _id: Id;
-    status?: string;
+    status?: Core_socket__user_status_type;
     text?: string;
 }
 

@@ -7,7 +7,7 @@ import { Socket_StandardRes } from "../../../types/socket/res";
 import { Socket_User } from "../../../types/socket/user";
 
 export async function self_status_update(suser: Socket_User, status: string, text: string): Promise<Socket_StandardRes> {
-    const validE = new ValidError("status.update");
+    const validE = new ValidError("self.status.update");
     if (status && !valid.str(status, 0, 15)) return validE.valid("status", "status");
     if (text && !valid.str(text, 0, 150)) return validE.valid("text");
 

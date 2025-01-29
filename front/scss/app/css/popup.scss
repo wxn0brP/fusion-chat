@@ -85,6 +85,15 @@
     #userProfileInfo {
         display: flex;
         gap: 1rem;
+        position: relative;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 72px;
+            left: 72px;
+            --wh: 25px;
+        }
     }
 
     img {

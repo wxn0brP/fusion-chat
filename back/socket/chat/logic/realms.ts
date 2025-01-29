@@ -124,12 +124,14 @@ export async function realm_users_activity_sync(suser: Socket_User, id: Id): Pro
         if (!userOnline) return { uid: symbolUID };
 
         const st = await db.userData.findOne<Db_UserData.status>(uid, { _id: "status" });
-        const status = st?.text || "online";
+        const statusText = st?.text;
+        const status = st?.status || "online";
 
         return {
             uid: symbolUID,
             activity: statusMgmtGetCache(uid),
             status,
+            statusText
         }
     });
 

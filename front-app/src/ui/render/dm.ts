@@ -9,6 +9,7 @@ import utils from "../../utils/utils";
 import apis from "../../api/apis";
 import socket from "../../core/socket/socket";
 import { Core_socket__blocked, Core_socket__dm } from "../../types/core/socket";
+import { updateUserProfileMarker } from "./userStatusMarker";
 
 const render_dm = {
     chats() {
@@ -18,7 +19,9 @@ const render_dm = {
             const privDiv = document.createElement("button");
             privDiv.classList.add("priv_chat");
             privDiv.classList.add("btn");
+            privDiv.classList.add("userStatusMarker");
             privDiv.id = "priv_chat_" + id;
+            privDiv.setAttribute("data-status-id", id);
 
             const structDiv = document.createElement("div");
 
@@ -40,7 +43,8 @@ const render_dm = {
             privDiv.addEventListener("contextmenu", (e) => {
                 e.preventDefault();
                 socket.emit("user.profile", id);
-            })
+            });
+            updateUserProfileMarker(id, vars.apisTemp.user_status[id]?.status.get());
         });
         render_dm.privsRead();
         coreFunc.markSelectedChat();

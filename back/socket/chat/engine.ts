@@ -17,8 +17,9 @@ class SocketEventEngine {
                 
                 if (isReturn) {
                     const cb = typeof args[args.length - 1] === "function" ? args.pop() : null;
-                    if (cb) cb(...data.res);
-                    else this.socket.emit(evt, ...data.res);
+                    const res = data.res || [];
+                    if (cb) cb(...res);
+                    else this.socket.emit(evt, ...res);
                 }
             } catch (e) {
                 this.socket.logError(e);

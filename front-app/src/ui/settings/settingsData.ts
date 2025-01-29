@@ -11,6 +11,7 @@ import staticData from "../../var/staticData";
 import { reloadProfileImages } from "../helpers/reloadImages";
 import { Settings_settingsManager__category } from "../../types/ui/settings";
 import LangPkg, { LangRef, load_translate } from "../../utils/translate";
+import render_realm from "../render/realm";
 
 interface SettingsData {
     user: () => Settings_settingsManager__category[];
@@ -29,7 +30,7 @@ const settingsData: SettingsData = {
                     txt: LangPkg.settings_user.status,
                     type: "select",
                     defaultValue: vars.user.status || "online",
-                    options: ["online", "away", "offline"]
+                    options: ["online", "idle", "dnd", "offline"]
                 },
                 {
                     name: "Status text",
@@ -197,8 +198,9 @@ const settingsData: SettingsData = {
             vars.user.statusText = settings["Status text"];
         }
         if (settings["Status"] != undefined || settings["Status text"] != undefined) {
-            socket.emit("status.update", vars.user.status, vars.user.statusText);
+            socket.emit("self.status.update", vars.user.status, vars.user.statusText);
             render_user.localUserProfile();
+            render_realm.realmUserStatus(vars.user._id, { status: vars.user.status, statusText: vars.user.statusText });
         }
 
         if (settings["Nickname"] != undefined) {
