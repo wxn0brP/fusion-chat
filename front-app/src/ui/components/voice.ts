@@ -9,6 +9,7 @@ import uiFunc from "../helpers/uiFunc";
 import vars from "../../var/var";
 import LangPkg, { langFunc } from "../../utils/translate";
 import Id from "../../types/Id";
+import debugFunc, { LogLevel } from "../../core/debug";
 
 interface voiceFuncVar {
     local_stream: null | MediaStream;
@@ -56,7 +57,7 @@ const voiceFunc = {
         };
 
         mediaRecorder.onstop = () => {
-            if (buffer.length == 0) return lo("no voice data");
+            if (buffer.length == 0) return debugFunc.msg(LogLevel.WARN, "no voice data");
 
             socket.volatile.emit("voice.sendData", buffer);
             buffer = [];
@@ -213,7 +214,7 @@ socket.on("voice.sendData", (from: Id, data: any) => {
 
 socket.on("connect", () => {
     if (!voiceFuncVar.joined) return;
-    lo("reconnected to voice channel");
+    debugFunc.msg(LogLevel.INFO, "reconnected to voice channel");
     voiceFunc.joinToVoiceChannel(voiceFuncVar.joined as Id);
 });
 
