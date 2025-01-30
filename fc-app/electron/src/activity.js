@@ -2,7 +2,7 @@ const fullscreenWindow = require("./fullscreenWindow");
 const { sendToFront } = require("./utils");
 
 const cache = {
-    inverval: null,
+    interval: null,
     title: null,
     set: false
 }
@@ -41,7 +41,7 @@ async function checkActivity(){
 }
 
 checkActivity().then(() => {
-    cache.inverval = setInterval(checkActivity, 30_000);
+    cache.interval = setInterval(checkActivity, 30_000);
 }).catch(err => {
     console.error(err);
 })
