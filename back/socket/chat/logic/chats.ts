@@ -36,7 +36,7 @@ export async function realm_get(suser: Socket_User): Promise<Socket_StandardRes>
 
 export async function dm_get(suser: Socket_User): Promise<Socket_StandardRes> {
     const privs = await db.userData.find<Db_UserData.priv>(suser._id, { $exists: { priv: true } });
-    if (privs.length == 0) return { err: false, res: [] };
+    if (privs.length == 0) return { err: false, res: [[]] };
 
     for (let i = 0; i < privs.length; i++) {
         const priv = privs[i] as Db_UserData.priv & { lastMessId: Id };
