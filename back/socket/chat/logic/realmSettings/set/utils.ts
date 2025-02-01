@@ -1,9 +1,10 @@
 import db from "../../../../../dataBase";
+import { ProcessDbChangesResult } from "./imports";
 
 /**
  * Save database changes
  */
-export async function saveDbChanges(doc, changes, idName = "_id") {
+export async function saveDbChanges(doc: string, changes: ProcessDbChangesResult, idName: string = "_id") {
     const { itemsToAdd, itemsToRemove, itemsToUpdate, itemsWithRemovedFields } = changes;
     const dbc = db.realmConf.c(doc);
     

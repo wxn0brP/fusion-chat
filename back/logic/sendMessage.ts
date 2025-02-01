@@ -1,4 +1,3 @@
-// @ts-check
 import { chatExists as _chatExists, combineId } from "./chatMgmt";
 import valid, { validChannelId } from "./validData";
 import ValidError from "./validError";
@@ -135,7 +134,7 @@ async function processIdAndPerm(req: Request, user: User, options: Options): Pro
 }
 
 async function sendReamNotification(to: Id, user: User, data: Message) {
-    const realm = await db.realmConf.findOne<Db_RealmConf.set>(to, { _id: "set" });
+    const realm = await db.realmConf.findOne<Db_RealmConf.meta>(to, { _id: "set" });
     const fromMsg = `${realm.name} @${user.name}`;
     data.to = to;
 

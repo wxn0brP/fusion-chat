@@ -25,7 +25,7 @@ router.get("/meta", global.authenticateMiddleware, async (req, res) => {
         img: undefined
     };
 
-    const realmMeta = await db.realmConf.findOne<Db_RealmConf.set>(id, { _id: "set" });
+    const realmMeta = await db.realmConf.findOne<Db_RealmConf.meta>(id, { _id: "set" });
     realmRes.name = realmMeta.name;
     realmRes.img = realmMeta.img || false;
 

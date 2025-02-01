@@ -190,7 +190,7 @@ export default class PermissionSystem{
     }
 
     async getAllRolesSorted(){
-        const roles = await this.realmRoles.find({});
+        const roles = await this.realmRoles.find<Db_RealmRoles.role>({});
         return roles.sort((a, b) => a.lvl - b.lvl);
     }
 

@@ -29,7 +29,7 @@ export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_St
     const isUserInRealm = await checkIsUserOnRealm(suser._id, id);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-    const realmMeta = await db.realmConf.findOne<Db_RealmConf.set>(id, { _id: "set" });
+    const realmMeta = await db.realmConf.findOne<Db_RealmConf.meta>(id, { _id: "set" });
     if (!realmMeta) return validE.err(InternalCode.UserError.Socket.RealmSetup_RealmNotFound);
 
     const name = realmMeta.name;
@@ -86,7 +86,7 @@ export async function realm_users_sync(suser: Socket_User, id: Id): Promise<Sock
     const rolesData = roles.map(({ name, c }) => { return { name, c } });
 
     const rolesMap = new Map();
-    for (const role of roles) rolesMap.set(role.rid, role.name);
+    for (const role of roles) rolesMap.set(role._id, role.name);
 
     const users = await db.realmUser.find(id, {});
     const usersData = users.map(u => {
@@ -96,7 +96,7 @@ export async function realm_users_sync(suser: Socket_User, id: Id): Promise<Sock
 
         return {
             uid: symbolUID,
-            roles: u.r.map(r => rolesMap.get(r)),
+            roles: u.r.map((r: Id) => rolesMap.get(r)),
         }
     });
 
@@ -143,7 +143,7 @@ export async function realm_delete(suser: Socket_User, id: Id, name: string): Pr
     if (!valid.id(id)) return validE.valid("id");
     if (!valid.str(name, 0, 30)) return validE.valid("name");
 
-    const realmMeta = await db.realmConf.findOne<Db_RealmConf.set>(id, { _id: "set" });
+    const realmMeta = await db.realmConf.findOne<Db_RealmConf.meta>(id, { _id: "set" });
     if (realmMeta.name != name) return validE.valid("name");
 
     const permSys = new permissionSystem(id);

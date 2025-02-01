@@ -23,7 +23,7 @@ export async function realm_get(suser: Socket_User): Promise<Socket_StandardRes>
         const realm = realms[i] as Db_UserData.realm & { img: boolean, p: number };
         const id = realm.realm;
 
-        const realmSet = await db.realmConf.findOne<Db_RealmConf.set>(id, { _id: 'set' });
+        const realmSet = await db.realmConf.findOne<Db_RealmConf.meta>(id, { _id: 'set' });
         realm.img = realmSet.img || false;
 
         const permSys = new PermissionSystem(realm.realm);

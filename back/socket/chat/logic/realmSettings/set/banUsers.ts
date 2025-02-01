@@ -1,2 +1,4 @@
-export default async (id, data) => {
+import { Id, Socket_RealmSettings } from "./imports";
+
+export default async (id: Id, data: Socket_RealmSettings) => {
 }

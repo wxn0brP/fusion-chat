@@ -1,11 +1,11 @@
-import db from "../../../../../dataBase";
-import { addCustom } from "../../../../../logic/webhooks/index";
-import Logic_Webhook from "../../../../../types/logic/webhook";
-import { processDbChanges } from "./imports";
 import { saveDbChanges } from "./utils";
+import { Settings_AllData } from "../set";
+import Logic_Webhook from "../../../../../types/logic/webhook";
+import { addCustom } from "../../../../../logic/webhooks/index";
+import { db, Id, processDbChanges, Socket_RealmSettings, Socket_User } from "./imports";
 
-export default async (id, data, suser, dbData) => {
-    const oldWebhooks = dbData.filter(d => !!d.whid);
+export default async (id: Id, data: Socket_RealmSettings, suser: Socket_User, dbData: Settings_AllData) => {
+    const oldWebhooks = dbData.filter(d => "whid" in d);
     const changes = processDbChanges(
         oldWebhooks,
         data.webhooks,

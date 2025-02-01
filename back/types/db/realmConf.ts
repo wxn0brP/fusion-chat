@@ -2,7 +2,7 @@ import { Id } from "../base";
 import Db_Mess from "./mess";
 
 namespace Db_RealmConf {
-    export interface set {
+    export interface meta {
         _id: "set";
         name: string;
         owner: Id;
