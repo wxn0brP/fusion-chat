@@ -97,7 +97,6 @@ export async function friend_remove(suser: Socket_User, id: Id): Promise<Socket_
     return { err: false };
 }
 
-// TODO fix type
 export async function friend_get_all(suser: Socket_User): Promise<Socket_StandardRes> {
     const friendsGraph = await db.dataGraph.find("friends", suser._id);
     const friends = friendsGraph.map(f => {
