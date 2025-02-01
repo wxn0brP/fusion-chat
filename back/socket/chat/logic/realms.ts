@@ -42,14 +42,13 @@ export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_St
 
     for (let i = 0; i < sortedCategories.length; i++) {
         const category = sortedCategories[i];
-        let chnls = channels.filter(c => c.category == category.cid);
-        chnls = chnls.sort((a, b) => a.i - b.i);
-        // @ts-ignore
-        // TODO fix type
-        chnls = await Promise.all(chnls.map(async c => {
+        let chnlsByDb = channels
+            .filter(c => c.category == category.cid)
+            .sort((a, b) => a.i - b.i);
+        
+        const allChnls = await Promise.all(chnlsByDb.map(async c => {
             const perms = await getChnlPerm(suser._id, id, c.chid);
             if (!perms) return null;
-
             if (!perms.view) return null;
 
             return {
@@ -60,13 +59,13 @@ export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_St
                 desc: c.desc,
             }
         }))
-        chnls = chnls.filter(c => !!c);
+        const chnls = allChnls.filter(Boolean);
 
-        if (chnls.length == 0) continue;
+        if (chnlsByDb.length == 0) continue;
         buildChannels.push({
             id: category.cid,
             name: category.name,
-            chnls: chnls,
+            chnls,
         });
     }
 
