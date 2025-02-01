@@ -17,7 +17,7 @@ import { PermissionSystem } from "./realmSettings/set/imports";
 
 export async function realm_get(suser: Socket_User): Promise<Socket_StandardRes> {
     const realms = await db.userData.find<Db_UserData.realm>(suser._id, r => !!r.realm);
-    if (realms.length == 0) return { err: false, res: [] };
+    if (realms.length == 0) return { err: false, res: [[]] };
 
     for (let i = 0; i < realms.length; i++) {
         const realm = realms[i] as Db_UserData.realm & { img: boolean, p: number };
