@@ -11,7 +11,7 @@ const roomPrefix = "voice-";
 
 export async function voice_join(socket: Socket, to: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("voice.join");
-    if (!valid.str(to, 0, 30)) return validE.valid("to");
+    if (!valid.str(to, 16, 100)) return validE.valid("to");
 
     emitToRoom(to, "voice.join", socket.user._id);
     emitToRoom(to, "refreshData", "voice.get.users");
