@@ -175,6 +175,15 @@ main {
         .spoiler__show {
             color: inherit;
         }
+
+        .message_emoji {
+            width: 1.1em;
+            height: 1.1em;
+        }
+
+        &.mess__text__emoji {
+            font-size: 1.5em;
+        }
     }
 
     .mess_time {

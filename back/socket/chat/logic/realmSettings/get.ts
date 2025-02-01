@@ -141,7 +141,7 @@ async function processSection(section, data, dbData, userPerms, realmId, userId)
             data.roles = await getAdjustedRoles(realmId, userId);
         break;
         case "emojis":
-            data.emojis = dbData.filter(d => !!d.unicode);
+            data.emojis = dbData.filter(d => !!d.emoji);
         break;
         case "webhooks":
             data.webhooks = dbData.filter(d => !!d.whid);

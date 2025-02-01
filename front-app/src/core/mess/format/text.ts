@@ -1,4 +1,6 @@
 import hub from "../../../hub";
+import utils from "../../../utils/utils";
+import vars from "../../../var/var";
 import format_list from "./list";
 import format_wrapTable from "./table";
 hub("mess/format/text");
@@ -48,6 +50,10 @@ export default function format_text(text: string) {
         const placeholder = `@EXCLUSION${i + 1}@`;
         text = text.replace(placeholder, exclusion);
     }
+
+    text = text.replace(/:([a-z0-9]+-[a-z0-9]+-[a-z0-9]+):/g, (match, emojiId) => {
+        return `<img src="/userFiles/realms/${vars.chat.to}/emojis/${emojiId}.png" class="message_emoji" alt=":${emojiId}:">`;
+    });
 
     return text;
 }

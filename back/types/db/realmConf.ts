@@ -38,7 +38,7 @@ namespace Db_RealmConf {
     }
 
     export interface emoji {
-        unicode: number;
+        emoji: Id;
         name: string;
     }
 }

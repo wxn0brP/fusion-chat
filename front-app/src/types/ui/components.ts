@@ -14,6 +14,7 @@ export interface Ui_EmojiData_emoji {
     id: string;
     name: string;
     keywords: string[];
+    html?: boolean;
     skins: {
         unified?: string;
         native?: string;

@@ -21,7 +21,6 @@ import { Vars_realm__thread } from "../types/var";
 const coreFunc = {
     async changeChat(id: Id, chnl: Id | "main" | null = null) {
         messHTML.div.innerHTML = "";
-        coreHTML.emojiStyle.innerHTML = "";
         customEmoji.categories = [];
         customEmoji.emojis = {};
         vars.realm = getEmptyRealmConfig();

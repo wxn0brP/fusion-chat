@@ -70,10 +70,9 @@ export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_St
         });
     }
 
-    const isOwnEmoji = existsSync("userFiles/emoji/" + id + ".ttf");
     const userPermissions = await permSys.getUserPermissions(suser._id);
 
-    return { err: false, res: [id, name, buildChannels, isOwnEmoji, userPermissions] };
+    return { err: false, res: [id, name, buildChannels, userPermissions] };
 }
 
 export async function realm_users_sync(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
@@ -214,7 +213,7 @@ export async function realm_emojis_sync(suser: Socket_User, realmId: Id): Promis
     const isUserInRealm = await checkIsUserOnRealm(suser._id, realmId);
     if (!isUserInRealm) return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-    const emojis = await db.realmConf.find(realmId, { $exists: { unicode: true } });
+    const emojis = await db.realmConf.find(realmId, { $exists: { emoji: true } });
     return { err: false, res: [emojis] };
 }
 

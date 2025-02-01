@@ -36,7 +36,7 @@ export interface Settings_rs__Channel {
 }
 
 export interface Settings_rs__Emoji {
-    unicode: number;
+    emoji: Id;
     name: string;
 }
 

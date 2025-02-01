@@ -44,7 +44,6 @@ function nav() {
 
 function core() {
     return {
-        emojiStyle: qd("#emoji-style"),
         messages_nav__realm__description: qd("#messages_nav__realm__description"),
     }
 }

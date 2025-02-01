@@ -47,7 +47,7 @@ export const renderEmojis = function () {
         emojiDiv.classList.add("emoji__container");
 
         const img = document.createElement("img");
-        img.src = "/userFiles/realms/" + rs_data.realmId + "/emojis/" + emoji.unicode.toString(16) + ".svg";
+        img.src = "/userFiles/realms/" + rs_data.realmId + "/emojis/" + emoji.emoji + ".png";
         img.style.width = "64px";
         emojiDiv.appendChild(img);
 
