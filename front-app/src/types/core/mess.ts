@@ -44,7 +44,7 @@ export interface Core_mess__command_arg_base{
     optional?: boolean;
 }
 
-export interface Core_mess__command_arg_list {
+export interface Core_mess__command_arg_list extends Core_mess__command_arg_base {
     name: string;
     type: "list";
     list: string[];
@@ -55,7 +55,7 @@ export type Core_mess__command_arg = Core_mess__command_arg_base | Core_mess__co
 
 export interface Core_mess__command {
     args: Core_mess__command_arg[];
-    exe(msg: Core_mess__dbMessage, args: any[]): number,
+    exe(msg: Core_mess__sendMessage, args: any[]): number,
     name?: string;
 }
 
