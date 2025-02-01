@@ -10,6 +10,7 @@ import {
 import Logic_PermSys from "../../types/logic/perm-sys";
 import Db_RealmRoles from "../../types/db/realmRoles";
 import { Id } from "../../types/base";
+import Db_RealmUser from "../../types/db/realmUser";
 
 export default class PermissionSystem{
     realmRoles: CollectionManager;
@@ -194,7 +195,7 @@ export default class PermissionSystem{
     }
 
     async getUserRolesSorted(userId: Id){
-        const userData = await this.realmUser.findOne({
+        const userData = await this.realmUser.findOne<Db_RealmUser.user | Db_RealmUser.bot>({
             $or: [
                 { u: userId },
                 { bot: userId }
@@ -205,8 +206,8 @@ export default class PermissionSystem{
         const userRoles = userData.r;
         if(userRoles.length === 0) return [];
 
-        const rolesMap = new Map();
-        const roles = await this.realmRoles.find({
+        const rolesMap = new Map<Id, Db_RealmRoles.role>();
+        const roles = await this.realmRoles.find<Db_RealmRoles.role>({
             $or: userRoles.map(a => ({ _id: a }))
         });
 
