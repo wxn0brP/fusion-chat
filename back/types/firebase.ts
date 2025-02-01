@@ -1,4 +1,4 @@
-import { Id } from "@wxn0brp/db";
+import { Id } from "../types/base";
 
 declare global {
     var firebaseAdmin: typeof import("firebase-admin");

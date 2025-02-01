@@ -1,4 +1,4 @@
-import { Id } from "@wxn0brp/db";
+import { Id } from "../../../../../types/base";
 import db from "../../../../../dataBase";
 import { processDbChanges } from "./imports";
 import fs from "fs";

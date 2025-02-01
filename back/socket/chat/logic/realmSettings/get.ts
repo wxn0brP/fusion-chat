@@ -7,7 +7,7 @@ import db from "../../../../dataBase";
 import Db_RealmData from "../../../../types/db/realmData";
 import Db_RealmConf from "../../../../types/db/realmConf";
 import { Socket_StandardRes } from "../../../../types/socket/res";
-import { Id } from "@wxn0brp/db";
+import { Id } from "../../../../types/base";
 import { Socket_User } from "../../../../types/socket/user";
 
 const DEFAULT_SECTIONS = [

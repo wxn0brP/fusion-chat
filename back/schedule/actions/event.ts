@@ -1,4 +1,4 @@
-import { Id } from "@wxn0brp/db";
+import { Id } from "../../types/base";
 import { activeTasks } from "../index";
 import db from "../../dataBase";
 import Db_RealmData from "../../types/db/realmData";
