@@ -32,7 +32,7 @@ const mainViewInteract = {
 
     requestFriendResponse(user_id: Id, accept: boolean) {
         if (!user_id) return;
-        const div = mainViewHTML.div.querySelector(`.main__view__friend[user_id="${user_id}"]`);
+        const div = mainViewHTML.div.querySelector(`.main__view__friend[data-status-id="${user_id}"]`);
         if (!div) return;
 
         socket.emit("friend.response", user_id, accept);
