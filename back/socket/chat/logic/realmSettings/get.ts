@@ -7,6 +7,8 @@ import db from "../../../../dataBase";
 import Db_RealmData from "../../../../types/db/realmData";
 import Db_RealmConf from "../../../../types/db/realmConf";
 import { Socket_StandardRes } from "../../../../types/socket/res";
+import { Id } from "@wxn0brp/db";
+import { Socket_User } from "../../../../types/socket/user";
 
 const DEFAULT_SECTIONS = [
     "meta",
@@ -17,7 +19,9 @@ const DEFAULT_SECTIONS = [
     "banUsers",
     "emojis",
     "webhooks"
-];
+] as const;
+
+type Section = typeof DEFAULT_SECTIONS[number];
 
 const REQUIRED_PERMISSIONS = {
     meta: [],
@@ -32,17 +36,17 @@ const REQUIRED_PERMISSIONS = {
 
 /**
  * Get realm settings based on user permissions and requested sections
- * @param {Object} suser - Session user object
- * @param {string} id - Realm ID
- * @param {string[]} sections - Sections to retrieve
- * @returns {Promise<Object>} Settings data or error
+ * @param suser - Session user object
+ * @param id - Realm ID
+ * @param sections - Sections to retrieve
+ * @returns Settings data or error
  */
-export default async function realm_settings_get(suser, id, sections=[]): Promise<Socket_StandardRes> {
+export default async function realm_settings_get(suser: Socket_User, id: Id, sections: Section[]=[]): Promise<Socket_StandardRes> {
     const validator = new ValidError("realm.settings.get");
     if(!valid.id(id)) return validator.valid("id");
     if(!valid.arrayString(sections)) return validator.valid("sections");
 
-    sections = sections.length ? sections : DEFAULT_SECTIONS;
+    sections = sections.length ? sections : [...DEFAULT_SECTIONS];
 
     const permSystem = new permissionSystem(id);
     const userPerms = await permSystem.getUserPermissions(suser._id);
@@ -66,10 +70,10 @@ export default async function realm_settings_get(suser, id, sections=[]): Promis
 
 /**
  * Checks if a user has the required permissions to access realm settings.
- * @param {number} userPerms - The user"s permissions
- * @returns {boolean} True if the user has the required permissions
+ * @param userPerms - The user"s permissions
+ * @returns True if the user has the required permissions
  */
-function hasRequiredPermissions(userPerms){
+function hasRequiredPermissions(userPerms: number){
     const requiredPerms = [
         Permissions.admin,
         Permissions.manageEmojis,
@@ -83,11 +87,11 @@ function hasRequiredPermissions(userPerms){
 
 /**
  * Checks if a user has the required permissions to access a given section of data.
- * @param {number} userPerms - The user"s permissions
- * @param {number[]} requiredPerms - The required permissions for the section
- * @returns {boolean} True if the user has the required permissions
+ * @param userPerms - The user"s permissions
+ * @param requiredPerms - The required permissions for the section
+ * @returns True if the user has the required permissions
  */
-function canAccessData(userPerms, requiredPerms=[]){
+function canAccessData(userPerms: number, requiredPerms: Permissions[]=[]){
     return PermissionFunctions.hasAnyPermission(userPerms, [
         Permissions.admin,
         ...requiredPerms
@@ -96,11 +100,11 @@ function canAccessData(userPerms, requiredPerms=[]){
 
 /**
  * Fetches the required data for the given sections from the database.
- * @param {string} id The id of the realm
- * @param {string[]} sections The sections to fetch data for
- * @returns {Promise<Object|null>} The data for the given sections
+ * @param id The id of the realm
+ * @param sections The sections to fetch data for
+ * @returns The data for the given sections
  */
-async function fetchRequiredData(id, sections){
+async function fetchRequiredData(id: Id, sections: Section[]){
     const sectionsRequiringDb = ["meta", "categories", "channels", "banUsers", "emojis", "webhooks"];
     if(!sections.some(section => sectionsRequiringDb.includes(section))){
         return null;
@@ -110,14 +114,14 @@ async function fetchRequiredData(id, sections){
 
 /**
  * Process a single section of data for the realm settings
- * @param {string} section The section to process
- * @param {Object} data The data to add the section to
- * @param {Array<Object>} dbData The data from the database
- * @param {Array<string>} userPerms The permissions of the user making the request
- * @param {string} realmId The id of the realm
- * @param {string} userId The id of the user making the request
+ * @param section The section to process
+ * @param data The data to add the section to
+ * @param dbData The data from the database
+ * @param userPerms The permissions of the user making the request
+ * @param realmId The id of the realm
+ * @param userId The id of the user making the request
  */
-async function processSection(section, data, dbData, userPerms, realmId, userId){
+async function processSection(section: Section, data: any, dbData: any[], userPerms: number, realmId: Id, userId: Id){
     if(!canAccessData(userPerms, REQUIRED_PERMISSIONS[section])){
         return;
     }
@@ -157,16 +161,19 @@ async function processSection(section, data, dbData, userPerms, realmId, userId)
                 return { u: uid, r: u.r }
             });
         break;
+        default:
+            const n: never = section;
+            return n;
     }
 }
 
 /**
  * Get all roles in a realm, with permissions adjusted to the lowest level between the role"s level and the user"s highest role level.
- * @param {string} realm - Realm ID
- * @param {string} userId - User ID
- * @returns {Promise<Object[]>} Adjusted roles
+ * @param realm - Realm ID
+ * @param userId - User ID
+ * @returns Adjusted roles
  */
-async function getAdjustedRoles(realm, userId){
+async function getAdjustedRoles(realm: Id, userId: Id){
     const permSys = new permissionSystem(realm);
     const allRoles = await permSys.getAllRolesSorted();
     const userHighestRole = await permSys.getUserHighestRole(userId);
@@ -184,17 +191,16 @@ async function getAdjustedRoles(realm, userId){
     return adjustedData;
 }
 
-async function getSubscribedChannels(realmId){
-    const channels = await db.realmData.find<Db_RealmData.announcement_channels & { name: string }>(
+async function getSubscribedChannels(realmId: Id){
+    const channels = await db.realmData.find<Omit<Db_RealmData.announcement_channels, "tr"> & { name: string }>(
         "announcement.channels",
         { tr: realmId },
         {},
         {},
         { exclude: ["tr"]}
-    )
+    );
 
-    // TODO fix type
-    const realms = groupBySource(channels) as { sr: string, scs: string[] }[];
+    const realms = groupBySource(channels);
     
     for(const realm of realms){
         const names = await db.realmConf.find<Pick<Db_RealmConf.channel, "chid" | "name">>(realm.sr, {
@@ -220,12 +226,14 @@ async function getSubscribedChannels(realmId){
  * groupBySource([{ sr: "a", sc: "b" }, { sr: "a", sc: "c" }, { sr: "d", sc: "e" }])
  * returns [{ sr: "a", scs: ["b", "c"] }, { sr: "d", scs: ["e"] }]
  */
-function groupBySource(data){
-    const grouped = {};
+function groupBySource(data: Pick<Db_RealmData.announcement_channels, "sr" | "sc">[]): Array<{ sr: string; scs: string[] }> {
+    const grouped: Record<string, { sr: string; scs: string[] }> = {};
 
-    data.forEach(({ sr, sc }) => {
-        if(!grouped[sr])
+    data.forEach((chnl) => {
+        const { sr, sc } = chnl;
+        if (!grouped[sr]) {
             grouped[sr] = { sr, scs: [] };
+        }
         grouped[sr].scs.push(sc);
     });
 
