@@ -300,10 +300,7 @@ export async function message_fetch_pinned(suser: Socket_User, chatId: Id, chnl:
     const isDmChat = chatId.startsWith("$");
     const dbChatId = isDmChat ? combineId(suser._id, chatId.replace("$", "")) : chatId;
 
-    const res = await db.mess.find(dbChatId, (data, context) => {
-        if (data.chnl != context.chnl) return false;
-        return data.pinned === true;
-    }, { chnl });
+    const res = await db.mess.find(dbChatId, { chnl, pinned: true });
 
     return { err: false, res: [res] };
 }

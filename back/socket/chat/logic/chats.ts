@@ -100,10 +100,7 @@ export async function dm_create(suser: Socket_User, nameOrId: string): Promise<S
 
     const toId = user._id;
 
-    const priv = await db.userData.findOne(suser._id, (r) => {
-        if (!r.priv) return false;
-        if (r.priv == toId) return true;
-    });
+    const priv = await db.userData.findOne<Db_UserData.priv>(suser._id, { priv: toId });
     if (priv) return validE.err(InternalCode.UserError.Socket.Dm_AlreadyExists);
 
     await createPriv(toId, suser._id);
