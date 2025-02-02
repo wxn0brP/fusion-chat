@@ -8,6 +8,7 @@
         "skipLibCheck": true,
         "outDir": "./dist-back",
         "inlineSourceMap": true,
+        "removeComments": true,
     },
     "include": [
         "./back"

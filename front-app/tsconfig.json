@@ -6,7 +6,8 @@
         "paths": {},
         "skipLibCheck": true,
         "moduleResolution": "node",
-        "sourceMap": true
+        "sourceMap": true,
+        "removeComments": true,
     },
     "include": [
         "src"
