@@ -9,6 +9,7 @@ import debugFunc, { LogLevel } from "../../../core/debug";
 import { addSeparator, initButton, initCheckbox, initInputText } from "./rs_utils";
 import { Settings_rs__Role } from "./types";
 import LangPkg from "../../../utils/translate";
+import uiFunc from "../../helpers/uiFunc";
 
 export const renderRoles = function () {
     const rs_data = rs_dataF();
@@ -83,10 +84,11 @@ export const renderRoles = function () {
     }
 
     addSeparator(container, 10);
-    initButton(container, LangPkg.uni.add, () => {
+    initButton(container, LangPkg.uni.add, async () => {
         const _id = genId();
+        const name = await uiFunc.prompt(LangPkg.settings_realm.enter_name);
         const role: Settings_rs__Role = {
-            name: "New role",
+            name: name || "New role",
             lvl: roles.length,
             p: 0,
             _id

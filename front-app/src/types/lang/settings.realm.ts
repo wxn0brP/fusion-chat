@@ -84,5 +84,6 @@ export interface Lang_Settings__Realm {
     }
     failed_to_save: string;
     no_channels: string;
-    rename_wrong: string;
+    delete_wrong_name: string;
+    confirm_realm_name: string;
 }

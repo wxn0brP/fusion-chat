@@ -29,7 +29,7 @@ export const renderChannels = function () {
     const channels = settings.channels;
 
     initButton(categoriesContainer, LangPkg.settings_realm.add_category, async () => {
-        const name = await uiFunc.prompt("Name");
+        const name = await uiFunc.prompt(LangPkg.settings_realm.enter_name);
 
         settings.categories.push({
             cid: genId(),

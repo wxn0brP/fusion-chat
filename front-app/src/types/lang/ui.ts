@@ -122,5 +122,8 @@ export interface Lang_UI {
         type_custom: string;
         img: string;
         notif: string;
-    }
+    },
+    enter_dm: string;
+    create_realm_name: string;
+    enter_realm_invite: string;
 }

@@ -63,8 +63,8 @@ export const renderMeta = function () {
             if (!result) return;
         }
 
-        const name = await uiFunc.prompt("Confirm realm name");
-        if (name !== meta.name) return uiFunc.uiMsgT(LangPkg.settings_realm.rename_wrong);
+        const name = await uiFunc.prompt(LangPkg.settings_realm.confirm_realm_name + "?");
+        if (name !== meta.name) return uiFunc.uiMsgT(LangPkg.settings_realm.delete_wrong_name);
 
         rs_data._this.exitWithoutSaving();
         coreFunc.changeChat("main");
