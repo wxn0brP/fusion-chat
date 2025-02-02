@@ -13,7 +13,6 @@ export async function saveDbChanges(doc: string, changes: ProcessDbChangesResult
     }
 
     for (const item of itemsToRemove) {
-        lo({ [idName]: item[idName] });
         await dbc.remove(
             { [idName]: item[idName] },
             { item, idName }
