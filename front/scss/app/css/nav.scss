@@ -228,7 +228,6 @@ nav {
     font-size: 0.8rem;
 }
 
-
 #navs .unreadPriv {
     border-color: var(--accent);
     font-weight: bold;
@@ -274,6 +273,10 @@ nav {
 #realms__create {
     font-size: 2.5rem;
     color: green;
+}
+
+#realms__voice_show {
+    border: 2px dashed var(--accent);
 }
 
 @media screen and (max-width: 800px) {
