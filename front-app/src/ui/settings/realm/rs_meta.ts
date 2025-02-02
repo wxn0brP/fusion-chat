@@ -10,6 +10,7 @@ import { addSeparator, initButton, initInputText } from "./rs_utils";
 import debugFunc, { LogLevel } from "../../../core/debug";
 import staticData from "../../../var/staticData";
 import LangPkg from "../../../utils/translate";
+import { saveAndExitSettings } from "./rs_save";
 
 export const renderMeta = function () {
     const rs_data = rs_dataF();
@@ -66,7 +67,7 @@ export const renderMeta = function () {
         const name = await uiFunc.prompt(LangPkg.settings_realm.confirm_realm_name + "?");
         if (name !== meta.name) return uiFunc.uiMsgT(LangPkg.settings_realm.delete_wrong_name);
 
-        rs_data._this.exitWithoutSaving();
+        saveAndExitSettings();
         coreFunc.changeChat("main");
         setTimeout(() => {
             socket.emit("realm.delete", rs_data.realmId, name);

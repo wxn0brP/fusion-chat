@@ -20,14 +20,12 @@ export const saveSettings = async function () {
     // @ts-ignore: delete addons property before sending to server
     delete settings.addons;
     const saved = await _this.saveCallback(settings);
+    settings.addons = addons;
     if (!saved) {
-        settings.addons = addons;
         uiFunc.uiMsgT(LangPkg.settings_realm.failed_to_save);
         return;
     }
-
-    rs_data.container.fadeOut();
-    rs_data.container.innerHTML = "";
+    return true;
 }
 
 export const exitWithoutSaving = function () {
@@ -38,4 +36,10 @@ export const exitWithoutSaving = function () {
     }
     rs_data.container.fadeOut();
     rs_data.container.innerHTML = "";
+}
+
+export const saveAndExitSettings = async function () {
+    const saved = await saveSettings();
+    if (!saved) return;
+    exitWithoutSaving();
 }
