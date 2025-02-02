@@ -11,6 +11,7 @@ import Id from "../../types/Id";
 import { Vars_mainView__page } from "../../types/var";
 import LangPkg, { langFunc } from "../../utils/translate";
 import { updateUserProfileMarker } from "../render/userStatusMarker";
+import render_realm from "../render/realm";
 
 const mainView = {
     show() {
@@ -50,6 +51,8 @@ const mainView = {
                 coreFunc.changeChat("$" + friend._id);
             });
             mainViewHTML.friendsContainer.appendChild(friendDiv);
+
+            render_realm.realmUserStatus(friend._id, friend);
             updateUserProfileMarker(friend._id, friend.status);
         });
 

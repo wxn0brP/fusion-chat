@@ -129,6 +129,7 @@ const render_user = {
         }
 
         renderUtils.initPopup(renderHTML.userProfile);
+        render_realm.realmUserStatus(data._id, data);
         updateUserProfileMarker(data._id, data.status);
     },
 }
