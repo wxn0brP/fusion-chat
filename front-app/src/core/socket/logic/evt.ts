@@ -31,7 +31,7 @@ export function error(evt_name: string, ...data: any[]) {
 
     const first = data[0];
     if (/^[1-5][0-2]\.\d{3}$/.test(first)) {
-        uiFunc.uiMsg(changeCodeToString(first));
+        uiFunc.uiMsgT(LangPkg.api.error, changeCodeToString(first));
         return;
     }
 

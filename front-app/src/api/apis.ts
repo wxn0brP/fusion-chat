@@ -9,6 +9,7 @@ import cw from "../core";
 import Id from "../types/Id";
 import LangPkg from "../utils/translate";
 import { Core_Api__GetInServer__Response } from "../types/core/api";
+import changeCodeToString from "../utils/code";
 
 const apis = {
     www: {
@@ -83,6 +84,7 @@ const apis = {
             const data = JSON.parse(dataS);
             if (data.err) {
                 uiFunc.uiMsgT(LangPkg.api.error_fetch, ["."]);
+                uiFunc.uiMsgT(LangPkg.api.error, changeCodeToString(data.c));
                 debugFunc.msg(LogLevel.ERROR, data);
                 return null;
             }

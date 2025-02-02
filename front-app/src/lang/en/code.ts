@@ -1,4 +1,6 @@
-const InternalCode = {
+import { InternalCodeType } from "../../types/code";
+
+const InternalCode: InternalCodeType = {
     Info: {
         General: {},
         Socket: {},

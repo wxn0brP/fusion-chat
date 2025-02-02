@@ -1,4 +1,4 @@
-import InternalCode from "../var/code";
+import LangPkg from "./translate";
 
 export enum InternalCodeCategory {
     Info = 1,
@@ -18,7 +18,7 @@ function changeCodeToString(code: string): string {
     const category = InternalCodeCategory[code[0]];
     const subcategory = InternalCodeSubcategory[code[1]];
 
-    return InternalCode[category][subcategory][code] || code;
+    return LangPkg.InternalCode[category][subcategory][code] || code;
 }
 
 export default changeCodeToString;

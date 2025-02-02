@@ -50,6 +50,7 @@ export async function load_translate(lang: string = "en") {
         ui: await importData<Lang_Pkg["ui"]>(lang, "ui"),
         uni: await importData<Lang_Pkg["uni"]>(lang, "uni"),
         common: await importData<Lang_Pkg["common"]>(lang, "common"),
+        InternalCode: await importData<Lang_Pkg["InternalCode"]>(lang, "code")
     }
 
     for (const key in LocalLangPkg) {
