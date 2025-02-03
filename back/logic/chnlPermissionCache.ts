@@ -1,6 +1,6 @@
 import NodeCache from "node-cache";
 import PermissionSystem from "./permission-system/index";
-import rolePermissions, { hasPermission, getAllPermissions } from "./permission-system/permBD";
+import rolePermissions, { hasPermission, getAllPermissions } from "./permission-system/permission";
 import db from "../dataBase";
 import Db_RealmConf from "../types/db/realmConf";
 import { Id } from "../types/base";

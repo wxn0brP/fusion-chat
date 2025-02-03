@@ -1,7 +1,7 @@
 import valid from "../../../../logic/validData";
 import ValidError from "../../../../logic/validError";
 import permissionSystem from "../../../../logic/permission-system/index";
-import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permBD";
+import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permission";
 import setRealmSettingsData from "../../valid/realmsSettings";
 import cpu from "./set/cpu";
 import db from "../../../../dataBase";

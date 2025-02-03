@@ -1,6 +1,6 @@
 import { genId } from "@wxn0brp/db";
 import PermissionSystem from "./permission-system/index";
-import Permissions, { getAllPermissions } from "./permission-system/permBD";
+import Permissions, { getAllPermissions } from "./permission-system/permission";
 import db from "../dataBase";
 import { Id } from "../types/base";
 

@@ -3,7 +3,7 @@ import db from "../dataBase";
 import { Id } from "../types/base";
 import Db_BotData from "../types/db/botData";
 import permissionSystem from "./permission-system/index";
-import Permissions from "./permission-system/permBD";
+import Permissions from "./permission-system/permission";
 
 export async function invite(userID: Id, botID: Id, realmID: Id) {
     const permSys = new permissionSystem(realmID);

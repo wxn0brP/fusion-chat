@@ -7,7 +7,7 @@ import Db_RealmConf from "../../../../../types/db/realmConf";
 import db from "../../../../../dataBase";
 import { ProcessDbChangesResult } from "../../../../../logic/processDbChanges";
 
-import Permissions, * as PermissionFunctions from "../../../../../logic/permission-system/permBD";
+import Permissions, * as PermissionFunctions from "../../../../../logic/permission-system/permission";
 export {
     Permissions,
     PermissionFunctions,

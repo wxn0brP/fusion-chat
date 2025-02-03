@@ -23,6 +23,7 @@ export default Permissions;
 export function hasPermission(userPermissions: number, permission: number): boolean {
     return (userPermissions & permission) !== 0;
 }
+
 /**
  * Adds a permission to the user's set of permissions
  * @param userPermissions - Current number representing the user's permissions
@@ -133,4 +134,3 @@ export function canChangePermissions(newPermissions: number, currentPermissions:
     const difference = newPermissions ^ currentPermissions;
     return (difference & ~managerPermissions) === 0;
 }
-

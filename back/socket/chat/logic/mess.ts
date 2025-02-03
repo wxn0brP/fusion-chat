@@ -1,7 +1,7 @@
 import { combineId } from "../../../logic/chatMgmt";
 import valid, { validChannelId } from "../../../logic/validData";
 import permissionSystem from "../../../logic/permission-system/index";
-import Permissions from "../../../logic/permission-system/permBD";
+import Permissions from "../../../logic/permission-system/permission";
 import { extractTimeFromId } from "../../../logic/utils";
 import messageSearchData from "../valid/messageSearch";
 import ValidError from "../../../logic/validError";

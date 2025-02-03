@@ -1,6 +1,6 @@
 import valid from "../../../logic/validData";
 import permissionSystem from "../../../logic/permission-system/index";
-import Permissions from "../../../logic/permission-system/permBD";
+import Permissions from "../../../logic/permission-system/permission";
 import { existsSync } from "fs";
 import ValidError from "../../../logic/validError";
 import { getCache as statusMgmtGetCache } from "../../../logic/status";

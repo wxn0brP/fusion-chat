@@ -4,7 +4,7 @@ import { Image } from "image-js";
 import { join } from "path";
 import cropAndResizeProfile from "../../../logic/cropAndResizeProfile";
 import permissionSystem from "../../../logic/permission-system/index";
-import Permissions from "../../../logic/permission-system/permBD";
+import Permissions from "../../../logic/permission-system/permission";
 import db from "../../../dataBase";
 import { Id } from "../../../types/base";
 import InternalCode from "../../../codes";
