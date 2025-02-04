@@ -1,7 +1,7 @@
 import { Id } from "../base";
 
 namespace Db_RealmData {
-    export interface events_channels {
+    export interface announcement_channels {
         sr: Id;
         sc: Id;
         tr: Id;

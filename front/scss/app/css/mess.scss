@@ -175,6 +175,15 @@ main {
         .spoiler__show {
             color: inherit;
         }
+
+        .message_emoji {
+            width: 1.1em;
+            height: 1.1em;
+        }
+
+        &.mess__text__emoji {
+            font-size: 1.5em;
+        }
     }
 
     .mess_time {
@@ -326,6 +335,18 @@ main {
 
     .custom-field {
         margin-bottom: 5px;
+    }
+}
+
+#forum_add {
+    margin-bottom: 10px;
+}
+
+.forum {
+    cursor: pointer;
+
+    .forum__author {
+        font-weight: bold;
     }
 }
 

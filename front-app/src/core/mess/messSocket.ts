@@ -13,8 +13,8 @@ import {
     message_fetch_pinned,
     realm_thread_list,
     realm_thread_delete,
-    message_mark_read,
 } from "../socket/logic/mess";
+import { message_mark_read } from "../socket/logic/evt";
 
 socket.on("mess", mess);
 socket.on("message.fetch", message_fetch);

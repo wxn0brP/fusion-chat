@@ -21,7 +21,7 @@
 }
 
 #prompt {
-    div {
+    &>div {
         position: absolute;
         min-width: 200px;
         max-width: 70%;
@@ -85,6 +85,15 @@
     #userProfileInfo {
         display: flex;
         gap: 1rem;
+        position: relative;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 72px;
+            left: 72px;
+            --wh: 25px;
+        }
     }
 
     img {
@@ -210,6 +219,11 @@
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     gap: 5px;
+}
+
+.emoji__img {
+    width: 1em;
+    height: 1em;
 }
 
 .emoji__item {

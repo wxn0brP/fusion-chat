@@ -65,7 +65,7 @@ const contextFunc = {
         }
     },
 
-    realm(type: Context__realm) {
+    async realm(type: Context__realm) {
         const id = document.querySelector("#realm_context_menu").getAttribute("_id");
         switch (type) {
             case "copy_id":
@@ -81,7 +81,7 @@ const contextFunc = {
                 });
                 break;
             case "exit":
-                const conf = confirm(langFunc(LangPkg.ui.confirm.exit_realm, apis.www.changeChat(id)) + "?");
+                const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.exit_realm, apis.www.changeChat(id)) + "?");
                 if (conf) {
                     socket.emit("realm.exit", id);
                     coreFunc.changeChat("main");
@@ -197,7 +197,7 @@ const contextFunc = {
         }
     },
 
-    thread(type: Context__thread) {
+    async thread(type: Context__thread) {
         const id = document.querySelector("#thread_context_menu").getAttribute("_id");
         switch (type) {
             case "copy_id":
@@ -206,7 +206,7 @@ const contextFunc = {
                 });
                 break;
             case "delete":
-                const conf = confirm(LangPkg.ui.confirm.delete_thread + "?");
+                const conf = await uiFunc.confirm(LangPkg.ui.confirm.delete_thread + "?");
                 if (!conf) return;
 
                 const thread = vars.realm.threads.find(t => t._id == id);

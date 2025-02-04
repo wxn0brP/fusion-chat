@@ -47,6 +47,7 @@ export interface Lang_Settings__Realm {
         voice: string;
         announcement: string;
         open_announcement: string;
+        forum: string;
     }
     category: string;
     unsubscribe_channel: string;
@@ -83,5 +84,6 @@ export interface Lang_Settings__Realm {
     }
     failed_to_save: string;
     no_channels: string;
-    rename_wrong: string;
+    delete_wrong_name: string;
+    confirm_realm_name: string;
 }

@@ -12,8 +12,7 @@ import permissionFunc, { PermissionFlags } from "../../utils/perm";
 import {
     Core_mess__command,
     Core_mess__command_arg_list,
-    Core_mess__dbMessage,
-    Core_mess__sendMessage
+    Core_mess__sendMessage,
 } from "../../types/core/mess";
 
 const barc__commads = messHTML.barc__commads;
@@ -30,7 +29,7 @@ export const messCmds: {
                 { name: "silent", type: "boolean" },
                 { name: "message", type: "text" }
             ],
-            exe(msg: Core_mess__dbMessage, args: any[]) {
+            exe(msg: Core_mess__sendMessage, args: any[]) {
                 if (args.length == 0) return 1;
                 if (args[0]) msg.silent = true;
                 msg.msg = args[1];
@@ -46,7 +45,7 @@ export const messCmds: {
                 { name: "pinned", type: "boolean", optional: true },
                 { name: "message", type: "text", optional: true }
             ],
-            exe(msg: Core_mess__dbMessage, args: any[]) {
+            exe(msg: Core_mess__sendMessage, args: any[]) {
                 if (args.length == 0) return 1;
                 const query = {
                     from: args[0],
@@ -66,7 +65,7 @@ export const messCmds: {
             args: [
                 { name: "url", type: "text" }
             ],
-            exe(msg: Core_mess__dbMessage, args: any[]) {
+            exe(msg: Core_mess__sendMessage, args: any[]) {
                 if (args.length == 0) return 1;
                 socket.emit("send.embed.og", vars.chat.to, vars.chat.chnl, args[0]);
                 return 1;
@@ -80,7 +79,7 @@ export const messCmds: {
                 { name: "image", type: "text", optional: true },
                 { name: "custom fields", type: "map", optional: true }
             ],
-            exe(msg: Core_mess__dbMessage, args: any[]) {
+            exe(msg: Core_mess__sendMessage, args: any[]) {
                 if (args.length == 0) return 1;
                 const embed = {
                     title: args[0],
@@ -96,7 +95,7 @@ export const messCmds: {
         },
         clear: {
             args: [{ name: "delete", type: "number" }],
-            exe(msg: Core_mess__dbMessage, args: any[]) {
+            exe(msg: Core_mess__sendMessage, args: any[]) {
                 if (args.length == 0) return 1;
                 let userIsMod = false;
                 if (vars.chat.to.startsWith("$")) userIsMod = false;
@@ -159,21 +158,21 @@ const messCmd = {
         barc__commads.innerHTML = "";
 
         const cmdName = msg.trim().split(" ")[0].substring(1);
-        const avelibleCmds = {};
+        const availableCmds = {};
         Object.keys(messCmds).forEach(category => {
             Object.keys(messCmds[category]).forEach(key => {
                 if (key.startsWith(cmdName) || cmdName == "") {
-                    if (!avelibleCmds[category]) avelibleCmds[category] = {};
-                    avelibleCmds[category][key] = messCmds[category][key];
+                    if (!availableCmds[category]) availableCmds[category] = {};
+                    availableCmds[category][key] = messCmds[category][key];
                 }
             });
         });
 
         const allCmds: Core_mess__command[] = [];
         const allCmdsNames: { c: string, name: string }[] = [];
-        Object.keys(avelibleCmds).forEach(category => {
-            Object.keys(avelibleCmds[category]).forEach(key => {
-                allCmds.push(avelibleCmds[category][key]);
+        Object.keys(availableCmds).forEach(category => {
+            Object.keys(availableCmds[category]).forEach(key => {
+                allCmds.push(availableCmds[category][key]);
                 allCmdsNames.push({ c: category, name: key });
             });
         });
@@ -202,14 +201,14 @@ const messCmd = {
         }
 
         currentCmd = null;
-        Object.keys(avelibleCmds).forEach(category => {
+        Object.keys(availableCmds).forEach(category => {
             const categoryDiv = document.createElement("div");
             categoryDiv.innerHTML = `<h2>${category}</h2>`;
 
             const ul = document.createElement("ul");
             categoryDiv.appendChild(ul);
 
-            Object.keys(avelibleCmds[category]).forEach(key => {
+            Object.keys(availableCmds[category]).forEach(key => {
                 const cmdLi = document.createElement("li");
                 cmdLi.innerHTML = key;
                 cmdLi.style.cursor = "pointer";
@@ -221,7 +220,7 @@ const messCmd = {
                 ul.appendChild(cmdLi);
 
                 function selectCmd() {
-                    currentCmd = avelibleCmds[category][key];
+                    currentCmd = availableCmds[category][key];
                     const args = msg.split(" ");
                     args[0] = "/" + key;
                     messHTML.input.value = args.join(" ") + " ";
@@ -251,32 +250,32 @@ const messCmd = {
     },
 
     close() {
-        this.selectedCmd = null;
+        currentCmd = null;
         barc__commads.style.display = "none";
         messHTML.input.value = "";
         messCmd.temp = [];
     },
 
     send(data: Core_mess__sendMessage) {
-        if (!this.selectedCmd) {
+        if (!currentCmd) {
             this.close();
             return 0;
         }
 
-        const isValid = this.chceckArgs();
+        const isValid = this.checkArgs();
         if (!isValid) return 2;
 
         this.changeArgs();
         const args = messCmd.temp;
-        const exitCode = this.selectedCmd.exe(data, args) || 0;
+        const exitCode = currentCmd.exe(data, args) || 0;
         this.close();
 
         return exitCode;
     },
 
-    chceckArgs() {
+    checkArgs() {
         const argsVal = messCmd.temp;
-        const argsObj = this.selectedCmd.args;
+        const argsObj = currentCmd.args;
 
         for (let i = 0; i < argsObj.length; i++) {
             const arg = argsObj[i];
@@ -303,7 +302,7 @@ const messCmd = {
                 const [h, m] = val.split(":");
                 if (isNaN(h) || isNaN(m)) return false;
             }
-            else if (arg.type == "list" && !arg.list.includes(val)) return false;
+            else if (arg.type == "list" && !(arg as Core_mess__command_arg_list).list.includes(val)) return false;
             else if (arg.type == "map" && Object.keys(val).length == 0) return false;
         }
         return true;
@@ -311,7 +310,7 @@ const messCmd = {
 
     changeArgs() {
         const argsVal = messCmd.temp;
-        const argsObj = this.selectedCmd.args;
+        const argsObj = currentCmd.args;
 
         for (let i = 0; i < argsObj.length; i++) {
             const arg = argsObj[i];

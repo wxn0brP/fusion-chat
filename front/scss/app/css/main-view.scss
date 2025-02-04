@@ -11,17 +11,18 @@
     margin-bottom: 1rem;
     white-space: nowrap;
     overflow-x: auto;
+
+    & button {
+        --pad_radius: 5px;
+        margin-right: 5px;
+        transition: background-color 0.5s;
+
+        &:hover {
+            --bg: color-mix(in srgb, var(--accent) 50%, transparent);
+        }
+    }
 }
 
-#main__view__nav button {
-    --pad_radius: 5px;
-    margin-right: 5px;
-    transition: background-color 0.5s;
-}
-
-#main__view__nav button:hover {
-    --bg: color-mix(in srgb, var(--accent) 50%, transparent);
-}
 
 .main__view__friend {
     border-radius: 1.3rem;
@@ -32,10 +33,33 @@
 
     display: flex;
     align-items: center;
-}
+    position: relative;
 
-.main__view__friend:hover {
-    background-color: var(--messHover);
+    &:hover {
+        background-color: var(--messHover);
+    }
+
+    .request__btn {
+        background-color: transparent;
+        border: 2px solid var(--accent);
+        color: var(--txt);
+        padding: 7px;
+        border-radius: 7px;
+        cursor: pointer;
+        margin-right: 5px;
+        margin-top: 5px;
+    }
+
+    .request__btn:hover {
+        background-color: var(--accent);
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 50px;
+        left: 45px;
+    }
 }
 
 .friend__avatar {
@@ -58,24 +82,6 @@
 
     &::after {
         content: ")";
-    }
-}
-
-
-.main__view__friend {
-    .request__btn {
-        background-color: transparent;
-        border: 2px solid var(--accent);
-        color: var(--txt);
-        padding: 7px;
-        border-radius: 7px;
-        cursor: pointer;
-        margin-right: 5px;
-        margin-top: 5px;
-    }
-
-    .request__btn:hover {
-        background-color: var(--accent);
     }
 }
 

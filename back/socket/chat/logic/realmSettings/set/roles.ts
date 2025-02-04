@@ -1,8 +1,9 @@
-import { processDbChanges, PermissionSystem } from "./imports";
+import Db_RealmRoles from "../../../../../types/db/realmRoles";
+import { processDbChanges, PermissionSystem, Id, Socket_RealmSettings, Socket_User } from "./imports";
 
-export default async (id, data, suser) => {
+export default async (id: Id, data: Socket_RealmSettings, suser: Socket_User) => {
     const permSys = new PermissionSystem(id);
-    const oldRoles = await permSys.getAllRolesSorted();
+    const oldRoles: Db_RealmRoles.role[] = await permSys.getAllRolesSorted();
     const newRoles = data.roles;
     const changes = processDbChanges(oldRoles, newRoles, ["lvl", "name", "c", "p"], "_id");
 
@@ -41,7 +42,7 @@ export default async (id, data, suser) => {
     }
 }
 
-function processRoleUpdate(oldRoles, itemsToUpdate){
+function processRoleUpdate(oldRoles: Db_RealmRoles.role[], itemsToUpdate){
     itemsToUpdate.forEach(role => {
         const old = oldRoles.find(r => r._id === role._id);
         if(role.lvl === old.lvl) delete role.lvl;

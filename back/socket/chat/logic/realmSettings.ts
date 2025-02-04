@@ -1,3 +1,4 @@
+import InternalCode from "../../../codes";
 import db from "../../../dataBase";
 import { create } from "../../../logic/token/index";
 import { KeyIndex } from "../../../logic/token/KeyManager";
@@ -24,15 +25,15 @@ export async function realm_webhook_token_get(suser: Socket_User, realmId: Id, w
     const permSystem = new PermissionSystem(realmId);
     const userPerms = await permSystem.canUserPerformAnyAction(suser._id, [Permissions.admin, Permissions.manageWebhooks]);
 
-    if(!userPerms) return validE.err("You don't have permission to edit this realm");
+    if(!userPerms) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
 
     const webhook = await db.realmConf.findOne<Db_RealmConf.webhook>(realmId, { whid: webhookId });
-    if(!webhook) return validE.err("webhook is not found");
+    if(!webhook) return validE.err(InternalCode.UserError.Socket.RealmWebhookTokenGet_NotFound);
 
     const token = await create({
         id: webhook.whid,
         chat: realmId,
     }, false, KeyIndex.WEBHOOK_TOKEN);
 
-    return { err: false, res: token };
+    return { err: false, res: [token] };
 }

@@ -70,25 +70,24 @@ class SettingsManager {
         this.container.innerHTML = "";
         const saveFns: Settings_settingsManager__saveFn[] = [];
 
-        function onlyFilter(data: { only?: string | string[] }[]): any[] {
+        function onlyFilter<T extends { only?: string | string[] }>(data: T[]): T[] {
             return data.filter(setting => {
+                if (!('only' in setting)) return true;
                 if (!setting.only) return true;
 
-                let only = setting.only;
+                let only = setting.only as string[];
                 if (typeof only == "string") only = [only];
 
                 if (!only.includes(apis.app.apiType)) return false;
 
                 return true;
-            })
+            });
         }
 
-        this.settings = onlyFilter(this.settings);
+        this.settings = onlyFilter<Settings_settingsManager__category>(this.settings);
         this.settings.forEach(setting => {
             if (setting.type != "obj") return;
-            // @ts-ignore
-            // TODO fix type
-            setting.settings = onlyFilter(setting.settings);
+            setting.settings = onlyFilter<Settings_settingsManager__settings>(setting.settings);
         })
 
         this.renderCategorySwitcher();

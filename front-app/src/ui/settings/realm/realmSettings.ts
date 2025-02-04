@@ -10,7 +10,7 @@ import { renderEmojis } from "./rs_emoji";
 import { renderChannels } from "./rs_channels";
 import { renderWebhooks } from "./rs_webhooks";
 import { renderUserRoleManager } from "./rs_users";
-import { saveSettings, exitWithoutSaving } from "./rs_save";
+import { saveSettings, exitWithoutSaving, saveAndExitSettings } from "./rs_save";
 import { renderCategorySwitcher, changeDisplay } from "./rs_nav";
 import LangPkg from "../../../utils/translate";
 
@@ -20,8 +20,6 @@ class RealmSettingsManager {
     exitCallback: () => void;
     container: HTMLDivElement;
     realmId: Id;
-    saveSettings: Function;
-    exitWithoutSaving: typeof exitWithoutSaving;
     saveMetaSettings: () => void;
 
     constructor(settings: Settings, realmId: Id, container: HTMLDivElement, saveCallback: (settings: Settings) => Promise<boolean>, exitCallback: () => void) {
@@ -34,7 +32,6 @@ class RealmSettingsManager {
             console.warn("No settings found");
             return;
         }
-        this.initModules();
         this.container.innerHTML = "";
 
         setData(this);
@@ -55,25 +52,26 @@ class RealmSettingsManager {
         renderWebhooks();
         changeDisplay({ meta: true });
 
+        const saveAndExitButton = document.createElement("button");
+        saveAndExitButton.textContent = LangPkg.settings.save_and_exit;
+        saveAndExitButton.className = "settings__exitButton";
+        saveAndExitButton.onclick = () => saveAndExitSettings();
+
         const saveButton = document.createElement("button");
         saveButton.textContent = LangPkg.settings.save;
         saveButton.className = "settings__exitButton";
-        saveButton.onclick = () => this.saveSettings(this);
+        saveButton.onclick = () => saveSettings();
 
         const exitButton = document.createElement("button");
         exitButton.textContent = LangPkg.settings.exit_without_save;
         exitButton.className = "settings__exitButton";
-        exitButton.onclick = () => this.exitWithoutSaving();
+        exitButton.onclick = () => exitWithoutSaving();
 
         this.container.appendChild(document.createElement("br"));
+        this.container.appendChild(saveAndExitButton);
         this.container.appendChild(saveButton);
         this.container.appendChild(exitButton);
         this.container.fadeIn();
-    }
-
-    initModules() {
-        this.saveSettings = saveSettings;
-        this.exitWithoutSaving = exitWithoutSaving;
     }
 }
 

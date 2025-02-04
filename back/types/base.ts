@@ -1,3 +1,2 @@
-import Id from "@wxn0brp/db/dist/esm/types/Id";
-
+import { Id } from "@wxn0brp/db";
 export { Id };

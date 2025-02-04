@@ -7,14 +7,15 @@ import fileFunc from "../../../api/file";
 import coreFunc from "../../../core/coreFunc";
 import rs_dataF from "./rs_var";
 import { addSeparator, initButton, initInputText } from "./rs_utils";
-import debugFunc from "../../../core/debug";
+import debugFunc, { LogLevel } from "../../../core/debug";
 import staticData from "../../../var/staticData";
 import LangPkg from "../../../utils/translate";
+import { saveAndExitSettings } from "./rs_save";
 
 export const renderMeta = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.meta) return debugFunc.msg(LangPkg.settings_realm.no_data);
+    if (!settings || !settings.meta) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
     const metaDiv = rs_data.html.meta;
     metaDiv.innerHTML = `<h1>${LangPkg.settings_realm.basic_settings}</h1>`;
 
@@ -59,14 +60,14 @@ export const renderMeta = function () {
             LangPkg.settings_realm.delete_realm_confirm.w3
         ];
         for (const text of warns) {
-            const result = confirm(text + end);
+            const result = await uiFunc.confirm(text + end);
             if (!result) return;
         }
 
-        const name = await uiFunc.prompt("Confirm realm name");
-        if (name !== meta.name) return uiFunc.uiMsgT(LangPkg.settings_realm.rename_wrong);
+        const name = await uiFunc.prompt(LangPkg.settings_realm.confirm_realm_name + "?");
+        if (name !== meta.name) return uiFunc.uiMsgT(LangPkg.settings_realm.delete_wrong_name);
 
-        rs_data._this.exitWithoutSaving();
+        saveAndExitSettings();
         coreFunc.changeChat("main");
         setTimeout(() => {
             socket.emit("realm.delete", rs_data.realmId, name);

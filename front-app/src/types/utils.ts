@@ -1,3 +1,4 @@
+import { InternalCodeType } from "./code";
 import { Lang_Api } from "./lang/api";
 import { Lang_common } from "./lang/common";
 import { Lang_Media } from "./lang/media";
@@ -23,5 +24,6 @@ export interface Lang_Pkg {
     socket?: Lang_Socket
     ui?: Lang_UI
     uni?: Lang_uni
-    common?: Lang_common
+    common?: Lang_common,
+    InternalCode?: InternalCodeType,
 }

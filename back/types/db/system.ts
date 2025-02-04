@@ -1,3 +1,4 @@
+import { Actions } from "../../schedule/actions";
 import { Id } from "../base";
 
 namespace Db_System {
@@ -10,13 +11,12 @@ namespace Db_System {
     export interface task {
         _id: Id;
         sType: task_sType;
-        type: task_type;
+        type: Actions;
         sTime: number;
         data: any;
     }
 
     export type task_sType = "one-time"; // add more if implemented
-    export type task_type = "deleteAccount"; // add more if implemented
 }
 
 export { Db_System };

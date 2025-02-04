@@ -5,7 +5,7 @@ import rs_dataF from "./rs_var";
 import apis from "../../../api/apis";
 import genId from "../../../utils/genId";
 import uiFunc from "../../helpers/uiFunc";
-import debugFunc from "../../../core/debug";
+import debugFunc, { LogLevel } from "../../../core/debug";
 import socket from "../../../core/socket/socket";
 import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Role } from "./types";
 import { Channel_Type } from "../../../types/channel";
@@ -20,7 +20,7 @@ import {
 export const renderChannels = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.categories || !settings.channels) return debugFunc.msg(LangPkg.settings_realm.no_data);
+    if (!settings || !settings.categories || !settings.channels) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
 
     const categoriesContainer = rs_data.html.category;
     categoriesContainer.innerHTML = `<h1>${LangPkg.settings_realm.categories_and_channels}</h1>`;
@@ -29,7 +29,7 @@ export const renderChannels = function () {
     const channels = settings.channels;
 
     initButton(categoriesContainer, LangPkg.settings_realm.add_category, async () => {
-        const name = await uiFunc.prompt("Name");
+        const name = await uiFunc.prompt(LangPkg.settings_realm.enter_name);
 
         settings.categories.push({
             cid: genId(),
@@ -70,11 +70,11 @@ export const renderChannels = function () {
 
         initButton(categoryDiv, LangPkg.settings_realm.add_channel, async () => {
             const name = await uiFunc.prompt(LangPkg.settings_realm.enter_name);
-            const { text, voice, announcement, open_announcement } = LangPkg.settings_realm.channel_types;
+            const { text, voice, announcement, open_announcement, forum } = LangPkg.settings_realm.channel_types;
             const type = await uiFunc.selectPrompt(
                 LangPkg.settings_realm.select_type,
-                [text, voice, announcement, open_announcement],
-                ["text", "voice", "announcement", "open_announcement"]
+                [text, voice, announcement, open_announcement, forum],
+                ["text", "voice", "announcement", "open_announcement", "forum"]
             ) as Channel_Type;
 
             const newChannel: Settings_rs__Channel = {
@@ -212,8 +212,9 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
             const unsubscribe = document.createElement("button");
             unsubscribe.style.marginLeft = "1rem";
             unsubscribe.innerHTML = LangPkg.settings_realm.unsubscribe_channel;
-            unsubscribe.addEventListener("click", () => {
-                const conf = confirm(langFunc(LangPkg.settings_realm.confirm_unsubscribe, apis.www.changeChat(sub.sr) + " - " + sub.name) + "?");
+            unsubscribe.addEventListener("click", async () => {
+                const text = langFunc(LangPkg.settings_realm.confirm_unsubscribe, apis.www.changeChat(sub.sr) + " - " + sub.name) + "?";
+                const conf = await uiFunc.confirm(text);
                 if (!conf) return;
                 socket.emit("realm.announcement.channel.unsubscribe", sub.sr, sub.sc, rs_data.realmId, sub.tc);
                 settings.addons.subscribedChannels = settings.addons.subscribedChannels.filter(s => s !== sub);
@@ -282,7 +283,7 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
 export const renderEditCategory = function (category: Settings_rs__Category) {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.categories) return debugFunc.msg("No settings data");
+    if (!settings || !settings.categories) return debugFunc.msg(LogLevel.ERROR, "No settings data");
 
     const containerElement = rs_data.html.editChannel;
     containerElement.innerHTML = `<h1>${LangPkg.settings_realm.edit_category}</h1>`;

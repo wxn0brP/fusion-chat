@@ -1,5 +1,5 @@
 import vars from "../../var/var";
-import debugFunc from "../../core/debug";
+import debugFunc, { LogLevel } from "../../core/debug";
 import socket from "../../core/socket/socket";
 import stateManager from "../../ui/helpers/stateManager";
 
@@ -12,7 +12,7 @@ export const receiveMessage = (data) => {
     data = JSON.parse(data);
     switch (data.type) {
         case "debug":
-            debugFunc.msg(data.msg);
+            debugFunc.msg(LogLevel.INFO, data.msg);
             break;
         case "status":
             if (!vars.settings.desktopHandling) return;

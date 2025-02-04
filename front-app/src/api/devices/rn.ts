@@ -1,5 +1,5 @@
 import socket from "../../core/socket/socket";
-import debugFunc from "../../core/debug";
+import debugFunc, { LogLevel } from "../../core/debug";
 import stateManager from "../../ui/helpers/stateManager";
 
 export const send = (data) => {
@@ -11,7 +11,7 @@ export const receiveMessage = (data) => {
     data = JSON.parse(data);
     switch (data.type) {
         case "debug":
-            debugFunc.msg(data.msg);
+            debugFunc.msg(LogLevel.INFO, data.msg);
             break;
         case "close":
             socket.disconnect();
@@ -53,7 +53,7 @@ const processMediaRN = {
             source.connect(this.destination);
             source.start();
         } catch (error) {
-            debugFunc.msg('Error processing audio data: ' + error);
+            debugFunc.msg(LogLevel.ERROR, 'Error processing audio data: ' + error);
         }
     },
 
@@ -76,7 +76,7 @@ setTimeout(() => {
     try {
         processMediaRN.init();
     } catch (error) {
-        debugFunc.msg(error);
+        debugFunc.msg(LogLevel.ERROR, error);
     }
 }, 1000);
 

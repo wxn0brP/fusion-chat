@@ -10,6 +10,8 @@ import uiFunc from "../helpers/uiFunc";
 import Id from "../../types/Id";
 import { Vars_mainView__page } from "../../types/var";
 import LangPkg, { langFunc } from "../../utils/translate";
+import { updateUserProfileMarker } from "../render/userStatusMarker";
+import render_realm from "../render/realm";
 
 const mainView = {
     show() {
@@ -28,8 +30,8 @@ const mainView = {
         vars.mainView.friends.forEach(friend => {
             const friendDiv = document.createElement("div");
             friendDiv.classList.add("main__view__friend");
-            friendDiv.setAttribute("user_id", friend._id);
-            friendDiv.setAttribute("user_status", friend.status);
+            friendDiv.classList.add("userStatusMarker");
+            friendDiv.setAttribute("data-status-id", friend._id);
 
             friendDiv.innerHTML = `
                 <img class="friend__avatar" src="/api/profile/img?id=${friend._id}" />
@@ -49,6 +51,9 @@ const mainView = {
                 coreFunc.changeChat("$" + friend._id);
             });
             mainViewHTML.friendsContainer.appendChild(friendDiv);
+
+            render_realm.realmUserStatus(friend._id, friend);
+            updateUserProfileMarker(friend._id, friend.status);
         });
 
         mainView.sortFriends(vars.mainView.page);
@@ -69,7 +74,7 @@ const mainView = {
         }
 
         mainViewHTML.div.querySelectorAll<HTMLElement>("[main_view]").forEach(e => e.style.backgroundColor = "");
-        document.querySelector<HTMLElement>(`[main_view="${page}"]`).style.backgroundColor = "var(--accent";
+        document.querySelector<HTMLElement>(`[main_view="${page}"]`).style.backgroundColor = "var(--accent)";
     },
 
     sortFriends(status: Vars_mainView__page) {
@@ -79,13 +84,12 @@ const mainView = {
         let visibleCount = friends.length;
 
         friends.forEach(friend => {
-            const friendStatus = friend.getAttribute("user_status");
-            if (!friendStatus) return;
+            const friendStatus = friend.getAttribute("data-status") || "offline";
 
             if (status == "all") {
                 friend.style.display = "";
             }
-            else if (status == "online" && (friendStatus == "online" || friendStatus == "away")) {
+            else if (status == "online" && (friendStatus == "online" || friendStatus == "idle" || friendStatus == "dnd")) {
                 friend.style.display = "";
             }
             else if (status == "offline" && friendStatus == "offline") {
@@ -112,7 +116,8 @@ const mainView = {
         vars.mainView.requests.forEach(request => {
             const requestDiv = document.createElement("div");
             requestDiv.classList.add("main__view__friend");
-            requestDiv.setAttribute("user_id", request);
+            requestDiv.classList.add("userStatusMarker");
+            requestDiv.setAttribute("data-status-id", request);
 
             requestDiv.innerHTML = `
                 <img class="friend__avatar" src="/api/profile/img?id=${request}" />
@@ -130,25 +135,26 @@ const mainView = {
             requestDiv.querySelector(".friend__avatar").addEventListener("click", showUser);
 
             mainViewHTML.requestsContainer.appendChild(requestDiv);
+            updateUserProfileMarker(request, vars.apisTemp.user_status[request]?.status.get());
         });
     },
 
-    removeFriend(friend: Id) {
+    async removeFriend(friend: Id) {
         if (!friend) return;
 
-        const conf = confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
+        const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
         if (!conf) return;
-        const conf2 = confirm(langFunc(LangPkg.ui.confirm.sure, apis.www.changeUserID(friend)) + "?");
+        const conf2 = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.sure, apis.www.changeUserID(friend)) + "?");
         if (!conf2) return;
 
         socket.emit("friend.remove", friend);
         socket.emit("friend.get.all");
     },
 
-    removeFriendRequest(friend: Id) {
+    async removeFriendRequest(friend: Id) {
         if (!friend) return;
 
-        const conf = confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
+        const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
         if (!conf) return;
 
         socket.emit("friend.request.remove", friend);

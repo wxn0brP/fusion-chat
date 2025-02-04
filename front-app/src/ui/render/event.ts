@@ -12,6 +12,7 @@ import formatFunc from "../../core/mess/format";
 import { navHTML, renderHTML } from "../../var/html";
 import { getChannelTypeEmoticon } from "./realmInit";
 import { Ui_render__event } from "../../types/ui/render";
+import uiFunc from "../helpers/uiFunc";
 
 const render_events = {
     show() {
@@ -65,8 +66,8 @@ const render_events = {
             const button = document.createElement("button");
             button.innerHTML = LangPkg.uni.delete;
             button.clA("btn");
-            button.addEventListener("click", () => {
-                const conf = confirm(LangPkg.ui.confirm.sure + "?");
+            button.addEventListener("click", async () => {
+                const conf = await uiFunc.confirm(LangPkg.ui.confirm.sure + "?");
                 if (!conf) return;
                 socket.emit("realm.event.delete", vars.chat.to, _id);
                 setTimeout(() => {

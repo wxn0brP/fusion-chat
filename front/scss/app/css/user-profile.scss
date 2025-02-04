@@ -9,8 +9,16 @@
         height: 46px;
         border-radius: 50%;
     }
-}
 
+    &::before {
+        content: "";
+        position: absolute;
+        left: 38px;
+        top: 40px;
+        z-index: 2;
+        --wh: 15px;
+    }
+}
 
 #navs__user__name {
     position: absolute;
@@ -37,4 +45,29 @@
     top: 19px;
     font-size: 1.6rem;
     cursor: pointer;
+}
+
+.userStatusMarker {
+    --wh: 13px;
+    &::before {
+        width: var(--wh);
+        height: var(--wh);
+        border-radius: 50%;
+    }
+
+    &[data-status="online"]::before {
+        background-color: green;
+    }
+
+    &[data-status="offline"]::before {
+        background-color: grey;
+    }
+
+    &[data-status="idle"]::before {
+        background-color: yellow;
+    }
+
+    &[data-status="dnd"]::before {
+        background-color: red;
+    }
 }

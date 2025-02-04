@@ -5,6 +5,7 @@ import vars from "../var/var";
 import messFunc from "../core/mess/mess";
 import setupSwipe from "../lib/swipeLib";
 import staticData from "../var/staticData";
+import { navHTML } from "../var/html";
 
 document.querySelector("#nav__toggle").addEventListener("click", () => {
     const nav = document.querySelector("nav").style;
@@ -12,6 +13,7 @@ document.querySelector("#nav__toggle").addEventListener("click", () => {
 });
 
 document.querySelector<HTMLImageElement>("#navs__user img").src = "/api/profile/img?id=" + vars.user._id;
+navHTML.navs__user.setAttribute("data-status-id", vars.user._id);
 
 document.querySelector("#app").addEventListener("contextmenu", (e) => {
     const target = e.target as HTMLElement;

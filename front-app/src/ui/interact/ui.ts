@@ -63,7 +63,7 @@ const uiInteract = {
         if (to.startsWith("$")) return;
         if (!vars.realm.chnlPerms[chnl]?.threadCreate) return;
 
-        const name = await uiFunc.prompt("Name of the thread");
+        const name = await uiFunc.prompt(LangPkg.ui.create_thread_name);
         if (!name) return;
 
         socket.emit("realm.thread.create", to, chnl, name, messId, () => {
@@ -71,10 +71,10 @@ const uiInteract = {
         });
     },
 
-    deleteMess(id: Id) {
+    async deleteMess(id: Id) {
         const keys = KeyState.shift || KeyState.ctrl; // if shift or ctrl is pressed skip confirmation
         if (!keys) {
-            const conf = confirm(LangPkg.ui.confirm.delete_message + "?"); // TODO rm mess confirm make better (popup with content) 
+            const conf = await uiFunc.confirm(LangPkg.ui.confirm.delete_message + "?"); // TODO rm mess confirm make better (popup with content) 
             if (!conf) return;
         }
         socket.emit("message.delete", vars.chat.to, id);

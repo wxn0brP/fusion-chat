@@ -6,6 +6,7 @@ export interface Settings_settingsManager__settings_base {
     type: Settings_settingsManager__type;
     defaultValue?: any;
     css?: string | Object;
+    only?: string | string[];
 }
 
 export interface Settings_settingsManager__settings_checkbox extends Settings_settingsManager__settings_base {

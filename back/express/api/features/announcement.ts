@@ -1,6 +1,7 @@
 import { Router } from "express";
 import valid, { validChannelId } from "../../../logic/validData";
 import db from "../../../dataBase";
+import InternalCode from "../../../codes";
 const router = Router();
 
 router.get("/announcement", async (req, res) => {
@@ -8,16 +9,24 @@ router.get("/announcement", async (req, res) => {
     const start = parseInt(startStr);
     const end = parseInt(endStr);
 
-    if(!valid.id(realm))        return res.json({ err: true, msg: "realm is not valid" });
-    if(!validChannelId(chnl))   return res.json({ err: true, msg: "channel is not valid" });
-    if(!valid.num(start, 0))    return res.json({ err: true, msg: "start is not valid" });
-    if(!valid.num(end, 0))      return res.json({ err: true, msg: "end is not valid" });
+    if (!valid.id(realm)) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "realm" });
+    if (!validChannelId(chnl)) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "channel" });
+    if (!valid.num(start, 0)) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "start" });
+    if (!valid.num(end, 0)) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "end" });
 
     const chnlData = await db.realmConf.findOne(realm, { chid: chnl });
-    if(!chnlData) return res.json({ err: true, msg: "channel is not open event" });
-    if(chnlData.type != "open_announcement") return res.json({ err: true, msg: "channel is not open announcement" });
+    if (!chnlData) return res.json({
+        err: true,
+        c: InternalCode.UserError.Express.Announcement_ChannelIsNotOpen,
+        msg: "channel is not open event"
+    });
+    if (chnlData.type != "open_announcement") return res.json({
+        err: true,
+        c: InternalCode.UserError.Express.Announcement_ChannelIsNotOpen,
+        msg: "channel is not open announcement"
+    });
 
-    let data = await db.mess.find(realm, { chnl }, {}, { reverse: true, max: end+start })
+    let data = await db.mess.find(realm, { chnl }, {}, { reverse: true, max: end + start })
     data = data
         .slice(start, end)
         .map(msg => {

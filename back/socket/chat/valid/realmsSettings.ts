@@ -31,7 +31,12 @@ export default {
                 properties: {
                     chid: { type: "string", validId: true },
                     name: { type: "string" },
-                    type: { type: "string", enum: ["text", "voice", "announcement", "open_announcement"] },
+                    type: {
+                        type: "string",
+                        enum: [
+                            "text", "voice", "announcement", "open_announcement", "forum",
+                        ]
+                    },
                     category: { type: "string" },
                     i: { type: "number" },
                     rp: {
@@ -86,9 +91,9 @@ export default {
                 type: "object",
                 properties: {
                     name: { type: "string", minLength: 1, maxLength: 64 },
-                    unicode: { type: "number" }
+                    emoji: { type: "string", validId: true },
                 },
-                required: ["name", "unicode"],
+                required: ["name", "emoji"],
                 additionalProperties: false
             }
         },

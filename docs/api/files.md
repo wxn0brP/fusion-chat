@@ -1,14 +1,12 @@
-## Structore of uploaded files
+## Structure of uploaded files
 
 /userFiles
-    /emocji
-        $id.ttf # font with emojis
     /profiles
         $id.png # user profile
     /realms
         $id/
             emojis/
-                $unicode.svg # indirect file to generate font, include emoji by svg file
+                $emoji_id.png
         $id.png # realm profile
     /users
         $id/

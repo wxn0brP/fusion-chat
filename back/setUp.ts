@@ -6,8 +6,8 @@ function dir(path: string){
 function file(path: string, value: string="", prefix: string="config/"){
     if(!fs.existsSync(prefix+path)) fs.writeFileSync(prefix+path, value);
 }
-function preFile(path: string, pre: string, prefix: string="config/"){
-    if(!fs.existsSync(prefix+path+".js")) fs.copyFileSync("back/config-base/"+pre+".js", prefix+path+".js");
+function preFile(path: string, pre: string=path, prefix: string="config/"){
+    if(!fs.existsSync(prefix+path+".js")) fs.copyFileSync("dist-back/config-base/"+pre+".js", prefix+path+".js");
 }
 
 dir("data");
@@ -18,6 +18,7 @@ dir("userFiles/profiles");
 dir("userFiles/realms");
 file("bannedIP.json", "[]");
 file("mailConfig.json", "{}");
-preFile("file", "file");
-preFile("database", "database");
-preFile("logs", "logs");
+preFile("file");
+preFile("database");
+preFile("logs");
+preFile("cache");

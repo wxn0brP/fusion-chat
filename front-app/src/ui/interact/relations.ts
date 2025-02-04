@@ -6,19 +6,20 @@ import uiFunc from "../helpers/uiFunc";
 import socket from "../../core/socket/socket";
 import { otherHTML } from "../../var/html";
 import { mglVar } from "../../var/mgl";
+import LangPkg from "../../utils/translate";
 
 const makeRealmDiv = otherHTML.makeRealm;
 
 const buttonFunc = {
     async addDm() {
-        const to = await uiFunc.prompt("Name of the 2 people");
+        const to = await uiFunc.prompt(LangPkg.ui.enter_dm);
         if (!to) return;
         socket.emit("dm.create", to);
     },
 
     async createRealm() {
         makeRealmDiv.fadeOut();
-        const name = await uiFunc.prompt("Name of the realm");
+        const name = await uiFunc.prompt(LangPkg.ui.create_realm_name);
         if (!name) return;
         socket.emit("realm.create", name);
         setTimeout(() => {
@@ -28,7 +29,7 @@ const buttonFunc = {
 
     async joinRealm() {
         makeRealmDiv.fadeOut();
-        let id = await uiFunc.prompt("Invite link of the realm") as Id;
+        let id = await uiFunc.prompt(LangPkg.ui.enter_realm_invite) as Id;
         if (!id) return;
 
         id = id

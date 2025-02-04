@@ -4,9 +4,11 @@ import { Image } from "image-js";
 import { join } from "path";
 import cropAndResizeProfile from "../../../logic/cropAndResizeProfile";
 import permissionSystem from "../../../logic/permission-system/index";
-import Permissions from "../../../logic/permission-system/permBD";
+import Permissions from "../../../logic/permission-system/permission";
 import db from "../../../dataBase";
 import { Id } from "../../../types/base";
+import InternalCode from "../../../codes";
+import valid from "../../../logic/validData";
 
 const router = Router();
 const MAX_FILE_SIZE = global.fileConfig.maxRealmProfileFileSize;
@@ -30,23 +32,26 @@ const upload = multer({
 
 router.post("/realm/profile/upload", global.authenticateMiddleware, async (req, res) => {
     const realmId = req.headers.realm as Id;
-    if(!realmId) return res.status(400).json({ err: true, msg: "No realm id provided." });
+    if(!valid.id(realmId)) return res.status(400).json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "realmId." });
 
     const permSys = new permissionSystem(realmId);
     const userId = req.user;
 
     const userPerm = await permSys.canUserPerformAction(userId, Permissions.admin);
-    if(!userPerm) return res.status(403).json({ err: true, msg: "You do not have permission to do that." });
-
+    if(!userPerm) return res.status(403).json({
+        err: true,
+        c: InternalCode.UserError.Express.RealmProfileUpload_NoPermissions,
+        msg: "You do not have permission to do that."
+    });
 
     upload(req, res, async (err) => {
         if(err){
-            return res.status(400).json({ err: true, msg: err.message });
+            return res.status(400).json({ err: true, c: InternalCode.UserError.Express.UploadError, msg: err.message });
         }
 
         const ReqFile = (req as any)?.file;
         if(!ReqFile){
-            return res.status(400).json({ err: true, msg: "No file uploaded." });
+            return res.status(400).json({ err: true, c: InternalCode.UserError.Express.FileUpload_NoFile, msg: "No file uploaded." });
         }
 
         const filePath = join(UPLOAD_DIR, `${realmId}.png`);
@@ -61,7 +66,7 @@ router.post("/realm/profile/upload", global.authenticateMiddleware, async (req, 
             res.json({ err: false, msg: "Profile picture uploaded successfully.", path: filePath });
             global.sendToChatUsers(realmId, "refreshData", "realm.get");
         }catch(error){
-            res.status(500).json({ err: true, msg: "An error occurred while processing the image." });
+            res.status(500).json({ err: true, c: InternalCode.ServerError.Express.UploadError, msg: "An error occurred while processing the image." });
         }
     });
 });

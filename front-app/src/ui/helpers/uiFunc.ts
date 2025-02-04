@@ -1,8 +1,8 @@
 import hub from "../../hub";
 hub("helpers/uiFunc");
 
-import debugFunc from "../../core/debug";
-import { langFunc } from "../../utils/translate";
+import debugFunc, { LogLevel } from "../../core/debug";
+import LangPkg, { langFunc } from "../../utils/translate";
 import { Ui_helper_uiMessage__opts, Ui_helper_uiMsg__opts } from "../../types/ui/helpers";
 
 export const errMessesDiv = document.querySelector<HTMLDivElement>("#errMesses");
@@ -15,7 +15,7 @@ const uiFunc = {
             ...opts,
         }
         const div = document.createElement("div");
-        div.textContent = message;
+        div.innerHTML = message;
 
         div.style.top = `-${div.offsetHeight + 20}px`;
         if (opts.className) div.classList.add(opts.className);
@@ -59,7 +59,7 @@ const uiFunc = {
     },
 
     uiMsg(data: string, opts: Ui_helper_uiMsg__opts = {}) {
-        debugFunc.msg("uiMsg:", data);
+        debugFunc.msg(LogLevel.INFO, "uiMsg:", data);
 
         opts = {
             extraTime: 0,
@@ -128,7 +128,44 @@ const uiFunc = {
         });
     },
 
-    selectPrompt<T>(text, options, optionsValues = [], categories: { name: string; options: T[], value?: T }[] = []): Promise<string | T> {
+    confirm(text: string, yesText: string=LangPkg.uni.ok, noText: string=LangPkg.uni.cancel): Promise<boolean> {
+        return new Promise((resolve) => {
+            function end(accept: boolean) {
+                return () => {
+                    resolve(accept);
+                    div.fadeOut();
+                    setTimeout(() => {
+                        div.remove();
+                    }, 2000);
+                }
+            }
+
+            const div = document.createElement("div");
+            div.style.opacity = "0";
+            div.classList.add("prompt");
+            div.innerHTML = "<p>" + text + "<p><br />";
+
+            const flex = document.createElement("div");
+            flex.style.display = "flex";
+            flex.style.justifyContent = "space-evenly";
+
+            const reject = document.createElement("button");
+            reject.innerHTML = noText || LangPkg.uni.cancel;
+            reject.addEventListener("click", end(false));
+            flex.appendChild(reject);
+
+            const accept = document.createElement("button");
+            accept.innerHTML = yesText || LangPkg.uni.ok;
+            accept.addEventListener("click", end(true));
+            flex.appendChild(accept);
+
+            div.appendChild(flex);
+            promptDiv.appendChild(div);
+            div.fadeIn();
+        });
+    },
+
+    selectPrompt<T>(text: string, options, optionsValues = [], categories: { name: string; options: T[], value?: T }[] = []): Promise<string | T> {
         return new Promise((resolve) => {
             function end() {
                 resolve(select.value);

@@ -3,5 +3,6 @@ export interface Lang_settings {
     exit_without_save: string;
     name: string;
     save: string;
+    save_and_exit: string;
     description: string;
 }

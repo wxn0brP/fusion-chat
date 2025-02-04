@@ -1,15 +1,16 @@
 import { Router } from "express";
 import multer, { memoryStorage, MulterError } from "multer";
-import { writeFileSync, unlinkSync, existsSync, mkdirSync } from "fs";
-import { Image } from "image-js";
+import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
-import { trace } from "potrace";
 import valid from "../../../logic/validData";
 import permissionSystem from "../../../logic/permission-system/index";
-import Permissions from "../../../logic/permission-system/permBD";
-import { manageRealmEmojis } from "../../../logic/emojiMgmt";
+import Permissions from "../../../logic/permission-system/permission";
 import db from "../../../dataBase";
 import { Id } from "../../../types/base";
+import InternalCode from "../../../codes";
+import { genId } from "@wxn0brp/db";
+import Db_RealmConf from "../../../types/db/realmConf";
+import { Image } from "image-js";
 
 const router = Router();
 
@@ -28,7 +29,7 @@ const upload = multer({
     }
 }).single("file");
 
-async function checkUserPermission(userId, realm){
+async function checkUserPermission(userId: Id, realm: Id){
     const permSys = new permissionSystem(realm);
     const userPerm = await permSys.canUserPerformAnyAction(
         userId,
@@ -37,96 +38,65 @@ async function checkUserPermission(userId, realm){
     return userPerm;
 }
 
-async function getRealmEmoji(realmId){
-    const emoji = await db.realmConf.find(realmId, { $exists: { unicode: true }});
-    return emoji;
-}
-
-function generatePrivateUseArea(){
-    const start = 0xE000;
-    const end = 0xF8FF;
-    const unicodeRange = [];
-    for(let code=start; code<=end; code++){
-        unicodeRange.push(code);
-    }
-    return unicodeRange;
-}
-
-function uploadEmoji(basePath, unicode, req, res){
-    return new Promise((resolve, reject) => {
-        upload(req, res, async (err) => {
-            if(err){
-                reject(err);
-                return res.status(400).json({ err: true, msg: err.message });
-            }
-            try{
-                const buffer = req.file.buffer;
-                const pngPath = join(basePath, "temp.png");
-        
-                const pngFile = await Image.load(buffer);
-                await pngFile.save(pngPath, { format: "png" });
-        
-                const svgPath = join(basePath, unicode.toString(16) + ".svg");
-                await new Promise((resolve, reject) => {
-                    trace(pngPath, (err, svg) => {
-                        if(err) return reject(err);
-                        writeFileSync(svgPath, svg);
-                        resolve(null);
-                    });
-                });
-
-                unlinkSync(pngPath);
-                resolve(svgPath);
-            }catch(err){
-                reject(err);
-                res.json({ err: true, msg: "An error occurred" });
-            }
-        });
-    })
-}
-
 router.post("/emoji/upload", global.authenticateMiddleware, async (req, res) => {
     const userId = req.user;
     const realm = req.headers.realm as Id;
-    if(!realm) return res.status(400).json({ err: true, msg: "No realm id provided." });
-    if(!valid.id(realm)) return res.status(400).json({ err: true, msg: "Invalid realm id." });
+    if(!valid.id(realm)) return res.status(400).json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "realm" });
 
     try{
         const userPerm = await checkUserPermission(userId, realm);
-        if(!userPerm) return res.status(403).json({ err: true, msg: "You do not have permission to do that." });
+        if(!userPerm) return res.status(403).json({
+            err: true,
+            c: InternalCode.UserError.Express.EmojiUpload_NoPermissions,
+            msg: "You do not have permission to do that."
+        });
     }catch(err){
-        return res.status(500).json({ err: true, msg: "You do not have permission to do that." });
+        return res.status(500).json({ err: true, c: InternalCode.ServerError.Express.UploadError, msg: "Permission error." });
     }
 
-    const realmEmoji = await getRealmEmoji(realm);
-    const realmEmojiUnicode = realmEmoji.map(emoji => emoji.unicode);
+    const emojisCount = await db.realmConf.find(realm, { $exists: { emoji: true } });
+    // TODO add emoji count config
+    if(emojisCount.length >= 100) return res.status(400).json({
+        err: true,
+        c: InternalCode.UserError.Express.EmojiUpload_Limit,
+        msg: "You can't upload more than 100 emojis."
+    });
 
-    const emojiUnicodes = generatePrivateUseArea();
-    const availableUnicodes = emojiUnicodes.filter(unicode => !realmEmojiUnicode.includes(unicode));
-
-    if(availableUnicodes.length === 0){
-        return res.status(400).json({ err: true, msg: "Emoji limit reached." });
-    }
-
-    const unicode = availableUnicodes[0];
     const basePath = join(baseRealmPath, realm, "emojis");
 
     if(!existsSync(basePath)){
         mkdirSync(basePath, { recursive: true });
     }
 
-    const svgPath = await uploadEmoji(basePath, unicode, req, res);
-    if(!svgPath) return res.status(400).json({ err: true, msg: "An error occurred" });
+    upload(req, res, async (err) => {
+        if(err){
+            return res.status(400).json({ err: true, c: InternalCode.UserError.Express.UploadError, msg: err.message });
+        }
 
-    const newEmoji = {
-        unicode,
-        name: "new emoji",
-    };
+        const file = (req as any).file;
+        if(!file){
+            return res.status(400).json({ err: true, c: InternalCode.UserError.Express.FileUpload_NoFile, msg: "No file uploaded." });
+        }
 
-    await db.realmConf.add(realm, newEmoji, false);
-    manageRealmEmojis(realm);   
+        const newEmoji = {
+            name: genId(),
+            emoji: genId()
+        }
+        const filePath = join(basePath, `${newEmoji.emoji}.png`);
+        
+        try{
+            const image = await Image.load(file.buffer);
+            await image.save(filePath, { format: "png" });
+        }catch(error){
+            res.status(500).json({ err: true, c: InternalCode.ServerError.Express.UploadError, msg: "An error occurred while processing the file." });
+            return;
+        }
+        
+        await db.realmConf.add<Db_RealmConf.emoji>(realm, newEmoji, false);
+    
+        res.json({ err: false, msg: "Emoji uploaded successfully." });
+    });
 
-    res.json({ err: false, msg: "Emoji uploaded successfully." });
 });
 
 export default router;

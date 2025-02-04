@@ -1,0 +1,82 @@
+name: Build and Deploy Server to Dist
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup Node.js environment (node > 22)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      # Install global dependencies
+      - name: Install dependencies
+        run: |
+          npm install -g typescript tsc-alias
+
+      # Build root directory
+      - name: Install and Build (Root)
+        working-directory: .
+        run: |
+          npm install
+          npm run build
+
+      # Build front-app directory
+      - name: Install and Build (Front-App)
+        working-directory: ./front-app
+        run: |
+          npm install
+          npm run build
+
+      # Prepare dist branch
+      - name: Deploy to Dist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          # Checkout or create empty dist branch
+          git checkout --orphan dist
+
+          mkdir -p dist
+          mkdir -p dist/front-app
+
+          cp -R ./dist-back/ dist/
+          cp -R ./front-app/dist/ dist/front-app/dist/
+          cp -R ./front/ dist/front/
+          cp ./index.js dist/index.js
+          cp ./app.js dist/app.js
+          cp ./package.json dist/package.json
+          cp ./LICENSE dist/LICENSE
+          cp ./.env.txt dist/.env.txt
+          
+          shopt -s extglob
+          rm -rf !(dist)
+          rm .gitignore
+          rm -r .github
+          mv dist/* ./
+          rm -rf dist
+          ls -al
+
+          git add .
+
+          git commit -m "Deploy build output to dist branch"
+          git push origin dist --force
+

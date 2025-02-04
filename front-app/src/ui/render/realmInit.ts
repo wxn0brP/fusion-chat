@@ -90,6 +90,7 @@ export function getChannelTypeEmoticon(type: Channel_Type) {
         case "voice": return "🎤";
         case "announcement": return "📣";
         case "open_announcement": return "📣";
+        case "forum": return "📜";
         default:
             const n: never = type;
             console.error(n);
@@ -101,6 +102,8 @@ function handleChannelClick(type: Channel_Type, cid: Id, sid: Id) {
         coreFunc.changeChnl(cid);
     } else if (type === "voice") {
         handleVoiceChannelJoin(cid, sid);
+    } else if (type === "forum") {
+        coreFunc.changeToForum(cid);
     }
 }
 
@@ -127,23 +130,6 @@ function createCategory(category: Ui_render__category, root: HTMLElement, sid: I
     });
 
     root.appendChild(detail);
-}
-
-function setupCustomEmoji(sid: Id) {
-    coreHTML.emojiStyle.innerHTML = "";
-    const emojiStyle = document.createElement("style");
-    emojiStyle.innerHTML = `
-        @font-face {
-            font-family: 'emoji';
-            src: url("/userFiles/emoji/${sid}.ttf") format("truetype");
-            font-weight: normal;
-            font-style: normal;
-        }
-        * {
-            font-family: 'emoji', 'Ubuntu', sans-serif;
-        }
-    `;
-    coreHTML.emojiStyle.appendChild(emojiStyle);
 }
 
 function findFirstTextChannel(categories: Ui_render__category[]) {
@@ -175,7 +161,7 @@ function downPanel_events(panel: HTMLElement) {
     });
 }
 
-function realmInit(sid: Id, name: string, categories: Ui_render__category[], isOwnEmoji: boolean, permission: number) {
+function realmInit(sid: Id, name: string, categories: Ui_render__category[], permission: number) {
     initRealmState(permission);
     createRealmNameSection(name, sid);
 
@@ -194,7 +180,8 @@ function realmInit(sid: Id, name: string, categories: Ui_render__category[], isO
         vars.chat.chnl = findFirstTextChannel(categories);
 
     coreFunc.changeChnl(vars.chat.chnl);
-    if (isOwnEmoji) setupCustomEmoji(sid);
+
+    socket.emit("realm.thread.list", sid, null);
 }
 
 export default realmInit;

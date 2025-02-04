@@ -2,7 +2,7 @@ import { Id } from "../base";
 import Db_Mess from "./mess";
 
 namespace Db_RealmConf {
-    export interface set {
+    export interface meta {
         _id: "set";
         name: string;
         owner: Id;
@@ -19,7 +19,7 @@ namespace Db_RealmConf {
         chid: Id;
         category: Id;
         name: string;
-        type: 'text' | 'voice' | 'announcement' | 'open_announcement';
+        type: "text" | "voice" | "announcement" | "open_announcement" | "forum";
         i: number;
         rp: RolePermission[];
         desc?: string;
@@ -38,7 +38,7 @@ namespace Db_RealmConf {
     }
 
     export interface emoji {
-        unicode: number;
+        emoji: Id;
         name: string;
     }
 }

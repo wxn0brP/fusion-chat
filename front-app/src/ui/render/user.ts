@@ -13,24 +13,26 @@ import { navHTML, renderHTML } from "../../var/html";
 import { Core_socket__friendStatus, Core_socket__user_profile } from "../../types/core/socket";
 import utils from "../../utils/utils";
 import LangPkg from "../../utils/translate";
+import { updateUserProfileMarker } from "./userStatusMarker";
 
 const render_user = {
-    localUserProfile(){
+    localUserProfile() {
         navHTML.user__name.innerHTML = apis.www.changeUserID(vars.user._id);
         navHTML.user__status.innerHTML = vars.user.statusText || vars.user.status || "Online";
+        updateUserProfileMarker(vars.user._id, vars.user.status || "online");
     },
 
-    userProfile(data: Core_socket__user_profile){
-        if(!data) return;
+    userProfile(data: Core_socket__user_profile) {
+        if (!data) return;
         const targetIsMe = data._id == vars.user._id;
         const imgLink = "/api/profile/img?id=" + data._id;
 
         renderHTML.userProfile.innerHTML = `
-            <div id="userProfileInfo">
+            <div id="userProfileInfo" class="userStatusMarker">
                 <img src="${imgLink}" onclick="mglInt.createMediaPopup('${imgLink}')" alt="User logo">
                 <div>
                     <h1>${data.name}</h1>
-                    <p>${data.status}${data.statusText ? " | "+data.statusText : ""}</p>
+                    <p>${data.status}${data.statusText ? " | " + data.statusText : ""}</p>
                     <div id="userProfileBtns" style="margin-top: 10px;"></div>
                 </div>
             </div>
@@ -38,37 +40,38 @@ const render_user = {
             <div id="userProfileAbout"></div>
         `.trim();
 
-        if(data.statusText) render_realm.realmUserStatus(data._id, { status: data.statusText });
+        if (data.statusText || data.status) render_realm.realmUserStatus(data._id, { status: data.status, statusText: data.statusText });
+        renderHTML.userProfile.querySelector("#userProfileInfo").setAttribute("data-status-id", data._id);
 
-        if(!targetIsMe){
+        if (!targetIsMe) {
             const friendBtn = document.createElement("button");
             friendBtn.classList.add("btn");
             let friendBtnText: string;
-            switch(data.friendStatus){
+            switch (data.friendStatus) {
                 case Core_socket__friendStatus.NOT_FRIEND:
                     friendBtnText = LangPkg.ui.friend.add;
                     friendBtn.onclick = () => mainViewInteract.addFriend(data._id);
-                break;
+                    break;
                 case Core_socket__friendStatus.IS_FRIEND:
                     friendBtnText = LangPkg.ui.friend.remove;
                     friendBtn.onclick = () => mainView.removeFriend(data._id);
-                break;
+                    break;
                 case Core_socket__friendStatus.REQUEST_SENT:
                     friendBtnText = LangPkg.ui.friend.request_sent;
                     friendBtn.onclick = () => mainView.removeFriendRequest(data._id);
-                break;
+                    break;
                 case Core_socket__friendStatus.REQUEST_RECEIVED:
                     friendBtnText = LangPkg.ui.friend.request_received;
                     friendBtn.onclick = () => {
                         coreFunc.changeChat("main");
                         mainView.changeView("requests");
                     }
-                break;
+                    break;
             }
             friendBtn.innerHTML = friendBtnText;
             const btns = renderHTML.userProfile.querySelector("#userProfileBtns");
             btns.appendChild(friendBtn);
-            
+
             const blockBtn = document.createElement("button");
             blockBtn.classList.add("btn");
             blockBtn.style.marginLeft = "10px";
@@ -90,28 +93,27 @@ const render_user = {
         }
 
         const activityDiv = renderHTML.userProfile.querySelector("#userProfileActivity");
-        if(data.activity?.state){
+        if (data.activity?.state) {
             const act = data.activity;
             activityDiv.innerHTML = `
                 <h2>Activity</h2>
                 <p>${act.state} | ${act.name}</p>
                 ${act.details ? "<p>" + act.details + "</p>" : ""}
                 ${act.startTime ? '<p>Time: <span id="userProfileActivityTime"></span></p>' : ""}
-                ${
-                    act.party ?
-                        "<p>Party: "+
-                            act.party.id + " | " +
-                            act.party.state +
-                            (act.party.max ? " / " + act.party.max : "") +
-                        "</p>"
+                ${act.party ?
+                    "<p>Party: " +
+                    act.party.id + " | " +
+                    act.party.state +
+                    (act.party.max ? " / " + act.party.max : "") +
+                    "</p>"
                     : ""}
             `.trim();
-            
+
             render_realm.realmUserStatus(data._id, { activity: utils.rmRef(act) });
 
-            if(act.startTime){
+            if (act.startTime) {
                 const timeP = activityDiv.querySelector("#userProfileActivityTime");
-                function update(){
+                function update() {
                     const time = new Date().getTime() - new Date(act.startTime).getTime();
                     const hours = Math.floor(time / 1000 / 60 / 60);
                     const minutes = Math.floor(time / 1000 / 60) - (hours * 60);
@@ -119,14 +121,16 @@ const render_user = {
                     timeP.innerHTML = `${hours}:${minutes}:${seconds}`;
                 }
                 let interval = setInterval(() => {
-                    if(!timeP) return clearInterval(interval);
-                    update();    
+                    if (!timeP) return clearInterval(interval);
+                    update();
                 }, 1000);
                 update();
             }
         }
 
         renderUtils.initPopup(renderHTML.userProfile);
+        render_realm.realmUserStatus(data._id, data);
+        updateUserProfileMarker(data._id, data.status);
     },
 }
 

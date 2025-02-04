@@ -50,6 +50,7 @@ const sr: Lang_Settings__Realm = {
         voice: "Voice",
         open_announcement: "Open announcement",
         announcement: "Announcement",
+        forum: "Forum",
     },
     unsubscribe_channel: "Unsubscribe",
     confirm_unsubscribe: "Are you sure you want to unsubscribe from $",
@@ -85,7 +86,8 @@ const sr: Lang_Settings__Realm = {
     },
     failed_to_save: "Failed to save settings. Make sure all settings are valid",
     no_channels: "No channels found",
-    rename_wrong: "Wrong realm name",
+    delete_wrong_name: "Wrong realm name",
+    confirm_realm_name: "Are you sure you want to delete this realm",
 }
 
 export default sr;

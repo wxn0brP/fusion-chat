@@ -11,6 +11,7 @@ import staticData from "../../var/staticData";
 import { reloadProfileImages } from "../helpers/reloadImages";
 import { Settings_settingsManager__category } from "../../types/ui/settings";
 import LangPkg, { LangRef, load_translate } from "../../utils/translate";
+import render_realm from "../render/realm";
 
 interface SettingsData {
     user: () => Settings_settingsManager__category[];
@@ -29,7 +30,7 @@ const settingsData: SettingsData = {
                     txt: LangPkg.settings_user.status,
                     type: "select",
                     defaultValue: vars.user.status || "online",
-                    options: ["online", "away", "offline"]
+                    options: ["online", "idle", "dnd", "offline"]
                 },
                 {
                     name: "Status text",
@@ -51,30 +52,31 @@ const settingsData: SettingsData = {
             type: "fn",
             settings: () => {
                 const div = document.createElement("div");
-                const tmpData = {
+                const tmpData: { img: File | null } = {
                     img: null
                 };
                 div.innerHTML = `
                     <div id="_1" style="display: flex; align-items: center; column-gap: 2rem;"></div>
                 `.trim();
-                const conteiner = div.querySelector('#_1');
+                const container = div.querySelector('#_1');
 
                 const imgPrev = document.createElement('img');
                 imgPrev.src = "/api/profile/img?id=" + vars.user._id + "&t=" + Date.now();
                 imgPrev.css("width: 128px; height: 128px; object-fit: cover;");
-                conteiner.appendChild(imgPrev);
+                container.appendChild(imgPrev);
 
                 const imgSel = document.createElement('input');
                 imgSel.type = 'file';
                 imgSel.accept = staticData.uploadImgTypes.join(', ');
-                imgSel.addEventListener("change", e => {
-                    // TODO fix types
-                    // @ts-ignore
-                    tmpData.img = e.target.files[0];
-                    // @ts-ignore
-                    imgPrev.src = URL.createObjectURL(e.target.files[0]);
+                imgSel.addEventListener("change", (e: Event) => {
+                    const target = e.target as HTMLInputElement;
+                    if (target.files && target.files[0]) {
+                        const file = target.files[0];
+                        tmpData.img = file;
+                        imgPrev.src = URL.createObjectURL(file);
+                    }
                 });
-                conteiner.appendChild(imgSel);
+                container.appendChild(imgSel);
 
                 return [div, tmpData];
             },
@@ -147,10 +149,10 @@ const settingsData: SettingsData = {
                     name: "Logout",
                     txt: LangPkg.settings_user.logout,
                     type: "button",
-                    onclick: () => {
+                    onclick: async () => {
                         const confText = LangPkg.settings_user.confirm_logout + "?";
-                        if (!confirm(confText)) return;
-                        if (!confirm(confText + " (" + LangPkg.settings_user.double_check + ")")) return;
+                        if (!await uiFunc.confirm(confText)) return;
+                        if (!await uiFunc.confirm(confText + " (" + LangPkg.settings_user.double_check + ")")) return;
 
                         localStorage.removeItem("user_id");
                         localStorage.removeItem("from");
@@ -167,10 +169,10 @@ const settingsData: SettingsData = {
                     name: "Delete Account",
                     txt: LangPkg.settings_user.delete,
                     type: "button",
-                    onclick: () => {
-                        if (!confirm(LangPkg.settings_user.confirm_delete.w1 + "?")) return;
-                        if (!confirm(LangPkg.settings_user.confirm_delete.w2 + "?")) return;
-                        if (!confirm(LangPkg.settings_user.confirm_delete.w3 + "?")) return;
+                    onclick: async () => {
+                        if (!await uiFunc.confirm(LangPkg.settings_user.confirm_delete.w1 + "?")) return;
+                        if (!await uiFunc.confirm(LangPkg.settings_user.confirm_delete.w2 + "?")) return;
+                        if (!await uiFunc.confirm(LangPkg.settings_user.confirm_delete.w3 + "?")) return;
 
                         socket.emit("user.delete", () => {
                             localStorage.removeItem("user_id");
@@ -196,8 +198,9 @@ const settingsData: SettingsData = {
             vars.user.statusText = settings["Status text"];
         }
         if (settings["Status"] != undefined || settings["Status text"] != undefined) {
-            socket.emit("status.update", vars.user.status, vars.user.statusText);
+            socket.emit("self.status.update", vars.user.status, vars.user.statusText);
             render_user.localUserProfile();
+            render_realm.realmUserStatus(vars.user._id, { status: vars.user.status, statusText: vars.user.statusText });
         }
 
         if (settings["Nickname"] != undefined) {

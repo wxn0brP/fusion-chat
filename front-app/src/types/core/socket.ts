@@ -21,7 +21,7 @@ export interface Core_socket__blocked {
     block?: Id;
 }
 
-export type Core_socket__user_status_type = "online" | "offline" | "away";
+export type Core_socket__user_status_type = "online" | "offline" | "idle" | "dnd";
 
 export interface Core_socket__user_profile {
     _id: Id;

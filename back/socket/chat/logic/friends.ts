@@ -7,6 +7,7 @@ import Db_UserData from "../../../types/db/userData";
 import { Socket_StandardRes } from "../../../types/socket/res";
 import { Id } from "../../../types/base";
 import { Socket_User } from "../../../types/socket/user";
+import InternalCode from "../../../codes";
 
 enum friendStatusEnum {
     NOT_FRIEND,
@@ -25,12 +26,12 @@ export async function friend_request(suser: Socket_User, nameOrId: string): Prom
             { _id: nameOrId }
         ]
     });
-    if (!userExists) return validE.err("user does not exist");
-    if (userExists._id == suser._id) return validE.err("can't add yourself");
+    if (!userExists) return validE.err(InternalCode.UserError.Socket.FriendRequest_UserNotFound);
+    if (userExists._id == suser._id) return validE.err(InternalCode.UserError.Socket.FriendRequest_Self);
     const id = userExists._id;
 
     const friendExists = await db.dataGraph.findOne("friends", suser._id, id);
-    if (friendExists) return validE.err("friend already exists");
+    if (friendExists) return validE.err(InternalCode.UserError.Socket.FriendRequest_AlreadyFriend);
 
     const friendRequestExists = await db.data.find("friendRequests", {
         $or: [
@@ -38,7 +39,7 @@ export async function friend_request(suser: Socket_User, nameOrId: string): Prom
             { from: suser._id, to: id }
         ]
     });
-    if (friendRequestExists.length > 0) return validE.err("friend request already exists");
+    if (friendRequestExists.length > 0) return validE.err(InternalCode.UserError.Socket.FriendRequest_AlreadySent);
 
     await db.data.add("friendRequests", { from: suser._id, to: id }, false);
     global.sendToSocket(id, "friend.request", suser._id);
@@ -58,7 +59,7 @@ export async function friend_response(suser: Socket_User, id: Id, accept: boolea
     await db.data.removeOne("friendRequests", { from: id, to: suser._id });
 
     const friendExists = await db.dataGraph.findOne("friends", suser._id, id);
-    if (friendExists) return validE.err("friend already exists");
+    if (friendExists) return validE.err(InternalCode.UserError.Socket.FriendRequest_AlreadyFriend);
 
     if (accept) await db.dataGraph.add("friends", id, suser._id);
 
@@ -87,7 +88,7 @@ export async function friend_remove(suser: Socket_User, id: Id): Promise<Socket_
     if (!valid.id(id)) return validE.valid("id");
 
     const friendExists = await db.dataGraph.findOne("friends", suser._id, id);
-    if (!friendExists) return validE.err("friend does not exist");
+    if (!friendExists) return validE.err(InternalCode.UserError.Socket.FriendRemove_FriendNotFound);
 
     await db.dataGraph.remove("friends", suser._id, id);
 
@@ -96,8 +97,7 @@ export async function friend_remove(suser: Socket_User, id: Id): Promise<Socket_
     return { err: false };
 }
 
-// TODO fix type
-export async function friend_get_all(suser: Socket_User): Promise<Socket_StandardRes<{ _id: string, status?: string, text?: string }[]>> {
+export async function friend_get_all(suser: Socket_User): Promise<Socket_StandardRes> {
     const friendsGraph = await db.dataGraph.find("friends", suser._id);
     const friends = friendsGraph.map(f => {
         if (f.a == suser._id) return f.b;
@@ -121,13 +121,13 @@ export async function friend_get_all(suser: Socket_User): Promise<Socket_Standar
 
     const friendsStatus = await Promise.all(friendsStatusPromises);
 
-    return { err: false, res: friendsStatus };
+    return { err: false, res: [friendsStatus] };
 }
 
-export async function friend_requests_get(suser: Socket_User): Promise<Socket_StandardRes<Id[]>> {
+export async function friend_requests_get(suser: Socket_User): Promise<Socket_StandardRes> {
     const friendRequestsData = await db.data.find<Db_Data.friendRequest>("friendRequests", { to: suser._id }) as Db_Data.friendRequest[];
     const friendRequests = friendRequestsData.map(f => f.from);
-    return { err: false, res: friendRequests };
+    return { err: false, res: [friendRequests] };
 }
 
 export async function user_profile(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
@@ -135,7 +135,7 @@ export async function user_profile(suser: Socket_User, id: Id): Promise<Socket_S
     if (!valid.id(id)) return validE.valid("id");
 
     const userN = await db.data.findOne<Db_Data.user>("user", { _id: id });
-    if (!userN) return validE.err("user not found");
+    if (!userN) return validE.err(InternalCode.UserError.Socket.UserProfile_UserNotFound);
 
     let userStatus = await db.userData.findOne<Partial<Db_UserData.status>>(id, { _id: "status" });
     const userOnline = global.getSocket(id).length > 0;
@@ -177,5 +177,5 @@ export async function user_profile(suser: Socket_User, id: Id): Promise<Socket_S
         activity: statusMgmtGetCache(id) || {},
     }
 
-    return { err: false, res: userData };
+    return { err: false, res: [userData] };
 }

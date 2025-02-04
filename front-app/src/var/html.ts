@@ -32,6 +32,7 @@ function nav() {
         main: qd("#navs__main"),
         realms: qd("#navs__realms"),
         main__call: qd("#navs__main__call"),
+        navs__user: qd("#navs__user"),
         user__name: qd("#navs__user__name"),
         user__status: qd("#navs__user__status"),
         realm__name: qd("#navs__realm__name"),
@@ -43,7 +44,6 @@ function nav() {
 
 function core() {
     return {
-        emojiStyle: qd("#emoji-style"),
         messages_nav__realm__description: qd("#messages_nav__realm__description"),
     }
 }

@@ -1,4 +1,5 @@
 import { readFileSync, watchFile } from "fs";
+import InternalCode from "./codes";
 
 let config = [];
 
@@ -7,7 +8,7 @@ export function expressMiddleware(req, res, next) {
     if (ip == "::1") return next();
 
     if (config.includes(ip)) {
-        return res.status(403).json({ err: true, msg: "Access denied. IP address is banned." });
+        return res.status(403).json({ err: true, c: InternalCode.UserError.Express.IpBanned, msg: "Access denied. IP address is banned." });
     }
     next();
 }

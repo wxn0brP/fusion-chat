@@ -14,6 +14,7 @@ import { emojiHTML, messHTML } from "../../var/html";
 import { mglInt } from "../../var/mgl";
 import emojiFunc, { customEmoji } from "../../ui/components/emoji";
 import LangPkg from "../../utils/translate";
+import Id from "../../types/Id";
 
 const messInteract = {
     replyClose() {
@@ -41,7 +42,7 @@ const messInteract = {
 
         const urlParts = url.split("/");
         if (urlParts.length < 2) return uiFunc.uiMsgT(LangPkg.ui.message.invalid_link);
-        const urlClored =
+        const urlColored =
             urlParts[0] + "//" +
             "<span>" + urlParts[2] + "</span>" +
             "/" + urlParts.slice(3).join("/")
@@ -56,7 +57,7 @@ const messInteract = {
             end();
         }
         messHTML.linkClick.fadeIn();
-        messHTML.linkClick.querySelector("#linkClick_link").innerHTML = urlClored;
+        messHTML.linkClick.querySelector("#linkClick_link").innerHTML = urlColored;
         messHTML.linkClick.querySelector("#linkClick_yes").addEventListener("click", handleYesClick);
         messHTML.linkClick.querySelector("#linkClick_no").addEventListener("click", end);
     },
@@ -67,6 +68,10 @@ const messInteract = {
             cb(e.detail);
             emojiHTML.div.removeEventListener("emocji", evt);
             emojiHTML.div.fadeOut();
+            setTimeout(() => {
+                coreFunc.focusInp();
+                messStyle.setSelectionStart();
+            }, 100);
         }
 
         setTimeout(() => {
@@ -76,7 +81,7 @@ const messInteract = {
 
             const to = vars.chat.to;
             if (to == "main" || to.startsWith("$")) return;
-            socket.emit("realm.emojis.sync", to, (emojis: {name: string, unicode: number}[]) => {
+            socket.emit("realm.emojis.sync", to, (emojis: {name: string, emoji: Id}[]) => {
                 customEmoji.categories = [{
                     id: "Custom",
                     emojis: [
@@ -87,14 +92,11 @@ const messInteract = {
                 customEmoji.emojis = {}
                 emojis.forEach(emoji => {
                     customEmoji.emojis[emoji.name] = {
-                        id: emoji.name,
+                        id: emoji.emoji,
                         name: emoji.name,
                         keywords: [emoji.name],
-                        skins: [
-                            {
-                                native: String.fromCharCode(emoji.unicode),
-                            }
-                        ],
+                        skins: [],
+                        html: true
                     }
                 });
 

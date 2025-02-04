@@ -1,12 +1,14 @@
 import NodeCache from "node-cache";
 import PermissionSystem from "./permission-system/index";
-import rolePermissions, { hasPermission, getAllPermissions } from "./permission-system/permBD";
+import rolePermissions, { hasPermission, getAllPermissions } from "./permission-system/permission";
 import db from "../dataBase";
 import Db_RealmConf from "../types/db/realmConf";
 import { Id } from "../types/base";
+import getCacheSettings from "./cacheSettings";
+import Logic_ChnlPerm from "../types/logic/chnlPerm";
 
-export const cache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache TTL 10 min
-export const channelPermissionsCache = new NodeCache({ stdTTL: 300, checkperiod: 60 }); // Cache TTL 5 min
+export const cache = new NodeCache(getCacheSettings("ChnlPermission"));
+export const channelPermissionsCache = new NodeCache(getCacheSettings("ChnlPermission_Channels"));
 
 const generateCacheKey = (realm: Id, chnl: Id, userId: Id) => `${realm}:${chnl}:${userId}`;
 
@@ -15,12 +17,12 @@ function parseCacheKey(key: string) {
     return { realm, chnl, userId };
 }
 
-async function fetchChannelsPermissions(realm: Id) {
-    let cachedPermissions = channelPermissionsCache.get(realm);
+async function fetchChannelsPermissions(realm: Id): Promise<Logic_ChnlPerm.ChannelPermissions> {
+    let cachedPermissions = channelPermissionsCache.get<Logic_ChnlPerm.ChannelPermissions>(realm);
     if (cachedPermissions) return cachedPermissions;
 
     const channels = await db.realmConf.find<Db_RealmConf.channel>(realm, { $exists: { chid: true } });
-    const permissions = channels.reduce((acc, channel) => {
+    const permissions = channels.reduce((acc: Logic_ChnlPerm.ChannelPermissions, channel: Db_RealmConf.channel) => {
         const rp = channel.rp; // Role-permissions array
         const chnlId = channel.chid;
 
@@ -38,9 +40,7 @@ async function fetchChannelsPermissions(realm: Id) {
 
         acc[chnlId] = perms;
         return acc;
-        // @ts-ignore
-        // TODO fix type
-    }, {});
+    }, {} as Logic_ChnlPerm.ChannelPermissions);
 
     channelPermissionsCache.set(realm, permissions);
     return permissions;
@@ -54,10 +54,10 @@ async function fetchUserRoles(realm: Id, userId: Id) {
 class PermissionCache {
     constructor() { }
 
-    async getPermissions(realm: Id, chnl: Id, userId: Id) {
+    async getPermissions(realm: Id, chnl: Id, userId: Id): Promise<number> {
         const cacheKey = generateCacheKey(realm, chnl, userId);
 
-        let cachedPermissions = cache.get(cacheKey);
+        let cachedPermissions = cache.get<number>(cacheKey);
         if (cachedPermissions) return cachedPermissions;
 
         const [channelsPermissions, userRoles] = await Promise.all([

@@ -18,6 +18,7 @@ const ui: Lang_UI = {
     pin_message: "Pin Message",
     unpin_message: "Unpin Message",
     create_thread: "Create Thread",
+    create_thread_name: "Name of the thread",
     copy_invite: "Copy Invite",
     exit_from_realm: "Exit From Realm",
     subscribe_channel: "Subscribe",
@@ -123,7 +124,11 @@ const ui: Lang_UI = {
         type_custom: "Custom",
         type_voice: "Voice",
         img: "Image URL or empty",
-    }
+        notif: "Event $ on $ has started (click to open)",
+    },
+    enter_dm: "Name of the 2 people",
+    enter_realm_invite: "Enter invite link of the realm",
+    create_realm_name: "Enter name of the realm",
 }
 
 export default ui;

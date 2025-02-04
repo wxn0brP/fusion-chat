@@ -18,6 +18,17 @@ export default (socket: Socket) => {
         updateFriendList(uid);
     });
 
+    socket.on("logout", async (cb?: Function) => {
+        const token = socket.handshake.auth.token;
+        db.data.removeOne("token", { token });
+        db.data.removeOne("fireToken", { fc: token });
+        socket.user = null;
+        if (cb) cb();
+        setTimeout(() => {
+            if (socket.connected) socket.disconnect();
+        }, 100);
+    });
+
     if (global.getSocket(uid).length == 1) updateFriendList(uid);
 }
 

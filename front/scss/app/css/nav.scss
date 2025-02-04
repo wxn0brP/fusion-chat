@@ -207,7 +207,15 @@ nav {
         align-items: center;
         gap: 1rem;
 
+        position: relative;
         cursor: pointer;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 34px;
+            top: 27px;
+        }
     }
 }
 
@@ -220,7 +228,6 @@ nav {
     font-size: 0.8rem;
 }
 
-
 #navs .unreadPriv {
     border-color: var(--accent);
     font-weight: bold;
@@ -230,10 +237,22 @@ nav {
     color: var(--accent);
 }
 
-.priv_chat div {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.priv_chat {
+    position: relative;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 27px;
+        left: 27px;
+        --wh: 12px;
+    }
+    
+    div {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
 }
 
 #navs__priv {
@@ -245,7 +264,7 @@ nav {
         height: 32px;
         border-radius: 50%;
     }
-} 
+}
 
 #navs .channel_textActive {
     color: var(--accent);
@@ -254,6 +273,10 @@ nav {
 #realms__create {
     font-size: 2.5rem;
     color: green;
+}
+
+#realms__voice_show {
+    border: 2px dashed var(--accent);
 }
 
 @media screen and (max-width: 800px) {

@@ -11,7 +11,7 @@ const roomPrefix = "voice-";
 
 export async function voice_join(socket: Socket, to: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("voice.join");
-    if (!valid.str(to, 0, 30)) return validE.valid("to");
+    if (!valid.str(to, 16, 100)) return validE.valid("to");
 
     emitToRoom(to, "voice.join", socket.user._id);
     emitToRoom(to, "refreshData", "voice.get.users");
@@ -68,7 +68,7 @@ export async function call_dm_init(suser: Socket_User, id: Id): Promise<Socket_S
                 data: [["call", suser._id]]
             }
         });
-        return { err: false, res: true };
+        return { err: false, res: [true] };
     }
 
     global.sendToSocket(id, "call.dm.init", suser._id);

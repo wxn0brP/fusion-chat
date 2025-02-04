@@ -26,7 +26,7 @@ namespace Db_UserData {
 
     export interface status {
         _id: "status";
-        status: "online" | "offline" | "away";
+        status: "online" | "offline" | "idle" | "dnd";
         text: string;
     }
 

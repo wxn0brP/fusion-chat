@@ -1,8 +1,9 @@
+import InternalCode from "../codes";
 import db from "../dataBase";
 import { Id } from "../types/base";
 import Db_BotData from "../types/db/botData";
 import permissionSystem from "./permission-system/index";
-import Permissions from "./permission-system/permBD";
+import Permissions from "./permission-system/permission";
 
 export async function invite(userID: Id, botID: Id, realmID: Id) {
     const permSys = new permissionSystem(realmID);
@@ -10,7 +11,11 @@ export async function invite(userID: Id, botID: Id, realmID: Id) {
         Permissions.admin,
         Permissions.manageInvites
     ]);
-    if(!userPerm) return { err: true, msg: "You don't have permission to edit this realm" };
+    if(!userPerm) return {
+        err: true,
+        c: InternalCode.UserError.Express.InviteBot_NotPermission,
+        msg: "You don't have permission to edit this realm"
+    };
 
     const botName = await db.botData.findOne<Db_BotData.name>(botID, { _id: "name" });
     const role = await permSys.createRole(botName.name);

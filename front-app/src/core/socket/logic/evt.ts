@@ -2,33 +2,45 @@ import hub from "../../../hub";
 hub("socket/evt");
 
 import socket from "../socket";
+import Id from "../../../types/Id";
 import vars from "../../../var/var";
-import debugFunc from "../../debug";
+import debugFunc, { LogLevel } from "../../debug";
+import apis from "../../../api/apis";
+import coreFunc from "../../coreFunc";
+import render_dm from "../../../ui/render/dm";
 import uiFunc from "../../../ui/helpers/uiFunc";
 import render_user from "../../../ui/render/user";
-import render_dm from "../../../ui/render/dm";
 import render_realm from "../../../ui/render/realm";
-import { Core_socket__refresh, Core_socket__user_status_type } from "../../../types/core/socket";
-import Id from "../../../types/Id";
-import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
+import render_events from "../../../ui/render/event";
 import { Ui_UserState } from "../../../types/ui/render";
-import LangPkg from "../../../utils/translate";
+import LangPkg, { langFunc } from "../../../utils/translate";
+import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
+import { Core_socket__refresh, Core_socket__user_status_type } from "../../../types/core/socket";
+import changeCodeToString from "../../../utils/code";
 
 export function connect() {
-    debugFunc.msg("connected to socket");
+    debugFunc.msg(LogLevel.INFO, "connected to socket");
     socket.emit("realm.get");
     socket.emit("self.status.get");
     socket.emit("dm.get");
 }
 
 export function error(evt_name: string, ...data: any[]) {
-    debugFunc.msg(evt_name, ...data)
-    if(data.length > 0) uiFunc.uiMsg(data[0]);
+    debugFunc.msg(LogLevel.ERROR, evt_name, ...data);
+    if (data.length == 0) return;
+
+    const first = data[0];
+    if (/^[1-5][0-2]\.\d{3}$/.test(first)) {
+        uiFunc.uiMsgT(LangPkg.api.error, changeCodeToString(first));
+        return;
+    }
+
+    uiFunc.uiMsg(first);
 }
 
 export function error_valid(evt: string, name: string, ...data: any[]) {
     uiFunc.uiMsgT(LangPkg.socket.valid_error);
-    debugFunc.msg(`Valid error: ${evt} - ${name}`, ...data)
+    debugFunc.msg(LogLevel.ERROR, `Valid error: ${evt} - ${name}`, ...data)
 }
 
 export function error_spam(type: string, ...data: any[]) {
@@ -46,7 +58,7 @@ export function error_spam(type: string, ...data: any[]) {
 export function connect_error(data: Error) {
     if (!localStorage.getItem("token")) window.location.href = "/login?err=true";
 
-    debugFunc.msg(data);
+    debugFunc.msg(LogLevel.SOCKET_ERROR, data);
     const dataStr = data.toString();
     if (dataStr.includes("Error: Authentication error")) {
         window.location.href = "/login?err=true";
@@ -56,7 +68,7 @@ export function connect_error(data: Error) {
             let text = "";
             let param = "";
             if (timeMath) {
-                text = "socket.ban";
+                text = LangPkg.socket.ban;
                 param = timeMath[1];
             } else {
                 text = dataStr;
@@ -136,5 +148,18 @@ export function realm_users_activity_sync(userActivity: Core_socket__realm_users
         if (!status && !activity) return;
 
         render_realm.realmUserStatus(uid, user);
+    })
+}
+
+export function realm_event_notify(realm: Id, evt: Id) {
+    socket.emit("realm.event.get.topic", realm, evt, (topic: string) => {
+        const text = langFunc(LangPkg.ui.event.notif, `<b>"${topic}"</b>`, `<b>${apis.www.changeChat(realm)}</b>`);
+        uiFunc.uiMsg(text, {
+            onClick: () => {
+                coreFunc.changeChat(realm).then(() => {
+                    render_events.show();
+                });
+            }
+        });
     })
 }

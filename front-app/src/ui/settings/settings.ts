@@ -4,7 +4,7 @@ hub("settings");
 import Id from "../../types/Id";
 import { mglInt } from "../../var/mgl";
 import { Settings } from "./realm/types";
-import debugFunc from "../../core/debug";
+import debugFunc, { LogLevel } from "../../core/debug";
 import settingsData from "./settingsData";
 import SettingsManager from "./settingsLib";
 import socket from "../../core/socket/socket";
@@ -31,7 +31,7 @@ const settingsFunc = {
                     socket.emit("realm.settings.set", id, data, (...errs) => {
                         if(errs.length == 1 && errs[0] === false) return res(true);
                         res(false);
-                        debugFunc.msg(...errs);
+                        debugFunc.msg(LogLevel.ERROR, "Error saving realm settings: ", ...errs);
                     });
                 })
             },

@@ -16,6 +16,7 @@ export interface Lang_UI {
     pin_message: string;
     unpin_message: string;
     create_thread: string;
+    create_thread_name: string;
     copy_invite: string;
     exit_from_realm: string;
     subscribe_channel: string;
@@ -120,5 +121,9 @@ export interface Lang_UI {
         type_voice: string;
         type_custom: string;
         img: string;
-    }
+        notif: string;
+    },
+    enter_dm: string;
+    create_realm_name: string;
+    enter_realm_invite: string;
 }

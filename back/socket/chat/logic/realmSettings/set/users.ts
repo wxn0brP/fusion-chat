@@ -1,8 +1,8 @@
-import db from "../../../../../dataBase";
-import { processDbChanges } from "./imports";
+import Db_RealmUser from "../../../../../types/db/realmUser";
+import { db, Id, processDbChanges, ProcessDbChangesResult, Socket_RealmSettings } from "./imports";
 
-export default async(id, data) => {
-    const old_data = await db.realmUser.find(id, {});
+export default async(id: Id, data: Socket_RealmSettings) => {
+    const old_data = await db.realmUser.find<Db_RealmUser.user | Db_RealmUser.bot>(id, {});
     let new_data = data.users;
     
     const new_users = new_data.filter(user => /^[a-zA-Z0-9]/.test(user.u)).map(user => {
@@ -12,7 +12,7 @@ export default async(id, data) => {
         }
     });
     
-    const old_users = old_data.filter(user => user.u);
+    const old_users = old_data.filter((user: Db_RealmUser.user) => user.u);
     const changes_users = processDbChanges(old_users, new_users, ["u", "r"], "u");
 
     const new_bots = new_data.filter(user => user.u.startsWith("^")).map(user => {
@@ -22,14 +22,14 @@ export default async(id, data) => {
         }
     });
     
-    const old_bots = old_data.filter(user => user.bot);
+    const old_bots = old_data.filter((user: Db_RealmUser.bot) => user.bot);
     const changes_bots = processDbChanges(old_bots, new_bots, ["bot", "r"], "bot");
     
     await saveDbChanges(id, changes_users, "u");
     await saveDbChanges(id, changes_bots, "bot");
 }
 
-async function saveDbChanges(realmId, changes, trackName){
+async function saveDbChanges(realmId: Id, changes: ProcessDbChangesResult, trackName: string){
     const itemsToUpdate = changes.itemsToUpdate;
 
     for(const item of itemsToUpdate){
