@@ -1,0 +1,41 @@
+/// { "title": "Fusion Chat | Invite bot" }
+<main>
+    <section id="state-invite" style="display: none;">
+        <h1 id="botName"></h1>
+        <label>
+            Select realm
+            <br />
+            <select id="realmSelect"></select>
+        </label>
+        <br />
+        <button onclick="invite()">Invite bot</button>
+    </section>
+    <section id="state-error" style="display: none;"></section>
+    <section id="state-success" style="display: none;">
+        <h1>Success</h1>
+        <a href="/app">Open App</a>
+    </section>
+</main>
+
+<link rel="stylesheet" href="/fc-mini.css">
+<script src="/js/botInvite.js"></script>
+
+<style>
+    #realmSelect{
+        background-color: var(--back);
+        color: var(--txt);
+        border: 1px solid var(--accent);
+        padding: 0.5rem 1rem;
+        border-radius: 1rem;
+        cursor: pointer;
+    }
+
+    section{
+        padding: 1rem;
+        margin: auto;
+    }
+
+    h1{
+        margin-bottom: 1rem;
+    }
+</style>

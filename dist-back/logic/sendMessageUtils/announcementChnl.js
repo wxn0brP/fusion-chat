@@ -1,0 +1,49 @@
+import NodeCache from "node-cache";
+import db from "../../dataBase.js";
+import { combineId } from "../chatMgmt.js";
+import sendMessage from "../sendMessage.js";
+import getCacheSettings from "../cacheSettings.js";
+const announcementSubscribeCache = new NodeCache(getCacheSettings("AnnouncementSubscribe"));
+async function announcementChnl(realm, data) {
+    const subs = await getSubscribed(realm, data.chnl);
+    if (subs.length == 0)
+        return;
+    subs.forEach(async ({ tr, tc }) => {
+        const req = {
+            to: tr,
+            msg: data.msg,
+            chnl: tc,
+        };
+        const user = {
+            _id: combineId(tr, tc),
+            name: "Event Chnl",
+        };
+        const opts = {
+            system: true,
+            frPrefix: "("
+        };
+        sendMessage(req, user, opts);
+    });
+}
+async function getSubscribed(realm, chnl) {
+    let realmData = announcementSubscribeCache.get(realm);
+    if (!realmData) {
+        const chnls = await db.realmData.find("announcement.channels", { sr: realm });
+        realmData = {};
+        chnls.forEach(({ sr, sc, tr, tc }) => {
+            const key = `${sr}:${sc}`;
+            if (!realmData[key]) {
+                realmData[key] = [];
+            }
+            realmData[key].push({ tr, tc });
+        });
+        announcementSubscribeCache.set(realm, realmData);
+    }
+    const key = `${realm}:${chnl}`;
+    return realmData[key] || [];
+}
+export function clearEventCache(realm) {
+    announcementSubscribeCache.del(realm);
+}
+export default announcementChnl;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYW5ub3VuY2VtZW50Q2hubC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL2JhY2svbG9naWMvc2VuZE1lc3NhZ2VVdGlscy9hbm5vdW5jZW1lbnRDaG5sLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sU0FBUyxNQUFNLFlBQVksQ0FBQztBQUNuQyxPQUFPLEVBQUUsTUFBTSxnQkFBZ0IsQ0FBQztBQUNoQyxPQUFPLEVBQUUsU0FBUyxFQUFFLE1BQU0sYUFBYSxDQUFDO0FBQ3hDLE9BQU8sV0FBVyxNQUFNLGdCQUFnQixDQUFDO0FBSXpDLE9BQU8sZ0JBQWdCLE1BQU0sa0JBQWtCLENBQUM7QUFFaEQsTUFBTSwwQkFBMEIsR0FBRyxJQUFJLFNBQVMsQ0FBQyxnQkFBZ0IsQ0FBQyx1QkFBdUIsQ0FBQyxDQUFDLENBQUM7QUFFNUYsS0FBSyxVQUFVLGdCQUFnQixDQUFDLEtBQVMsRUFBRSxJQUFhO0lBQ3BELE1BQU0sSUFBSSxHQUFHLE1BQU0sYUFBYSxDQUFDLEtBQUssRUFBRSxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUM7SUFDbkQsSUFBRyxJQUFJLENBQUMsTUFBTSxJQUFJLENBQUM7UUFBRSxPQUFPO0lBRTVCLElBQUksQ0FBQyxPQUFPLENBQUMsS0FBSyxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUU7UUFDOUIsTUFBTSxHQUFHLEdBQUc7WUFDUixFQUFFLEVBQUUsRUFBRTtZQUNOLEdBQUcsRUFBRSxJQUFJLENBQUMsR0FBRztZQUNiLElBQUksRUFBRSxFQUFFO1NBQ1gsQ0FBQTtRQUNELE1BQU0sSUFBSSxHQUFHO1lBQ1QsR0FBRyxFQUFFLFNBQVMsQ0FBQyxFQUFFLEVBQUUsRUFBRSxDQUFDO1lBQ3RCLElBQUksRUFBRSxZQUFZO1NBQ3JCLENBQUE7UUFDRCxNQUFNLElBQUksR0FBRztZQUNULE1BQU0sRUFBRSxJQUFJO1lBQ1osUUFBUSxFQUFFLEdBQUc7U0FDaEIsQ0FBQTtRQUNELFdBQVcsQ0FBQyxHQUFHLEVBQUUsSUFBSSxFQUFFLElBQUksQ0FBQyxDQUFDO0lBQ2pDLENBQUMsQ0FBQyxDQUFDO0FBQ1AsQ0FBQztBQVFELEtBQUssVUFBVSxhQUFhLENBQUMsS0FBUyxFQUFFLElBQVE7SUFDNUMsSUFBSSxTQUFTLEdBQUcsMEJBQTBCLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBRXRELElBQUcsQ0FBQyxTQUFTLEVBQUMsQ0FBQztRQUNYLE1BQU0sS0FBSyxHQUFHLE1BQU0sRUFBRSxDQUFDLFNBQVMsQ0FBQyxJQUFJLENBQXFDLHVCQUF1QixFQUFFLEVBQUUsRUFBRSxFQUFFLEtBQUssRUFBRSxDQUFDLENBQUM7UUFFbEgsU0FBUyxHQUFHLEVBQUUsQ0FBQztRQUNmLEtBQUssQ0FBQyxPQUFPLENBQUMsQ0FBQyxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUU7WUFDakMsTUFBTSxHQUFHLEdBQUcsR0FBRyxFQUFFLElBQUksRUFBRSxFQUFFLENBQUM7WUFDMUIsSUFBRyxDQUFDLFNBQVMsQ0FBQyxHQUFHLENBQUMsRUFBQyxDQUFDO2dCQUNoQixTQUFTLENBQUMsR0FBRyxDQUFDLEdBQUcsRUFBRSxDQUFDO1lBQ3hCLENBQUM7WUFDRCxTQUFTLENBQUMsR0FBRyxDQUFDLENBQUMsSUFBSSxDQUFDLEVBQUUsRUFBRSxFQUFFLEVBQUUsRUFBRSxDQUFDLENBQUM7UUFDcEMsQ0FBQyxDQUFDLENBQUM7UUFFSCwwQkFBMEIsQ0FBQyxHQUFHLENBQUMsS0FBSyxFQUFFLFNBQVMsQ0FBQyxDQUFDO0lBQ3JELENBQUM7SUFFRCxNQUFNLEdBQUcsR0FBRyxHQUFHLEtBQUssSUFBSSxJQUFJLEVBQUUsQ0FBQztJQUMvQixPQUFPLFNBQVMsQ0FBQyxHQUFHLENBQUMsSUFBSSxFQUFFLENBQUM7QUFDaEMsQ0FBQztBQUVELE1BQU0sVUFBVSxlQUFlLENBQUMsS0FBYTtJQUN6QywwQkFBMEIsQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFDLENBQUM7QUFDMUMsQ0FBQztBQUVELGVBQWUsZ0JBQWdCLENBQUMifQ==

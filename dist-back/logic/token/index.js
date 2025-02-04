@@ -1,0 +1,54 @@
+import { SignJWT, jwtVerify, jwtDecrypt, EncryptJWT } from "jose";
+import keyManager, { KeyIndex } from "./KeyManager.js";
+const secretKey = new TextEncoder().encode(process.env.JWT);
+export async function create(data, exp = true, encrypt = false) {
+    const jwt = new SignJWT(data)
+        .setProtectedHeader({ alg: "HS256" })
+        .setIssuedAt();
+    if (exp !== false) {
+        if (exp === true)
+            exp = "1h";
+        else if (typeof exp === "number")
+            exp = exp + "s";
+        jwt.setExpirationTime(exp ? exp : "1h");
+    }
+    const signedToken = await jwt.sign(secretKey);
+    if (encrypt) {
+        const keyIndex = typeof encrypt === "number" ? encrypt : KeyIndex.GENERAL;
+        const keyPair = await keyManager.getKeyPair(keyIndex);
+        if (!keyPair) {
+            throw new Error(`Key with index ${keyIndex} does not exist.`);
+        }
+        const encryptedToken = new EncryptJWT({ token: signedToken })
+            .setProtectedHeader({ alg: "RSA-OAEP-256", enc: "A256GCM" });
+        if (exp !== false)
+            encryptedToken.setExpirationTime(exp ? exp : "1h");
+        return await encryptedToken
+            .encrypt(keyPair.publicKey);
+    }
+    return signedToken;
+}
+export async function decode(token, keyIndex = false) {
+    try {
+        if (keyIndex) {
+            const keyPair = await keyManager.getKeyPair(keyIndex);
+            if (!keyPair) {
+                throw new Error(`Key with index ${keyIndex} does not exist.`);
+            }
+            const decrypted = await jwtDecrypt(token, keyPair.privateKey);
+            const decoded = await jwtVerify(decrypted.payload.token, secretKey);
+            return decoded.payload;
+        }
+        else {
+            const { payload } = await jwtVerify(token, secretKey);
+            return payload;
+        }
+    }
+    catch (error) {
+        if (process.env.NODE_ENV == "development")
+            lo("Token verification error:", error.message);
+        return null;
+    }
+}
+export { KeyIndex };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9iYWNrL2xvZ2ljL3Rva2VuL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBRSxPQUFPLEVBQUUsU0FBUyxFQUFFLFVBQVUsRUFBRSxVQUFVLEVBQWMsTUFBTSxNQUFNLENBQUM7QUFDOUUsT0FBTyxVQUFVLEVBQUUsRUFBRSxRQUFRLEVBQUUsTUFBTSxjQUFjLENBQUM7QUFFcEQsTUFBTSxTQUFTLEdBQUcsSUFBSSxXQUFXLEVBQUUsQ0FBQyxNQUFNLENBQUMsT0FBTyxDQUFDLEdBQUcsQ0FBQyxHQUFHLENBQUMsQ0FBQztBQVM1RCxNQUFNLENBQUMsS0FBSyxVQUFVLE1BQU0sQ0FBQyxJQUFnQixFQUFFLE1BQTJCLElBQUksRUFBRSxVQUEwQixLQUFLO0lBRTNHLE1BQU0sR0FBRyxHQUFHLElBQUksT0FBTyxDQUFDLElBQUksQ0FBQztTQUN4QixrQkFBa0IsQ0FBQyxFQUFFLEdBQUcsRUFBRSxPQUFPLEVBQUUsQ0FBQztTQUNwQyxXQUFXLEVBQUUsQ0FBQztJQUVuQixJQUFHLEdBQUcsS0FBSyxLQUFLLEVBQUMsQ0FBQztRQUNkLElBQUcsR0FBRyxLQUFLLElBQUk7WUFBRSxHQUFHLEdBQUcsSUFBSSxDQUFDO2FBQ3ZCLElBQUcsT0FBTyxHQUFHLEtBQUssUUFBUTtZQUFFLEdBQUcsR0FBRyxHQUFHLEdBQUcsR0FBRyxDQUFDO1FBQ2pELEdBQUcsQ0FBQyxpQkFBaUIsQ0FBQyxHQUFHLENBQUMsQ0FBQyxDQUFDLEdBQUcsQ0FBQyxDQUFDLENBQUMsSUFBSSxDQUFDLENBQUM7SUFDNUMsQ0FBQztJQUVELE1BQU0sV0FBVyxHQUFHLE1BQU0sR0FBRyxDQUFDLElBQUksQ0FBQyxTQUFTLENBQUMsQ0FBQztJQUc5QyxJQUFHLE9BQU8sRUFBQyxDQUFDO1FBQ1IsTUFBTSxRQUFRLEdBQUcsT0FBTyxPQUFPLEtBQUssUUFBUSxDQUFDLENBQUMsQ0FBQyxPQUFPLENBQUMsQ0FBQyxDQUFDLFFBQVEsQ0FBQyxPQUFPLENBQUM7UUFDMUUsTUFBTSxPQUFPLEdBQUcsTUFBTSxVQUFVLENBQUMsVUFBVSxDQUFDLFFBQVEsQ0FBQyxDQUFDO1FBRXRELElBQUcsQ0FBQyxPQUFPLEVBQUMsQ0FBQztZQUNULE1BQU0sSUFBSSxLQUFLLENBQUMsa0JBQWtCLFFBQVEsa0JBQWtCLENBQUMsQ0FBQztRQUNsRSxDQUFDO1FBRUQsTUFBTSxjQUFjLEdBQUcsSUFBSSxVQUFVLENBQUMsRUFBRSxLQUFLLEVBQUUsV0FBVyxFQUFFLENBQUM7YUFDeEQsa0JBQWtCLENBQUMsRUFBRSxHQUFHLEVBQUUsY0FBYyxFQUFFLEdBQUcsRUFBRSxTQUFTLEVBQUUsQ0FBQyxDQUFDO1FBRWpFLElBQUcsR0FBRyxLQUFLLEtBQUs7WUFDWixjQUFjLENBQUMsaUJBQWlCLENBQUMsR0FBRyxDQUFDLENBQUMsQ0FBQyxHQUFHLENBQUMsQ0FBQyxDQUFDLElBQUksQ0FBQyxDQUFDO1FBRXZELE9BQU8sTUFBTSxjQUFjO2FBQ3RCLE9BQU8sQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLENBQUM7SUFDcEMsQ0FBQztJQUVELE9BQU8sV0FBVyxDQUFDO0FBQ3ZCLENBQUM7QUFRRCxNQUFNLENBQUMsS0FBSyxVQUFVLE1BQU0sQ0FBQyxLQUFhLEVBQUUsV0FBMkIsS0FBSztJQUN4RSxJQUFHLENBQUM7UUFDQSxJQUFHLFFBQVEsRUFBQyxDQUFDO1lBRVQsTUFBTSxPQUFPLEdBQUcsTUFBTSxVQUFVLENBQUMsVUFBVSxDQUFDLFFBQVEsQ0FBQyxDQUFDO1lBQ3RELElBQUcsQ0FBQyxPQUFPLEVBQUMsQ0FBQztnQkFDVCxNQUFNLElBQUksS0FBSyxDQUFDLGtCQUFrQixRQUFRLGtCQUFrQixDQUFDLENBQUM7WUFDbEUsQ0FBQztZQUVELE1BQU0sU0FBUyxHQUFHLE1BQU0sVUFBVSxDQUFDLEtBQUssRUFBRSxPQUFPLENBQUMsVUFBVSxDQUFtQyxDQUFDO1lBQ2hHLE1BQU0sT0FBTyxHQUFHLE1BQU0sU0FBUyxDQUFDLFNBQVMsQ0FBQyxPQUFPLENBQUMsS0FBSyxFQUFFLFNBQVMsQ0FBQyxDQUFDO1lBQ3BFLE9BQU8sT0FBTyxDQUFDLE9BQU8sQ0FBQztRQUMzQixDQUFDO2FBQUksQ0FBQztZQUVGLE1BQU0sRUFBRSxPQUFPLEVBQUUsR0FBRyxNQUFNLFNBQVMsQ0FBQyxLQUFLLEVBQUUsU0FBUyxDQUFDLENBQUM7WUFDdEQsT0FBTyxPQUFPLENBQUM7UUFDbkIsQ0FBQztJQUNMLENBQUM7SUFBQSxPQUFNLEtBQUssRUFBQyxDQUFDO1FBQ1YsSUFBRyxPQUFPLENBQUMsR0FBRyxDQUFDLFFBQVEsSUFBSSxhQUFhO1lBQUUsRUFBRSxDQUFDLDJCQUEyQixFQUFFLEtBQUssQ0FBQyxPQUFPLENBQUMsQ0FBQztRQUN6RixPQUFPLElBQUksQ0FBQztJQUNoQixDQUFDO0FBQ0wsQ0FBQztBQUVELE9BQU8sRUFBRSxRQUFRLEVBQUUsQ0FBQyJ9

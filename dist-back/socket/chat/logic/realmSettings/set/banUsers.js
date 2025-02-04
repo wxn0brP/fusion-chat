@@ -1,0 +1,3 @@
+export default async (id, data) => {
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYmFuVXNlcnMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi9iYWNrL3NvY2tldC9jaGF0L2xvZ2ljL3JlYWxtU2V0dGluZ3Mvc2V0L2JhblVzZXJzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUVBLGVBQWUsS0FBSyxFQUFFLEVBQU0sRUFBRSxJQUEwQixFQUFFLEVBQUU7QUFDNUQsQ0FBQyxDQUFBIn0=

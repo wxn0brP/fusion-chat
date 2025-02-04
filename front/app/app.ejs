@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="alternate icon" href="/favicon.png">
+        <title>Fusion Chat</title>
+        <link rel="stylesheet" href="/style.css">
+        <link rel="stylesheet" href="css/require.css">
+    </head>
+    <body>
+        <noscript class="delete" time="500">This page require JS to work</noscript>
+        <div id="app">
+            <%- include('html/nav') -%> 
+            <%- include('html/mess') -%> 
+            <%- include('html/context-menu') -%> 
+            <%- include('html/pop-up') -%> 
+
+            <div id="loadingScreen" class="delete" time="4000">
+                <img id="loadingScreenAnim" src="/assets/hatwoo.svg" alt="Loading..." />
+            </div>
+        </div>
+        <div id="assets" style="display: none;">
+        </div>
+        <%- include('html/script') %> 
+    </body>
+</html>

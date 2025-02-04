@@ -1,0 +1,36 @@
+<nav>
+    <div id="realms">
+        <div class="realm" onclick="mglVar.coreFunc.changeChat('main')">
+            <img src="/favicon.svg" alt="MAIN" id="realms__main__img">
+        </div>
+        <hr>
+        <div id="realms__content"></div>
+        <hr>
+        <div class="realm" onclick="mglHTML.other.makeRealm.fadeIn()" id="realms__create">+</div>
+        <div class="realm" onclick="mglHTML.voice.div.fadeIn()" id="realms__voice_show" style="display: none;">🎤</div>
+    </div>
+    <div id="navs">
+        <div id="navs__main">
+            <button onclick="mglVar.buttonFunc.addDm()" translate class="btn">ui.add_dm</button>
+            <button onclick="mglVar.voiceFunc.startCall()" translate id="navs__main__call" class="btn">ui.call.call</button>
+            <hr>
+            <br />
+            <div id="navs__priv"></div>
+        </div>
+        <div id="navs__realms" style="display: none;">
+            <div id="navs__realm__name"></div>
+            <div id="navs__realm__panel"></div>
+            <hr>
+            <br />
+            <div id="navs__realm__channels"></div>
+            <div id="navs__realms__users"></div>
+        </div>
+        <div id="navs__user" class="userStatusMarker">
+            <img src="/assets/hatwoo.svg" alt="">
+            <div id="navs__user__name"></div>
+            <div id="navs__user__status"></div>
+            <div id="navs__user__setting" onclick="mglInt.settingsFunc.showUserSettings()">⚙️</div>
+        </div>
+    </div>
+</nav>
+<div id="nav__toggle">&#9776;</div>

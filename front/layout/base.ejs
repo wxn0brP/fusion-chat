@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="alternate icon" href="/favicon.png">
+        <title><%= layout.title || 'Fusion Chat' %></title>
+		<meta name="description" content="<%= layout.description || 'Fusion Chat' %>" />
+        <link rel="stylesheet" href="/style.css">
+        <% (layout.styles || []).forEach((style) => { %>
+            <link rel="stylesheet" href="<%= style %>.css" />
+        <% }) %>
+        <% (layout.scripts || []).forEach((script) => { %>
+            <script src="<%= script %>.js" defer></script>
+        <% }) %>
+    </head>
+    <body>
+        <%- body %>
+    </body>
+</html>

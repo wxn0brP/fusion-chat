@@ -1,0 +1,73 @@
+#navs__user {
+    position: relative;
+
+    img {
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        left: 38px;
+        top: 40px;
+        z-index: 2;
+        --wh: 15px;
+    }
+}
+
+#navs__user__name {
+    position: absolute;
+    left: 65px;
+    top: 11px;
+    width: 105px;
+    font-size: 1.2rem;
+    text-align: left;
+}
+
+#navs__user__status {
+    position: absolute;
+    left: 65px;
+    top: 32px;
+    width: 105px;
+    text-align: left;
+    overflow: auto;
+    text-wrap: nowrap;
+}
+
+#navs__user__setting {
+    position: absolute;
+    left: 194px;
+    top: 19px;
+    font-size: 1.6rem;
+    cursor: pointer;
+}
+
+.userStatusMarker {
+    --wh: 13px;
+    &::before {
+        width: var(--wh);
+        height: var(--wh);
+        border-radius: 50%;
+    }
+
+    &[data-status="online"]::before {
+        background-color: green;
+    }
+
+    &[data-status="offline"]::before {
+        background-color: grey;
+    }
+
+    &[data-status="idle"]::before {
+        background-color: yellow;
+    }
+
+    &[data-status="dnd"]::before {
+        background-color: red;
+    }
+}
