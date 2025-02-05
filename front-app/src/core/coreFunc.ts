@@ -140,6 +140,7 @@ const coreFunc = {
             LangPkg.ui.message.placeholder + "..." :
             LangPkg.ui.message.read_only + "!";
         messHTML.input.disabled = !permToWrite;
+        messHTML.bar.style.display = "";
     },
 
     loadChat() {
@@ -216,6 +217,9 @@ const coreFunc = {
         }) as Vars_realm__thread[];
         messHTML.div.innerHTML = "";
         render_forum(forms, id);
+        messHTML.input.placeholder = LangPkg.ui.message.read_only + "!";
+        messHTML.input.disabled = true;
+        messHTML.bar.style.display = "none";
     }
 }
 
