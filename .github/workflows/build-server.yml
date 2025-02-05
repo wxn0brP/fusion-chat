@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - main
+      - dev
   pull_request:
     branches:
       - main
-
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -15,52 +16,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Setup Node.js environment (node > 22)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '22'
 
-      # Install global dependencies
       - name: Install dependencies
         run: |
           npm install -g typescript tsc-alias
 
-      # Build root directory
       - name: Install and Build (Root)
         working-directory: .
         run: |
           npm install
           npm run build
 
-      # Remove devDependencies
-      - name: Remove devDependencies
-        run: |
-          jq 'del(.devDependencies)' package.json > temp.json && mv temp.json package.json
-
-      # Build front-app directory
       - name: Install and Build (Front-App)
         working-directory: ./front-app
         run: |
           npm install
           npm run build
 
-      # Prepare dist branch
-      - name: Deploy to Dist
+      - name: Determine Target Branch
+        id: branch-name
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "TARGET_BRANCH=dist-nightly" >> $GITHUB_ENV
+          else
+            echo "TARGET_BRANCH=dist" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy to Target Branch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-          # Checkout or create empty dist branch
-          git checkout --orphan dist
+          git checkout --orphan $TARGET_BRANCH
 
-          mkdir -p dist
           mkdir -p dist/front-app
 
           cp -R ./dist-back/ dist/
@@ -71,7 +68,7 @@ jobs:
           cp ./package.json dist/package.json
           cp ./LICENSE dist/LICENSE
           cp ./.env.txt dist/.env.txt
-          
+
           shopt -s extglob
           rm -rf !(dist)
           rm .gitignore
@@ -80,8 +77,12 @@ jobs:
           rm -rf dist
           ls -al
 
+      - name: Remove devDependencies
+        run: |
+          jq 'del(.devDependencies)' package.json > temp.json && mv temp.json package.json
+
+      - name: Commit and Push
+        run: |
           git add .
-
-          git commit -m "Deploy build output to dist branch"
-          git push origin dist --force
-
+          git commit -m "Deploy build output to $TARGET_BRANCH"
+          git push origin $TARGET_BRANCH --force
