@@ -1,8 +1,15 @@
-const os = require("os");
+import { platform } from "os";
+import { DataNext } from "../types/fullscreenWindow";
 const TOLERANCE = 10;
 
-if (os.platform() === "win32") {
-    const koffi = require("koffi");
+const exports: {
+    getCurrentWindow: () => Promise<string>
+} = {
+    getCurrentWindow: () => new Promise(resolve => resolve(""))
+};
+
+if (platform() === "win32") {
+    const koffi = await import("koffi");
 
     const user32 = koffi.load("user32.dll");
 
@@ -14,7 +21,7 @@ if (os.platform() === "win32") {
     const GetSystemMetrics = user32.func("int GetSystemMetrics(int)");
     const GetWindowTextW = user32.func("int GetWindowTextW(void*, void*, int)");
 
-    module.exports = () => {
+    exports.getCurrentWindow = () => {
         const hWnd = GetForegroundWindow();
         const rectBuffer = Buffer.alloc(16);
 
@@ -46,15 +53,15 @@ if (os.platform() === "win32") {
 
         return new Promise(resolve => resolve(windowTitle));
     }
-} else if (os.platform() === "linux") {
-    const { exec } = require("child_process");
+} else if (platform() === "linux") {
+    const { exec } = await import("child_process");
     let commandsExist = 0;
     const notExistsCheck = 20; // how many times to check if commands exist if not found
 
-    module.exports = () => {
+    exports.getCurrentWindow = () => {
         return new Promise(async (resolve, reject) => {
-            const dataNext = { resolve, reject };
-            
+            const dataNext: DataNext = { resolve, reject };
+
             if (commandsExist < 0) {
                 dataNext.reject("Error (screen) command doesn't installed");
                 return;
@@ -63,7 +70,7 @@ if (os.platform() === "win32") {
             if (commandsExist == 0 || commandsExist < -notExistsCheck) {
                 const checkCmds = await checkCommands(dataNext);
                 if (commandsExist < -notExistsCheck) commandsExist = 0;
-                if (!checkCmds){
+                if (!checkCmds) {
                     commandsExist--;
                     return;
                 }
@@ -74,8 +81,8 @@ if (os.platform() === "win32") {
         });
     }
 
-    async function checkCommands(dataNext) {
-        function tryCmd(cmd) {
+    async function checkCommands(dataNext: DataNext) {
+        function tryCmd(cmd: string) {
             return new Promise((resolve) => {
                 exec("command -v " + cmd, (error, stdout) => resolve(!!stdout));
             })
@@ -91,10 +98,10 @@ if (os.platform() === "win32") {
         return true;
     }
 
-    function getActiveWindowTitle(dataNext) {
+    function getActiveWindowTitle(dataNext: DataNext) {
         exec("xdotool getwindowfocus getwindowname", (error, stdout, stderr) => {
             if (error || stderr) {
-                dataNext, reject(`Error (screen): ${error || stderr}`);
+                dataNext.reject(`Error (screen): ${error || stderr}`);
                 return;
             }
             dataNext.windowTitle = stdout.trim();
@@ -102,7 +109,7 @@ if (os.platform() === "win32") {
         });
     }
 
-    function getWindowGeometry(dataNext) {
+    function getWindowGeometry(dataNext: DataNext) {
         exec("xdotool getwindowfocus getwindowgeometry --shell", (err, geomOut) => {
             if (err) {
                 dataNext.reject(`Error (screen) while getting window geometry: ${err.message}`);
@@ -117,7 +124,7 @@ if (os.platform() === "win32") {
         });
     }
 
-    function getScreenInformation(dataNext) {
+    function getScreenInformation(dataNext: DataNext) {
         exec(`xrandr | grep " connected "`, (xrErr, xrOut) => {
             if (xrErr) {
                 dataNext.reject(`Error (screen) fetching screen information: ${xrErr.message}`);
@@ -129,8 +136,8 @@ if (os.platform() === "win32") {
         });
     }
 
-    function parseMonitorInformation(xrOut) {
-        return xrOut.split("\n").map(line => {
+    function parseMonitorInformation(xrOut: string) {
+        return xrOut.split("\n").map((line: string) => {
             const [, resolution] = line.match(/\b(\d+x\d+\+\d+\+\d+)\b/) || [];
 
             const [resWidth, resHeight, resX, resY] = resolution
@@ -140,7 +147,7 @@ if (os.platform() === "win32") {
         }).filter(m => m.resWidth && m.resHeight);
     }
 
-    function findMonitor(dataNext) {
+    function findMonitor(dataNext: DataNext) {
         const monitor = dataNext.monitors.find(({ resX, resY, resWidth, resHeight }) =>
             dataNext.windowX >= resX &&
             dataNext.windowX < resX + resWidth &&
@@ -157,13 +164,13 @@ if (os.platform() === "win32") {
         checkFullscreen(dataNext);
     }
 
-    function checkFullscreen(dataNext) {
+    function checkFullscreen(dataNext: DataNext) {
         const isFullscreen =
             Math.abs(dataNext.monitor.resWidth - dataNext.windowWidth) <= TOLERANCE &&
             Math.abs(dataNext.monitor.resHeight - dataNext.windowHeight) <= TOLERANCE;
 
         dataNext.resolve(isFullscreen ? dataNext.windowTitle : "");
     }
-} else {
-    module.exports = () => new Promise(resolve => resolve(""));
 }
+
+export default exports;

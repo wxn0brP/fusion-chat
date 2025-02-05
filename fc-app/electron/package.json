@@ -1,7 +1,8 @@
 {
     "name": "fusion-chat",
-    "version": "0.0.1",
-    "main": "src/index.js",
+    "version": "0.0.2",
+    "main": "dist-js/index.js",
+    "description": "Fusion Chat desktop client",
     "author": {
         "name": "wxn0brP",
         "email": "fusion@fusion.ct8.pl"
@@ -9,29 +10,32 @@
     "license": "MIT",
     "private": false,
     "devDependencies": {
+        "@types/opn": "^5.5.0",
+        "@types/source-map-support": "^0.5.10",
+        "@types/ws": "^8.5.14",
         "electron": "^30.0.2",
         "electron-builder": "^24.13.3",
         "electron-packager": "^17.1.2"
     },
     "dependencies": {
         "axios": "^1.7.2",
+        "commander": "^13.1.0",
         "koffi": "^2.9.2",
         "opn": "^6.0.0",
-        "ws": "^8.18.0",
-        "yargs": "^17.7.2"
+        "source-map-support": "^0.5.21",
+        "ws": "^8.18.0"
     },
+    "type": "module",
     "homepage": "https://fusion.ct8.pl",
     "scripts": {
         "start": "electron .",
-
+        "build:ts": "tsc && tsc-alias",
         "build": "electron-builder build --publish never",
         "build-win": "electron-builder build --win --publish never",
         "build-linux": "electron-builder build --linux --publish never",
-
         "deploy": "electron-builder build -wl --publish always",
         "deploy-win": "electron-builder build --win --publish always",
         "deploy-linux": "electron-builder build --linux --publish always",
-
         "build-pack": "electron-packager . --overwrite --out=dist",
         "build-pack-asar": "electron-packager . --overwrite --out=dist --asar"
     },
@@ -53,12 +57,14 @@
         "linux": {
             "target": [
                 "deb",
-                "tar.gz"
+                "tar.gz",
+                "pacman"
             ],
-            "icon": "favicon.png"
+            "icon": "favicon.png",
+            "category": "Application"
         },
         "files": [
-            "src/**/*",
+            "dist-js/**/*",
             "favicon.png",
             "icon.ico",
             "package.json"

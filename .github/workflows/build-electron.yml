@@ -32,10 +32,12 @@ jobs:
         run: |
           cd fc-app/electron
           npm install
+          npm install -g typescript tsc-alias
 
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
         run: |
           cd fc-app/electron
+          npm run build:ts
           npx electron-builder --publish always --win --linux

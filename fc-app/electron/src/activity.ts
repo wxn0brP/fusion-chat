@@ -1,5 +1,8 @@
-const fullscreenWindow = require("./fullscreenWindow");
-const { sendToFront } = require("./utils");
+import fullscreenWindow from "./os/fullscreenWindow";
+import { sendToFront } from "./utils/utils";
+import vars from "./vars";
+
+const { getCurrentWindow } = fullscreenWindow;
 
 const cache = {
     interval: null,
@@ -7,14 +10,14 @@ const cache = {
     set: false
 }
 
-if(confArg.rpcAuto == undefined) confArg.rpcAuto = false;
+if (vars.confArg.rpcAuto == undefined) vars.confArg.rpcAuto = false;
 
-async function checkActivity(){
-    if(!confArg.rpcAuto) return;
+async function checkActivity() {
+    if (!vars.confArg.rpcAuto) return;
 
-    return await fullscreenWindow().then(title => {
-        if(!title || title.trim() == ""){
-            if(cache.set){
+    return await getCurrentWindow().then(title => {
+        if (!title || title.trim() == "") {
+            if (cache.set) {
                 cache.set = false;
                 sendToFront({
                     type: "status",
@@ -24,7 +27,7 @@ async function checkActivity(){
             }
             return;
         }
-        if(cache.title == title) return;
+        if (cache.title == title) return;
 
         cache.title = title;
         sendToFront({
