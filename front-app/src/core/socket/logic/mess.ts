@@ -35,7 +35,10 @@ export function mess(data: Core_mess__receivedMessage) {
         const title = langFunc(LangPkg.ui.new_message, apis.www.changeUserID(data.fr));
         uiFunc.uiMsg(title);
 
-        if (vars.settings.notifications) utils.sendNotification(title, data.msg, { msg: data });
+        if (
+            vars.settings.notifications &&
+            vars.user.status !== "dnd"
+        ) utils.sendNotification(title, data.msg, { msg: data });
     }
     if (isPrivateChat) render_dm.chats();
 
