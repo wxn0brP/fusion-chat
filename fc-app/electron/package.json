@@ -58,7 +58,8 @@
             "target": [
                 "deb",
                 "tar.gz",
-                "pacman"
+                "pacman",
+                "rpm"
             ],
             "icon": "favicon.png",
             "category": "Application"

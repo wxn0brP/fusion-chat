@@ -26,7 +26,9 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt update
-          sudo apt install -y wine32 wine64
+          sudo apt install -y \
+            wine32 wine64 \
+            bsdtar fpm pacman fakeroot libarchive-tools rpm
 
       - name: Install dependencies
         run: |
