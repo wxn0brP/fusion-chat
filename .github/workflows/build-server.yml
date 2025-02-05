@@ -37,6 +37,11 @@ jobs:
           npm install
           npm run build
 
+      # Remove devDependencies
+      - name: Remove devDependencies
+        run: |
+          jq 'del(.devDependencies)' package.json > temp.json && mv temp.json package.json
+
       # Build front-app directory
       - name: Install and Build (Front-App)
         working-directory: ./front-app
