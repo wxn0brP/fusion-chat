@@ -127,7 +127,7 @@ function createServer(port: number) {
 
 export async function apiServer_start() {
     try {
-        const basePort = vars.confArg["rpc-port"];
+        const basePort = vars.confArg.rpcPort;
         const port = await findFreePort(basePort, basePort + 20).catch(() => 0); // get port from pool or random
         console.log(`API server started on $port[${port}]`);
         createServer(port);

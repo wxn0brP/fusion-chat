@@ -6,7 +6,7 @@ export interface Vars {
     confArg: {
         link: string;
         dev: boolean;
-        "rpc-port": number;
+        rpcPort: number;
         rpcAuto: boolean;
     };
     wss: WebSocketServer | null;
