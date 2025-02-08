@@ -1,5 +1,5 @@
-import notifee, { EventType } from '@notifee/react-native';
-import callbacks from './notifCallbacks';
+import notifee, { EventType } from "@notifee/react-native";
+import callbacks from "../components/notifCallbacks";
 
 let channelId = null;
 
@@ -9,8 +9,8 @@ const initNotifications = async () => {
 
     // Create a channel (required for Android)
     channelId = await notifee.createChannel({
-        id: 'fc-channel',
-        name: 'FusionChat',
+        id: "fc-channel",
+        name: "FusionChat",
     });
 
     function callbacksFn(type, detail){
@@ -23,7 +23,7 @@ const initNotifications = async () => {
         callbacksFn(data.type, data.detail);
     });
 
-    notifee.onBackgroundEvent(data => {
+    notifee.onBackgroundEvent(async data => {
         callbacksFn(data.type, data.detail);
     })
 }
@@ -35,7 +35,7 @@ const showNotification = async (title, body, pressOpts={}, opts={}) => {
         android: {
             channelId,
             pressAction: {
-                id: 'default',
+                id: "default",
                 ...pressOpts
             },
             ...opts

@@ -1,7 +1,7 @@
 import axios from "axios";
-import config from "./config";
+import config from "../config/config";
 
-async function update(){
+async function updateFunc(){
     const appVersion = config.version;
     const serverVersion = await getServerVersion();
 
@@ -45,4 +45,4 @@ async function getServerVersion(){
     }
 }
 
-export default update;
+export default updateFunc;

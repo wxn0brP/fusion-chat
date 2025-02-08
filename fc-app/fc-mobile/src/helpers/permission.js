@@ -1,9 +1,9 @@
-import messaging from '@react-native-firebase/messaging';
-import { PermissionsAndroid } from 'react-native';
+import messaging from "@react-native-firebase/messaging";
+import { PermissionsAndroid } from "react-native";
 
 const requestUserPermission = async () => {
     const authStatus = await messaging().requestPermission();
-    console.log('Authorization Firebase status:', authStatus);
+    console.log("Authorization Firebase status:", authStatus);
 }
 
 const requestMicrophonePermission = async () => {

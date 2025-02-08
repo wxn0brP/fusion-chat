@@ -1,4 +1,4 @@
-import messaging from '@react-native-firebase/messaging';
+import messaging from "@react-native-firebase/messaging";
 import axios from "axios";
 import config from "./config";
 
@@ -9,7 +9,7 @@ const registerApp = async (pointerToken) => {
             fireToken,
             fcToken: pointerToken,
         });
-        console.log("res token add", res.data.err, res.data.msg);
+        console.log("res token add. `err`:", res.data.err, "`msg:`", res.data.msg);
     }catch(e){
         console.error("error token add:", e.message);
     }

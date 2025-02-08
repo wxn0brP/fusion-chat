@@ -1,7 +1,7 @@
 # dir
 node_modules
 app-test
-config
+/config/
 data
 userFiles
 !docs/**
