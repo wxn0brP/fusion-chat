@@ -95,7 +95,6 @@ const coreFunc = {
             socket.emit("realm.setup", id);
             socket.emit("realm.users.sync", id);
             socket.emit("realm.users.activity.sync", id);
-            if (chnl) socket.emit("realm.thread.list", id, chnl);
         }
         coreFunc.markSelectedChat();
     },
