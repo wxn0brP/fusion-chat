@@ -11,7 +11,8 @@ import Id from "../../types/Id";
 import { Vars_mainView__page } from "../../types/var";
 import LangPkg, { langFunc } from "../../utils/translate";
 import { updateUserProfileMarker } from "../render/userStatusMarker";
-import render_realm from "../render/realm";
+import apiVars from "../../var/api";
+import UserStateManager from "../helpers/userStateManager";
 
 const mainView = {
     show() {
@@ -52,8 +53,10 @@ const mainView = {
             });
             mainViewHTML.friendsContainer.appendChild(friendDiv);
 
-            render_realm.realmUserStatus(friend._id, friend);
-            updateUserProfileMarker(friend._id, friend.status);
+            UserStateManager.set(friend._id, {
+                status: friend?.status,
+                statusText: friend?.text
+            });
         });
 
         mainView.sortFriends(vars.mainView.page);
@@ -135,7 +138,7 @@ const mainView = {
             requestDiv.querySelector(".friend__avatar").addEventListener("click", showUser);
 
             mainViewHTML.requestsContainer.appendChild(requestDiv);
-            updateUserProfileMarker(request, vars.apisTemp.user_status[request]?.status.get());
+            updateUserProfileMarker(request, apiVars.user_state[request]?.status.get());
         });
     },
 

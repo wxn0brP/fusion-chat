@@ -18,14 +18,15 @@ import contextMenu from "../../../ui/components/contextMenu";
 import { Vars_mess__pinned, Vars_realm__thread } from "../../../types/var";
 import { Core_mess__dbMessage, Core_mess__receivedMessage } from "../../../types/core/mess";
 import LangPkg, { langFunc } from "../../../utils/translate";
+import apiVars from "../../../var/api";
 
 export function mess(data: Core_mess__receivedMessage) {
     // generate last message storage if needed
-    vars.lastMess[data.to] = vars.lastMess[data.to] || {};
-    vars.lastMess[data.to][data.chnl] = vars.lastMess[data.to][data.chnl] || { read: null, mess: null };
+    apiVars.lastMess[data.to] = apiVars.lastMess[data.to] || {};
+    apiVars.lastMess[data.to][data.chnl] = apiVars.lastMess[data.to][data.chnl] || { read: null, mess: null };
 
     // update last message
-    vars.lastMess[data.to][data.chnl].mess = data._id;
+    apiVars.lastMess[data.to][data.chnl].mess = data._id;
 
     const isPrivateChat = data.to.startsWith("$");
     const currentChatIsDM = vars.chat.to.startsWith("$");
@@ -46,7 +47,7 @@ export function mess(data: Core_mess__receivedMessage) {
     if (vars.chat.to !== data.to || vars.chat.chnl !== data.chnl) return;
 
     // update last message read
-    vars.lastMess[data.to][data.chnl].read = data._id;
+    apiVars.lastMess[data.to][data.chnl].read = data._id;
     if (isPrivateChat) render_dm.privsRead();
 
     // add message to chat
@@ -55,7 +56,7 @@ export function mess(data: Core_mess__receivedMessage) {
     messStyle.colorRole();
 
     setTimeout(() => {
-        const lastMessageId = vars.lastMess[data.to][data.chnl].mess;
+        const lastMessageId = apiVars.lastMess[data.to][data.chnl].mess;
         if (lastMessageId === data._id) {
             socket.emit("message.mark.read", data.to, data.chnl, data._id);
         }

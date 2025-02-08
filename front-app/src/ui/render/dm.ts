@@ -10,6 +10,7 @@ import apis from "../../api/apis";
 import socket from "../../core/socket/socket";
 import { Core_socket__blocked, Core_socket__dm } from "../../types/core/socket";
 import { updateUserProfileMarker } from "./userStatusMarker";
+import apiVars from "../../var/api";
 
 const render_dm = {
     chats() {
@@ -44,7 +45,7 @@ const render_dm = {
                 e.preventDefault();
                 socket.emit("user.profile", id);
             });
-            updateUserProfileMarker(id, vars.apisTemp.user_status[id]?.status.get());
+            updateUserProfileMarker(id, apiVars.user_state[id]?.status.get());
         });
         render_dm.privsRead();
         coreFunc.markSelectedChat();
@@ -55,7 +56,7 @@ const render_dm = {
             const cl = document.querySelector("#priv_chat_" + id)?.classList;
             if (!cl) return;
 
-            const l = vars.lastMess["$" + id]?.main;
+            const l = apiVars.lastMess["$" + id]?.main;
             if (!l) return;
             let unreadPriv = false;
 
@@ -73,8 +74,8 @@ const render_dm = {
         data.forEach((priv) => {
             const id = "$" + priv.priv;
     
-            vars.lastMess[id] = vars.lastMess[id] || {};
-            vars.lastMess[id].main = {
+            apiVars.lastMess[id] = apiVars.lastMess[id] || {};
+            apiVars.lastMess[id].main = {
                 read: priv.last?.main ?? null,
                 mess: priv.lastMessId ?? null,
             }

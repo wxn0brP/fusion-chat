@@ -83,6 +83,7 @@ const required = [
     "translate",
     "utils",
 //  var
+    "var/api",
     "var/html",
     "var/keys",
     "var/staticData",

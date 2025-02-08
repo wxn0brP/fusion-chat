@@ -14,6 +14,7 @@ import {
     realm_users_sync,
     realm_users_activity_sync,
     realm_event_notify,
+    user_status_update,
 } from "./logic/evt";
 
 socket.on("connect", connect);
@@ -27,3 +28,4 @@ socket.on("self.status.get", self_status_get);
 socket.on("realm.users.sync", realm_users_sync);
 socket.on("realm.users.activity.sync", realm_users_activity_sync);
 socket.on("realm.event.notify", realm_event_notify);
+socket.on("user.status.update", user_status_update);

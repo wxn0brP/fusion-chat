@@ -17,6 +17,8 @@ import LangPkg, { langFunc } from "../../../utils/translate";
 import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
 import { Core_socket__refresh, Core_socket__user_status_type } from "../../../types/core/socket";
 import changeCodeToString from "../../../utils/code";
+import apiVars from "../../../var/api";
+import UserStateManager from "../../../ui/helpers/userStateManager";
 
 export function connect() {
     debugFunc.msg(LogLevel.INFO, "connected to socket");
@@ -124,10 +126,10 @@ export function message_mark_read(to: Id, chnl: Id, id: Id) {
     if (!to || !chnl || !id) return;
     try {
         // generate last message storage if needed
-        vars.lastMess[to] = vars.lastMess[to] || {};
-        vars.lastMess[to][chnl] = vars.lastMess[to][chnl] || { read: null, mess: null };
+        apiVars.lastMess[to] = apiVars.lastMess[to] || {};
+        apiVars.lastMess[to][chnl] = apiVars.lastMess[to][chnl] || { read: null, mess: null };
 
-        vars.lastMess[to][chnl].read = id;
+        apiVars.lastMess[to][chnl].read = id;
         if (to.startsWith("$")) render_dm.chats();
     } catch { }
 }
@@ -147,7 +149,7 @@ export function realm_users_activity_sync(userActivity: Core_socket__realm_users
         const { uid, status, activity } = user;
         if (!status && !activity) return;
 
-        render_realm.realmUserStatus(uid, user);
+        UserStateManager.set(uid, user);
     })
 }
 
@@ -162,4 +164,8 @@ export function realm_event_notify(realm: Id, evt: Id) {
             }
         });
     })
+}
+
+export function user_status_update(id: Id, status: Core_socket__user_status_type, text: string) {
+    UserStateManager.set(id, { status, statusText: text });
 }
