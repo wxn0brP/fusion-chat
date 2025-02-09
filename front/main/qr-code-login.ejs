@@ -1,0 +1,79 @@
+/// { "title": "Fusion Chat | Login by QR Code" }
+<main>
+    <h1>Login by QR Code</h1>
+    <h2>Do you really want to login on this device?</h2>
+    <p id="device" style="color: red;"></p>
+    <h2>On this account:</h2>
+    <img src="favicon.svg" alt="User avatar" id="avatar">
+    <h3 id="account"></h3>
+
+    <button id="accept-btn" type="button">Confirm Login</button>
+</main>
+
+<style>
+    main {
+        width: 500px;
+        max-width: calc(100% - 2rem);
+        line-height: 1.6;
+        text-align: center;
+
+        color: var(--txt);
+        border-radius: 1rem;
+        padding: 1rem;
+        border: 2px solid var(--accent);
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 10px 5px rgba(var(--accentRGB), .5);
+    }
+
+    section {
+        padding: 1rem;
+        margin: auto;
+    }
+
+    h1 {
+        margin-bottom: 1rem;
+    }
+
+    button {
+        margin-top: 1rem;
+        color: var(--txt);
+        background-color: var(--back);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 1rem;
+        cursor: pointer;
+        transition: border-color 0.5s, box-shadow 0.5s;
+        border: 2px solid var(--accent);
+        box-shadow: 0 0 10px 5px rgba(var(--accentRGB), .5);
+    }
+
+    button:hover {
+        border-color: var(--txt);
+        box-shadow: 0 0 10px 5px var(--txt);
+    }
+
+    button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    img {
+        width: 128px;
+        height: 128px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin: auto;
+    }
+
+    @media screen and (max-width: 800px) {
+        main {
+            width: 100%;
+        }
+    }
+</style>
+
+<script src="/libs/socket.io.min.js"></script>
+<script src="/js/qrCode.login.js"></script>

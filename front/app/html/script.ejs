@@ -1,0 +1,10 @@
+<% const libs = [
+    "socket.io",
+] %>
+
+<div id="scripts" style="display: none;">
+    <% libs.forEach(script => { %>
+        <script src="/libs/<%= script %>.min.js"></script>
+    <% }) %>
+    <script type="module" src="js/startApp.js"></script>
+</div>

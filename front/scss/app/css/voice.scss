@@ -1,0 +1,35 @@
+#voice_call {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 350px;
+    height: 200px;
+    background-color: var(--back);
+    z-index: 10;
+    display: none;
+    text-align: left;
+
+    border: 1px solid var(--accent);
+    border-radius: 1rem;
+    padding: 1rem;
+    max-width: 90vw;
+
+    button {
+        margin-right: 10px;
+
+        &:hover {
+            border-color: red;
+        }
+    }
+}
+
+#voice_call_users_container {
+    margin-top: 1rem;
+    padding-left: 1rem;
+}
+
+#voice_call_users {
+    padding-left: 1rem;
+}

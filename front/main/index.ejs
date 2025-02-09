@@ -1,0 +1,190 @@
+/// { "title": "Welcome to Fusion Chat", "description": "Fusion Chat is a free, open source, and privacy-friendly chat application." }
+<%- include('main/nav') %>
+<main>
+    <section>
+        <div>
+            <h1>SEE THE PLACE...</h1>
+            <p>
+                ...where you can be part of a discussion group, a music band, or an international community of artists. This place encourages spontaneous conversations and more frequent meetups with friends.
+                <br>
+                This is <strong>Fusion Chat</strong>!
+            </p>
+            
+            <div id="open">
+                <a href="/get?auto=true" class="get__get">Download <span class="getForSpan"></span></a>
+                <a href="/app" class="get__get">Open Fusion Chat in Browser</a>
+            </div>
+        </div>
+    </section>
+    
+    <section>
+        <div>
+            <ul role="list" class="link-card-grid">
+                <% const cards = [
+                    { title: "Easy to Use", body: "Simple interface, easy to navigate." },
+                    { title: "Customizable Themes", body: "Personalize the look according to preferences." },
+                    { title: "Community and Support", body: "Support from the community and team." },
+                    { title: "Updates and Information", body: "Receive the latest updates." },
+                    { title: "Privacy and Security", body: "Strong encryption for your privacy." },
+                    { title: "Multi-platform Versions", body: "Available on various devices." },
+                    { title: "User Management", body: "Easy community management." },
+                    { title: "Starter Kits", body: "Quick start with starter kits." }
+                ]; %> 
+
+                <% cards.forEach(card => { %>
+                    <%- include('main/card', { props: card }) %> 
+                <% }) %>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <div>
+            <h3>It's time to begin a new journey!</h3>
+            <br />
+            <a href="/get?auto=true" id="getBtnLast" class="get__get">Download <span class="getForSpan"></span></a>
+        </div>
+    </section>
+</main>
+
+<style>
+	a{
+		color: var(--txt);
+	}
+
+	main{
+		width: 800px;
+		max-width: calc(100% - 2rem);
+		line-height: 1.6;
+
+		margin-left: auto;
+		margin-right: auto;
+		padding-left: 1rem;
+		padding-right: 1rem;
+		color: white;
+		text-align: center;
+		font-size: 1.25rem;
+	}
+
+	h1{
+		font-size: 4rem;
+		margin-bottom: 26px;
+	}
+
+	section{
+		min-height: 450px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 7rem;
+	}
+
+	section > div{
+		width: 100%;
+		height: 100%;
+	}
+
+	#open{
+		margin-top: 2.5rem;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-around;
+	}
+
+	.link-card-grid{
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+		gap: 2rem;
+		padding: 0;
+	}
+
+	.get__get{
+		border-radius: 10px;
+		background-color: var(--accent);
+		padding: 10px 15px;
+		transition: background-color 0.5s ease;
+	}
+
+	.get__get:hover{
+		background-color: var(--back);
+		margin: -3px;
+		border: 3px solid var(--accent);
+	}
+
+	@media screen and (max-width: 800px){
+		#open .get__get{
+			margin: 1rem;
+		}
+	}
+
+	.link-card{
+		list-style: none;
+		display: flex;
+		padding: 1px;
+		background-color: #23262d;
+		background-image: none;
+		background-size: 400%;
+		border-radius: 7px;
+		background-position: 100%;
+		transition: background-position 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+	}
+
+	.link-card > span{
+		width: 100%;
+		text-decoration: none;
+		line-height: 1.4;
+		padding: calc(1.5rem - 1px);
+		border-radius: 8px;
+		color: white;
+		background-color: #23262d;
+		opacity: 0.8;
+	}
+
+	.link-card h2{
+		margin: 0;
+		font-size: 1.25rem;
+		transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.link-card p{
+		margin-top: 0.5rem;
+		margin-bottom: 0;
+	}
+
+	.link-card:is(:hover, :focus-within){
+		background-position: 0;
+		background-image: linear-gradient(
+			90deg,
+			rgb(var(--accent)) 0%,
+			rgb(var(--accent-light)) 20%,
+			white 60%
+		);
+	}
+</style>
+
+<script>
+	function getSystemName(){
+		const userAgent = window.navigator.userAgent,
+			platform = window.navigator.platform,
+			macosPlatforms = ['macOS', 'Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+			windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+			iosPlatforms = ['iPhone', 'iPad', 'iPod'];
+
+		if(macosPlatforms.indexOf(platform) !== -1) return "Mac OS";
+		else if(iosPlatforms.indexOf(platform) !== -1) return "iOS";
+		else if(windowsPlatforms.indexOf(platform) !== -1) return "Windows";
+		else if(/Android/.test(userAgent)) return "Android";
+		else if(/Linux/.test(platform)) return "Linux";
+		return "";
+	}
+
+	(function(){
+		let getForName = getSystemName();
+		if(!getForName) return;
+		getForName = "for "+getForName;
+		document.querySelectorAll(".getForSpan").forEach(e => {
+			e.innerHTML = getForName;
+		})
+	})();
+</script>

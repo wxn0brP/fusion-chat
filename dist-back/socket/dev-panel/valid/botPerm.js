@@ -1,0 +1,23 @@
+export default [
+    "administrator",
+    "viewAuditLog",
+    "manageServer",
+    "manageRoles",
+    "manageChannels",
+    "kickMembers",
+    "banMembers",
+    "createInvite",
+    "changeNickname",
+    "manageNicknames",
+    "manageWebhooks",
+    "viewChannels",
+    "sendMessage",
+    "readMessageHistory",
+    "addReaction",
+    "useSlashCommands",
+    "connectVC",
+    "speakVC",
+    "videoVC",
+    "muteMembersVC",
+];
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYm90UGVybS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL2JhY2svc29ja2V0L2Rldi1wYW5lbC92YWxpZC9ib3RQZXJtLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLGVBQWU7SUFDWCxlQUFlO0lBQ2YsY0FBYztJQUNkLGNBQWM7SUFDZCxhQUFhO0lBQ2IsZ0JBQWdCO0lBQ2hCLGFBQWE7SUFDYixZQUFZO0lBQ1osY0FBYztJQUNkLGdCQUFnQjtJQUNoQixpQkFBaUI7SUFDakIsZ0JBQWdCO0lBQ2hCLGNBQWM7SUFDZCxhQUFhO0lBQ2Isb0JBQW9CO0lBQ3BCLGFBQWE7SUFDYixrQkFBa0I7SUFDbEIsV0FBVztJQUNYLFNBQVM7SUFDVCxTQUFTO0lBQ1QsZUFBZTtDQUNsQixDQUFBIn0=

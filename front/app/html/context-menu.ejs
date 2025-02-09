@@ -1,0 +1,53 @@
+<% const menuItems = {
+    message: [
+        { text: "uni.copy", action: "copy" },
+        { text: "uni.edit", action: "edit", dataId: "edit" },
+        { text: "uni.delete", action: "delete", style: "color: red", dataId: "delete" },
+        { text: "ui.reply", action: "reply" },
+        { text: "ui.copy_id", action: "copy_id" },
+        { text: "ui.add_reaction", action: "add_reaction", dataId: "add_reaction" },
+        { text: "ui.pin_message", action: "pin", dataId: "pin" },
+        { text: "ui.unpin_message", action: "unpin", dataId: "unpin" },
+        { text: "ui.create_thread", action: "create_thread", dataId: "create_thread" }
+    ],
+    realm: [
+        { text: "ui.mute.mute", action: "mute" },
+        { text: "ui.copy_invite", action: "copy_invite" },
+        { text: "hr" },
+        { text: "settings.settings", action: "settings", dataId: "settings" },
+        { text: "hr" },
+        { text: "ui.copy_id", action: "copy_id" },
+        { text: "ui.exit_from_realm", action: "exit", style: "color: red" }
+    ],
+    channel: [
+        { text: "ui.subscribe_channel", action: "subscribe", dataId: "subscribe" },
+        { text: "ui.copy_id", action: "copy_id" },
+        { text: "ui.create_thread", action: "create_thread", dataId: "create_thread" },
+    ],
+    thread: [
+        { text: "ui.copy_id", action: "copy_id" },
+        { text: "uni.delete", action: "delete", style: "color: red", dataId: "delete" }
+    ]
+}; %>
+  
+<% const renderMenu = (menuId, items, contextType) => { %>
+    <div id="<%= menuId %>" class="context-menu">
+        <% items.forEach(item => { %>
+            <% if (item.text === "hr") { %>
+                <hr>
+            <% } else { %>
+                <div class="context-menu__item" 
+                    <% if (item.dataId) { %> data-id="<%= item.dataId %>" <% } %>
+                    onclick="mglInt.contextFunc.<%= contextType %>('<%= item.action %>', event)" 
+                    translate 
+                    <% if (item.style) { %> style="<%= item.style %>" <% } %>
+                ><%= item.text %></div>
+            <% } %>
+        <% }); %>
+    </div>
+<% }; %>
+  
+<%= renderMenu("message_context_menu", menuItems.message, "message") %>
+<%= renderMenu("realm_context_menu", menuItems.realm, "realm") %>
+<%= renderMenu("channel_context_menu", menuItems.channel, "channel") %>
+<%= renderMenu("thread_context_menu", menuItems.thread, "thread") %>
