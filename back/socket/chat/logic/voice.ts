@@ -6,6 +6,7 @@ import { Id } from "../../../types/base";
 import { Socket_StandardRes } from "../../../types/socket/res";
 import Db_Data from "../../../types/db/data";
 import { Socket_User } from "../../../types/socket/user";
+import firebaseSend from "../../../firebase";
 
 const roomPrefix = "voice-";
 
@@ -58,7 +59,7 @@ export async function call_dm_init(suser: Socket_User, id: Id): Promise<Socket_S
     if (sockets.length == 0) {
         const targetName = await db.data.findOne<Db_Data.user>("user", { _id: id }).then(u => u.name);
 
-        global.fireBaseMessage.send({
+        firebaseSend({
             to: id,
             title: targetName + " is calling you",
             body: "Join to the call",

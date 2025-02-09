@@ -12,6 +12,7 @@ import { Message, Options, Request, User } from "../types/sendMessage";
 import { Socket_StandardRes } from "../types/socket/res";
 import { Id } from "../types/base";
 import InternalCode from "../codes";
+import firebaseSend from "../firebase";
 
 const validE = new ValidError("mess");
 
@@ -154,7 +155,7 @@ async function sendReamNotification(to: Id, user: User, data: Message) {
                 global.sendToSocket(uid, "mess", data);
                 if (data.silent) return;
 
-                global.fireBaseMessage.send({
+                firebaseSend({
                     to: uid,
                     title: "New message from " + fromMsg,
                     body: data.msg,
@@ -182,7 +183,7 @@ function sendDmNotification(to: Id, user: User, data: Message) {
 
     if (data.silent) return;
 
-    global.fireBaseMessage.send({
+    firebaseSend({
         to: toSend,
         title: "New message from " + user.name,
         body: data.msg,
