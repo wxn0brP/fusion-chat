@@ -12,7 +12,7 @@ export interface Core_mess__dbMessage extends Core_mess__MessageBase {
     msg: string;
     
     lastEdit?: string; // edit time (36 system format)
-    res?: Id; // reponse message id
+    res?: Id; // response message id
     reacts?: {
         [react: string]: Id[]
     }

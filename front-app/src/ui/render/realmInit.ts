@@ -14,6 +14,7 @@ import { Ui_render__category, Ui_render__channel } from "../../types/ui/render";
 import LangPkg from "../../utils/translate";
 import socket from "../../core/socket/socket";
 import render_events from "./event";
+import { socketEvt } from "../../core/socket/engine";
 
 function initRealmState(permission: number = 0) {
     vars.realm = {
@@ -181,7 +182,7 @@ function realmInit(sid: Id, name: string, categories: Ui_render__category[], per
 
     coreFunc.changeChnl(vars.chat.chnl);
 
-    socket.emit("realm.thread.list", sid, null);
+    socketEvt["realm.thread.list"].emitId(sid + "=null", sid, null);
 }
 
 export default realmInit;

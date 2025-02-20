@@ -10,6 +10,7 @@ import socket from "../../core/socket/socket";
 import uiFunc, { promptDiv } from "../helpers/uiFunc";
 import KeyState from "../../var/keys";
 import LangPkg from "../../utils/translate";
+import { socketEvt } from "../../core/socket/engine";
 
 const uiInteract = {
     editMess(id: Id) {
@@ -67,7 +68,7 @@ const uiInteract = {
         if (!name) return;
 
         socket.emit("realm.thread.create", to, chnl, name, messId, () => {
-            socket.emit("realm.thread.list", to, chnl);
+            socketEvt["realm.thread.list"].emitId(to + "=" + chnl, to, chnl);
         });
     },
 

@@ -8,11 +8,12 @@ import apis from "../../api/apis";
 import socket from "../../core/socket/socket";
 import uiFunc from "../helpers/uiFunc";
 import Id from "../../types/Id";
-import { Vars_mainView__page } from "../../types/var";
+import { Vars_mainView__friend, Vars_mainView__page } from "../../types/var";
 import LangPkg, { langFunc } from "../../utils/translate";
 import { updateUserProfileMarker } from "../render/userStatusMarker";
 import apiVars from "../../var/api";
 import UserStateManager from "../helpers/userStateManager";
+import { socketEvt } from "../../core/socket/engine";
 
 const mainView = {
     show() {
@@ -46,7 +47,7 @@ const mainView = {
 
             friendDiv.querySelector(".friend__name").addEventListener("click", (e) => {
                 e.stopPropagation();
-                socket.emit("user.profile", friend._id);
+                socketEvt["user.profile"].emitDataId(friend._id);
             });
             friendDiv.addEventListener("click", () => {
                 coreFunc.changeChat("$" + friend._id);
@@ -166,15 +167,15 @@ const mainView = {
 
 mainView.changeView("online");
 
-socket.on("friend.get.all", (friends) => {
+export function friend_get_all(friends: Vars_mainView__friend[]) {
     vars.mainView.friends = friends;
     mainView.renderFriends();
-});
+}
 
-socket.on("friend.requests.get", (requests) => {
+export function friend_requests_get(requests: Id[]) {
     vars.mainView.requests = requests;
     mainView.renderRequests();
-});
+}
 
 socket.on("friend.request", (from) => {
     const text = langFunc(LangPkg.ui.friend.request, apis.www.changeUserID(from));
