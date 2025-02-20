@@ -107,7 +107,14 @@ const apis = {
             else if (dev.isInIframe) path = "if";
             this.apiType = path;
 
-            apis.api = await import("./devices/" + path + ".js");
+            const devices = {
+                web: () => import("./devices/web.js"),
+                ele: () => import("./devices/ele.js"),
+                rn: () => import("./devices/rn.js"),
+                if: () => import("./devices/if.js"),
+            };
+            
+            apis.api = await devices[path]();            
             debugFunc.msg(LogLevel.INFO, "load api: " + path);
         },
         apiType: "",

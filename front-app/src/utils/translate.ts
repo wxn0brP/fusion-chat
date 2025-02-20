@@ -80,7 +80,8 @@ function getDataByKey(keyChain: string): string | null {
 }
 
 async function importData<T>(lang: string, pkg: string) {
-    const data = await import(`../lang/${lang}/${pkg}.js`);
+    const dynamicImport = new Function("path", "return import(path);");
+    const data = await dynamicImport(`./lang/${lang}/${pkg}.js`)
     return data.default as T;
 }
 

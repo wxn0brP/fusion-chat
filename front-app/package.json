@@ -6,11 +6,12 @@
     "license": "MIT",
     "type": "module",
     "scripts": {
-        "build": "tsc && tsc-alias"
+        "build": "tsc && tsc-alias && node build.js"
     },
     "dependencies": {},
     "devDependencies": {
         "@types/socket.io-client": "^3.0.0",
+        "esbuild": "^0.25.0",
         "tsc-alias": "^1.8.10",
         "typescript": "^5.7.2"
     }
