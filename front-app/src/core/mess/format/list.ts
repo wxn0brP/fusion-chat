@@ -1,8 +1,13 @@
 import hub from "../../../hub";
 hub("mess/format/list");
 
+interface ListChild {
+    line: string;
+    lvl: number;
+}
+
 const format_list = {
-    calculateLevels(lines) {
+    calculateLevels(lines: string[]) {
         const result = [];
         let spacePerLvl = null;
 
@@ -36,12 +41,12 @@ const format_list = {
         return result;
     },
 
-    buildTree(linesWithLevels) {
+    buildTree(linesWithLevels: ListChild[]) {
         const listItemRegex = /^(?:[-*]|\d+[.)]?|[a-zA-Z][.)])\s/;
         const root = [];
         const stack = [{ children: root, lvl: -1 }];
 
-        function getBulletType(line) {
+        function getBulletType(line: string) {
             const trimmed = line.trim();
             if (/^[-*]\s/.test(trimmed)) return "bullet";
             if (/^\d[.)]?\s/.test(trimmed)) return "decimal";
@@ -68,7 +73,7 @@ const format_list = {
         return root;
     },
 
-    treeToHtml(tree, marginValue, marginUnits) {
+    treeToHtml(tree: ListChild[], marginValue: number, marginUnits: string) {
         let html = "";
         const listMapOl = ["decimal", "lower-alpha", "upper-alpha", "lower-roman", "upper-roman"];
         let listEnd = true;
@@ -85,7 +90,7 @@ const format_list = {
 
                 if (node.children.length > 0) {
                     listEnd = true;
-                    node.children.forEach(child => {
+                    node.children.forEach((child: ListChild) => {
                         processNode(child, lvl + 1);
                     });
                     listEnd = false;
@@ -103,12 +108,12 @@ const format_list = {
         return html;
     },
 
-    cpu(text, marginValue = 0, marginUnits = "") {
+    cpu(text: string, marginValue: number = 0, marginUnits: string = "") {
         const lines = text.split(/\n|\<br\>|\<br\/\>|\<br \/>/);
-        const levels = this.calculateLevels(lines);
-        const tree = this.buildTree(levels);
-        const html = this.treeToHtml(tree, marginValue, marginUnits);
-        return html;
+        const levels = format_list.calculateLevels(lines);
+        const tree = format_list.buildTree(levels);
+        const html = format_list.treeToHtml(tree, marginValue, marginUnits);
+        return html.replace(/<br\s*\/?>\s*$/i, "");
     }
 }
 
