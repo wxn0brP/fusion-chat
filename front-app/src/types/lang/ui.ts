@@ -2,7 +2,7 @@ export interface Lang_UI {
     voice_show: string;
     add_dm: string;
     reply_to_message: string;
-    edi_message: string;
+    edit_message: string;
     online: string;
     offline: string;
     add_friend: string;
