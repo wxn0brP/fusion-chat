@@ -19,6 +19,7 @@ import render_forum from "../ui/render/forum";
 import { Vars_realm__thread } from "../types/var";
 import { Core_socket__blocked, Core_socket__dm } from "../types/core/socket";
 import { socketEvt } from "./socket/engine";
+import messageCacheController from "./cacheControllers/mess";
 
 const coreFunc = {
     async changeChat(id: Id, chnl: Id | "main" | null = null) {
@@ -167,8 +168,12 @@ const coreFunc = {
         vars.chat.actMess += staticData.messCount;
         if (vars.chat.to == "main") return;
 
-        socket.emit("message.fetch", vars.chat.to, vars.chat.chnl, tmp, vars.chat.actMess);
-        socket.emit("message.mark.read", vars.chat.to, vars.chat.chnl, "last");
+        if(socket.connected) {
+            socket.emit("message.fetch", vars.chat.to, vars.chat.chnl, tmp, vars.chat.actMess);
+            socket.emit("message.mark.read", vars.chat.to, vars.chat.chnl, "last");
+        } else {
+            messageCacheController.getMessages();
+        }
     },
 
     scrollToBottom() {

@@ -51,10 +51,10 @@ export async function message_edit(
     await db.mess.updateOne(dbChatId, { _id }, { msg, lastEdit: time });
 
     if (isDmChat) {
-        global.sendToSocket(suser._id, "message.edit", _id, msg, time);
-        global.sendToSocket(chatId.replace("$", ""), "message.edit", _id, msg, time);
+        global.sendToSocket(suser._id, "message.edit", _id, msg, time, chatId);
+        global.sendToSocket(chatId.replace("$", ""), "message.edit", _id, msg, time, "$"+suser._id);
     } else {
-        global.sendToChatUsers(dbChatId, "message.edit", _id, msg, time);
+        global.sendToChatUsers(dbChatId, "message.edit", _id, msg, time, dbChatId);
     }
 
     return { err: false };
@@ -81,10 +81,10 @@ export async function message_delete(suser: Socket_User, chatId: Id, _id: Id): P
 
     await db.mess.removeOne(dbChatId, { _id });
     if (isDmChat) {
-        global.sendToSocket(suser._id, "message.delete", _id);
-        global.sendToSocket(chatId.replace("$", ""), "message.delete", _id);
+        global.sendToSocket(suser._id, "message.delete", _id, chatId);
+        global.sendToSocket(chatId.replace("$", ""), "message.delete", _id, "$"+suser._id);
     } else {
-        global.sendToChatUsers(dbChatId, "message.delete", _id);
+        global.sendToChatUsers(dbChatId, "message.delete", _id, dbChatId);
         const threads = await db.realmData.find<Db_RealmData.thread>(dbChatId, { reply: _id });
         for (const thread of threads) {
             await realm_thread_delete(suser, dbChatId, thread._id);
@@ -121,10 +121,10 @@ export async function messages_delete(suser: Socket_User, chatId: Id, ids: Id[])
     }
     await db.mess.remove(dbChatId, { $in: { _id: ids } });
     if (isDmChat) {
-        global.sendToSocket(suser._id, "messages.delete", ids);
-        global.sendToSocket(chatId.replace("$", ""), "messages.delete", ids);
+        global.sendToSocket(suser._id, "messages.delete", ids, chatId);
+        global.sendToSocket(chatId.replace("$", ""), "messages.delete", ids, "$"+suser._id);
     } else {
-        global.sendToChatUsers(dbChatId, "messages.delete", ids);
+        global.sendToChatUsers(dbChatId, "messages.delete", ids, dbChatId);
         const threads = await db.realmData.find<Db_RealmData.thread>(dbChatId, { $in: { reply: ids } });
         for (const thread of threads) {
             await realm_thread_delete(suser, dbChatId, thread._id);

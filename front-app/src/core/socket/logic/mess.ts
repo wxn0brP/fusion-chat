@@ -19,6 +19,7 @@ import { Vars_mess__pinned, Vars_realm__thread } from "../../../types/var";
 import { Core_mess__dbMessage, Core_mess__receivedMessage } from "../../../types/core/mess";
 import LangPkg, { langFunc } from "../../../utils/translate";
 import apiVars from "../../../var/api";
+import messageCacheController from "../../cacheControllers/mess";
 
 export function mess(data: Core_mess__receivedMessage) {
     // generate last message storage if needed
@@ -27,6 +28,8 @@ export function mess(data: Core_mess__receivedMessage) {
 
     // update last message
     apiVars.lastMess[data.to][data.chnl].mess = data._id;
+
+    messageCacheController.addMessage(data.to, data.chnl, convertReceivedMessageToDbMessage(data));
 
     const isPrivateChat = data.to.startsWith("$");
     const currentChatIsDM = vars.chat.to.startsWith("$");
@@ -100,19 +103,21 @@ export function message_fetch(data: Core_mess__dbMessage[]) {
     messStyle.colorRole();
 }
 
-export function message_delete(id: Id) {
+export function message_delete(id: Id, chatId: Id) {
     document.querySelector("#mess__" + id)?.remove();
     messStyle.hideFromMessageInfo();
+    messageCacheController.deleteMessage(chatId, id);
 }
 
-export function messages_delete(ids: Id[]) {
+export function messages_delete(ids: Id[], chatId: Id) {
     ids.forEach(id => {
         document.querySelector("#mess__" + id)?.remove();
     })
     messStyle.hideFromMessageInfo();
+    messageCacheController.deleteMessages(chatId, ids);
 }
 
-export function message_edit(id: Id, msg: string, time: string) {
+export function message_edit(id: Id, msg: string, time: string, chatId: Id) {
     const messageDiv = document.querySelector("#mess__" + id + " .mess_content") as HTMLDivElement;
     if (!messageDiv) return;
     messageDiv.setAttribute("_plain", msg);
@@ -124,6 +129,7 @@ export function message_edit(id: Id, msg: string, time: string) {
         mess.innerHTML = msg;
     });
     messStyle.hideFromMessageInfo();
+    messageCacheController.editMessage(id, msg, time, chatId);
 }
 
 export function message_react(uid: Id, realm: Id, messId: Id, react: string) {

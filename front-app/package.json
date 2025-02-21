@@ -8,7 +8,9 @@
     "scripts": {
         "build": "tsc && tsc-alias && node build.js"
     },
-    "dependencies": {},
+    "dependencies": {
+        "idb": "^8.0.2"
+    },
     "devDependencies": {
         "@types/socket.io-client": "^3.0.0",
         "esbuild": "^0.25.0",
