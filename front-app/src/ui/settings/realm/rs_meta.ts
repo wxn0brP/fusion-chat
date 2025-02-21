@@ -36,8 +36,9 @@ export const renderMeta = function () {
     realmImgFile.type = "file";
     realmImgFile.accept = staticData.uploadImgTypes.join(", ");
     realmImgFile.addEventListener("change", e => {
+        meta.img = true;
         // @ts-ignore
-        tmpData.img = e.target.files[0];
+        img = e.target.files[0];
         // @ts-ignore
         realmImg.src = URL.createObjectURL(e.target.files[0]);
         realmImg.style.display = "";
@@ -78,6 +79,6 @@ export const renderMeta = function () {
         settings.meta.name = nameInput.value;
 
         if (img)
-            fileFunc.realm(img, rs_data.realmId);
+            fileFunc.realm(img as File, rs_data.realmId);
     }
 }
