@@ -125,6 +125,10 @@ export async function messages_delete(suser: Socket_User, chatId: Id, ids: Id[])
         global.sendToSocket(chatId.replace("$", ""), "messages.delete", ids);
     } else {
         global.sendToChatUsers(dbChatId, "messages.delete", ids);
+        const threads = await db.realmData.find<Db_RealmData.thread>(dbChatId, { $in: { reply: ids } });
+        for (const thread of threads) {
+            await realm_thread_delete(suser, dbChatId, thread._id);
+        }
     }
 
     return { err: false };
