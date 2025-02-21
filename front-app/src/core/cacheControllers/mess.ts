@@ -32,7 +32,7 @@ export async function createCollection(collection: string): Promise<IDBPDatabase
     let db = await getDB();
 
     if (!db.objectStoreNames.contains(collection)) {
-        db.close(); // Zamykamy przed migracją
+        db.close();
         db = await getDB((upgraded) => {
             const store = upgraded.createObjectStore(collection, { keyPath: "_id" });
             store.createIndex("chnl", "chnl", { unique: false });
