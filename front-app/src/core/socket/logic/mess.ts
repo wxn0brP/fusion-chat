@@ -122,7 +122,7 @@ export function message_edit(id: Id, msg: string, time: string, chatId: Id) {
     if (!messageDiv) return;
     messageDiv.setAttribute("_plain", msg);
     formatFunc.formatMess(msg, messageDiv);
-    messageDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnix(parseInt(time, 36)));
+    messageDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnix(parseInt(time, 36) * 1000));
 
     const responeMessages = document.querySelectorAll(`[resMsgID=${id}] .res_msg`);
     responeMessages.forEach(mess => {

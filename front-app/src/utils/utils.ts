@@ -22,7 +22,7 @@ const utils = {
     },
 
     formatDateFormUnix(unixTimestamp: number): string {
-        const date = new Date(unixTimestamp * 1000);
+        const date = new Date(unixTimestamp);
 
         const day = date.getDate();
         const month = date.getMonth() + 1;

@@ -310,7 +310,7 @@ export async function message_fetch_pinned(suser: Socket_User, chatId: Id, chnl:
 }
 
 function filterMessages(query: Socket__Mess.MessageQuery, mess: Db_Mess.Message): boolean {
-    const time = extractTimeFromId(mess._id) * 1000;
+    const time = extractTimeFromId(mess._id);
 
     if (query.from && mess.fr !== query.from) return false;
     if (query.mentions && !mess.msg.includes(`@${query.mentions}`)) return false;

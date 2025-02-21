@@ -20,7 +20,7 @@ import { addTask, cancelTask } from "../../../schedule";
 import InternalCode from "../../../codes";
 import { checkIsUserOnRealm } from "../../../logic/checkIsUserOnRealm";
 
-const eventCreateSchemat = valid.objAjv(eventCreateData);
+const eventCreateSchema = valid.objAjv(eventCreateData);
 
 export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.setup");
@@ -426,7 +426,7 @@ export async function realm_event_create(suser: Socket_User, realmId: Id, req: S
     const validE = new ValidError("realm.event.create");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
-    if (!eventCreateSchemat(req)) return validE.valid("req");
+    if (!eventCreateSchema(req)) return validE.valid("req");
     if (req.type === "voice") {
         if (!valid.id(req.where)) return validE.valid("req.where");
         const chnl = await db.realmConf.findOne<Db_RealmConf.channel>(realmId, { chid: req.where });

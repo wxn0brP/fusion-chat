@@ -106,7 +106,8 @@ const messFunc = {
         messContentDiv.setAttribute("_plain", data.msg);
         messDiv.appendChild(messContentDiv);
         if(data.lastEdit){
-            messContentDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnix(parseInt(data.lastEdit, 36)));
+            const replacer = utils.formatDateFormUnix(parseInt(data.lastEdit, 36) * 1000);
+            messContentDiv.innerHTML += editMessText.replace("$$", replacer);
         }
         if(data.embed)
            format_embed(data.embed, messContentDiv);
