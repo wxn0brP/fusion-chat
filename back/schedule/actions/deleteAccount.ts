@@ -1,8 +1,8 @@
-import db from "../../dataBase";
-import deleteAccount from "../../logic/deleteAccount";
-import sendMail from "../../logic/mail";
-import { Id } from "../../types/base";
-import Db_Data from "../../types/db/data";
+import db from "#db";
+import deleteAccount from "#logic/deleteAccount";
+import sendMail from "#logic/mail";
+import Id from "#id";
+import Db_Data from "#types/db/data";
 import { activeTasks } from "../index";
 
 export default async (data: { user: Id }, taskId: Id) => {

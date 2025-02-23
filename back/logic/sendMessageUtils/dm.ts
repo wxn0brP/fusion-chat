@@ -1,10 +1,10 @@
 import NodeCache from "node-cache";
-import db from "../../dataBase";
+import db from "#db";
 import { combineId } from "../chatMgmt";
-import { Id } from "../../types/base";
+import Id from "#id";
 import ValidError from "../validError";
-import { Socket_StandardRes } from "../../types/socket/res";
-import InternalCode from "../../codes";
+import { Socket_StandardRes } from "#types/socket/res";
+import InternalCode from "#codes";
 import getCacheSettings from "../cacheSettings";
 
 const blockedCache = new NodeCache(getCacheSettings("DmBlock"));

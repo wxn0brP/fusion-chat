@@ -3,8 +3,8 @@ import multer, { memoryStorage } from "multer";
 import { Image } from "image-js";
 import { join } from "path";
 import { readFileSync, existsSync } from "fs";
-import cropAndResizeProfile from "../../../logic/cropAndResizeProfile";
-import InternalCode from "../../../codes";
+import cropAndResizeProfile from "#logic/cropAndResizeProfile";
+import InternalCode from "#codes";
 
 const router = Router();
 const MAX_FILE_SIZE = global.fileConfig.maxUserProfileFileSize;

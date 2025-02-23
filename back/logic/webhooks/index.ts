@@ -1,12 +1,12 @@
 import { genId } from "@wxn0brp/db";
 import * as customWebhookUtils from "./custom"; 
 import sendMessage from "../sendMessage";
-import { decode, KeyIndex } from "../../logic/token/index";
-import db from "../../dataBase";
-import { Id } from "../../types/base";
-import { Socket_StandardRes_Error } from "../../types/socket/res";
-import Db_RealmConf from "../../types/db/realmConf";
-import Logic_Webhook from "../../types/logic/webhook";
+import { decode, KeyIndex } from "#logic/token/index";
+import db from "#db";
+import Id from "#id";
+import { Socket_StandardRes_Error } from "#types/socket/res";
+import Db_RealmConf from "#types/db/realmConf";
+import Logic_Webhook from "#types/logic/webhook";
 
 export async function addCustom(webhookInfo: Logic_Webhook.webhook_builder){
     const { chat, chnl, name, template, ajv, required } = webhookInfo;

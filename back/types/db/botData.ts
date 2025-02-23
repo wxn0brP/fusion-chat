@@ -1,4 +1,4 @@
-import { Id } from "../base";
+import { Id } from "../id";
 
 namespace Db_BotData {
     export interface owner {

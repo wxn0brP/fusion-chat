@@ -1,4 +1,4 @@
-import { Id } from "../types/base";
+import Id from "#id";
 
 export function extractTimeFromId(id: Id): number{
     if(!id) return;

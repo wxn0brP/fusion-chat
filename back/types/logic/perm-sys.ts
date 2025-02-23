@@ -1,4 +1,4 @@
-import { Id } from "../base";
+import { Id } from "../id";
 
 namespace Logic_PermSys {
     export interface createRole__opts {

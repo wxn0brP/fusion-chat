@@ -1,4 +1,4 @@
-import { Id } from "../../../types/base";
+import Id from "#id";
 
 namespace Socket__Realms {
     export interface Event__req {

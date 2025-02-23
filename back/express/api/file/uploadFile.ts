@@ -3,7 +3,7 @@ import multer, { diskStorage, MulterError } from "multer";
 import { existsSync, readdirSync, mkdirSync } from "fs";
 import { join } from "path";
 import { genId } from "@wxn0brp/db";
-import InternalCode from "../../../codes";
+import InternalCode from "#codes";
 
 const { maxUserFiles, maxUserFileSize } = global.fileConfig;
 const router = Router();

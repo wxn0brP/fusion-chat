@@ -1,4 +1,4 @@
-import { Id } from "../base";
+import { Id } from "../id";
 
 export interface Socket_User {
     _id: Id;

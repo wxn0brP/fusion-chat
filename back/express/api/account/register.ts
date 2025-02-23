@@ -1,8 +1,8 @@
-import { Router } from "express";
+import InternalCode from "#codes";
+import db from "#db";
+import mailer from "#logic/mail";
 import { createHash } from "crypto";
-import mailer from "../../../logic/mail";
-import db from "../../../dataBase";
-import InternalCode from "../../../codes";
+import { Router } from "express";
 const router = Router();
 
 router.post("/register", async function(req, res){

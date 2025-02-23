@@ -1,7 +1,7 @@
 import { rm } from "fs";
-import { rmCache as statusMgmtRmCache } from "../../logic/status";
-import db from "../../dataBase";
-import { Id } from "../../types/base";
+import { rmCache as statusMgmtRmCache } from "#logic/status";
+import db from "#db";
+import Id from "#id";
 import { Socket } from "socket.io";
 
 export default (socket: Socket) => {

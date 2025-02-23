@@ -1,13 +1,13 @@
 import evt from "./evt";
 import voice from "./voice";
-import db from "../../dataBase";
+import db from "#db";
 import register from "./register";
 import { Socket } from "socket.io";
 import realmSettings from "./realmSettings";
-import { Socket_User } from "../../types/socket/user";
-import { authUser, createUser } from "../../logic/auth";
+import { Socket_User } from "#types/socket/user";
+import { authUser, createUser } from "#logic/auth";
 import SocketEventLimiter, { bannedUsers } from "./limiter";
-import { Socket_StandardRes, Socket_StandardRes_Error } from "../../types/socket/res";
+import { Socket_StandardRes, Socket_StandardRes_Error } from "#types/socket/res";
 
 global.io.of("/").use(async (socket: Socket, next: Function) => {
     const authData = socket.handshake.auth;

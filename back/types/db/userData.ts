@@ -1,4 +1,4 @@
-import { Id } from "../base";
+import { Id } from "../id";
 
 namespace Db_UserData {
     export interface realm {

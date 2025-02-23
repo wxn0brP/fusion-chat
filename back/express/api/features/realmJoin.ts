@@ -1,11 +1,11 @@
+import InternalCode from "#codes";
+import db from "#db";
+import { realm_join } from "#scl/chats";
+import Id from "#id";
+import Db_RealmConf from "#types/db/realmConf";
+import { Socket_StandardRes_Error } from "#types/socket/res";
+import { Socket_User } from "#types/socket/user";
 import { Router } from "express";
-import { realm_join } from "../../../socket/chat/logic/chats";
-import db from "../../../dataBase";
-import Db_RealmConf from "../../../types/db/realmConf";
-import { Id } from "../../../types/base";
-import { Socket_StandardRes_Error } from "../../../types/socket/res";
-import { Socket_User } from "../../../types/socket/user";
-import InternalCode from "../../../codes";
 const router = Router();
 
 export const path = "realm/join";

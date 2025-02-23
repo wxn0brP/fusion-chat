@@ -1,4 +1,4 @@
-import { Socket_StandardRes_Error } from "../../types/socket/res";
+import { Socket_StandardRes_Error } from "#types/socket/res";
 import {
     bots_get,
     bots_create,

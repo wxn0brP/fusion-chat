@@ -1,4 +1,4 @@
-import { Id } from "../base";
+import { Id } from "../id";
 import Db_Mess from "./mess";
 
 namespace Db_RealmConf {

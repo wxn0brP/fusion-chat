@@ -1,12 +1,12 @@
+import db from "#db";
+import firebaseSend from "#firebase";
+import valid from "#logic/validData";
+import ValidError from "#logic/validError";
+import Id from "#id";
+import Db_Data from "#types/db/data";
+import { Socket_StandardRes } from "#types/socket/res";
+import { Socket_User } from "#types/socket/user";
 import { Socket } from "socket.io";
-import db from "../../../dataBase";
-import valid from "../../../logic/validData";
-import ValidError from "../../../logic/validError";
-import { Id } from "../../../types/base";
-import { Socket_StandardRes } from "../../../types/socket/res";
-import Db_Data from "../../../types/db/data";
-import { Socket_User } from "../../../types/socket/user";
-import firebaseSend from "../../../firebase";
 
 const roomPrefix = "voice-";
 

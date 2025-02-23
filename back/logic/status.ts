@@ -1,6 +1,6 @@
 import NodeCache from "node-cache";
-import { Id } from "../types/base";
-import Status from "../types/socket/chat/status";
+import Id from "#id";
+import Status from "#types/socket/chat/status";
 import getCacheSettings from "./cacheSettings";
 
 const h2 = 2 * 60 * 60 * 1000; //2 hours in ms

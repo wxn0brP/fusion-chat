@@ -1,15 +1,15 @@
-import valid from "../../../../logic/validData";
-import ValidError from "../../../../logic/validError";
-import permissionSystem from "../../../../logic/permission-system/index";
-import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permission";
+import valid from "#logic/validData";
+import ValidError from "#logic/validError";
+import permissionSystem from "#logic/permission-system/index";
+import Permissions, * as PermissionFunctions from "#logic/permission-system/permission";
 import setRealmSettingsData from "../../valid/realmsSettings";
 import cpu from "./set/cpu";
-import db from "../../../../dataBase";
-import { Socket_StandardRes } from "../../../../types/socket/res";
-import InternalCode from "../../../../codes";
-import { Socket_User } from "../../../../types/socket/user";
-import { Id } from "../../../../types/base";
-import { Socket_RealmSettings } from "../../../../types/socket/chat/realmSettings";
+import db from "#db";
+import { Socket_StandardRes } from "#types/socket/res";
+import InternalCode from "#codes";
+import { Socket_User } from "#types/socket/user";
+import Id from "#id";
+import { Socket_RealmSettings } from "#types/socket/chat/realmSettings";
 import { ValidateFunction } from "ajv";
 import { Db_RealmConf } from "./set/imports";
 

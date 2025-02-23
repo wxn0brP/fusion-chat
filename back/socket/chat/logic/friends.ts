@@ -1,14 +1,14 @@
-import valid from "../../../logic/validData";
-import ValidError from "../../../logic/validError";
-import { getCache as statusMgmtGetCache } from "../../../logic/status";
-import db from "../../../dataBase";
-import Db_Data from "../../../types/db/data";
-import Db_UserData from "../../../types/db/userData";
-import { Socket_StandardRes } from "../../../types/socket/res";
-import { Id } from "../../../types/base";
-import { Socket_User } from "../../../types/socket/user";
-import InternalCode from "../../../codes";
-import firebaseSend from "../../../firebase";
+import InternalCode from "#codes";
+import db from "#db";
+import firebaseSend from "#firebase";
+import { getCache as statusMgmtGetCache } from "#logic/status";
+import valid from "#logic/validData";
+import ValidError from "#logic/validError";
+import Id from "#id";
+import Db_Data from "#types/db/data";
+import Db_UserData from "#types/db/userData";
+import { Socket_StandardRes } from "#types/socket/res";
+import { Socket_User } from "#types/socket/user";
 
 enum friendStatusEnum {
     NOT_FRIEND,

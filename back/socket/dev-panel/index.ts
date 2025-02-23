@@ -1,6 +1,6 @@
-import db from "../../dataBase";
-import { authUser } from "../../logic/auth";
-import { Socket_User } from "../../types/socket/user";
+import db from "#db";
+import { authUser } from "#logic/auth";
+import { Socket_User } from "#types/socket/user";
 import botsMgmt from "./botsMgmt";
 import editBot from "./editBot";
 

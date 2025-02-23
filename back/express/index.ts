@@ -2,11 +2,11 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import crypto from "crypto";
-import { authUser } from "../logic/auth";
+import { authUser } from "#logic/auth";
 import cors from "cors";
 import { expressMiddleware as bannedIp } from "../bannedIp";
-import { Socket_User } from "../types/socket/user";
-import InternalCode from "../codes";
+import { Socket_User } from "#types/socket/user";
+import InternalCode from "#codes";
 
 const app = express();
 global.app = app;

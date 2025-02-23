@@ -1,9 +1,9 @@
 import { Socket } from "socket.io";
-import { authUser, createUser } from "../logic/auth";
-import { Socket_User } from "../types/socket/user";
-import { Id } from "../types/base";
-import db from "../dataBase";
-import ValidError from "../logic/validError";
+import { authUser, createUser } from "#logic/auth";
+import { Socket_User } from "#types/socket/user";
+import Id from "#id";
+import db from "#db";
+import ValidError from "#logic/validError";
 
 interface Socket_QRCodeLogin extends Socket {
     _idK: string;

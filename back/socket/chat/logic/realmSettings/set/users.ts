@@ -1,4 +1,4 @@
-import Db_RealmUser from "../../../../../types/db/realmUser";
+import Db_RealmUser from "#types/db/realmUser";
 import { db, Id, processDbChanges, ProcessDbChangesResult, Socket_RealmSettings } from "./imports";
 
 export default async(id: Id, data: Socket_RealmSettings) => {

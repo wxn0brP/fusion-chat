@@ -1,7 +1,7 @@
-import { Id } from "../../../../types/base";
+import Id from "#id";
 import { db } from "../realmSettings/set/imports";
-import Db_UserData from "../../../../types/db/userData";
-import Db_RealmUser from "../../../../types/db/realmUser";
+import Db_UserData from "#types/db/userData";
+import Db_RealmUser from "#types/db/realmUser";
 
 async function emitUserStatusUpdate(id: Id, status: string, text: string) {
     const relation_users = new Map<Id, true>();

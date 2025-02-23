@@ -1,8 +1,8 @@
 import schedule from "node-schedule";
 import actions, { Actions } from "./actions/index";
-import db from "../dataBase";
-import { Id } from "../types/base";
-import Db_System from "../types/db/system";
+import db from "#db";
+import Id from "#id";
+import Db_System from "#types/db/system";
 
 export const activeTasks = new Map<Id, schedule.Job>();
 

@@ -1,10 +1,10 @@
+import InternalCode from "#codes";
+import db from "#db";
+import { createUser } from "#logic/auth";
+import mailer from "#logic/mail";
+import Db_Data from "#types/db/data";
+import { createHash, timingSafeEqual } from "crypto";
 import { Router } from "express";
-import { timingSafeEqual, createHash } from "crypto";
-import { createUser } from "../../../logic/auth";
-import mailer from "../../../logic/mail";
-import db from "../../../dataBase";
-import Db_Data from "../../../types/db/data";
-import InternalCode from "../../../codes";
 const router = Router();
 
 router.post("/login", async (req, res) => {

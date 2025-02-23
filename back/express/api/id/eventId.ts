@@ -1,11 +1,11 @@
 import { Router } from "express";
 import NodeCache from "node-cache";
-import db from "../../../dataBase";
-import valid from "../../../logic/validData";
-import { combineId } from "../../../logic/chatMgmt";
-import { Id } from "../../../types/base";
-import InternalCode from "../../../codes";
-import getCacheSettings from "../../../logic/cacheSettings";
+import db from "#db";
+import valid from "#logic/validData";
+import { combineId } from "#logic/chatMgmt";
+import Id from "#id";
+import InternalCode from "#codes";
+import getCacheSettings from "#logic/cacheSettings";
 
 const router = Router();
 const cache = new NodeCache(getCacheSettings("EventId"));

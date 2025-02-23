@@ -1,4 +1,4 @@
-import { Id } from "../base";
+import { Id } from "../id";
 
 namespace Db_RealmData {
     export interface announcement_channels {

@@ -1,4 +1,4 @@
-import { Id } from "../base";
+import { Id } from "../id";
 
 interface Session {
     [key: string]: any;

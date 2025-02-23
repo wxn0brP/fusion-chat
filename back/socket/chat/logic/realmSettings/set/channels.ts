@@ -1,4 +1,4 @@
-import { permissionCache } from "../../../../../logic/chnlPermissionCache";
+import { permissionCache } from "#logic/chnlPermissionCache";
 import { Settings_AllData } from "../set";
 import { Db_RealmConf, Id, processDbChanges, Socket_RealmSettings, Socket_User } from "./imports";
 import { saveDbChanges } from "./utils";

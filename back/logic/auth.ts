@@ -1,6 +1,6 @@
-import db from "../dataBase";
-import { Id } from "../types/base";
-import { Socket_User } from "../types/socket/user";
+import db from "#db";
+import Id from "#id";
+import { Socket_User } from "#types/socket/user";
 import { create, decode, KeyIndex } from "./token/index";
 
 /**

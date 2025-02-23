@@ -2,17 +2,17 @@ import { chatExists as _chatExists, combineId } from "./chatMgmt";
 import valid, { validChannelId } from "./validData";
 import ValidError from "./validError";
 import getChnlPerm from "./chnlPermissionCache";
-import db from "../dataBase";
+import db from "#db";
 import checkDmChat from "./sendMessageUtils/dm";
 import announcementChnl from "./sendMessageUtils/announcementChnl";
-import Db_RealmConf from "../types/db/realmConf";
-import Db_UserData from "../types/db/userData";
-import Db_RealmUser from "../types/db/realmUser";
-import { Message, Options, Request, User } from "../types/sendMessage";
-import { Socket_StandardRes } from "../types/socket/res";
-import { Id } from "../types/base";
-import InternalCode from "../codes";
-import firebaseSend from "../firebase";
+import Db_RealmConf from "#types/db/realmConf";
+import Db_UserData from "#types/db/userData";
+import Db_RealmUser from "#types/db/realmUser";
+import { Message, Options, Request, User } from "#types/sendMessage";
+import { Socket_StandardRes } from "#types/socket/res";
+import Id from "#id";
+import InternalCode from "#codes";
+import firebaseSend from "#firebase";
 
 const validE = new ValidError("mess");
 

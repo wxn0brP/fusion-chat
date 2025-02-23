@@ -1,12 +1,12 @@
-import db from "../../dataBase";
+import db from "#db";
 import register from "./register";
 import { Socket } from "socket.io";
-import { Id } from "../../types/base";
-import Db_BotData from "../../types/db/botData";
+import Id from "#id";
+import Db_BotData from "#types/db/botData";
 import SocketEventLimiter, { bannedUsers } from "../chat/limiter";
-import { decode, KeyIndex } from "../../logic/token/index";
-import { Socket_User } from "../../types/socket/user";
-import { Socket_StandardRes, Socket_StandardRes_Error } from "../../types/socket/res";
+import { decode, KeyIndex } from "#logic/token/index";
+import { Socket_User } from "#types/socket/user";
+import { Socket_StandardRes, Socket_StandardRes_Error } from "#types/socket/res";
 import voice from "../chat/voice";
 
 global.io.of("/bot").use(async (socket: Socket, next: Function) => {

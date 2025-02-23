@@ -3,9 +3,9 @@ import SocketEventEngine from "../chat/engine";
 import { Events, generalEvents } from "../chat/register";
 
 import { get_bot_info } from "./logic/bot";
-import sendMessage from "../../logic/sendMessage";
-import { Socket_User } from "../../types/socket/user";
-import { Request } from "../../types/sendMessage";
+import sendMessage from "#logic/sendMessage";
+import { Socket_User } from "#types/socket/user";
+import { Request } from "#types/sendMessage";
 
 const botEvents: Events[] = [
     ["get.bot.info", 1_000, true, get_bot_info],

@@ -1,4 +1,4 @@
-import { Id } from "../base";
+import { Id } from "../id";
 
 namespace Logic_Webhook {
     export interface webhook_builder {

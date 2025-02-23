@@ -1,7 +1,7 @@
-import { Id } from "../../types/base";
+import Id from "#id";
 import { activeTasks } from "../index";
-import db from "../../dataBase";
-import Db_RealmData from "../../types/db/realmData";
+import db from "#db";
+import Db_RealmData from "#types/db/realmData";
 
 export default async (data: { realm: Id, evt: Id }, taskId: Id) => {
     if(!activeTasks.has(taskId)) return;
