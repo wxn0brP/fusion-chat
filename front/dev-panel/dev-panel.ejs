@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="/favicon.svg" type="image/x-icon">
+        <title>Fusion Chat | Dev Panel</title>
+        <link rel="stylesheet" href="/style.css">
+        <link rel="stylesheet" href="css/require.css">
+    </head>
+    <body>
+        <noscript class="delete" time="500">This page require JS to work</noscript>
+        <div id="app">
+            <%- include('html/header') %>
+            <%- include('html/listBot') %> 
+            <%- include('html/menageBot') %>
+            <%- include('html/templates') %>
+            <%- include('html/ui') %>
+        </div>
+
+        <% const libs = [
+            "socket.io",
+        ] %>
+
+        <div id="scripts" style="display: none;">
+            <script src="/core.js"></script>
+            <% libs.forEach(script => { %>
+                <script src="/libs/<%= script %>.min.js"></script>
+            <% }) %>
+            <script type="module" src="/js/dev-panel/start.js"></script>
+        </div>
+    </body>
+</html>

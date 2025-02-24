@@ -1,0 +1,24 @@
+import SocketEventEngine from "../chat/engine.js";
+import { generalEvents } from "../chat/register.js";
+import { get_bot_info } from "./logic/bot.js";
+import sendMessage from "../../logic/sendMessage.js";
+const botEvents = [
+    ["get.bot.info", 1_000, true, get_bot_info],
+    ["mess", 200, false,
+        async (suser, req) => {
+            return await sendMessage(req, suser, {
+                frPrefix: "^"
+            });
+        }
+    ],
+];
+export default (socket) => {
+    const engine = new SocketEventEngine(socket);
+    for (const event of generalEvents) {
+        engine.add(event[0], event[1], event[2], event[3]);
+    }
+    for (const event of botEvents) {
+        engine.add(event[0], event[1], event[2], event[3]);
+    }
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicmVnaXN0ZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9iYWNrL3NvY2tldC9ib3QvcmVnaXN0ZXIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsT0FBTyxpQkFBaUIsTUFBTSxnQkFBZ0IsQ0FBQztBQUMvQyxPQUFPLEVBQVUsYUFBYSxFQUFFLE1BQU0sa0JBQWtCLENBQUM7QUFFekQsT0FBTyxFQUFFLFlBQVksRUFBRSxNQUFNLGFBQWEsQ0FBQztBQUMzQyxPQUFPLFdBQVcsTUFBTSxvQkFBb0IsQ0FBQztBQUk3QyxNQUFNLFNBQVMsR0FBYTtJQUN4QixDQUFDLGNBQWMsRUFBRSxLQUFLLEVBQUUsSUFBSSxFQUFFLFlBQVksQ0FBQztJQUMzQyxDQUFDLE1BQU0sRUFBRSxHQUFHLEVBQUUsS0FBSztRQUNmLEtBQUssRUFBRSxLQUFrQixFQUFFLEdBQVksRUFBRSxFQUFFO1lBQ3ZDLE9BQU8sTUFBTSxXQUFXLENBQUMsR0FBRyxFQUFFLEtBQUssRUFBRTtnQkFDakMsUUFBUSxFQUFFLEdBQUc7YUFDaEIsQ0FBQyxDQUFDO1FBQ1AsQ0FBQztLQUNKO0NBQ0osQ0FBQztBQUVGLGVBQWUsQ0FBQyxNQUFjLEVBQUUsRUFBRTtJQUM5QixNQUFNLE1BQU0sR0FBRyxJQUFJLGlCQUFpQixDQUFDLE1BQU0sQ0FBQyxDQUFDO0lBRTdDLEtBQUssTUFBTSxLQUFLLElBQUksYUFBYSxFQUFFLENBQUM7UUFDaEMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFDLEVBQUUsS0FBSyxDQUFDLENBQUMsQ0FBQyxFQUFFLEtBQUssQ0FBQyxDQUFDLENBQUMsRUFBRSxLQUFLLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQztJQUN2RCxDQUFDO0lBRUQsS0FBSyxNQUFNLEtBQUssSUFBSSxTQUFTLEVBQUUsQ0FBQztRQUM1QixNQUFNLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQyxDQUFDLENBQUMsRUFBRSxLQUFLLENBQUMsQ0FBQyxDQUFDLEVBQUUsS0FBSyxDQUFDLENBQUMsQ0FBQyxFQUFFLEtBQUssQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO0lBQ3ZELENBQUM7QUFDTCxDQUFDLENBQUEifQ==

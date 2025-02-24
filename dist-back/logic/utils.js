@@ -1,0 +1,8 @@
+export function extractTimeFromId(id) {
+    if (!id)
+        return;
+    const timePart = id.split("-")[0];
+    const timeUnix = parseInt(timePart, 36);
+    return timeUnix;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXRpbHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9iYWNrL2xvZ2ljL3V0aWxzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUVBLE1BQU0sVUFBVSxpQkFBaUIsQ0FBQyxFQUFNO0lBQ3BDLElBQUcsQ0FBQyxFQUFFO1FBQUUsT0FBTztJQUNmLE1BQU0sUUFBUSxHQUFHLEVBQUUsQ0FBQyxLQUFLLENBQUMsR0FBRyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUM7SUFDbEMsTUFBTSxRQUFRLEdBQUcsUUFBUSxDQUFDLFFBQVEsRUFBRSxFQUFFLENBQUMsQ0FBQztJQUN4QyxPQUFPLFFBQVEsQ0FBQztBQUNwQixDQUFDIn0=

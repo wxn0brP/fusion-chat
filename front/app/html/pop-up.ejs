@@ -1,0 +1,74 @@
+<div id="settings" style="display: none;"></div>
+
+<div id="userProfile" style="display: none;"></div>
+
+<div id="emojiDiv">
+    <div id="emojiDiv__struct">
+        <button onclick="mglVar.emojiFunc.emojiClick()" id="emojiDiv__close" class="btn">X</button>
+        <div id="emoji__search">
+            <label for="emocji-input">🔎</label>
+            <input type="text" id="emocji-input" class="btn">
+        </div>
+        <div id="emoji__nav"></div>
+        <div id="emoji__container"></div>
+    </div>
+</div>
+
+<div id="errMesses"></div>
+
+<div id="prompt"></div>
+
+<div id="voice_call" style="display: none;">
+    <button onclick="mglHTML.voice.div.fadeOut()" translate class="btn">uni.hide</button>
+    <button onclick="mglVar.voiceFunc.endCall()" id="voice_call_end" translate class="btn">ui.disconnect</button>
+    <button onclick="mglVar.voiceFunc.toggleMute()" id="voice_call_mute_mic" class="btn"></button>
+    <div id="voice_call_users_container">
+        <span translate>ui.users</span>:
+        <ul id="voice_call_users"></ul>
+    </div>
+    <div id="voice_call_media"></div>
+</div>
+
+<div id="linkClick" style="display: none;">
+    <h1 translate>ui.open_link</h1>
+    <br />
+    <h2 id="linkClick_link"></h2>
+    <br />
+    <div id="linkClick_btns">
+        <button id="linkClick_yes" translate>uni.yes</button>
+        <button id="linkClick_no" translate>uni.cancel</button>
+    </div>
+</div>
+
+<div id="makeRealm" style="display: none;">
+    <button onclick="mglVar.buttonFunc.createRealm();" translate class="btn">ui.create_realm</button>
+    <br />
+    <br />
+    <button onclick="mglVar.buttonFunc.joinRealm();" translate class="btn">ui.join_realm</button>
+    <br />
+    <br />
+    <button onclick="event.target.parentElement.fadeOut()" translate class="btn">uni.cancel</button>
+</div>
+
+<div id="mediaPopup"></div>
+
+<div id="subscribeEventChnl" style="display: none;">
+    <h2>Realm:</h2>
+    <select id="subscribeEventChnl_realms"></select>
+    <br /><br />
+    <h2><span translate>ui.channel</span>:</h2>
+    <select id="subscribeEventChnl_channels"></select>
+    <br /><br />
+    <button onclick="mglInt.subscribeEventChnl.exit()" translate class="btn" id="subscribeEventChnl_exit">uni.cancel</button>
+    <button onclick="mglInt.subscribeEventChnl.subscribe()" translate class="btn" id="subscribeEventChnl_subscribe">ui.subscribe_channel</button>
+</div>
+
+<div id="realmEvents" style="display: none;">
+    <div id="realmEvents__exit">
+        <button onclick="mglInt.realmEvents.exit()" class="btn">X</button>
+    </div>
+    <div style="text-align: left; margin-bottom: 1rem;">
+        <button id="realmEvents__add" translate class="btn" onclick="mglInt.realmEvents.create()">uni.add</button>
+    </div>
+    <div id="realmEvents__container"></div>
+</div>
