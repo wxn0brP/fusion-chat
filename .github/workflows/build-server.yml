@@ -79,6 +79,7 @@ jobs:
           git checkout --orphan $TARGET_BRANCH
 
           mkdir -p dist/front-app
+          mkdir -p dist/front-scripts
 
           cp -R ./dist-back/ dist/
           cp -R ./front-app/dist/ dist/front-app/dist/
@@ -89,6 +90,7 @@ jobs:
           cp ./package.json dist/package.json
           cp ./LICENSE dist/LICENSE
           cp ./.env.txt dist/.env.txt
+          ls -al dist
 
           shopt -s extglob
           rm -rf !(dist)
