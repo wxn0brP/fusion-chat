@@ -1,5 +1,6 @@
 import vars from "./var/var";
 import socket from "./core/ws";
+import "./core/copy";
 
 socket.connect();
 const userImg = document.querySelector<HTMLImageElement>("#header__user__img");

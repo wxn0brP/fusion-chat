@@ -1,11 +1,11 @@
-.noneselect{
+.noneselect {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
 
-.btn{
+.btn {
     --pad_radius: 5px;
     --border: 2px;
     --bg: transparent;
@@ -19,14 +19,14 @@
     background-color: var(--bg);
 }
 
-@media screen and (max-width: 800px){
-    .only_desktop{
-        display: none;  
+@media screen and (max-width: 800px) {
+    .only_desktop {
+        display: none;
     }
 }
 
-@media screen and (min-width: 800px){
-    .only_mobile{
+@media screen and (min-width: 800px) {
+    .only_mobile {
         display: none;
     }
 }

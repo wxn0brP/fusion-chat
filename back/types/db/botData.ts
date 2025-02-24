@@ -11,11 +11,6 @@ namespace Db_BotData {
         name: string;
     }
 
-    export interface perm {
-        _id: "perm";
-        perm: string[];
-    }
-
     export interface realm {
         realm: Id;
     }

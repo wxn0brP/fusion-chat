@@ -1,5 +1,5 @@
 import type SocketIOClient from "socket.io-client";
-import listBot from "./page_listBot";
+import mainListBots from "./mainList";
 declare var io: typeof SocketIOClient;
 
 const socket = io("/dev-panel", {
@@ -16,7 +16,7 @@ const socket = io("/dev-panel", {
 
 socket.on("connect", () => {
     lo("connected to socket");
-    listBot.getBots();
+    mainListBots.getBots();
 });
 
 socket.on("error", console.log);

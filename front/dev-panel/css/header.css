@@ -1,4 +1,4 @@
-header{
+header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -9,23 +9,23 @@ header{
     background-color: var(--panel);
     color: var(--txt);
     border-bottom: 2px solid var(--accent);
-    
+
     padding: 0.5rem;
     padding-inline: 10px;
     margin-bottom: 1rem;
 }
 
-header > div{
+header>div {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-#header__logo{
+#header__logo {
     height: 46px;
 }
 
-#header__user__img{
+#header__user__img {
     height: 46px;
     object-fit: cover;
 }

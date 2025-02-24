@@ -2,7 +2,7 @@ const errMessesDiv = document.querySelector("#errMesses");
 const promptDiv = document.querySelector("#prompt");
 
 const uiFunc = {
-    async uiMessage(message, backgroundColor="", displayTime=6000, className=""){
+    async uiMessage(message: string, backgroundColor: string="", displayTime: number=6000, className: string=""){
         const div = document.createElement("div");
         div.textContent = message;
         if(backgroundColor) div.style.backgroundColor = backgroundColor;
@@ -46,13 +46,13 @@ const uiFunc = {
         await end();
     },
     
-    uiMsg(data, extraTime=0){
+    uiMsg(data: string, extraTime: number=0){
         const speed = 1/3; //1s = 3 words
         const time = data.split(" ").length * speed + 6 + extraTime;
         uiFunc.uiMessage(data, undefined, time * 1000, "uiMsgClass");
     },
 
-    prompt(text, defaultValue=""){
+    prompt(text: string, defaultValue: string=""){
         return new Promise((resolve) => {
             function end(){
                 resolve(input.value);
@@ -87,7 +87,7 @@ const uiFunc = {
         });
     },
 
-    selectPrompt(text, options, optionsValues=[]){
+    selectPrompt(text: string, options: string, optionsValues: string[]=[]){
         return new Promise((resolve) => {
             function end(){
                 resolve(select.value);
@@ -123,3 +123,5 @@ const uiFunc = {
         });
     }
 }
+
+export default uiFunc;

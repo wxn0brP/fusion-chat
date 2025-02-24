@@ -1,0 +1,44 @@
+<div id="page_menageBot" style="display: none;">
+    <div id="page_menageBot__container"></div>
+</div>
+
+<script id="template_menageBot" type="text/x-handlebars-template">
+    <h1>Edit Bot</h1>
+    <label>
+        Name:
+        <input type="text" id="menageBot__name" value="{{ botInfo.name }}">
+    </label>
+    <div style="height: 10px;"></div>
+
+    <div class="menageBot_container" style="flex-direction: column;">
+        <details>
+            <summary style="font-size: large;">Realms</summary>
+            <div id="bot_realms__container"></div>
+        </details>
+    </div>
+
+    <div class="menageBot_container">
+        <button class="btn" onclick="menageBot.generateToken()" translate>Generate new access token</button>
+        <div style="height: 10px;"></div>
+        
+        <button class="btn" onclick="copy.id('{{botInfo.id}}')" translate>Copy ID</button>
+        <button class="btn" onclick="copy.invite('{{botInfo.id}}')" translate>Copy Invite</button>
+        <div style="height: 10px;"></div>
+        
+        <button class="btn" onclick="menageBot.exit()" translate>Cancel</button>
+        <button class="btn" onclick="menageBot.save()" translate>Save</button>
+        <div style="height: 10px;"></div>
+        
+        <button class="btn" onclick="menageBot.deleteBot()" translate style="--txt: red;">Delete</button>
+    </div>
+</script>
+
+<script id="template_botRealms" type="text/x-handlebars-template">
+    {{#each realms}}
+        <div class="botRealm">
+            <div class="botRealm__name">{{this.name}}</div>
+            <img src="/userFiles/realms/{{this.id}}.png" alt="{{this.name}}">
+            <button class="btn" onclick="menageBot.exitFromRealm('{{this.id}}')" translate style="--txt: red;">Exit</button>
+        </div>
+    {{/each}}
+</script>

@@ -22,6 +22,10 @@ declare global {
 
     var lo: typeof console.log;
     var delay: (ms: number) => Promise<void>;
+
+    var cw: {
+        get: (url: string) => string;
+    }
 }
 
 export {}

@@ -1,7 +1,7 @@
 import Handlebars from "handlebars";
 
 const templateFunc = {
-    compile(selector){
+    compile(selector: string){
         const ele = document.querySelector(selector);
         const template = ele.innerHTML;
         ele.remove();
@@ -9,7 +9,7 @@ const templateFunc = {
         return templateFunc;
     },
 
-    registerPartial(name, selector){
+    registerPartial(name: string, selector: string){
         const ele = document.querySelector(selector);
         const template = ele.innerHTML;
         ele.remove();
@@ -17,10 +17,10 @@ const templateFunc = {
     }
 }
 
-templateFunc.registerPartial("permissionsForm", "#permissionsFormTemplate");
 const templates = {
-    listBot: templateFunc.compile("#t_listBot"),
-    editBot: templateFunc.compile("#t_editBot"),
+    listBot: templateFunc.compile("#template_listBot"),
+    menageBot: templateFunc.compile("#template_menageBot"),
+    botRealms: templateFunc.compile("#template_botRealms")
 }
 
 export default templates;
