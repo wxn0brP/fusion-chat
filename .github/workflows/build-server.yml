@@ -83,7 +83,7 @@ jobs:
 
           cp -R ./dist-back/ dist/
           cp -R ./front-app/dist/ dist/front-app/dist/
-          cp -R ./front-scripts/dist-build/ dist/front-app/dist-build/
+          cp -R ./front-scripts/dist-build/ dist/front-scripts/dist-build/
           cp -R ./front/ dist/front/
           cp ./index.js dist/index.js
           cp ./app.js dist/app.js
