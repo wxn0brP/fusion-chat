@@ -8,6 +8,21 @@
     color: var(--txt);
 }
 
+#page_menageBot input {
+    border-radius: 5px;
+    border: 1px solid var(--accent);
+    background-color: var(--back);
+    color: var(--txt);
+    padding: 5px;
+}
+
+#page_menageBot img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 #page_menageBot__container {
     display: flex;
     justify-content: center;
@@ -51,4 +66,23 @@
     width: 64px;
     height: 64px;
     object-fit: cover;
+}
+
+#page_menageBot hr {
+    width: 30%;
+    color: var(--accent);
+}
+
+.paddingDiv {
+    --h: 20px;
+    --c: var(--back);
+    width: 30%;
+    height: calc(var(--h) / 2);
+    margin-bottom: calc(var(--h) / 2);
+    border-bottom: 1px solid var(--c);
+    margin-inline: auto;
+}
+
+.paddingDiv.acc {
+    --c: var(--accent);
 }

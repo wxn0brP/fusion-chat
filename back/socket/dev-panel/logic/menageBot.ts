@@ -13,11 +13,12 @@ import Socket_Bot from "#types/socket/dev-panel/bot";
 import Db_BotData from "#types/db/botData";
 import NodeCache from "node-cache";
 import getCacheSettings from "#logic/cacheSettings";
+import fs from "fs";
 const editInfoSchemat = valid.objAjv(infoSchema);
 
 const cache = new NodeCache(getCacheSettings("BotEdit"));
 
-async function canUserEditBot(suser: Socket_User, id: Id): Promise<boolean> {
+export async function canUserEditBot(suser: Socket_User, id: Id): Promise<boolean> {
     if (cache.has(suser._id)) {
         return cache.get<Id[]>(suser._id).includes(id);
     }
@@ -85,4 +86,18 @@ export async function bot_generate_token(suser: Socket_User, id: Id): Promise<So
     const token = await create(payload, false, KeyIndex.BOT_TOKEN);
     await db.botData.updateOneOrAdd(id, { _id: "token" }, { token });
     return { err: false, res: [token] };
+}
+
+export async function bot_profile_remove(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
+    const validE = new ValidError("bot.profile.remove");
+    if(!valid.id(id)) return validE.valid("id");
+
+    const canEdit = await canUserEditBot(suser, id);
+    if(!canEdit) return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
+
+    await db.botData.removeOne(id, { _id: "img" });
+    const path = "userFiles/profiles/" + id + ".png";
+    if(fs.existsSync(path)) fs.unlinkSync(path);
+
+    return { err: false };
 }

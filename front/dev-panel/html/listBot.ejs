@@ -11,6 +11,7 @@
     {{#each bots}}
         <div class="bot">
             <div class="bot__name">{{this.name}}</div>
+            <img src="/api/profile/img?id={{this.id}}" alt="Profile img" data-bpi="{{this.id}}">
             <div style="height: 10px;"></div>
 
             <button class="btn" onclick="copy.id('{{this.id}}')" translate>Copy ID</button>

@@ -14,6 +14,10 @@ namespace Db_BotData {
     export interface realm {
         realm: Id;
     }
+
+    export interface img {
+        _id: "img";
+    }
 }
 
 export default Db_BotData;

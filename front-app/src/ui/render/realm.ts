@@ -82,7 +82,7 @@ const render_realm = {
             }
 
             const userImg = document.createElement("img");
-            userImg.src = !isBot ? "/api/profile/img?id=" + userID : "/favicon.svg";
+            userImg.src = "/api/profile/img?id=" + userID.replace("^", "");
             userDiv.appendChild(userImg);
 
             const textContainer = document.createElement("div");

@@ -19,3 +19,10 @@
     width: 200px;
     height: 200px;
 }
+
+#page_listBot__container .bot img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+}

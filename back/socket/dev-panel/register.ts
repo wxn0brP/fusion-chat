@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 import SocketEventEngine from "../chat/engine";
 import { Events } from "../chat/register";
-import { bot_edit, bot_generate_token, bot_get_realms, bot_realm_exit } from "./logic/menageBot";
+import { bot_edit, bot_generate_token, bot_get_realms, bot_profile_remove, bot_realm_exit } from "./logic/menageBot";
 import { bots_create, bots_delete, bots_get } from "./logic/mainList";
 
 const events: Events[] = [
@@ -13,6 +13,7 @@ const events: Events[] = [
     ["bot.get.realms", 1000, true, bot_get_realms],
     ["bot.realm.exit", 1000, true, bot_realm_exit],
     ["bot.generate.token", 1000, true, bot_generate_token],
+    ["bot.profile.remove", 1000, true, bot_profile_remove],
 ]
 
 export default (socket: Socket) => {
