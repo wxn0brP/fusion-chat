@@ -118,10 +118,9 @@ export async function addUserToChat(chatId: Id, userId: Id, roles: Id[]=[]){
  * @return A promise that resolves when the user is removed from the chat
  */
 export async function exitChat(chatId: Id, userId: Id){
-    await db.realmUser.removeOne(chatId, { uid: userId });
+    await db.realmUser.removeOne(chatId, { u: userId });
     await db.userData.removeOne(userId, { realm: chatId });
 }
-
 
 /**
  * A function to create a privilege for two users.
