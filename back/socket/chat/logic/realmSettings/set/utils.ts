@@ -1,4 +1,4 @@
-import db from "../../../../../dataBase";
+import db from "#db";
 import { ProcessDbChangesResult } from "./imports";
 
 /**

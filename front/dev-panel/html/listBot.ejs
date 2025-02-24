@@ -7,11 +7,17 @@
     <div id="page_listBot__container"></div>
 </div>
 
-<script id="t_listBot" type="text/x-handlebars-template">
+<script id="template_listBot" type="text/x-handlebars-template">
     {{#each bots}}
         <div class="bot">
             <div class="bot__name">{{this.name}}</div>
-            <div class="bot__id">{{this.id}}</div>
+            <img src="/api/profile/img?id={{this.id}}" alt="Profile img" data-bpi="{{this.id}}">
+            <div style="height: 10px;"></div>
+
+            <button class="btn" onclick="copy.id('{{this.id}}')" translate>Copy ID</button>
+            <button class="btn" onclick="copy.invite('{{this.id}}')" translate>Copy Invite</button>
+            <div style="height: 10px;"></div>
+
             <button class="btn" onclick="listBot.editBot('{{this.id}}')" translate>Edit</button>
         </div>
     {{/each}}

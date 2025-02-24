@@ -1,13 +1,14 @@
-import valid from "../../../logic/validData";
-import ValidError from "../../../logic/validError";
-import { getCache as statusMgmtGetCache } from "../../../logic/status";
-import db from "../../../dataBase";
-import Db_Data from "../../../types/db/data";
-import Db_UserData from "../../../types/db/userData";
-import { Socket_StandardRes } from "../../../types/socket/res";
-import { Id } from "../../../types/base";
-import { Socket_User } from "../../../types/socket/user";
-import InternalCode from "../../../codes";
+import InternalCode from "#codes";
+import db from "#db";
+import firebaseSend from "#firebase";
+import { getCache as statusMgmtGetCache } from "#logic/status";
+import valid from "#logic/validData";
+import ValidError from "#logic/validError";
+import Id from "#id";
+import Db_Data from "#types/db/data";
+import Db_UserData from "#types/db/userData";
+import { Socket_StandardRes } from "#types/socket/res";
+import { Socket_User } from "#types/socket/user";
 
 enum friendStatusEnum {
     NOT_FRIEND,
@@ -43,7 +44,7 @@ export async function friend_request(suser: Socket_User, nameOrId: string): Prom
 
     await db.data.add("friendRequests", { from: suser._id, to: id }, false);
     global.sendToSocket(id, "friend.request", suser._id);
-    await global.fireBaseMessage.send({
+    await firebaseSend({
         to: id,
         title: "Friend request",
         body: suser.name + " wants to be your friend"
@@ -65,7 +66,7 @@ export async function friend_response(suser: Socket_User, id: Id, accept: boolea
 
     global.sendToSocket(id, "friend.response", suser._id, accept);
     if (accept) global.sendToSocket(suser._id, "refreshData", "friend.get.all");
-    global.fireBaseMessage.send({
+    firebaseSend({
         to: id,
         title: "Friend request",
         body: suser.name + (accept ? " accepted your friend request" : " rejected your friend request")

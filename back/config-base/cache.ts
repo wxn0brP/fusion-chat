@@ -10,4 +10,5 @@ export default {
     DmBlock: [defaultTTL, defaultCheckPeriod],
     UserDm: [defaultTTL, defaultCheckPeriod],
     AnnouncementSubscribe: [defaultTTL, defaultCheckPeriod],
+    BotEdit: [defaultTTL, defaultCheckPeriod],
 }

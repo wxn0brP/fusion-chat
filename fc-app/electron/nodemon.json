@@ -1,5 +1,5 @@
 {
-    "exec": "electron . --link http://localhost:1478 -d",
+    "exec": "yarn build:ts && electron . --link http://localhost:1478 -d",
     "events": {
         "restart": "clear"
     },

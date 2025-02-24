@@ -1,11 +1,11 @@
 import NodeCache from "node-cache";
 import PermissionSystem from "./permission-system/index";
 import rolePermissions, { hasPermission, getAllPermissions } from "./permission-system/permission";
-import db from "../dataBase";
-import Db_RealmConf from "../types/db/realmConf";
-import { Id } from "../types/base";
+import db from "#db";
+import Db_RealmConf from "#types/db/realmConf";
+import Id from "#id";
 import getCacheSettings from "./cacheSettings";
-import Logic_ChnlPerm from "../types/logic/chnlPerm";
+import Logic_ChnlPerm from "#types/logic/chnlPerm";
 
 export const cache = new NodeCache(getCacheSettings("ChnlPermission"));
 export const channelPermissionsCache = new NodeCache(getCacheSettings("ChnlPermission_Channels"));

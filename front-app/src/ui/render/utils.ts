@@ -3,30 +3,15 @@ hub("render/utils");
 
 import Id from "../../types/Id";
 import utils from "../../utils/utils";
-import vars from "../../var/var";
 import { Utils_updater } from "../../types/utils";
+import apiVars from "../../var/api";
 
 const renderUtils = {
-    // TODO unused check
-    getLastFromChat(obj: { [Id: Id]: Id }) {
-        let latestTime: number = null;
-
-        for (let key in obj) {
-            if (!obj.hasOwnProperty(key)) continue;
-            const id = obj[key];
-            const time = utils.extractTimeFromId(id);
-
-            if (time !== null && (latestTime === null || time > latestTime)) latestTime = time;
-        }
-
-        return latestTime;
-    },
-
     sortPrivs(data: Id[]): Id[] {
         const sortedData = [...data];
         sortedData.sort((a, b) => {
-            const la = vars.lastMess["$" + a]?.main;
-            const lb = vars.lastMess["$" + b]?.main;
+            const la = apiVars.lastMess["$" + a]?.main;
+            const lb = apiVars.lastMess["$" + b]?.main;
             if (!la || !lb) return 0;
 
             return utils.extractTimeFromId(lb.mess) - utils.extractTimeFromId(la.mess);

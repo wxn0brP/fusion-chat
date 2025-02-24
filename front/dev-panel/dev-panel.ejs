@@ -13,29 +13,13 @@
         <div id="app">
             <%- include('html/header') %>
             <%- include('html/listBot') %> 
-            <%- include('html/editBot') %>
+            <%- include('html/menageBot') %>
             <%- include('html/templates') %>
             <%- include('html/ui') %>
         </div>
 
         <% const libs = [
             "socket.io",
-            "handlebars",
-        ] %>
-
-        <% const scripts = [
-            "init",
-            "var",
-            "utils",
-            "ws",
-            "uiFunc",
-            
-            "dataStruct",
-            "loadTemplates",
-            "page_editBot",
-            "page_listBot",
-
-            "start"
         ] %>
 
         <div id="scripts" style="display: none;">
@@ -43,9 +27,7 @@
             <% libs.forEach(script => { %>
                 <script src="/libs/<%= script %>.min.js"></script>
             <% }) %>
-            <% scripts.forEach(script => { %>
-                <script src="js/<%= script %>.js"></script>
-            <% }) %>
+            <script type="module" src="/js/dev-panel/start.js"></script>
         </div>
     </body>
 </html>

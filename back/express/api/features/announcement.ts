@@ -1,7 +1,7 @@
+import InternalCode from "#codes";
+import db from "#db";
+import valid, { validChannelId } from "#logic/validData";
 import { Router } from "express";
-import valid, { validChannelId } from "../../../logic/validData";
-import db from "../../../dataBase";
-import InternalCode from "../../../codes";
 const router = Router();
 
 router.get("/announcement", async (req, res) => {

@@ -1,7 +1,7 @@
 import NodeCache from "node-cache";
-import { Id } from "../types/base";
-import db from "../dataBase";
-import Db_RealmUser from "../types/db/realmUser";
+import Id from "#id";
+import db from "#db";
+import Db_RealmUser from "#types/db/realmUser";
 import getCacheSettings from "./cacheSettings";
 
 const cache = new NodeCache(getCacheSettings("UserOnRealm"));

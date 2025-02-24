@@ -2,7 +2,7 @@ import nodeCache from "node-cache";
 import { decode, create, KeyIndex } from "./token/index";
 import { randomBytes } from "crypto";
 import { genId } from "@wxn0brp/db";
-import { Id } from "../types/base";
+import Id from "#id";
 
 export const cache = new nodeCache({
     stdTTL: 2 * 60,

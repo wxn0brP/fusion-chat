@@ -11,7 +11,8 @@ import staticData from "../../var/staticData";
 import { reloadProfileImages } from "../helpers/reloadImages";
 import { Settings_settingsManager__category } from "../../types/ui/settings";
 import LangPkg, { LangRef, load_translate } from "../../utils/translate";
-import render_realm from "../render/realm";
+import apiVars from "../../var/api";
+import UserStateManager from "../helpers/userStateManager";
 
 interface SettingsData {
     user: () => Settings_settingsManager__category[];
@@ -200,12 +201,12 @@ const settingsData: SettingsData = {
         if (settings["Status"] != undefined || settings["Status text"] != undefined) {
             socket.emit("self.status.update", vars.user.status, vars.user.statusText);
             render_user.localUserProfile();
-            render_realm.realmUserStatus(vars.user._id, { status: vars.user.status, statusText: vars.user.statusText });
+            UserStateManager.set(vars.user._id, { status: vars.user.status, statusText: vars.user.statusText });
         }
 
         if (settings["Nickname"] != undefined) {
             socket.emit("profile.set_nickname", settings["Nickname"]);
-            vars.apisTemp.user.main[vars.user._id] = settings["Nickname"];
+            apiVars.temp.user.main[vars.user._id] = settings["Nickname"];
             render_user.localUserProfile();
         }
 

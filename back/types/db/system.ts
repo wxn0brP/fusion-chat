@@ -1,5 +1,5 @@
 import { Actions } from "../../schedule/actions";
-import { Id } from "../base";
+import { Id } from "../id";
 
 namespace Db_System {
     export interface encryptionKey {

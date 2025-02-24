@@ -1,7 +1,7 @@
+import valid from "#logic/validData";
+import { handleCustom } from "#logic/webhooks/index";
+import Logic_Webhook from "#types/logic/webhook";
 import { Router } from "express";
-import { handleCustom } from "../../../logic/webhooks/index";
-import valid from "../../../logic/validData";
-import Logic_Webhook from "../../../types/logic/webhook";
 const router = Router();
 
 router.post("/custom", async (req, res) => {
@@ -13,7 +13,6 @@ router.post("/custom", async (req, res) => {
     const { code, msg } = await handleCustom(queryData, body);
     res.status(code).send(msg);
 });
-
 
 const exportRouter = Router();
 exportRouter.use("/webhook", router);

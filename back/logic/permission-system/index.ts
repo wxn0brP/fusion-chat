@@ -1,5 +1,5 @@
 import CollectionManager from "@wxn0brp/db/dist/esm/CollectionManager";
-import db from "../../dataBase";
+import db from "#db";
 import {
     hasPermission,
     combinePermissions,
@@ -7,10 +7,10 @@ import {
     canChangePermissions,
     hasAllPermissionsNumber,
 } from "./permission";
-import Logic_PermSys from "../../types/logic/perm-sys";
-import Db_RealmRoles from "../../types/db/realmRoles";
-import { Id } from "../../types/base";
-import Db_RealmUser from "../../types/db/realmUser";
+import Logic_PermSys from "#types/logic/perm-sys";
+import Db_RealmRoles from "#types/db/realmRoles";
+import Id from "#id";
+import Db_RealmUser from "#types/db/realmUser";
 
 /**
  * A hierarchical role-based permission system for managing roles and permissions in a workspace.

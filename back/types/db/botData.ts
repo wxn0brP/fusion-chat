@@ -1,4 +1,4 @@
-import { Id } from "../base";
+import { Id } from "../id";
 
 namespace Db_BotData {
     export interface owner {
@@ -11,13 +11,12 @@ namespace Db_BotData {
         name: string;
     }
 
-    export interface perm {
-        _id: "perm";
-        perm: string[];
-    }
-
     export interface realm {
         realm: Id;
+    }
+
+    export interface img {
+        _id: "img";
     }
 }
 

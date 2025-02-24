@@ -1,26 +1,25 @@
-import valid from "../../../logic/validData";
-import permissionSystem from "../../../logic/permission-system/index";
-import Permissions from "../../../logic/permission-system/permission";
-import { existsSync } from "fs";
-import ValidError from "../../../logic/validError";
-import { getCache as statusMgmtGetCache } from "../../../logic/status";
-import getChnlPerm from "../../../logic/chnlPermissionCache";
-import { clearEventCache } from "../../../logic/sendMessageUtils/announcementChnl";
-import db from "../../../dataBase";
-import Db_RealmConf from "../../../types/db/realmConf";
-import Db_UserData from "../../../types/db/userData";
-import Db_RealmData from "../../../types/db/realmData";
-import { Socket_StandardRes } from "../../../types/socket/res";
-import { Socket_User } from "../../../types/socket/user";
-import { Id } from "../../../types/base";
-import Socket__Realms from "../../../types/socket/chat/realms";
+import InternalCode from "#codes";
+import db from "#db";
+import { checkIsUserOnRealm } from "#logic/checkIsUserOnRealm";
+import getChnlPerm from "#logic/chnlPermissionCache";
+import permissionSystem from "#logic/permission-system/index";
+import Permissions from "#logic/permission-system/permission";
+import { clearEventCache } from "#logic/sendMessageUtils/announcementChnl";
+import { getCache as statusMgmtGetCache } from "#logic/status";
+import valid from "#logic/validData";
+import ValidError from "#logic/validError";
+import { addTask, cancelTask } from "#schedule";
+import Id from "#id";
+import Db_RealmConf from "#types/db/realmConf";
+import Db_RealmData from "#types/db/realmData";
+import Db_System from "#types/db/system";
+import Db_UserData from "#types/db/userData";
+import Socket__Realms from "#types/socket/chat/realms";
+import { Socket_StandardRes } from "#types/socket/res";
+import { Socket_User } from "#types/socket/user";
 import eventCreateData from "../valid/event";
-import Db_System from "../../../types/db/system";
-import { addTask, cancelTask } from "../../../schedule";
-import InternalCode from "../../../codes";
-import { checkIsUserOnRealm } from "../../../logic/checkIsUserOnRealm";
 
-const eventCreateSchemat = valid.objAjv(eventCreateData);
+const eventCreateSchema = valid.objAjv(eventCreateData);
 
 export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.setup");
@@ -426,7 +425,7 @@ export async function realm_event_create(suser: Socket_User, realmId: Id, req: S
     const validE = new ValidError("realm.event.create");
     if (!valid.id(realmId)) return validE.valid("realmId");
 
-    if (!eventCreateSchemat(req)) return validE.valid("req");
+    if (!eventCreateSchema(req)) return validE.valid("req");
     if (req.type === "voice") {
         if (!valid.id(req.where)) return validE.valid("req.where");
         const chnl = await db.realmConf.findOne<Db_RealmConf.channel>(realmId, { chid: req.where });

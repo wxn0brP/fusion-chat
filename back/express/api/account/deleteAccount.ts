@@ -1,11 +1,11 @@
+import InternalCode from "#codes";
+import db from "#db";
+import { decode, KeyIndex } from "#logic/token/index";
+import { addTask, cancelTask } from "#schedule";
+import Db_Data from "#types/db/data";
 import { Router } from "express";
-const router = Router();
-import { decode, KeyIndex } from "../../../logic/token/index";
 import { comparePasswords, randomDelay } from "./login";
-import db from "../../../dataBase";
-import Db_Data from "../../../types/db/data";
-import { addTask, cancelTask } from "../../../schedule/index";
-import InternalCode from "../../../codes";
+const router = Router();
 
 export const path = "account/delete";
 

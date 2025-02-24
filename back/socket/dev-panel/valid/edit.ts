@@ -1,30 +1,8 @@
-import botPerm from "./botPerm";
-
-export default {
+export const infoSchema = {
     type: "object",
     properties: {
-        info: {
-            type: "object",
-            properties: {
-                name: { type: "string", minLength: 1, maxLength: 64 },
-            },
-            required: ["name"],
-            additionalProperties: false
-        },
-        data: {
-            type: "object",
-            properties: {
-                perm: {
-                    type: "array",
-                    items: {
-                        type: "string",
-                        enum: botPerm
-                    }
-                }
-            },
-            required: ["perm"],
-        }
+        name: { type: "string", minLength: 1, maxLength: 64 },
     },
-    required: ["info", "data"],
+    required: ["name"],
     additionalProperties: false
-}  
+}

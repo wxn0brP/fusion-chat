@@ -81,7 +81,7 @@ setTimeout(() => {
 }, 1000);
 
 setTimeout(() => {
-    socket.emit("fireToken.get", (token) => {
+    socket.emit("fireToken.get", localStorage.getItem("token"), (token: string) => {
         send({
             type: "fireToken",
             fireToken: token,

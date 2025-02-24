@@ -5,6 +5,8 @@ const required = [
 //  common
     "warning",
 //  core
+    // cacheControllers
+        "cacheControllers/socketGeneral",
     // mess
         // format
             "mess/format/embed",
@@ -25,6 +27,7 @@ const required = [
         // logic
             "socket/evt",
             "socket/mess",
+        "socket/engine",
         "socket",
     "coreFunc",
     "debug",
@@ -57,7 +60,6 @@ const required = [
         "render/event",
         "render/realm",
         "render/realmInit",
-        "render/socket",
         "render/user",
         "render/utils",
         "render/var",
@@ -83,6 +85,7 @@ const required = [
     "translate",
     "utils",
 //  var
+    "var/api",
     "var/html",
     "var/keys",
     "var/staticData",

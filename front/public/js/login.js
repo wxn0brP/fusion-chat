@@ -1,34 +1,35 @@
-function locationNext(){
+function locationNext() {
     let urlParam = new URLSearchParams(location.search);
     urlParam = urlParam.get("next");
     let next = "/app";
-    if(urlParam){
+    if (urlParam) {
         next = window.location.protocol + "//" + window.location.host;
-        if(!urlParam.startsWith("/")) urlParam = "/" + urlParam;
+        if (!urlParam.startsWith("/")) urlParam = "/" + urlParam;
         next += urlParam;
     }
     location.href = next;
 }
 
-function loginW(){
+function loginW() {
     const urlParam = new URLSearchParams(location.search);
-    if(urlParam.get("err")) return;
-    if(
+    if (urlParam.get("err")) return;
+    if (
         localStorage.getItem("token") &&
         localStorage.getItem("from") &&
         localStorage.getItem("user_id")
-    ){
+    ) {
         locationNext();
     }
 }
 loginW();
 
 const s_id = createCode();
-qrcodeC(location.protocol + '//' + location.host + "/qrCodeLogin?k=" + s_id);
+qrcodeC(location.protocol + '//' + location.host + "/qr-code-login?k=" + s_id);
 const socket = io("/qrCodeLogin", {
     auth: {
         role: "get",
-        id: s_id
+        id: s_id,
+        device: navigator.userAgent
     }
 });
 socket.connect();
@@ -46,12 +47,12 @@ const errDiv = document.querySelector("#err");
 document.querySelector("form").addEventListener("submit", (e) => {
     e.preventDefault();
     let login = loginDiv.value;
-    if(!login){
+    if (!login) {
         errDiv.html("Login is empty");
         return;
     }
     let pass = passDiv.value;
-    if(!pass){
+    if (!pass) {
         errDiv.html("Password is empty");
         return;
     }
@@ -63,9 +64,9 @@ document.querySelector("form").addEventListener("submit", (e) => {
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({ name: login, password: pass }));
     let res = xhr.responseText;
-    try{
+    try {
         res = JSON.parse(res);
-        if(res.err){
+        if (res.err) {
             errDiv.innerHTML = res.msg;
             return;
         }
@@ -73,31 +74,31 @@ document.querySelector("form").addEventListener("submit", (e) => {
         localStorage.setItem("user_id", res.user_id);
         localStorage.setItem("token", res.token);
         locationNext();
-    }catch(e){
+    } catch (e) {
         alert(`Login error! Code ${xhr.status}.`);
         console.log(res, e);
     }
 });
 
-function qrcodeC(url){
+function qrcodeC(url) {
     const qrD = document.querySelector("#qrcode-qr");
     qrD.innerHTML = "";
     const qrcode = new QRCode(qrD, {
         width: 364,
         height: 364,
-        correctLevel : QRCode.CorrectLevel.H
+        correctLevel: QRCode.CorrectLevel.H
     });
     qrcode.makeCode(url);
 }
 
-function createCode(){
+function createCode() {
     let id = "";
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for(let i=0; i<15; i++) id += characters.charAt(Math.floor(Math.random() * characters.length));
+    for (let i = 0; i < 15; i++) id += characters.charAt(Math.floor(Math.random() * characters.length));
     return id;
 }
 
-function changeCodeStatus(opn){
+function changeCodeStatus(opn) {
     document.querySelector("#qrcode-div").style.display = opn ? "block" : "none";
     document.querySelector("#loginC").style.display = !opn ? "" : "none";
 }

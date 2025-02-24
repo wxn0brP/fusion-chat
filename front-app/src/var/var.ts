@@ -22,14 +22,6 @@ const vars: Vars = {
         replyId: null,
         editId: null,
     }, // temporary
-    apisTemp: {
-        user: {
-            main: {},
-        },
-        chat: {},
-        user_status: {},
-    },
-    lastMess: {},
     privs: [],
     realms: [],
     realm: getEmptyRealmConfig(),

@@ -1,10 +1,10 @@
 import NodeCache from "node-cache";
-import db from "../../dataBase";
+import db from "#db";
 import { combineId } from "../chatMgmt";
 import sendMessage from "../sendMessage";
-import { Id } from "../../types/base";
-import { Message } from "../../types/sendMessage";
-import Db_RealmData from "../../types/db/realmData";
+import Id from "#id";
+import { Message } from "#types/sendMessage";
+import Db_RealmData from "#types/db/realmData";
 import getCacheSettings from "../cacheSettings";
 
 const announcementSubscribeCache = new NodeCache(getCacheSettings("AnnouncementSubscribe"));

@@ -14,6 +14,7 @@ import { navHTML, renderHTML } from "../../var/html";
 import { Vars_user__activity } from "../../types/var";
 import { Core_socket__user_status_type } from "../../types/core/socket";
 import { updateUserProfileMarker } from "./userStatusMarker";
+import apiVars from "../../var/api";
 
 const render_realm = {
     realms(data) {
@@ -81,7 +82,7 @@ const render_realm = {
             }
 
             const userImg = document.createElement("img");
-            userImg.src = !isBot ? "/api/profile/img?id=" + userID : "/favicon.svg";
+            userImg.src = "/api/profile/img?id=" + userID.replace("^", "");
             userDiv.appendChild(userImg);
 
             const textContainer = document.createElement("div");
@@ -100,15 +101,15 @@ const render_realm = {
 
             userDiv.appendChild(textContainer);
             navHTML.realm__users.appendChild(userDiv);
-            render_realm._realmUserStatus(userID);
-            updateUserProfileMarker(userID, vars.apisTemp.user_status[userID]?.status.get());
+            render_realm.realmUserStatus(userID);
+            updateUserProfileMarker(userID, apiVars.user_state[userID]?.status.get());
         });
     },
 
-    _realmUserStatus(id: Id) {
+    realmUserStatus(id: Id) {
         const ele = document.querySelector("#user_status_" + utils.escape(id));
         if (!ele) return;
-        const data = vars.apisTemp.user_status[id];
+        const data = apiVars.user_state[id];
         if (!data){
             updateUserProfileMarker(id, "offline");
             return;
@@ -122,23 +123,6 @@ const render_realm = {
             return;
         }
         ele.innerHTML = act.state + " | " + act.name;
-    },
-
-    realmUserStatus(id: Id, state: Ui_UserState) {
-        let { status, statusText, activity } = state;
-        const temp = vars.apisTemp.user_status;
-        if (!temp[id]) {
-            const reRender = () => render_realm._realmUserStatus(id);
-
-            temp[id] = {
-                status: renderUtils.createUpdater<Core_socket__user_status_type>(reRender, status ?? "offline"),
-                statusText: renderUtils.createUpdater<string>(reRender, statusText ?? ""),
-                activity: renderUtils.createUpdater<Vars_user__activity | null>(reRender, activity ?? null),
-            };
-        }
-
-        if (status) temp[id].status.set(status);
-        if (activity) temp[id].activity.set(activity);
     }
 }
 

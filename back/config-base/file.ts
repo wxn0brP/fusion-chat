@@ -5,4 +5,5 @@ export default {
 
     maxRealmProfileFileSize: 2 * 1024 * 1024,
 
+    maxBotProfileFileSize: 2 * 1024 * 1024,
 }

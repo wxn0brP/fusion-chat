@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Id } from "../base";
+import { Id } from "../id";
 import { Socket_StandardRes } from "./res";
 import { Socket_User } from "./user";
 

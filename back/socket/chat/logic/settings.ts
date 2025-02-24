@@ -1,10 +1,11 @@
-import valid from "../../../logic/validData";
-import ValidError from "../../../logic/validError";
-import { getCache as statusMgmtGetCache } from "../../../logic/status";
-import db from "../../../dataBase";
-import Db_UserData from "../../../types/db/userData";
-import { Socket_StandardRes } from "../../../types/socket/res";
-import { Socket_User } from "../../../types/socket/user";
+import db from "#db";
+import { getCache as statusMgmtGetCache } from "#logic/status";
+import valid from "#logic/validData";
+import ValidError from "#logic/validError";
+import Db_UserData from "#types/db/userData";
+import { Socket_StandardRes } from "#types/socket/res";
+import { Socket_User } from "#types/socket/user";
+import emitUserStatusUpdate from "./helpers/emitUserStatusUpdate";
 
 export async function self_status_update(suser: Socket_User, status: string, text: string): Promise<Socket_StandardRes> {
     const validE = new ValidError("self.status.update");
@@ -15,6 +16,7 @@ export async function self_status_update(suser: Socket_User, status: string, tex
     if (!text) text = "";
 
     await db.userData.updateOneOrAdd(suser._id, { _id: "status" }, { status, text });
+    emitUserStatusUpdate(suser._id, status, text);
     return { err: false };
 }
 

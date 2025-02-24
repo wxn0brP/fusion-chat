@@ -1,9 +1,9 @@
+import InternalCode from "#codes";
+import db from "#db";
+import { invite } from "#logic/inviteBot";
+import Id from "#id";
 import { Router } from "express";
 const router = Router();
-import { invite } from "../../../logic/inviteBot";
-import db from "../../../dataBase";
-import { Id } from "../../../types/base";
-import InternalCode from "../../../codes";
 
 export const path = "iv/bot";
 

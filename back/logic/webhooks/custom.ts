@@ -1,4 +1,4 @@
-import Db_RealmConf from "../../types/db/realmConf";
+import Db_RealmConf from "#types/db/realmConf";
 import valid from "../validData";
 
 function getNestedValue(obj: object, path: string) {

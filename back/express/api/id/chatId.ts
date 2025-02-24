@@ -1,7 +1,7 @@
 import { Router } from "express";
-import db from "../../../dataBase";
-import { Id } from "../../../types/base";
-import InternalCode from "../../../codes";
+import db from "#db";
+import Id from "#id";
+import InternalCode from "#codes";
 const router = Router();
 
 router.get("/id/chat", async (req, res) => {

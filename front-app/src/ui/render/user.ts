@@ -4,7 +4,6 @@ hub("render/user");
 import vars from "../../var/var";
 import apis from "../../api/apis";
 import renderUtils from "./utils";
-import render_realm from "./realm";
 import coreFunc from "../../core/coreFunc";
 import socket from "../../core/socket/socket";
 import mainView from "../components/mainView";
@@ -14,6 +13,7 @@ import { Core_socket__friendStatus, Core_socket__user_profile } from "../../type
 import utils from "../../utils/utils";
 import LangPkg from "../../utils/translate";
 import { updateUserProfileMarker } from "./userStatusMarker";
+import UserStateManager from "../helpers/userStateManager";
 
 const render_user = {
     localUserProfile() {
@@ -40,7 +40,7 @@ const render_user = {
             <div id="userProfileAbout"></div>
         `.trim();
 
-        if (data.statusText || data.status) render_realm.realmUserStatus(data._id, { status: data.status, statusText: data.statusText });
+        if (data.statusText || data.status) UserStateManager.set(data._id, { status: data.status, statusText: data.statusText });
         renderHTML.userProfile.querySelector("#userProfileInfo").setAttribute("data-status-id", data._id);
 
         if (!targetIsMe) {
@@ -109,7 +109,7 @@ const render_user = {
                     : ""}
             `.trim();
 
-            render_realm.realmUserStatus(data._id, { activity: utils.rmRef(act) });
+            UserStateManager.set(data._id, { activity: utils.rmRef(act) });
 
             if (act.startTime) {
                 const timeP = activityDiv.querySelector("#userProfileActivityTime");
@@ -129,8 +129,7 @@ const render_user = {
         }
 
         renderUtils.initPopup(renderHTML.userProfile);
-        render_realm.realmUserStatus(data._id, data);
-        updateUserProfileMarker(data._id, data.status);
+        UserStateManager.set(data._id, data);
     },
 }
 

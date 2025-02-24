@@ -1,4 +1,4 @@
-import { Socket_event, Socket_StandardRes } from "../types/socket/res";
+import { Socket_event, Socket_StandardRes } from "#types/socket/res";
 
 export default class ValidError {
     module: Socket_event;

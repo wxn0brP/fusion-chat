@@ -17,6 +17,9 @@ import LangPkg from "../utils/translate";
 import render_dm from "../ui/render/dm";
 import render_forum from "../ui/render/forum";
 import { Vars_realm__thread } from "../types/var";
+import { Core_socket__blocked, Core_socket__dm } from "../types/core/socket";
+import { socketEvt } from "./socket/engine";
+import messageCacheController from "./cacheControllers/mess";
 
 const coreFunc = {
     async changeChat(id: Id, chnl: Id | "main" | null = null) {
@@ -65,7 +68,7 @@ const coreFunc = {
                 const rawId = id.substring(1);
                 const data = await new Promise(res => {
                     socket.emit("dm.create", rawId, () => {
-                        socket.emit("dm.get", (data, blocked) => {
+                        socket.emit("dm.get", (data: Core_socket__dm[], blocked: Core_socket__blocked[]) => {
                             res([data, blocked]);
                         });
                     });
@@ -74,7 +77,7 @@ const coreFunc = {
             }
 
             coreFunc.loadChat();
-            socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
+            coreFunc.fetchPinned();
             vars.realm.users = [];
             vars.realm.roles = [];
             vars.realm.chnlPerms = {};
@@ -92,10 +95,9 @@ const coreFunc = {
             renderState.chnl_user = false;
             navHTML.realm__channels.style.display = "";
             navHTML.realm__users.style.display = "none";
-            socket.emit("realm.setup", id);
-            socket.emit("realm.users.sync", id);
-            socket.emit("realm.users.activity.sync", id);
-            if (chnl) socket.emit("realm.thread.list", id, chnl);
+            socketEvt["realm.setup"].emitDataId(id);
+            socketEvt["realm.users.sync"].emitDataId(id);
+            socketEvt["realm.users.activity.sync"].emitDataId(id);
         }
         coreFunc.markSelectedChat();
     },
@@ -110,10 +112,10 @@ const coreFunc = {
         coreHTML.messages_nav__realm__description.innerHTML = vars.realm.desc[id] || "";
 
         coreFunc.loadChat();
-        socket.emit("message.fetch.pinned", vars.chat.to, vars.chat.chnl);
+        coreFunc.fetchPinned();
         if (!id.startsWith("&")) {
             setTimeout(() => {
-                socket.emit("realm.thread.list", vars.chat.to, vars.chat.chnl);
+                socketEvt["realm.thread.list"].emitId(vars.chat.to + "=" + vars.chat.chnl, vars.chat.to, vars.chat.chnl);
             }, 100); // wait for load chat
         }
 
@@ -140,6 +142,7 @@ const coreFunc = {
             LangPkg.ui.message.placeholder + "..." :
             LangPkg.ui.message.read_only + "!";
         messHTML.input.disabled = !permToWrite;
+        messHTML.bar.style.display = "";
     },
 
     loadChat() {
@@ -165,8 +168,12 @@ const coreFunc = {
         vars.chat.actMess += staticData.messCount;
         if (vars.chat.to == "main") return;
 
-        socket.emit("message.fetch", vars.chat.to, vars.chat.chnl, tmp, vars.chat.actMess);
-        socket.emit("message.mark.read", vars.chat.to, vars.chat.chnl, "last");
+        if(socket.connected) {
+            socket.emit("message.fetch", vars.chat.to, vars.chat.chnl, tmp, vars.chat.actMess);
+            socket.emit("message.mark.read", vars.chat.to, vars.chat.chnl, "last");
+        } else {
+            messageCacheController.getMessages();
+        }
     },
 
     scrollToBottom() {
@@ -212,10 +219,17 @@ const coreFunc = {
     async changeToForum(id: Id) {
         vars.chat.chnl = "";
         const forms = await new Promise(r => {
-            socket.emit("realm.thread.list", vars.chat.to, id, r);
+            socketEvt["realm.thread.list"].emitId(vars.chat.to + "=" + id, vars.chat.to, id, r);
         }) as Vars_realm__thread[];
         messHTML.div.innerHTML = "";
         render_forum(forms, id);
+        messHTML.input.placeholder = LangPkg.ui.message.read_only + "!";
+        messHTML.input.disabled = true;
+        messHTML.bar.style.display = "none";
+    },
+
+    fetchPinned(){
+        socketEvt["message.fetch.pinned"].emitId(vars.chat.to + "=" + vars.chat.chnl, vars.chat.to, vars.chat.chnl);
     }
 }
 

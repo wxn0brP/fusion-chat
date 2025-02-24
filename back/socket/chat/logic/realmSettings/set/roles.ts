@@ -1,4 +1,4 @@
-import Db_RealmRoles from "../../../../../types/db/realmRoles";
+import Db_RealmRoles from "#types/db/realmRoles";
 import { processDbChanges, PermissionSystem, Id, Socket_RealmSettings, Socket_User } from "./imports";
 
 export default async (id: Id, data: Socket_RealmSettings, suser: Socket_User) => {

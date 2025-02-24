@@ -26,16 +26,20 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt update
-          sudo apt install -y wine32 wine64
+          sudo apt install -y \
+            wine32 wine64 \
+            libarchive-tools pacman fakeroot libarchive-tools rpm
 
       - name: Install dependencies
         run: |
           cd fc-app/electron
           npm install
+          npm install -g typescript tsc-alias
 
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.FC_DESKTOP_TOKEN }}
         run: |
           cd fc-app/electron
+          npm run build:ts
           npx electron-builder --publish always --win --linux

@@ -22,7 +22,7 @@ import {
     user_profile
 } from "./logic/friends";
 
-import sendMessage from "../../logic/sendMessage";
+import sendMessage from "#logic/sendMessage";
 import {
     message_delete,
     messages_delete,
@@ -76,9 +76,9 @@ import {
     self_status_update,
     profile_set_nickname,
 } from "./logic/settings";
-import { Request } from "../../types/sendMessage";
-import { Socket_User } from "../../types/socket/user";
-import { Socket_StandardRes } from "../../types/socket/res";
+import { Request } from "#types/sendMessage";
+import { Socket_User } from "#types/socket/user";
+import { Socket_StandardRes } from "#types/socket/res";
 
 export type Events = [
     string,

@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Id } from "../../types/base";
+import Id from "#id";
 import {
     voice_getUsers,
     voice_join,

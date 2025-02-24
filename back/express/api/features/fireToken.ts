@@ -1,7 +1,7 @@
+import InternalCode from "#codes";
+import db from "#db";
+import { cache, getTokenFromPointer } from "#logic/mobileNotif";
 import { Router } from "express";
-import { getTokenFromPointer, cache } from "../../../logic/mobileNotif";
-import db from "../../../dataBase";
-import InternalCode from "../../../codes";
 const router = Router();
 
 router.post("/fireToken", async (req, res) => {

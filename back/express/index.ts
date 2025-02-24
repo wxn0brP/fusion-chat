@@ -2,11 +2,11 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import crypto from "crypto";
-import { authUser } from "../logic/auth";
+import { authUser } from "#logic/auth";
 import cors from "cors";
 import { expressMiddleware as bannedIp } from "../bannedIp";
-import { Socket_User } from "../types/socket/user";
-import InternalCode from "../codes";
+import { Socket_User } from "#types/socket/user";
+import InternalCode from "#codes";
 
 const app = express();
 global.app = app;
@@ -41,6 +41,7 @@ app.use("/dev-panel", express.static("front/dev-panel"));
 app.use("/meta", express.static("front/meta"));
 app.use("/userFiles", express.static("userFiles"));
 app.use("/app/src", express.static("front-app/src"));
+app.use("/js", express.static("front-scripts/dist-build"));
 
 //parser
 app.use(cookieParser());

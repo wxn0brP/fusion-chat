@@ -7,6 +7,7 @@ declare global {
         maxUserFileSize: number;
         maxUserFiles: number;
         maxRealmProfileFileSize: number;
+        maxBotProfileFileSize: number;
     };
 
     var logsConfig: {

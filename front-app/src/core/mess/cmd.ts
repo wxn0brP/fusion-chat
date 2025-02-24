@@ -14,6 +14,7 @@ import {
     Core_mess__command_arg_list,
     Core_mess__sendMessage,
 } from "../../types/core/mess";
+import apiVars from "../../var/api";
 
 const barc__commads = messHTML.barc__commads;
 barc__commads.style.display = "none";
@@ -325,7 +326,7 @@ const messCmd = {
             else if (arg.type == "number") argsVal[i] = Number(val);
             else if (arg.type == "user") {
                 if (val.split("-").length == 0) continue;
-                const idToName = vars.apisTemp.user;
+                const idToName = apiVars.temp.user;
                 const usersMap = new Map();
                 Object.keys(idToName).forEach(id => {
                     usersMap.set(idToName[id], id);

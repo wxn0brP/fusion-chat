@@ -4,7 +4,7 @@ const ui: Lang_UI = {
     voice_show: "Voice Show",
     add_dm: "Add Direct Message",
     reply_to_message: "Reply to message",
-    edi_message: "Edit message",
+    edit_message: "Edit message",
     online: "Online",
     offline: "Offline",
     add_friend: "Add friend",

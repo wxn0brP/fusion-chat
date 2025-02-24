@@ -1,14 +1,13 @@
-import valid from "../../../../logic/validData";
-import ValidError from "../../../../logic/validError";
-
-import permissionSystem from "../../../../logic/permission-system/index";
-import Permissions, * as PermissionFunctions from "../../../../logic/permission-system/permission";
-import db from "../../../../dataBase";
-import Db_RealmData from "../../../../types/db/realmData";
-import Db_RealmConf from "../../../../types/db/realmConf";
-import { Socket_StandardRes } from "../../../../types/socket/res";
-import { Id } from "../../../../types/base";
-import { Socket_User } from "../../../../types/socket/user";
+import valid from "#logic/validData";
+import ValidError from "#logic/validError";
+import permissionSystem from "#logic/permission-system/index";
+import Permissions, * as PermissionFunctions from "#logic/permission-system/permission";
+import db from "#db";
+import Db_RealmData from "#types/db/realmData";
+import Db_RealmConf from "#types/db/realmConf";
+import { Socket_StandardRes } from "#types/socket/res";
+import Id from "#id";
+import { Socket_User } from "#types/socket/user";
 
 const DEFAULT_SECTIONS = [
     "meta",

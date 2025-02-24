@@ -10,12 +10,13 @@ import Id from "../types/Id";
 import LangPkg from "../utils/translate";
 import { Core_Api__GetInServer__Response } from "../types/core/api";
 import changeCodeToString from "../utils/code";
+import apiVars from "../var/api";
 
 const apis = {
     www: {
         changeUserID(id: Id): string {
             const chat = vars.chat.to;
-            const temp = vars.apisTemp.user;
+            const temp = apiVars.temp.user;
 
             if (chat.startsWith("$") || chat == "main") { // if dm or main
                 if (temp.main[id]) return temp.main[id];
@@ -73,9 +74,9 @@ const apis = {
         },
 
         changeChat(id: Id): string {
-            if (vars.apisTemp.chat[id]) return vars.apisTemp.chat[id];
+            if (apiVars.temp.realm[id]) return apiVars.temp.realm[id];
             const data = apis.www.getInServer("/api/id/chat?chat=" + id).name;
-            vars.apisTemp.chat[id] = data;
+            apiVars.temp.realm[id] = data;
             return data;
         },
 
@@ -106,7 +107,14 @@ const apis = {
             else if (dev.isInIframe) path = "if";
             this.apiType = path;
 
-            apis.api = await import("./devices/" + path + ".js");
+            const devices = {
+                web: () => import("./devices/web.js"),
+                ele: () => import("./devices/ele.js"),
+                rn: () => import("./devices/rn.js"),
+                if: () => import("./devices/if.js"),
+            };
+            
+            apis.api = await devices[path]();            
             debugFunc.msg(LogLevel.INFO, "load api: " + path);
         },
         apiType: "",

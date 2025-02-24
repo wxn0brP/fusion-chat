@@ -22,38 +22,6 @@ interface Vars {
         replyId: Id | null;
         editId: Id | null;
     }; // temporary
-    apisTemp: {
-        user: {
-            main: {
-                [id: Id]: string;
-            };
-            [chat: Id]: {
-                [id: Id]: string | 0; // 0 if user haven't realm nick
-            }
-        };
-        chat: {
-            [id: Id]: string;
-        };
-        user_status: {
-            [id: Id]: {
-                status: Utils_updater<Core_socket__user_status_type>;
-                statusText: Utils_updater<string>;
-                activity: Utils_updater<Vars_user__activity | null>;
-            }
-        };
-    };
-    lastMess: {
-        [id: Id]: {
-            main?: {
-                read: Id;
-                mess: Id;
-            }
-            [id: Id]: {
-                read: Id;
-                mess: Id;
-            }
-        }
-    };
     privs: Id[];
     realms: Vars_realms[];
     realm: Vars_realm;

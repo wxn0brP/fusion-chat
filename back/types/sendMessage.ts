@@ -1,4 +1,4 @@
-import { Id } from "./base";
+import { Id } from "./id";
 
 export interface Request {
     to: Id; // The identifier of the recipient or chat.
