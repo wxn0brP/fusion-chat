@@ -32,7 +32,8 @@ const renderUtils = {
         popup.setAttribute("opened", "1");
         popup.fadeIn();
 
-        const closePopup = () => {
+        const closePopup = (e: MouseEvent) => {
+            if (popup && (popup === e.target || popup.contains(e.target as Node))) return;
             setTimeout(() => {
                 const isPopupStillOpen = popup.getAttribute("opened") === "2";
                 if (isPopupStillOpen) {
