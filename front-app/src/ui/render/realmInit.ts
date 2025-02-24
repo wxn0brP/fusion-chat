@@ -8,7 +8,7 @@ import uiFunc from "../helpers/uiFunc";
 import coreFunc from "../../core/coreFunc";
 import voiceFunc from "../components/voice";
 import { Channel_Type } from "../../types/channel";
-import { coreHTML, navHTML } from "../../var/html";
+import { navHTML } from "../../var/html";
 import contextMenu from "../components/contextMenu";
 import { Ui_render__category, Ui_render__channel } from "../../types/ui/render";
 import LangPkg from "../../utils/translate";

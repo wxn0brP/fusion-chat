@@ -78,9 +78,6 @@ const coreFunc = {
 
             coreFunc.loadChat();
             coreFunc.fetchPinned();
-            vars.realm.users = [];
-            vars.realm.roles = [];
-            vars.realm.chnlPerms = {};
             coreFunc.dmPlaceholder(id.substring(1));
             navHTML.main__call.style.display = "";
             messHTML.nav_priv.style.display = "";
@@ -95,9 +92,11 @@ const coreFunc = {
             renderState.chnl_user = false;
             navHTML.realm__channels.style.display = "";
             navHTML.realm__users.style.display = "none";
-            socketEvt["realm.setup"].emitDataId(id);
-            socketEvt["realm.users.sync"].emitDataId(id);
-            socketEvt["realm.users.activity.sync"].emitDataId(id);
+            socketEvt["realm.setup"].emitDataId(id).then(async () => {
+                await delay(50);
+                socketEvt["realm.users.sync"].emitDataId(id);
+                socketEvt["realm.users.activity.sync"].emitDataId(id);
+            });
         }
         coreFunc.markSelectedChat();
     },
@@ -168,7 +167,7 @@ const coreFunc = {
         vars.chat.actMess += staticData.messCount;
         if (vars.chat.to == "main") return;
 
-        if(socket.connected) {
+        if (socket.connected) {
             socket.emit("message.fetch", vars.chat.to, vars.chat.chnl, tmp, vars.chat.actMess);
             socket.emit("message.mark.read", vars.chat.to, vars.chat.chnl, "last");
         } else {
@@ -228,7 +227,7 @@ const coreFunc = {
         messHTML.bar.style.display = "none";
     },
 
-    fetchPinned(){
+    fetchPinned() {
         socketEvt["message.fetch.pinned"].emitId(vars.chat.to + "=" + vars.chat.chnl, vars.chat.to, vars.chat.chnl);
     }
 }
