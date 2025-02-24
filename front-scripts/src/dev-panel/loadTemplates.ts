@@ -1,3 +1,5 @@
+import Handlebars from "handlebars";
+
 const templateFunc = {
     compile(selector){
         const ele = document.querySelector(selector);
@@ -20,3 +22,5 @@ const templates = {
     listBot: templateFunc.compile("#t_listBot"),
     editBot: templateFunc.compile("#t_editBot"),
 }
+
+export default templates;

@@ -1,5 +1,10 @@
-const page_listBot = document.querySelector("#page_listBot");
-const page_listBot__container = document.querySelector("#page_listBot__container");
+import templates from "../loadTemplates";
+import editBot, { page_editBot } from "./page_editBot";
+import vars from "../var/var";
+import socket from "./ws";
+
+export const page_listBot = document.querySelector<HTMLDivElement>("#page_listBot");
+export const page_listBot__container = document.querySelector<HTMLDivElement>("#page_listBot__container");
 
 const listBot = {
     renderBots(){
@@ -29,3 +34,5 @@ const listBot = {
         });
     }
 }
+
+export default listBot;

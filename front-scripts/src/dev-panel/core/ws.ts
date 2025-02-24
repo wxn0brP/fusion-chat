@@ -1,3 +1,7 @@
+import type SocketIOClient from "socket.io-client";
+import listBot from "./page_listBot";
+declare var io: typeof SocketIOClient;
+
 const socket = io("/dev-panel", {
     transports: ["websocket"],
     auth: {
@@ -8,7 +12,6 @@ const socket = io("/dev-panel", {
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
     reconnectionAttempts: Infinity,
-    maxReconnectionAttempts: Infinity
 });
 
 socket.on("connect", () => {
@@ -20,12 +23,12 @@ socket.on("error", console.log);
 socket.on("error.valid", console.log);
 
 socket.on("connect_error", (data) => {
-    if(!localStorage.getItem("token")) window.location = "/login?err=true&next=/dev-panel";
+    if(!localStorage.getItem("token")) window.location.href = "/login?err=true&next=/dev-panel";
 
     lo(data);
     const dataStr = data.toString();
     if(dataStr.includes("Error: Authentication error")){
-        window.location = "/login?err=true&next=/dev-panel";
+        window.location.href = "/login?err=true&next=/dev-panel";
     }else
     if(dataStr.includes("Ban:")){
         const timeMath = dataStr.match(/Ban: You are temporarily banned. Please try again after (\d+) minutes./);
@@ -43,3 +46,5 @@ socket.on("connect_error", (data) => {
         return;
     }
 });
+
+export default socket;

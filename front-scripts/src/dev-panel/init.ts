@@ -1,4 +1,4 @@
-if(!localStorage.getItem("token")) window.location = "/login&next=/dev-panel";
+if(!localStorage.getItem("token")) window.location.href = "/login&next=/dev-panel";
 
 window.onload = () => {
     document.querySelectorAll(".delete").forEach(e => {

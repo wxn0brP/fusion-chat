@@ -16,7 +16,7 @@ const uiFunc = {
         function calculateTopPosition(){
             let top = 0;
             for(const child of errMessesDiv.children)
-                top += child.offsetHeight + padding;
+                top += (child as HTMLDivElement).offsetHeight + padding;
             return top;
         }
 
@@ -27,7 +27,8 @@ const uiFunc = {
             div.style.top = `-${div.offsetHeight + 20}px`;
     
             await delay(700);
-            for(const child of errMessesDiv.children){
+            const children = Array.from(errMessesDiv.children) as HTMLDivElement[];
+            for(const child of children){
                 const currentTop = parseInt(child.style.top.replace("px", ""));
                 child.style.top = `${currentTop - padding - div.offsetHeight}px`;
             }
@@ -62,7 +63,7 @@ const uiFunc = {
             }
 
             const div = document.createElement("div");
-            div.style.opacity = 0;
+            div.style.opacity = "0";
             div.classList.add("prompt");
             div.innerHTML = "<p>" + text + "<p><br />";
 
@@ -97,7 +98,7 @@ const uiFunc = {
             }
             
             const div = document.createElement("div");
-            div.style.opacity = 0;
+            div.style.opacity = "0";
             div.classList.add("prompt");
             div.innerHTML = "<p>" + text + "<p><br />";
             const select = document.createElement("select");

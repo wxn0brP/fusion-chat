@@ -41,6 +41,7 @@ app.use("/dev-panel", express.static("front/dev-panel"));
 app.use("/meta", express.static("front/meta"));
 app.use("/userFiles", express.static("userFiles"));
 app.use("/app/src", express.static("front-app/src"));
+app.use("/js", express.static("front-scripts/dist-build"));
 
 //parser
 app.use(cookieParser());

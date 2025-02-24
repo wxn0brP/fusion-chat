@@ -1,5 +1,10 @@
-const page_editBot = document.querySelector("#page_editBot");
-const page_editBot__container = document.querySelector("#page_editBot__container");
+import templates from "../loadTemplates";
+import listBot, { page_listBot } from "./page_listBot";
+import vars from "../var/var";
+import socket from "./ws";
+
+export const page_editBot = document.querySelector<HTMLDivElement>("#page_editBot");
+export const page_editBot__container = document.querySelector<HTMLDivElement>("#page_editBot__container");
 
 const editBot = {
     botInfo: null,
@@ -26,7 +31,7 @@ const editBot = {
         
         const bot = {
             info: {
-                name: cnt.querySelector("#editBot__name").value,
+                name: cnt.querySelector<HTMLInputElement>("#editBot__name").value,
             },
             data: {
                 perm: editBotCPU.outPerm(),
@@ -82,10 +87,12 @@ const editBotCPU = {
 
     outPerm(){
         const out = [];
-        const chkboxes = page_editBot__container.querySelectorAll("#permissionsTable input[type=checkbox]");
-        chkboxes.forEach(checkbox => {
+        const checkboxs = page_editBot__container.querySelectorAll<HTMLInputElement>("#permissionsTable input[type=checkbox]");
+        checkboxs.forEach(checkbox => {
             if(checkbox.checked) out.push(checkbox.getAttribute("data-perm"));
         });
         return out;
     }
 }
+
+export default editBot;
