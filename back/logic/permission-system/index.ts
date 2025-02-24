@@ -11,6 +11,7 @@ import Logic_PermSys from "#types/logic/perm-sys";
 import Db_RealmRoles from "#types/db/realmRoles";
 import Id from "#id";
 import Db_RealmUser from "#types/db/realmUser";
+import Db_RealmConf from "#types/db/realmConf";
 
 /**
  * A hierarchical role-based permission system for managing roles and permissions in a workspace.
@@ -20,6 +21,7 @@ import Db_RealmUser from "#types/db/realmUser";
 export default class PermissionSystem {
     realmRoles: CollectionManager;
     realmUser: CollectionManager;
+    realmId: string;
 
     /**
      * @param workspaceCollection - The workspace collection identifier.
@@ -29,6 +31,7 @@ export default class PermissionSystem {
         if (!workspaceCollection)
             throw new Error("Missing required parameter workspaceCollection");
 
+        this.realmId = workspaceCollection;
         this.realmRoles = db.realmRoles.c(workspaceCollection);
         this.realmUser = db.realmUser.c(workspaceCollection);
     }
@@ -86,11 +89,11 @@ export default class PermissionSystem {
 
         if (managerId) {
             const userHighestRole = await this.getUserHighestRole(managerId);
-            if (userHighestRole.lvl >= lvl)
+            if (userHighestRole.lvl >= lvl && !this.isUserBeKing(managerId, userHighestRole.lvl))
                 throw new Error("Invalid lvl - would break chain with user's highest role");
 
             const userPerms = await this.getUserPermissions(managerId);
-            if (!hasAllPermissionsNumber(userPerms, p))
+            if (!hasAllPermissionsNumber(userPerms, p) && !this.isUserBeKing(managerId, userHighestRole.lvl))
                 throw new Error("Cannot assign permissions you do not have");
         }
 
@@ -137,13 +140,13 @@ export default class PermissionSystem {
 
         if (managerId) {
             const managerRoles = await this.getUserRolesSorted(managerId);
-            if (!this.hasHigherRole(managerRoles, role.lvl))
+            if (!this.hasHigherRole(managerRoles, role.lvl) && !this.isUserBeKing(managerId))
                 throw new Error("Insufficient permissions to edit this role");
 
             if (updates.p !== undefined) {
                 const managerPerms = this.calculateCombinedPermissions(managerRoles);
 
-                if (!canChangePermissions(updates.p, role.p, managerPerms))
+                if (!canChangePermissions(updates.p, role.p, managerPerms) && !this.isUserBeKing(managerId))
                     throw new Error("Cannot assign permissions you do not have");
             }
         }
@@ -162,7 +165,10 @@ export default class PermissionSystem {
 
         if (managerId) {
             const managerHighestRole = await this.getUserHighestRole(managerId);
-            if (managerHighestRole.lvl >= roles.find(r => r._id === roleId).lvl) {
+            if (
+                managerHighestRole.lvl >= roles.find(r => r._id === roleId).lvl &&
+                !this.isUserBeKing(managerId, managerHighestRole.lvl)
+            ) {
                 throw new Error("Insufficient permissions to delete this role");
             }
         }
@@ -250,7 +256,7 @@ export default class PermissionSystem {
     /**
      * Retrieves a role by its ID.
      * @param roleId - The ID of the role to retrieve.
-     * @returns {Promise<Db_RealmRoles.role | null>} The role, or null if not found.
+     * @returns The role, or null if not found.
      */
     async getRole(roleId: Id) {
         return await this.realmRoles.findOne({ _id: roleId });
@@ -258,7 +264,7 @@ export default class PermissionSystem {
 
     /**
      * Retrieves all roles sorted by level in ascending order.
-     * @returns {Promise<Db_RealmRoles.role[]>} The sorted list of roles.
+     * @returns The sorted list of roles.
      */
     async getAllRolesSorted() {
         const roles = await this.realmRoles.find<Db_RealmRoles.role>({});
@@ -268,7 +274,7 @@ export default class PermissionSystem {
     /**
      * Retrieves the roles assigned to a user, sorted by level in ascending order.
      * @param userId - The ID of the user.
-     * @returns {Promise<Db_RealmRoles.role[]>} The sorted list of roles assigned to the user.
+     * @returns The sorted list of roles assigned to the user.
      */
     async getUserRolesSorted(userId: Id) {
         const userData = await this.realmUser.findOne<Db_RealmUser.user | Db_RealmUser.bot>({
@@ -298,7 +304,7 @@ export default class PermissionSystem {
     /**
      * Retrieves the highest-level role assigned to a user.
      * @param userId - The ID of the user.
-     * @returns {Promise<Db_RealmRoles.role | null>} The highest-level role, or null if no roles are assigned.
+     * @returns The highest-level role, or null if no roles are assigned.
      */
     async getUserHighestRole(userId: Id) {
         const roles = await this.getUserRolesSorted(userId);
@@ -309,7 +315,7 @@ export default class PermissionSystem {
      * Checks if a user has a specific permission.
      * @param userId - The ID of the user.
      * @param requiredPermission - The permission to check.
-     * @returns {Promise<boolean>} True if the user has the permission, otherwise false.
+     * @returns True if the user has the permission, otherwise false.
      */
     async canUserPerformAction(userId: Id, requiredPermission: number) {
         const roles = await this.getUserRolesSorted(userId);
@@ -372,5 +378,15 @@ export default class PermissionSystem {
     async getUserPermissions(userId: Id) {
         const roles = await this.getUserRolesSorted(userId);
         return this.calculateCombinedPermissions(roles);
+    }
+
+    async isUserBeKing(userId: Id, userHighestRoleLvl?: number) {
+        userHighestRoleLvl = userHighestRoleLvl || (await this.getUserHighestRole(userId))?.lvl;
+        if (userHighestRoleLvl === 0) return true;
+        
+        const realmOwner = await db.realmConf.findOne<Db_RealmConf.meta>(this.realmId, { _id: "set" }, {}, { select: ["owner"] });
+        if (realmOwner && realmOwner.owner === userId) return true;
+
+        return false;
     }
 }
