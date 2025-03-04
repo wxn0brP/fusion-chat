@@ -1,0 +1,12 @@
+import { permissionCache } from "../../../../../logic/chnlPermissionCache.js";
+import { processDbChanges } from "./imports.js";
+import { saveDbChanges } from "./utils.js";
+export default async (id, data, suser, dbData) => {
+    const oldChannels = dbData.filter(d => "chid" in d);
+    const changes = processDbChanges(oldChannels, data.channels, ["name", "i", "rp", "desc"], "chid");
+    await saveDbChanges(id, changes, "chid");
+    for (const item of changes.itemsToUpdate) {
+        permissionCache.clearChannelCache(id, item.chid);
+    }
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY2hhbm5lbHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi9iYWNrL3NvY2tldC9jaGF0L2xvZ2ljL3JlYWxtU2V0dGluZ3Mvc2V0L2NoYW5uZWxzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBRSxlQUFlLEVBQUUsTUFBTSw0QkFBNEIsQ0FBQztBQUU3RCxPQUFPLEVBQW9CLGdCQUFnQixFQUFxQyxNQUFNLFdBQVcsQ0FBQztBQUNsRyxPQUFPLEVBQUUsYUFBYSxFQUFFLE1BQU0sU0FBUyxDQUFDO0FBRXhDLGVBQWUsS0FBSyxFQUFFLEVBQU0sRUFBRSxJQUEwQixFQUFFLEtBQWtCLEVBQUUsTUFBd0IsRUFBRSxFQUFFO0lBQ3RHLE1BQU0sV0FBVyxHQUEyQixNQUFNLENBQUMsTUFBTSxDQUFDLENBQUMsQ0FBQyxFQUFFLENBQUMsTUFBTSxJQUFJLENBQUMsQ0FBQyxDQUFDO0lBQzVFLE1BQU0sT0FBTyxHQUFHLGdCQUFnQixDQUFDLFdBQVcsRUFBRSxJQUFJLENBQUMsUUFBUSxFQUFFLENBQUMsTUFBTSxFQUFFLEdBQUcsRUFBRSxJQUFJLEVBQUUsTUFBTSxDQUFDLEVBQUUsTUFBTSxDQUFDLENBQUM7SUFDbEcsTUFBTSxhQUFhLENBQUMsRUFBRSxFQUFFLE9BQU8sRUFBRSxNQUFNLENBQUMsQ0FBQztJQUV6QyxLQUFJLE1BQU0sSUFBSSxJQUFJLE9BQU8sQ0FBQyxhQUFhLEVBQUMsQ0FBQztRQUNyQyxlQUFlLENBQUMsaUJBQWlCLENBQUMsRUFBRSxFQUFFLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQztJQUNyRCxDQUFDO0FBQ0wsQ0FBQyxDQUFBIn0=

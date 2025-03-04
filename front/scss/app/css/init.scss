@@ -1,0 +1,33 @@
+#loadingScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--back);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    cursor: progress;
+
+    animation: init-anim 1s;
+    animation-delay: 3.1s;
+
+    #loadingScreenAnim {
+        width: 25rem;
+        height: 25rem;
+        margin-top: -2rem;
+    }
+}
+
+
+@keyframes init-anim {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}

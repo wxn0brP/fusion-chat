@@ -1,0 +1,47 @@
+.context-menu {
+    position: absolute;
+    display: none;
+    background-color: var(--panel);
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 100;
+    border: 1px solid var(--border);
+
+    box-shadow: 0 10px 25px rgba(var(--accentRGB), .5);
+
+    top: var(--top);
+    left: var(--left);
+    right: var(--right);
+    bottom: var(--bottom);
+}
+
+.context-menu__item {
+    padding: 5px;
+    cursor: pointer;
+    text-align: left;
+    margin-block: 3px;
+}
+
+.context-switcher {
+    position: absolute;
+    display: none;
+    background-color: var(--panel);
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 100;
+    border: 1px solid var(--border);
+
+    box-shadow: 0 10px 25px rgba(var(--accentRGB), .5);
+}
+
+@media screen and (max-width: 600px) {
+    .context-menu {
+        top: auto;
+        left: 0;
+        right: auto;
+        bottom: 0;
+        position: fixed;
+        width: 100%;
+        padding-bottom: 4rem;
+    }
+}

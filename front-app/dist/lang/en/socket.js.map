@@ -1,0 +1,1 @@
+{"version":3,"file":"socket.js","sourceRoot":"","sources":["../../../src/lang/en/socket.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,GAAgB;IACnB,WAAW,EAAE,6DAA6D;IAC1E,GAAG,EAAE,8DAA8D;IACnE,IAAI,EAAE;QACF,IAAI,EAAE,eAAe;QACrB,IAAI,EAAE,mFAAmF;QACzF,GAAG,EAAE,wFAAwF;QAC7F,IAAI,EAAE,+DAA+D;KACxE;CACJ,CAAA;AAED,eAAe,CAAC,CAAC"}

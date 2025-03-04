@@ -1,0 +1,75 @@
+import { genId } from "@wxn0brp/db";
+import * as customWebhookUtils from "./custom.js";
+import sendMessage from "../sendMessage.js";
+import { decode, KeyIndex } from "../token/index.js";
+import db from "../../dataBase.js";
+export async function addCustom(webhookInfo) {
+    const { chat, chnl, name, template, ajv, required } = webhookInfo;
+    const webhook = {
+        whid: genId(),
+        name,
+        template,
+        chnl,
+        ajv: ajv || {},
+        required: required || []
+    };
+    await db.realmConf.add(chat, webhook, false);
+}
+export async function handleCustom(query, body) {
+    const token = await decode(query.token, KeyIndex.WEBHOOK_TOKEN);
+    if (!token)
+        return { code: 400, msg: "Invalid token" };
+    const wh = await db.realmConf.findOne(token.chat, { whid: token.id });
+    if (!wh)
+        return { code: 404, msg: "Webhook not found" };
+    const isValid = customWebhookUtils.check(wh, body);
+    if (!isValid)
+        return { code: 400, msg: "Invalid data" };
+    const formattedMessage = customWebhookUtils.processTemplate(wh.template, body);
+    const message = {
+        to: token.chat,
+        chnl: wh.chnl,
+        msg: formattedMessage,
+        silent: query.silent === "true" || false
+    };
+    let embed = null;
+    if (wh.embed) {
+        const { title, description, url, image, customFields } = wh.embed;
+        embed = {
+            title: customWebhookUtils.processTemplate(title, body),
+        };
+        if (description)
+            embed.description = customWebhookUtils.processTemplate(description, body);
+        if (url)
+            embed.url = customWebhookUtils.processTemplate(url, body);
+        if (image)
+            embed.image = customWebhookUtils.processTemplate(image, body);
+        if (customFields) {
+            embed.customFields = {};
+            for (const [key, value] of Object.entries(customFields)) {
+                embed.customFields[key] = customWebhookUtils.processTemplate(value, body);
+            }
+        }
+    }
+    const res = await sendMessage(message, {
+        _id: wh.whid,
+        name: wh.name
+    }, {
+        system: true,
+        customFields: {
+            embed: embed ? embed : undefined
+        },
+        frPrefix: "%",
+    });
+    if (res.err) {
+        const err = res.err;
+        if (err[0] === "error.valid") {
+            return { code: 400, msg: "Invalid data" };
+        }
+        else {
+            return { code: 400, msg: "Invalid data: " + err.slice(1).join(", ") };
+        }
+    }
+    return { code: 200, msg: "Webhook processed and message sent" };
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9iYWNrL2xvZ2ljL3dlYmhvb2tzL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBRSxLQUFLLEVBQUUsTUFBTSxhQUFhLENBQUM7QUFDcEMsT0FBTyxLQUFLLGtCQUFrQixNQUFNLFVBQVUsQ0FBQztBQUMvQyxPQUFPLFdBQVcsTUFBTSxnQkFBZ0IsQ0FBQztBQUN6QyxPQUFPLEVBQUUsTUFBTSxFQUFFLFFBQVEsRUFBRSxNQUFNLG9CQUFvQixDQUFDO0FBQ3RELE9BQU8sRUFBRSxNQUFNLEtBQUssQ0FBQztBQU1yQixNQUFNLENBQUMsS0FBSyxVQUFVLFNBQVMsQ0FBQyxXQUEwQztJQUN0RSxNQUFNLEVBQUUsSUFBSSxFQUFFLElBQUksRUFBRSxJQUFJLEVBQUUsUUFBUSxFQUFFLEdBQUcsRUFBRSxRQUFRLEVBQUUsR0FBRyxXQUFXLENBQUM7SUFFbEUsTUFBTSxPQUFPLEdBQXlCO1FBQ2xDLElBQUksRUFBRSxLQUFLLEVBQUU7UUFDYixJQUFJO1FBQ0osUUFBUTtRQUNSLElBQUk7UUFDSixHQUFHLEVBQUUsR0FBRyxJQUFJLEVBQUU7UUFDZCxRQUFRLEVBQUUsUUFBUSxJQUFJLEVBQUU7S0FDM0IsQ0FBQTtJQUVELE1BQU0sRUFBRSxDQUFDLFNBQVMsQ0FBQyxHQUFHLENBQUMsSUFBSSxFQUFFLE9BQU8sRUFBRSxLQUFLLENBQUMsQ0FBQztBQUNqRCxDQUFDO0FBRUQsTUFBTSxDQUFDLEtBQUssVUFBVSxZQUFZLENBQUMsS0FBa0MsRUFBRSxJQUFZO0lBQy9FLE1BQU0sS0FBSyxHQUFHLE1BQU0sTUFBTSxDQUFDLEtBQUssQ0FBQyxLQUFLLEVBQUUsUUFBUSxDQUFDLGFBQWEsQ0FBeUIsQ0FBQztJQUV4RixJQUFHLENBQUMsS0FBSztRQUFFLE9BQU8sRUFBRSxJQUFJLEVBQUUsR0FBRyxFQUFFLEdBQUcsRUFBRSxlQUFlLEVBQUUsQ0FBQztJ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

@@ -1,0 +1,23 @@
+import InternalCode from "../codes/index.js";
+import db from "../dataBase.js";
+import permissionSystem from "./permission-system/index.js";
+import Permissions from "./permission-system/permission.js";
+export async function invite(userID, botID, realmID) {
+    const permSys = new permissionSystem(realmID);
+    const userPerm = await permSys.canUserPerformAnyAction(userID, [
+        Permissions.admin,
+        Permissions.manageInvites
+    ]);
+    if (!userPerm)
+        return {
+            err: true,
+            c: InternalCode.UserError.Express.InviteBot_NotPermission,
+            msg: "You don't have permission to edit this realm"
+        };
+    const botName = await db.botData.findOne(botID, { _id: "name" });
+    const role = await permSys.createRole(botName.name);
+    await db.botData.add(botID, { realm: realmID }, false);
+    await db.realmUser.add(realmID, { bot: botID, r: [role._id] }, false);
+    return { err: false, msg: "ok" };
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW52aXRlQm90LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vYmFjay9sb2dpYy9pbnZpdGVCb3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxZQUFZLE1BQU0sUUFBUSxDQUFDO0FBQ2xDLE9BQU8sRUFBRSxNQUFNLEtBQUssQ0FBQztBQUdyQixPQUFPLGdCQUFnQixNQUFNLDJCQUEyQixDQUFDO0FBQ3pELE9BQU8sV0FBVyxNQUFNLGdDQUFnQyxDQUFDO0FBRXpELE1BQU0sQ0FBQyxLQUFLLFVBQVUsTUFBTSxDQUFDLE1BQVUsRUFBRSxLQUFTLEVBQUUsT0FBVztJQUMzRCxNQUFNLE9BQU8sR0FBRyxJQUFJLGdCQUFnQixDQUFDLE9BQU8sQ0FBQyxDQUFDO0lBQzlDLE1BQU0sUUFBUSxHQUFHLE1BQU0sT0FBTyxDQUFDLHVCQUF1QixDQUFDLE1BQU0sRUFBRTtRQUMzRCxXQUFXLENBQUMsS0FBSztRQUNqQixXQUFXLENBQUMsYUFBYTtLQUM1QixDQUFDLENBQUM7SUFDSCxJQUFHLENBQUMsUUFBUTtRQUFFLE9BQU87WUFDakIsR0FBRyxFQUFFLElBQUk7WUFDVCxDQUFDLEVBQUUsWUFBWSxDQUFDLFNBQVMsQ0FBQyxPQUFPLENBQUMsdUJBQXVCO1lBQ3pELEdBQUcsRUFBRSw4Q0FBOEM7U0FDdEQsQ0FBQztJQUVGLE1BQU0sT0FBTyxHQUFHLE1BQU0sRUFBRSxDQUFDLE9BQU8sQ0FBQyxPQUFPLENBQWtCLEtBQUssRUFBRSxFQUFFLEdBQUcsRUFBRSxNQUFNLEVBQUUsQ0FBQyxDQUFDO0lBQ2xGLE1BQU0sSUFBSSxHQUFHLE1BQU0sT0FBTyxDQUFDLFVBQVUsQ0FBQyxPQUFPLENBQUMsSUFBSSxDQUFDLENBQUM7SUFFcEQsTUFBTSxFQUFFLENBQUMsT0FBTyxDQUFDLEdBQUcsQ0FBQyxLQUFLLEVBQUUsRUFBRSxLQUFLLEVBQUUsT0FBTyxFQUFFLEVBQUUsS0FBSyxDQUFDLENBQUM7SUFDdkQsTUFBTSxFQUFFLENBQUMsU0FBUyxDQUFDLEdBQUcsQ0FBQyxPQUFPLEVBQUUsRUFBRSxHQUFHLEVBQUUsS0FBSyxFQUFFLENBQUMsRUFBRSxDQUFDLElBQUksQ0FBQyxHQUFHLENBQUMsRUFBRSxFQUFFLEtBQUssQ0FBQyxDQUFDO0lBRXRFLE9BQU8sRUFBRSxHQUFHLEVBQUUsS0FBSyxFQUFFLEdBQUcsRUFBRSxJQUFJLEVBQUUsQ0FBQztBQUNyQyxDQUFDIn0=

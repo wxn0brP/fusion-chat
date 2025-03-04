@@ -1,0 +1,71 @@
+#errMesses div {
+    position: absolute;
+    max-width: 70%;
+    top: -10rem;
+    left: 50%;
+    transition: .7s ease;
+    font-size: 1.6rem;
+    border-radius: 1rem;
+    letter-spacing: 2px;
+    padding: 7px 12px;
+    transform: translateX(-50%);
+    z-index: 99;
+    cursor: pointer;
+}
+
+.uiMsgClass {
+    backdrop-filter: blur(5px);
+    background-color: rgba(var(--accentRGB), .2);
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 10px 5px rgba(var(--accentRGB), .5);
+}
+
+#prompt div {
+    position: absolute;
+    min-width: 200px;
+    max-width: 70%;
+    top: 50%;
+    left: 50%;
+    border-radius: 1rem;
+    padding: 12px;
+    transform: translate(-50%, -50%);
+    z-index: 99;
+    border: 2px solid var(--accent);
+    backdrop-filter: blur(4px);
+}
+
+#prompt p {
+    font-size: 1.2rem;
+}
+
+#prompt input,
+#prompt button,
+#prompt select {
+    border-radius: 1rem;
+    padding: 7px 12px;
+    border: 2px solid var(--accent);
+    background-color: var(--back);
+    color: var(--txt);
+    margin-top: 5px;
+}
+
+#prompt option {
+    background-color: var(--back);
+    color: var(--txt);
+}
+
+#prompt button {
+    transition: background-color .3s;
+    cursor: pointer;
+}
+
+#prompt button:hover {
+    background-color: rgba(var(--accentRGB), .5);
+}
+
+@media screen and (max-width: 800px) {
+    #errMesses div {
+        width: 90vw;
+        max-width: none;
+    }
+}

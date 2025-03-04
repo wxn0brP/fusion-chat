@@ -1,0 +1,116 @@
+/// { "title": "Download Fusion Chat" }
+<%- include('main/nav') %>
+<main>
+    <section>
+        <label for="android"><img src="/assets/icon/android.svg" alt="android"></label>
+        <button id="android" data-d="fc-mobile">Download</button>
+    </section>
+
+    <section>
+        <label for="windows"><img src="/assets/icon/windows.svg" alt="windows"></label>
+        <button id="windows" data-d="fc-desktop">Download</button>
+    </section>
+    <section>
+        <label for="linux"><img src="/assets/icon/linux.svg" alt="linux"></label>
+        <button id="linux" data-d="fc-desktop">Download</button>
+    </section>
+</main>
+
+<style>
+	main{
+		width: 800px;
+		max-width: calc(100% - 2rem);
+		line-height: 1.6;
+
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        color: white;
+        text-align: center;
+        font-size: 1.25rem;
+	}
+
+	main section{
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		margin-bottom: 3rem;
+	}
+
+	main img{
+		width: 100px;
+	}
+
+	main button{
+		color: var(--txt);
+		background-color: var(--back);
+		border: 3px solid var(--accent);
+		border-radius: 1rem;
+		padding: 1rem;
+	}
+
+	main button:hover{
+		background-color: var(--accent);
+	}
+
+	a{
+		text-decoration: underline;
+	}
+
+	.code{
+		width: 100%;
+		text-align: left;
+	}
+</style>
+
+<script>
+	function getSystemName(){
+		const userAgent = window.navigator.userAgent,
+			platform = window.navigator.platform,
+			macosPlatforms = ['macOS', 'Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+			windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+			iosPlatforms = ['iPhone', 'iPad', 'iPod'];
+
+		if(macosPlatforms.indexOf(platform) !== -1) return "mac";
+		else if(iosPlatforms.indexOf(platform) !== -1) return "ios";
+		else if(windowsPlatforms.indexOf(platform) !== -1) return "windows";
+		else if(/Android/.test(userAgent)) return "android";
+		else if(/Linux/.test(platform)) return "linux";
+		return "";
+	}
+
+	document.querySelectorAll("[data-d]").forEach(e => {
+		const id = e.getAttribute("id");
+		const data = e.getAttribute("data-d");
+		e.addEventListener("click", () => {
+			downloadApp(data);
+		});
+	});
+
+	const urlParams = new URLSearchParams(window.location.search);
+	if(urlParams.has('auto') && urlParams.get('auto') === 'true'){
+		const sys = getSystemName();
+		if(sys == "windows" || sys == "linux"){
+			downloadApp("fc-desktop");
+		}else
+		if(sys == "android"){
+			downloadApp("fc-mobile");
+		}
+
+		urlParams.set('auto', 'false');
+		const baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+		window.history.replaceState({ path: baseUrl }, '', baseUrl);
+	}
+
+	function downloadApp(repo){
+		download(`https://github.com/wxn0brP/${repo}/releases/latest`)
+	}
+
+	function download(link){
+		let a = document.createElement("a");
+		a.href = link;
+		a.target = "_blank";
+		a.click();
+	}
+</script>

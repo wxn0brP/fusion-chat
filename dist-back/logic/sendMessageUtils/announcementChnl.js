@@ -1,0 +1,49 @@
+import NodeCache from "node-cache";
+import db from "../../dataBase.js";
+import { combineId } from "../chatMgmt.js";
+import sendMessage from "../sendMessage.js";
+import getCacheSettings from "../cacheSettings.js";
+const announcementSubscribeCache = new NodeCache(getCacheSettings("AnnouncementSubscribe"));
+async function announcementChnl(realm, data) {
+    const subs = await getSubscribed(realm, data.chnl);
+    if (subs.length == 0)
+        return;
+    subs.forEach(async ({ tr, tc }) => {
+        const req = {
+            to: tr,
+            msg: data.msg,
+            chnl: tc,
+        };
+        const user = {
+            _id: combineId(tr, tc),
+            name: "Event Chnl",
+        };
+        const opts = {
+            system: true,
+            frPrefix: "("
+        };
+        sendMessage(req, user, opts);
+    });
+}
+async function getSubscribed(realm, chnl) {
+    let realmData = announcementSubscribeCache.get(realm);
+    if (!realmData) {
+        const chnls = await db.realmData.find("announcement.channels", { sr: realm });
+        realmData = {};
+        chnls.forEach(({ sr, sc, tr, tc }) => {
+            const key = `${sr}:${sc}`;
+            if (!realmData[key]) {
+                realmData[key] = [];
+            }
+            realmData[key].push({ tr, tc });
+        });
+        announcementSubscribeCache.set(realm, realmData);
+    }
+    const key = `${realm}:${chnl}`;
+    return realmData[key] || [];
+}
+export function clearEventCache(realm) {
+    announcementSubscribeCache.del(realm);
+}
+export default announcementChnl;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYW5ub3VuY2VtZW50Q2hubC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL2JhY2svbG9naWMvc2VuZE1lc3NhZ2VVdGlscy9hbm5vdW5jZW1lbnRDaG5sLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sU0FBUyxNQUFNLFlBQVksQ0FBQztBQUNuQyxPQUFPLEVBQUUsTUFBTSxLQUFLLENBQUM7QUFDckIsT0FBTyxFQUFFLFNBQVMsRUFBRSxNQUFNLGFBQWEsQ0FBQztBQUN4QyxPQUFPLFdBQVcsTUFBTSxnQkFBZ0IsQ0FBQztBQUl6QyxPQUFPLGdCQUFnQixNQUFNLGtCQUFrQixDQUFDO0FBRWhELE1BQU0sMEJBQTBCLEdBQUcsSUFBSSxTQUFTLENBQUMsZ0JBQWdCLENBQUMsdUJBQXVCLENBQUMsQ0FBQyxDQUFDO0FBRTVGLEtBQUssVUFBVSxnQkFBZ0IsQ0FBQyxLQUFTLEVBQUUsSUFBYTtJQUNwRCxNQUFNLElBQUksR0FBRyxNQUFNLGFBQWEsQ0FBQyxLQUFLLEVBQUUsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDO0lBQ25ELElBQUcsSUFBSSxDQUFDLE1BQU0sSUFBSSxDQUFDO1FBQUUsT0FBTztJQUU1QixJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFO1FBQzlCLE1BQU0sR0FBRyxHQUFHO1lBQ1IsRUFBRSxFQUFFLEVBQUU7WUFDTixHQUFHLEVBQUUsSUFBSSxDQUFDLEdBQUc7WUFDYixJQUFJLEVBQUUsRUFBRTtTQUNYLENBQUE7UUFDRCxNQUFNLElBQUksR0FBRztZQUNULEdBQUcsRUFBRSxTQUFTLENBQUMsRUFBRSxFQUFFLEVBQUUsQ0FBQztZQUN0QixJQUFJLEVBQUUsWUFBWTtTQUNyQixDQUFBO1FBQ0QsTUFBTSxJQUFJLEdBQUc7WUFDVCxNQUFNLEVBQUUsSUFBSTtZQUNaLFFBQVEsRUFBRSxHQUFHO1NBQ2hCLENBQUE7UUFDRCxXQUFXLENBQUMsR0FBRyxFQUFFLElBQUksRUFBRSxJQUFJLENBQUMsQ0FBQztJQUNqQyxDQUFDLENBQUMsQ0FBQztBQUNQLENBQUM7QUFRRCxLQUFLLFVBQVUsYUFBYSxDQUFDLEtBQVMsRUFBRSxJQUFRO0lBQzVDLElBQUksU0FBUyxHQUFHLDBCQUEwQixDQUFDLEdBQUcsQ0FBQyxLQUFLLENBQUMsQ0FBQztJQUV0RCxJQUFHLENBQUMsU0FBUyxFQUFDLENBQUM7UUFDWCxNQUFNLEtBQUssR0FBRyxNQUFNLEVBQUUsQ0FBQyxTQUFTLENBQUMsSUFBSSxDQUFxQyx1QkFBdUIsRUFBRSxFQUFFLEVBQUUsRUFBRSxLQUFLLEVBQUUsQ0FBQyxDQUFDO1FBRWxILFNBQVMsR0FBRyxFQUFFLENBQUM7UUFDZixLQUFLLENBQUMsT0FBTyxDQUFDLENBQUMsRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFO1lBQ2pDLE1BQU0sR0FBRyxHQUFHLEdBQUcsRUFBRSxJQUFJLEVBQUUsRUFBRSxDQUFDO1lBQzFCLElBQUcsQ0FBQyxTQUFTLENBQUMsR0FBRyxDQUFDLEVBQUMsQ0FBQztnQkFDaEIsU0FBUyxDQUFDLEdBQUcsQ0FBQyxHQUFHLEVBQUUsQ0FBQztZQUN4QixDQUFDO1lBQ0QsU0FBUyxDQUFDLEdBQUcsQ0FBQyxDQUFDLElBQUksQ0FBQyxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUUsQ0FBQyxDQUFDO1FBQ3BDLENBQUMsQ0FBQyxDQUFDO1FBRUgsMEJBQTBCLENBQUMsR0FBRyxDQUFDLEtBQUssRUFBRSxTQUFTLENBQUMsQ0FBQztJQUNyRCxDQUFDO0lBRUQsTUFBTSxHQUFHLEdBQUcsR0FBRyxLQUFLLElBQUksSUFBSSxFQUFFLENBQUM7SUFDL0IsT0FBTyxTQUFTLENBQUMsR0FBRyxDQUFDLElBQUksRUFBRSxDQUFDO0FBQ2hDLENBQUM7QUFFRCxNQUFNLFVBQVUsZUFBZSxDQUFDLEtBQWE7SUFDekMsMEJBQTBCLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQyxDQUFDO0FBQzFDLENBQUM7QUFFRCxlQUFlLGdCQUFnQixDQUFDIn0=

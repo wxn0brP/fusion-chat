@@ -1,0 +1,14 @@
+const defaultTTL = 600;
+const defaultCheckPeriod = 120;
+export default {
+    EventId: [defaultTTL, defaultCheckPeriod],
+    UserOnRealm: [defaultTTL, defaultCheckPeriod],
+    ChnlPermission: [defaultTTL, defaultCheckPeriod],
+    ChnlPermission_Channels: [defaultTTL / 2, defaultCheckPeriod / 2],
+    UserStatus: [2 * 60, 60],
+    DmBlock: [defaultTTL, defaultCheckPeriod],
+    UserDm: [defaultTTL, defaultCheckPeriod],
+    AnnouncementSubscribe: [defaultTTL, defaultCheckPeriod],
+    BotEdit: [defaultTTL, defaultCheckPeriod],
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY2FjaGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9iYWNrL2NvbmZpZy1iYXNlL2NhY2hlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE1BQU0sVUFBVSxHQUFHLEdBQUcsQ0FBQztBQUN2QixNQUFNLGtCQUFrQixHQUFHLEdBQUcsQ0FBQztBQUUvQixlQUFlO0lBQ1gsT0FBTyxFQUFFLENBQUMsVUFBVSxFQUFFLGtCQUFrQixDQUFDO0lBQ3pDLFdBQVcsRUFBRSxDQUFDLFVBQVUsRUFBRSxrQkFBa0IsQ0FBQztJQUM3QyxjQUFjLEVBQUUsQ0FBQyxVQUFVLEVBQUUsa0JBQWtCLENBQUM7SUFDaEQsdUJBQXVCLEVBQUUsQ0FBQyxVQUFVLEdBQUMsQ0FBQyxFQUFFLGtCQUFrQixHQUFDLENBQUMsQ0FBQztJQUM3RCxVQUFVLEVBQUUsQ0FBQyxDQUFDLEdBQUcsRUFBRSxFQUFFLEVBQUUsQ0FBQztJQUN4QixPQUFPLEVBQUUsQ0FBQyxVQUFVLEVBQUUsa0JBQWtCLENBQUM7SUFDekMsTUFBTSxFQUFFLENBQUMsVUFBVSxFQUFFLGtCQUFrQixDQUFDO0lBQ3hDLHFCQUFxQixFQUFFLENBQUMsVUFBVSxFQUFFLGtCQUFrQixDQUFDO0lBQ3ZELE9BQU8sRUFBRSxDQUFDLFVBQVUsRUFBRSxrQkFBa0IsQ0FBQztDQUM1QyxDQUFBIn0=
