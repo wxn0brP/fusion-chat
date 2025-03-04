@@ -338,6 +338,51 @@
     }
 }
 
+#realmUserProfile {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9;
+    background-color: var(--back);
+    color: var(--txt);
+    border: 2px solid var(--accent);
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 300px;
+
+    #realmUserProfile__user {
+        display: flex;
+        gap: 5px;
+        text-align: left;
+        margin-bottom: 1rem;
+
+        img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        div[data-id="status"] {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            overflow: hidden;    
+        }
+    }
+
+    ul {
+        text-align: left;
+        list-style: none;
+
+        li button {
+            margin-right: 5px;
+            margin-bottom: 2px;
+        }
+    }
+}
+
 @media screen and (max-width: 800px) {
     #errMesses div {
         width: 90vw;

@@ -126,4 +126,8 @@ export interface Lang_UI {
     enter_dm: string;
     create_realm_name: string;
     enter_realm_invite: string;
+    realm_user_profile: {
+        kick_user: string;
+        add_role: string;
+    }
 }

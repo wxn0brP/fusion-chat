@@ -4,20 +4,18 @@ hub("render/realm");
 import vars from "../../var/var";
 import Id from "../../types/Id";
 import apis from "../../api/apis";
-import renderUtils from "./utils";
 import utils from "../../utils/utils";
 import coreFunc from "../../core/coreFunc";
 import socket from "../../core/socket/socket";
 import contextMenu from "../components/contextMenu";
-import { Ui_UserState } from "../../types/ui/render";
 import { navHTML, renderHTML } from "../../var/html";
-import { Vars_user__activity } from "../../types/var";
-import { Core_socket__user_status_type } from "../../types/core/socket";
 import { updateUserProfileMarker } from "./userStatusMarker";
 import apiVars from "../../var/api";
+import realmUserProfile from "../components/realmUserProfile";
+import { Vars_realms } from "../../types/var";
 
 const render_realm = {
-    realms(data) {
+    realms(data: Vars_realms[]) {
         renderHTML.realms__content.innerHTML = "";
         vars.realms = data;
         data.forEach((realm) => {
@@ -80,6 +78,10 @@ const render_realm = {
                     socket.emit("user.profile", userID);
                 });
             }
+
+            contextMenu.menuClickEvent(userDiv, (e) => {
+                realmUserProfile.render(userID);
+            })
 
             const userImg = document.createElement("img");
             userImg.src = "/api/profile/img?id=" + userID.replace("^", "");

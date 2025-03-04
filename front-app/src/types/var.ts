@@ -38,7 +38,6 @@ interface Vars {
 }
 
 export interface Vars_realm__role {
-    _id: Id;
     c: string;
     name: string;
 }

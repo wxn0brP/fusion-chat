@@ -44,6 +44,7 @@ const required = [
         "components/emoji",
         "components/mainView",
         "components/media",
+        "components/realmUserProfile",
         "components/voice",
     // helpers
         "helpers/reloadImages",
@@ -52,6 +53,7 @@ const required = [
     // interact
         "interact/context",
         "interact/mainView",
+        "interact/realmUser",
         "interact/relations",
         "interact/subscribeEventChnl",
         "interact/ui",

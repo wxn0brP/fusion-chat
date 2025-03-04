@@ -129,6 +129,10 @@ const ui: Lang_UI = {
     enter_dm: "Name of the 2 people",
     enter_realm_invite: "Enter invite link of the realm",
     create_realm_name: "Enter name of the realm",
+    realm_user_profile: {
+        add_role: "Add role",
+        kick_user: "Kick User",
+    }
 }
 
 export default ui;
