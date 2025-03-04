@@ -46,6 +46,20 @@ interface idb_message extends Core_mess__dbMessage {
     chnl: Id;
 }
 
+function sortMessagesById(messages: Core_mess__dbMessage[]): Core_mess__dbMessage[] {
+    return messages.sort((a, b) => {
+        const aId = a._id;
+        const bId = b._id;
+
+        const timeA = utils.extractTimeFromId(aId);
+        const timeB = utils.extractTimeFromId(bId);
+        if (timeA !== timeB) return timeB - timeA;
+        const partsA = aId.split("-").slice(1).join("-");
+        const partsB = bId.split("-").slice(1).join("-");
+        return partsA.localeCompare(partsB);
+    });
+}
+
 class MessageCacheController {
     constructor() {
         getDB();
@@ -70,12 +84,7 @@ class MessageCacheController {
 
         for (const message of messages) {
             const msg: idb_message = { ...message, chnl };
-            await store.put(msg);
-            // TODO message cache
-            /**
-             * 1. make gen id more precise
-             * 2. remove await
-             */
+            store.put(msg);
         }
 
         await tx.done;
@@ -89,7 +98,7 @@ class MessageCacheController {
         const store = tx.objectStore(chat);
         const index = store.index("chnl");
         const data = await index.getAll(chnl);
-        return data;
+        return sortMessagesById(data);
     }
 
     async getMessages() {
