@@ -7,8 +7,18 @@ on:
     paths:
       - 'fc-app/electron/package.json'
 
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'fc-app/electron/package.json'
+
   workflow_dispatch:
-  
+
+concurrency:
+  group: build-electron-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-electron:
     runs-on: ubuntu-latest

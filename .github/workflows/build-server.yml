@@ -25,6 +25,10 @@ on:
       - 'tsconfig.json'
   workflow_dispatch:
 
+concurrency:
+  group: build-server-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-server:
     runs-on: ubuntu-latest

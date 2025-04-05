@@ -6,8 +6,18 @@ on:
       - main
     paths:
       - 'fc-app/fc-mobile/package.json'
+      
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'fc-app/fc-mobile/package.json'
 
   workflow_dispatch:
+
+concurrency:
+  group: build-android-${{ github.ref }}
+  cancel-in-progress: true
   
 jobs:
   build-android:
