@@ -1,0 +1,10 @@
+{
+    "cmd": "yarn build:ts && electron . --link http://localhost:1478 -d",
+    "watch": [
+        "src"
+    ],
+    "restart_cmd": "clear",
+    "events": {
+        "clean": "rm -rf dist"
+    }
+}
