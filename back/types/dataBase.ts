@@ -1,19 +1,18 @@
-import db from "@wxn0brp/db/dist/esm/database";
-import graph from "@wxn0brp/db/dist/esm/graph";
+import { Graph, Valthera } from "@wxn0brp/db";
 
 export interface FC_DataBases {
-    data?: db,
-    dataGraph?: graph,
-    system?: db,
-    logs?: db,
+    data?: Valthera,
+    dataGraph?: Graph,
+    system?: Valthera,
+    logs?: Valthera,
 
-    mess?: db,
-    userData?: db,
-    botData?: db,
+    mess?: Valthera,
+    userData?: Valthera,
+    botData?: Valthera,
 
-    realmConf?: db,
-    realmRoles?: db,
-    realmUser?: db,
-    realmData?: db,
-    realmDataGraph?: graph
+    realmConf?: Valthera,
+    realmRoles?: Valthera,
+    realmUser?: Valthera,
+    realmData?: Valthera,
+    realmDataGraph?: Graph
 }

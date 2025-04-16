@@ -1,6 +1,6 @@
 import { generateKeyPair, exportSPKI, exportPKCS8, importSPKI, importPKCS8 } from "jose";
 import db from "#db";
-import { DataBase } from "@wxn0brp/db";
+import { Valthera } from "@wxn0brp/db";
 
 enum KeyIndex {
     GENERAL,
@@ -11,7 +11,7 @@ enum KeyIndex {
 };
 
 class KeyManager{
-    db: DataBase;
+    db: Valthera;
 
     constructor(){
         this.db = db.system;

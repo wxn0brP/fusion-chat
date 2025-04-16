@@ -1,6 +1,6 @@
 // @ts-ignore
 import config from "../config/database.js";
-import { DataBase, Graph, DataBaseRemote, GraphRemote } from "@wxn0brp/db";
+import { Valthera, Graph, ValtheraRemote, GraphRemote } from "@wxn0brp/db";
 import { FC_DataBases } from "./types/dataBase";
 
 const db: FC_DataBases = {};
@@ -22,7 +22,7 @@ const databases = [
     { name: "realmDataGraph", type: "graph" },      //realm all types data graph
 ];
 
-function getRemoteConfig(name, path){
+function getRemoteConfig(name, path) {
     const cnf = {
         name,
         path,
@@ -30,44 +30,44 @@ function getRemoteConfig(name, path){
         auth: null
     }
     const custom = config[name];
-    if(custom.url && custom.auth){
+    if (custom.url && custom.auth) {
         cnf.url = custom.url;
         cnf.auth = custom.auth;
-    }else{
+    } else {
         cnf.url = config.remoteDefault.url;
         cnf.auth = config.remoteDefault.auth;
     }
     return cnf;
 }
 
-async function initDataBase(name){
+async function initValthera(name: string) {
     const cfg = config[name];
-    if(cfg.type === "local"){
-        return new DataBase(cfg.path);
-    }else if(cfg.type === "remote"){
+    if (cfg.type === "local") {
+        return new Valthera(cfg.path);
+    } else if (cfg.type === "remote") {
         const remoteCfg = getRemoteConfig(name, cfg.path);
-        return new DataBaseRemote(remoteCfg);
-    }else{
+        return new ValtheraRemote(remoteCfg);
+    } else {
         throw new Error("Unknown database type " + cfg.name);
     }
 }
 
-async function initGraph(name){
+async function initGraph(name: string) {
     const cfg = config[name];
-    if(cfg.type === "local"){
+    if (cfg.type === "local") {
         return new Graph(cfg.path);
-    }else if(cfg.type === "remote"){
+    } else if (cfg.type === "remote") {
         const remoteCfg = getRemoteConfig(name, cfg.path);
         return new GraphRemote(remoteCfg);
-    }else{
+    } else {
         throw new Error("Unknown database type " + cfg.name);
     }
 }
 
-for(const database of databases){
-    if(database.type === "database"){
-        db[database.name] = await initDataBase(database.name);
-    }else if(database.type === "graph"){
+for (const database of databases) {
+    if (database.type === "database") {
+        db[database.name] = await initValthera(database.name);
+    } else if (database.type === "graph") {
         db[database.name] = await initGraph(database.name);
     }
 }

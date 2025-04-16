@@ -1,4 +1,3 @@
-import CollectionManager from "@wxn0brp/db/dist/esm/CollectionManager";
 import db from "#db";
 import {
     hasPermission,
@@ -12,6 +11,7 @@ import Db_RealmRoles from "#types/db/realmRoles";
 import Id from "#id";
 import Db_RealmUser from "#types/db/realmUser";
 import Db_RealmConf from "#types/db/realmConf";
+import CollectionManager from "@wxn0brp/db/dist/CollectionManager";
 
 /**
  * A hierarchical role-based permission system for managing roles and permissions in a workspace.
