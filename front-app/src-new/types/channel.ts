@@ -1,0 +1,1 @@
+export type Channel_Type = "text" | "announcement" | "open_announcement" | "forum";

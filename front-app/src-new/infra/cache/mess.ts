@@ -1,0 +1,170 @@
+import { Id } from "#types/base";
+import { Core_mess__dbMessage } from "#types/core/mess";
+import utils from "#utils/utils";
+import { IDBPDatabase, openDB } from "idb";
+
+const DB_NAME = "messages";
+let database: IDBPDatabase | null = null;
+
+/**
+ * Opens a database with the current timestamp as the version.
+ */
+export async function getDB(upgrade?: (db: IDBPDatabase) => void): Promise<IDBPDatabase> {
+    if (!upgrade && database) return database;
+
+    const version = Date.now(); // UNIX timestamp
+    const newDB = await openDB(DB_NAME, version, {
+        upgrade(upgraded) {
+            if (upgrade) upgrade(upgraded);
+        },
+    });
+
+    database = newDB;
+    return newDB;
+}
+
+/**
+ * Creates a collection if it doesn't exist.
+ */
+export async function createCollection(collection: string): Promise<IDBPDatabase> {
+    let db = await getDB();
+
+    if (!db.objectStoreNames.contains(collection)) {
+        db.close();
+        db = await getDB((upgraded) => {
+            const store = upgraded.createObjectStore(collection, { keyPath: "_id" });
+            store.createIndex("chnl", "chnl", { unique: false });
+        });
+    }
+
+    return db;
+}
+
+interface idb_message extends Core_mess__dbMessage {
+    chnl: Id;
+}
+
+function sortMessagesById(messages: Core_mess__dbMessage[]): Core_mess__dbMessage[] {
+    return messages.sort((a, b) => {
+        const aId = a._id;
+        const bId = b._id;
+
+        const timeA = utils.extractTimeFromId(aId);
+        const timeB = utils.extractTimeFromId(bId);
+        if (timeA !== timeB) return timeB - timeA;
+        const partsA = aId.split("-").slice(1).join("-");
+        const partsB = bId.split("-").slice(1).join("-");
+        return partsA.localeCompare(partsB);
+    });
+}
+
+class MessageCacheController {
+    constructor() {
+        getDB();
+    }
+
+    async addMessage(chat: Id, chnl: Id, message: Core_mess__dbMessage) {
+        const msg: idb_message = {
+            ...message,
+            chnl
+        }
+        const db = await createCollection(chat);
+        await db.put(chat, msg);
+        await enforceChannelCacheLimit(db, chat, chnl);
+    }
+
+    async addMessages(chat: Id, chnl: Id, messages: Core_mess__dbMessage[]) {
+        if (messages.length === 0) return;
+
+        const db = await createCollection(chat);
+        const tx = db.transaction(chat, "readwrite");
+        const store = tx.objectStore(chat);
+
+        for (const message of messages) {
+            const msg: idb_message = { ...message, chnl };
+            store.put(msg);
+        }
+
+        await tx.done;
+        await enforceChannelCacheLimit(db, chat, chnl);
+    }
+
+    async getMessagesRaw(chat: Id, chnl: Id) {
+        const db = await createCollection(chat);
+
+        const tx = db.transaction(chat, "readonly");
+        const store = tx.objectStore(chat);
+        const index = store.index("chnl");
+        const data = await index.getAll(chnl);
+        return sortMessagesById(data);
+    }
+
+    async deleteMessage(chat: Id, id: Id) {
+        const db = await createCollection(chat);
+        const store = db.transaction(chat, "readwrite").objectStore(chat);
+        await store.delete(id);
+    }
+
+    async deleteMessages(chat: Id, ids: Id[]) {
+        const db = await createCollection(chat);
+        const tx = db.transaction(chat, "readwrite");
+        const store = tx.objectStore(chat);
+        for (const id of ids) {
+            store.delete(id);
+        }
+        await tx.done;
+    }
+
+    async editMessage(id: Id, msg: string, time: string, chatId: Id) {
+        const db = await createCollection(chatId);
+        const tx = db.transaction(chatId, "readwrite");
+        const store = tx.objectStore(chatId);
+
+        const existingMessage = await store.get(id);
+        if (!existingMessage) return;
+
+        const updatedMessage: idb_message = {
+            ...existingMessage,
+            msg,
+            lastEdit: time
+        }
+
+        await store.put(updatedMessage);
+        await tx.done;
+    }
+
+    async deleteAllMessages(chat: Id, chnl: Id) {
+        const db = await createCollection(chat);
+        const tx = db.transaction(chat, "readwrite");
+        const store = tx.objectStore(chat);
+        const index = store.index("chnl");
+        const data = await index.getAll(chnl);
+        for (const message of data) {
+            store.delete(message._id);
+        }
+        await tx.done;
+    }
+}
+
+async function enforceChannelCacheLimit(db: IDBPDatabase, chat: Id, chnl: Id) {
+    const tx = db.transaction(chat, "readwrite");
+    const store = tx.objectStore(chat);
+    const index = store.index("chnl");
+
+    // TODO add message limit to settings
+    const messages = await index.getAll(chnl);
+    if (messages.length <= 150) return;
+
+    messages.sort((a, b) => utils.extractTimeFromId(b._id) - utils.extractTimeFromId(a._id));
+
+    const excess = messages.length - 150;
+    for (let i = 0; i < excess; i++) {
+        await store.delete(messages[i]._id);
+    }
+
+    await tx.done;
+}
+
+
+const messageCacheController = new MessageCacheController();
+export default messageCacheController;

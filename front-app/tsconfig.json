@@ -3,14 +3,34 @@
         "module": "ES2022",
         "target": "ES2022",
         "outDir": "dist",
-        "paths": {},
+        "paths": {
+            "#socket/*": ["./src-new/infra/socket/*"],
+            "#lib/*": ["./src-new/shared/lib/*"],
+            "#types/*": ["./src-new/types/*"],
+            "#actions/*": ["./src-new/ui/actions/*"],
+            "#components/*": ["./src-new/ui/*"],
+            "#utils/*": ["./src-new/shared/utils/*"],
+            "#helpers/*": ["./src-new/shared/helpers/*"],
+            "#features/*": ["./src-new/features/*"],
+            "#core/*": ["./src-new/core/*"],
+            "#api/*": ["./src-new/api/*"],
+            "#infra/*": ["./src-new/infra/*"],
+            
+            "#apis": ["./src-new/api/apis"],
+            "#bus": ["./src-new/core/bus"],
+            "#socket": ["./src-new/infra/socket/socket"],
+            "#debug": ["./src-new/core/debug"],
+            "#store": ["./src-new/core/store/index"],
+            "#core": ["./src-new/app/core"],
+            "#uiFunc": ["./src-new/shared/helpers/uiFunc"],
+        },
         "skipLibCheck": true,
         "moduleResolution": "node",
         "sourceMap": true,
         "removeComments": true,
     },
     "include": [
-        "src"
+        "src-new"
     ],
     "tsc-alias": {
         "resolveFullPaths": true,

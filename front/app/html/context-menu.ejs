@@ -38,7 +38,7 @@
             <% } else { %>
                 <div class="context-menu__item" 
                     <% if (item.dataId) { %> data-id="<%= item.dataId %>" <% } %>
-                    onclick="mglInt.contextFunc.<%= contextType %>('<%= item.action %>', event)" 
+                    onclick="app.ui.context.<%= contextType %>('<%= item.action %>', event)" 
                     translate 
                     <% if (item.style) { %> style="<%= item.style %>" <% } %>
                 ><%= item.text %></div>

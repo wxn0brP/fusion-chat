@@ -70,7 +70,7 @@ export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_St
 
     const userPermissions = await permSys.getUserPermissions(suser._id);
 
-    return { err: false, res: [id, name, buildChannels, userPermissions] };
+    return { err: false, res: [name, buildChannels, userPermissions] };
 }
 
 export async function realm_users_sync(suser: Socket_User, id: Id): Promise<Socket_StandardRes> {
@@ -385,7 +385,7 @@ export async function realm_thread_delete(suser: Socket_User, realmId: Id, threa
     return { err: false };
 }
 
-export async function realm_thread_list(suser: Socket_User, realmId: Id | null, channelId: Id): Promise<Socket_StandardRes> {
+export async function realm_thread_list(suser: Socket_User, realmId: Id, channelId: Id): Promise<Socket_StandardRes> {
     const validE = new ValidError("realm.thread.list");
     if (!valid.id(realmId)) return validE.valid("realmId");
     if (!valid.id(channelId) && channelId != null) return validE.valid("channelId");

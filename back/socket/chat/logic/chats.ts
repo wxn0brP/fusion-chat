@@ -71,6 +71,7 @@ export async function realm_create(suser: Socket_User, name: string): Promise<So
     if (!valid.str(name, 0, 30)) return validE.valid("name");
 
     createChat(name, suser._id);
+    global.sendToSocket(suser._id, "refreshData", "realm.get");
     return { err: false };
 }
 
@@ -95,8 +96,8 @@ export async function dm_create(suser: Socket_User, nameOrId: string): Promise<S
             { _id: nameOrId }
         ]
     });
-    if (user._id == suser._id) return validE.err(InternalCode.UserError.Socket.Dm_CreateSelf);
     if (!user) return validE.err(InternalCode.UserError.Socket.Dm_UserNotFound);
+    if (user._id == suser._id) return validE.err(InternalCode.UserError.Socket.Dm_CreateSelf);
 
     const toId = user._id;
 

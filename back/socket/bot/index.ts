@@ -7,7 +7,6 @@ import SocketEventLimiter, { bannedUsers } from "../chat/limiter";
 import { decode, KeyIndex } from "#logic/token/index";
 import { Socket_User } from "#types/socket/user";
 import { Socket_StandardRes, Socket_StandardRes_Error } from "#types/socket/res";
-import voice from "../chat/voice";
 
 global.io.of("/bot").use(async (socket: Socket, next: Function) => {
     const authData = socket.handshake.auth;
@@ -64,7 +63,6 @@ global.io.of("/bot").on("connection", (socket: Socket) => {
     socket.onLimit = limiter.onLimit.bind(limiter);
 
     register(socket);
-    voice(socket);
 });
 
 export { };

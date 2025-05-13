@@ -16,14 +16,14 @@ for (const arg of args) {
 }
 
 esbuild.build({
-    entryPoints: ["src/startApp.ts"],
+    entryPoints: ["src-new/app/startApp.ts"],
     outdir: "dist",
     bundle: true,
     format: "esm",
     platform: "browser",
     target: "es2022",
     sourcemap: true,
-    minify: true,
+    minify: false,
     treeShaking: true,
     splitting: false,
     keepNames: true,

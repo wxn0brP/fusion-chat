@@ -1,5 +1,4 @@
 import evt from "./evt";
-import voice from "./voice";
 import db from "#db";
 import register from "./register";
 import { Socket } from "socket.io";
@@ -58,7 +57,6 @@ global.io.of("/").on("connection", (socket: Socket) => {
 
     register(socket);
     realmSettings(socket);
-    voice(socket);
     evt(socket);
 
     setTimeout(async () => {

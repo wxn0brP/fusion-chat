@@ -2,7 +2,7 @@
     "cmd": "yarn build",
     "args": [],
     "watch": [
-        "src"
+        "src-new"
     ],
     "restart_cmd": "clear",
     "events": {
