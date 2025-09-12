@@ -8,12 +8,12 @@ import users from "./users";
 import webhooks from "./webhooks";
 
 export default {
-    banUsers,
-    categories,
-    channels,
-    emojis,
-    meta,
-    roles,
-    users,
-    webhooks
+	banUsers,
+	categories,
+	channels,
+	emojis,
+	meta,
+	roles,
+	users,
+	webhooks,
 };

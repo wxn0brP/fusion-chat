@@ -2,16 +2,32 @@
     "compilerOptions": {
         "module": "ES2022",
         "target": "ES2022",
-        "moduleResolution": "Node",
+        "moduleResolution": "bundler",
         "paths": {
-            "#logic/*": ["./back/logic/*"],
-            "#types/*": ["./back/types/*"],
-            "#db": ["./back/dataBase"],
-            "#codes": ["./back/codes"],
-            "#firebase": ["./back/firebase"],
-            "#schedule": ["./back/schedule"],
-            "#scl/*": ["./back/socket/chat/logic/*"],
-            "#id": ["./back/types/id"],
+            "#logic/*": [
+                "./back/logic/*"
+            ],
+            "#types/*": [
+                "./back/types/*"
+            ],
+            "#db": [
+                "./back/dataBase"
+            ],
+            "#codes": [
+                "./back/codes"
+            ],
+            "#firebase": [
+                "./back/firebase"
+            ],
+            "#schedule": [
+                "./back/schedule"
+            ],
+            "#scl/*": [
+                "./back/socket/chat/logic/*"
+            ],
+            "#id": [
+                "./back/types/id"
+            ],
         },
         "esModuleInterop": true,
         "skipLibCheck": true,

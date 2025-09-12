@@ -1,10 +1,10 @@
 export type Item = { [key: string]: any };
 
 export interface ProcessDbChangesResult {
-    itemsToAdd: Item[];
-    itemsToRemove: Item[];
-    itemsToUpdate: Item[];
-    itemsWithRemovedFields: Item[];
+	itemsToAdd: Item[];
+	itemsToRemove: Item[];
+	itemsToUpdate: Item[];
+	itemsWithRemovedFields: Item[];
 }
 
 /**
@@ -21,25 +21,41 @@ export interface ProcessDbChangesResult {
  * @returns an object with four properties: itemsToAdd, itemsToRemove, itemsToUpdate, itemsWithRemovedFields
  */
 export default function processDbChanges<T extends Item>(
-    oldData: T[],
-    newData: T[],
-    trackParams: string[] = [],
-    idName: string = "_id"
+	oldData: T[],
+	newData: T[],
+	trackParams: string[] = [],
+	idName: string = "_id",
 ): ProcessDbChangesResult {
-    const itemsToAdd = newData.filter(newItem => !oldData.some(oldItem => oldItem[idName] === newItem[idName]));
-    const itemsToRemove = oldData.filter(oldItem => !newData.some(newItem => newItem[idName] === oldItem[idName]));
-    const itemsToUpdate = newData.filter(newItem => {
-        const oldItem = oldData.find(oldItem => oldItem[idName] === newItem[idName]);
-        return oldItem && !areObjectsEqual(newItem, oldItem, trackParams);
-    });
+	const itemsToAdd = newData.filter(
+		(newItem) =>
+			!oldData.some((oldItem) => oldItem[idName] === newItem[idName]),
+	);
+	const itemsToRemove = oldData.filter(
+		(oldItem) =>
+			!newData.some((newItem) => newItem[idName] === oldItem[idName]),
+	);
+	const itemsToUpdate = newData.filter((newItem) => {
+		const oldItem = oldData.find(
+			(oldItem) => oldItem[idName] === newItem[idName],
+		);
+		return oldItem && !areObjectsEqual(newItem, oldItem, trackParams);
+	});
 
-    const itemsWithRemovedFields = itemsToUpdate.map(newItem => {
-        const oldItem = oldData.find(oldItem => oldItem[idName] === newItem[idName]);
-        const deletedParams = findDeletedParams(oldItem, newItem, trackParams);
-        return { [idName]: newItem[idName], deletedParams };
-    }).filter(item => item.deletedParams.length > 0);
+	const itemsWithRemovedFields = itemsToUpdate
+		.map((newItem) => {
+			const oldItem = oldData.find(
+				(oldItem) => oldItem[idName] === newItem[idName],
+			);
+			const deletedParams = findDeletedParams(
+				oldItem,
+				newItem,
+				trackParams,
+			);
+			return { [idName]: newItem[idName], deletedParams };
+		})
+		.filter((item) => item.deletedParams.length > 0);
 
-    return { itemsToAdd, itemsToRemove, itemsToUpdate, itemsWithRemovedFields };
+	return { itemsToAdd, itemsToRemove, itemsToUpdate, itemsWithRemovedFields };
 }
 
 /**
@@ -49,21 +65,30 @@ export default function processDbChanges<T extends Item>(
  * @param params - the properties to check
  * @returns true if the objects are equal on all given properties
  */
-export function areObjectsEqual(obj1: Item, obj2: Item, params: string[]): boolean {
-    return params.every(param => {
-        const val1 = obj1[param];
-        const val2 = obj2[param];
+export function areObjectsEqual(
+	obj1: Item,
+	obj2: Item,
+	params: string[],
+): boolean {
+	return params.every((param) => {
+		const val1 = obj1[param];
+		const val2 = obj2[param];
 
-        if (Array.isArray(val1) && Array.isArray(val2)) {
-            return arrayDeepEqual(val1, val2);
-        }
+		if (Array.isArray(val1) && Array.isArray(val2)) {
+			return arrayDeepEqual(val1, val2);
+		}
 
-        if (typeof val1 === 'object' && val1 !== null && typeof val2 === 'object' && val2 !== null) {
-            return areObjectsEqual(val1, val2, Object.keys(val1));
-        }
+		if (
+			typeof val1 === "object" &&
+			val1 !== null &&
+			typeof val2 === "object" &&
+			val2 !== null
+		) {
+			return areObjectsEqual(val1, val2, Object.keys(val1));
+		}
 
-        return val1 === val2;
-    });
+		return val1 === val2;
+	});
 }
 
 /**
@@ -73,21 +98,26 @@ export function areObjectsEqual(obj1: Item, obj2: Item, params: string[]): boole
  * @returns true if the arrays are deeply equal
  */
 function arrayDeepEqual(arr1: any[], arr2: any[]): boolean {
-    if (arr1.length !== arr2.length) return false;
+	if (arr1.length !== arr2.length) return false;
 
-    return arr1.every((item, index) => {
-        const otherItem = arr2[index];
+	return arr1.every((item, index) => {
+		const otherItem = arr2[index];
 
-        if (Array.isArray(item) && Array.isArray(otherItem)) {
-            return arrayDeepEqual(item, otherItem);
-        }
+		if (Array.isArray(item) && Array.isArray(otherItem)) {
+			return arrayDeepEqual(item, otherItem);
+		}
 
-        if (typeof item === 'object' && item !== null && typeof otherItem === 'object' && otherItem !== null) {
-            return areObjectsEqual(item, otherItem, Object.keys(item));
-        }
+		if (
+			typeof item === "object" &&
+			item !== null &&
+			typeof otherItem === "object" &&
+			otherItem !== null
+		) {
+			return areObjectsEqual(item, otherItem, Object.keys(item));
+		}
 
-        return item === otherItem;
-    });
+		return item === otherItem;
+	});
 }
 
 /**
@@ -97,6 +127,10 @@ function arrayDeepEqual(arr1: any[], arr2: any[]): boolean {
  * @param params - the properties to check
  * @returns an array of properties that were deleted
  */
-function findDeletedParams(oldItem: Item, newItem: Item, params: string[]): string[] {
-    return params.filter(param => !(param in newItem) && (param in oldItem));
+function findDeletedParams(
+	oldItem: Item,
+	newItem: Item,
+	params: string[],
+): string[] {
+	return params.filter((param) => !(param in newItem) && param in oldItem);
 }

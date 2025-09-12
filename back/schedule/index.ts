@@ -23,7 +23,8 @@ function scheduleOneTimeTask(task: Db_System.task) {
 	const currentTime = new Date();
 	const timeDiff = scheduledDate.getTime() - currentTime.getTime();
 
-	if (timeDiff <= 10000) { // if < 10s or space the time run now
+	if (timeDiff <= 10000) {
+		// if < 10s or space the time run now
 		performTask(type, data, _id);
 	} else {
 		const job = schedule.scheduleJob(_id, scheduledDate, () => {
@@ -37,12 +38,11 @@ function scheduleOneTimeTask(task: Db_System.task) {
 }
 
 function processTask(task: Db_System.task) {
-	if (task.sType === "one-time")
-		scheduleOneTimeTask(task);
+	if (task.sType === "one-time") scheduleOneTimeTask(task);
 }
 
-db.system.find<Db_System.task>("tasks", {}).then(tasks => {
-	tasks.forEach(task => processTask(task));
+db.system.find<Db_System.task>("tasks", {}).then((tasks) => {
+	tasks.forEach((task) => processTask(task));
 });
 
 export async function cancelTask(taskId: Id) {
@@ -57,7 +57,7 @@ export async function removeTask(taskId: Id) {
 }
 
 export async function addTask(taskReq: Omit<Db_System.task, "_id">) {
-	const task = await db.system.add<Db_System.task>("tasks", taskReq);
+	const task = await db.system.add<Db_System.task>("tasks", taskReq as any);
 	processTask(task);
 	return task._id;
 }

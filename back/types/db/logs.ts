@@ -1,30 +1,30 @@
 import { Id } from "../id";
 
 namespace Db_Logs {
-    export interface uncaughtException {
-        error: string;
-        stackTrace: string;
-        _id: Id;
-    }
+	export interface uncaughtException {
+		error: string;
+		stackTrace: string;
+		_id: Id;
+	}
 
-    export interface unhandledRejection {
-        reason: any
-        promise: any
-        _id: Id;
-    }
+	export interface unhandledRejection {
+		reason: any;
+		promise: any;
+		_id: Id;
+	}
 
-    export interface socketIo {
-        error: string;
-        stackTrace: string;
-        _id: Id;
-    }
+	export interface socketIo {
+		error: string;
+		stackTrace: string;
+		_id: Id;
+	}
 
-    export interface spam {
-        user: Id;
-        evt: string;
-        _id: Id;
-        ban?: true;
-    }
+	export interface spam {
+		user: Id;
+		evt: string;
+		_id: Id;
+		ban?: true;
+	}
 }
 
 export { Db_Logs };

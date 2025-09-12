@@ -9,12 +9,12 @@ import { ProcessDbChangesResult } from "#logic/processDbChanges";
 
 import Permissions, * as PermissionFunctions from "#logic/permission-system/permission";
 export {
-    Permissions,
-    PermissionFunctions,
-    Id,
-    Socket_RealmSettings,
-    Socket_User,
-    Db_RealmConf,
-    ProcessDbChangesResult,
-    db,
+	Permissions,
+	PermissionFunctions,
+	Id,
+	Socket_RealmSettings,
+	Socket_User,
+	Db_RealmConf,
+	ProcessDbChangesResult,
+	db,
 };

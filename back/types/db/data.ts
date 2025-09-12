@@ -1,32 +1,32 @@
 import { Id } from "../id";
 
 namespace Db_Data {
-    export interface fireToken {
-        fc: string;
-        fire: string;
-        user: string;
-        exp: number;
-    }
+	export interface fireToken {
+		fc: string;
+		fire: string;
+		user: string;
+		exp: number;
+	}
 
-    export interface friendRequest {
-        from: Id;
-        to: Id;
-    }
+	export interface friendRequest {
+		from: Id;
+		to: Id;
+	}
 
-    export interface rm {
-        _id: Id;
-    }
+	export interface rm {
+		_id: Id;
+	}
 
-    export interface token {
-        token: string;
-    }
+	export interface token {
+		token: string;
+	}
 
-    export interface user {
-        _id: Id;
-        name: string;
-        email: string;
-        password: string;
-    }
+	export interface user {
+		_id: Id;
+		name: string;
+		email: string;
+		password: string;
+	}
 }
 
 export default Db_Data;

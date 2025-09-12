@@ -1,8 +1,8 @@
 export default {
-    logLvl: "error",
+	logLvl: "error",
 
-    mail: {
-        loginWarn: true,
-        deletedAccount: true,
-    }
-}
+	mail: {
+		loginWarn: true,
+		deletedAccount: true,
+	},
+};

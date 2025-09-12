@@ -11,29 +11,48 @@ const router = Router();
 const cache = new NodeCache(getCacheSettings("EventId"));
 
 router.get("/id/event", async (req, res) => {
-    const { id } = req.query as { id: Id };
-    if(!valid.id(id)) return res.json({ err: true, c: InternalCode.UserError.Express.MissingParameters, msg: "event" });
+	const { id } = req.query as { id: Id };
+	if (!valid.id(id))
+		return res.json({
+			err: true,
+			c: InternalCode.UserError.Express.MissingParameters,
+			msg: "event",
+		});
 
-    let name = cache.get(id);
-    if(!name){
-        const data = await db.realmData.findOne("announcement.channels", (data, ctx) => {
-            const { tr, tc } = data;
-            return ctx.combineId(tr, tc) == ctx.id;
-        }, { id, combineId: combineId });
+	let name = cache.get(id);
+	if (!name) {
+		const data = await db.realmData.findOne(
+			"announcement.channels",
+			(data, ctx) => {
+				const { tr, tc } = data;
+				return ctx.combineId(tr, tc) == ctx.id;
+			},
+			{ id, combineId: combineId },
+		);
 
-        if(!data)
-            return res.json({ err: true, c: InternalCode.UserError.Express.EventId_NotFound, msg: "event not found" });
+		if (!data)
+			return res.json({
+				err: true,
+				c: InternalCode.UserError.Express.EventId_NotFound,
+				msg: "event not found",
+			});
 
-        const chnl = await db.realmConf.findOne(data.tr, { chid: data.tc });
-        if(!chnl)
-            return res.json({ err: true, c: InternalCode.UserError.Express.EventId_NotFound, msg: "event not found" });
-        
-        const realmName = await db.realmConf.findOne(data.tr, { _id: "set" }).then(({ name }) => name);
-        name = realmName + " > " + chnl.name;
-        cache.set(id, name);
-    }
+		const chnl = await db.realmConf.findOne<any>(data.tr, { chid: data.tc });
+		if (!chnl)
+			return res.json({
+				err: true,
+				c: InternalCode.UserError.Express.EventId_NotFound,
+				msg: "event not found",
+			});
 
-    res.json({ err: false, name });
+		const realmName = await db.realmConf
+			.findOne<any>(data.tr, { _id: "set" })
+			.then(({ name }) => name);
+		name = realmName + " > " + chnl.name;
+		cache.set(id, name);
+	}
+
+	res.json({ err: false, name });
 });
 
 export default router;
