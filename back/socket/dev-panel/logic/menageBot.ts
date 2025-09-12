@@ -11,19 +11,19 @@ import { genId } from "@wxn0brp/db";
 import { infoSchema } from "../valid/edit";
 import Socket_Bot from "#types/socket/dev-panel/bot";
 import Db_BotData from "#types/db/botData";
-import NodeCache from "node-cache";
 import getCacheSettings from "#logic/cacheSettings";
 import fs from "fs";
+import { AnotherCache } from "@wxn0brp/ac";
 const editInfoSchemat = valid.objAjv(infoSchema);
 
-const cache = new NodeCache(getCacheSettings("BotEdit"));
+const cache = new AnotherCache<Id[]>(getCacheSettings("BotEdit"));
 
 export async function canUserEditBot(
 	suser: Socket_User,
 	id: Id,
 ): Promise<boolean> {
 	if (cache.has(suser._id)) {
-		return cache.get<Id[]>(suser._id).includes(id);
+		return cache.get(suser._id).includes(id);
 	}
 
 	const bots = await db.userData

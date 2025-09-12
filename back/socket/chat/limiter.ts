@@ -1,7 +1,7 @@
-import NodeCache from "node-cache";
+import { AnotherCache } from "@wxn0brp/ac";
 import { Socket } from "socket.io";
 
-export const bannedUsers = new NodeCache();
+export const bannedUsers = new AnotherCache();
 
 export interface SpamThresholds {
 	warningDelay: number;

@@ -1,11 +1,11 @@
-import NodeCache from "node-cache";
 import Id from "#id";
 import Status from "#types/socket/chat/status";
+import { AnotherCache } from "@wxn0brp/ac";
 import getCacheSettings from "./cacheSettings";
 
 const h2 = 2 * 60 * 60 * 1000; //2 hours in ms
 
-export const cache = new NodeCache(getCacheSettings("UserStatus"));
+export const cache = new AnotherCache(getCacheSettings("UserStatus"));
 
 export function setCache(userId: Id, state: Status) {
 	let endTime = state.endTime;
@@ -35,5 +35,5 @@ export function getCache(userId: Id) {
 }
 
 export function rmCache(userId: Id) {
-	cache.del(userId);
+	cache.delete(userId);
 }

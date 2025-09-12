@@ -22,7 +22,7 @@ const databases = [
 	{ name: "realmDataGraph", type: "graph" }, //realm all types data graph
 ];
 
-function getRemoteConfig(name, path) {
+function getRemoteConfig(name: string, path: string) {
 	const cnf = {
 		name,
 		path,

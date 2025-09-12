@@ -1,6 +1,6 @@
 await import("./setUp.js");
 import { configDotenv } from "dotenv";
-configDotenv();
+configDotenv({ quiet: true });
 await import("./env.js");
 import sourceMapSupport from "source-map-support";
 sourceMapSupport.install();
@@ -25,4 +25,4 @@ server.listen(parseInt(process.env.PORT), function () {
 		lo("http://localhost:" + process.env.PORT + "/app");
 	}
 });
-import("./schedule/index.js");
+await import("./schedule/index.js");

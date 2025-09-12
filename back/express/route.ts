@@ -7,7 +7,7 @@ const apiRouter = Router();
 global.app.use("/", frontRouter);
 global.app.use("/api", apiRouter);
 
-function minifyHtml(body) {
+function minifyHtml(body: string) {
 	return minify(body, {
 		collapseWhitespace: true,
 		minifyCSS: true,
@@ -35,7 +35,7 @@ function error500(cb) {
 	};
 }
 
-const apiPath = "dist-back/express/api/";
+const apiPath = `${import.meta.dirname}/api/`;
 for (const file of readdirSync(apiPath, {
 	recursive: true,
 	withFileTypes: true,

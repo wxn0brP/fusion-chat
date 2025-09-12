@@ -1,4 +1,3 @@
-import NodeCache from "node-cache";
 import db from "#db";
 import { combineId } from "../chatMgmt";
 import Id from "#id";
@@ -6,9 +5,10 @@ import ValidError from "../validError";
 import { Socket_StandardRes } from "#types/socket/res";
 import InternalCode from "#codes";
 import getCacheSettings from "../cacheSettings";
+import { AnotherCache } from "@wxn0brp/ac";
 
-const blockedCache = new NodeCache(getCacheSettings("DmBlock"));
-const userDmCache = new NodeCache(getCacheSettings("UserDm"));
+const blockedCache = new AnotherCache(getCacheSettings("DmBlock"));
+const userDmCache = new AnotherCache(getCacheSettings("UserDm"));
 
 async function blocked(fr: Id, to: Id, combined: Id): Promise<boolean> {
 	if (blockedCache.has(combined)) return blockedCache.get(combined);
@@ -51,10 +51,10 @@ export default checkDmChat;
 
 export function clearBlockedCache(fr: Id, to: Id) {
 	const combined = combineId(fr, to);
-	blockedCache.del(combined);
+	blockedCache.delete(combined);
 }
 
 export function clearUserDmCache(fr: Id, to: Id) {
 	const combined = combineId(fr, to);
-	userDmCache.del(combined);
+	userDmCache.delete(combined);
 }

@@ -1,4 +1,3 @@
-import NodeCache from "node-cache";
 import PermissionSystem from "./permission-system/index";
 import rolePermissions, {
 	hasPermission,
@@ -9,9 +8,10 @@ import Db_RealmConf from "#types/db/realmConf";
 import Id from "#id";
 import getCacheSettings from "./cacheSettings";
 import Logic_ChnlPerm from "#types/logic/chnlPerm";
+import { AnotherCache } from "@wxn0brp/ac";
 
-export const cache = new NodeCache(getCacheSettings("ChnlPermission"));
-export const channelPermissionsCache = new NodeCache(
+export const cache = new AnotherCache<number>(getCacheSettings("ChnlPermission"));
+export const channelPermissionsCache = new AnotherCache<Logic_ChnlPerm.ChannelPermissions>(
 	getCacheSettings("ChnlPermission_Channels"),
 );
 
@@ -27,7 +27,7 @@ async function fetchChannelsPermissions(
 	realm: Id,
 ): Promise<Logic_ChnlPerm.ChannelPermissions> {
 	let cachedPermissions =
-		channelPermissionsCache.get<Logic_ChnlPerm.ChannelPermissions>(realm);
+		channelPermissionsCache.get(realm);
 	if (cachedPermissions) return cachedPermissions;
 
 	const channels = await db.realmConf.find<Db_RealmConf.channel>(realm, {
@@ -69,12 +69,12 @@ async function fetchUserRoles(realm: Id, userId: Id) {
 }
 
 class PermissionCache {
-	constructor() {}
+	constructor() { }
 
 	async getPermissions(realm: Id, chnl: Id, userId: Id): Promise<number> {
 		const cacheKey = generateCacheKey(realm, chnl, userId);
 
-		let cachedPermissions = cache.get<number>(cacheKey);
+		let cachedPermissions = cache.get(cacheKey);
 		if (cachedPermissions) return cachedPermissions;
 
 		const [channelsPermissions, userRoles] = await Promise.all([
@@ -152,19 +152,19 @@ class PermissionCache {
 
 	clearRealmCache(realm: Id) {
 		const keys = cache.keys().filter((key) => key.startsWith(`${realm}:`));
-		keys.forEach((key) => cache.del(key));
+		keys.forEach((key) => cache.delete(key));
 	}
 
 	clearChannelCache(realm: Id, chnl: Id) {
 		const keys = cache
 			.keys()
 			.filter((key) => key.startsWith(`${realm}:${chnl}:`));
-		keys.forEach((key) => cache.del(key));
+		keys.forEach((key) => cache.delete(key));
 	}
 
 	clearAllCache() {
-		cache.flushAll();
-		channelPermissionsCache.flushAll();
+		cache.clear();
+		channelPermissionsCache.clear();
 	}
 }
 
@@ -190,7 +190,7 @@ export default async function getChnlPerm(
 	realm: Id,
 	chnl: Id,
 ): Promise<Permissions> {
-	const cached = cache.get<number>(generateCacheKey(realm, chnl, user));
+	const cached = cache.get(generateCacheKey(realm, chnl, user));
 	if (cached) return mapPermissionsToFlags(cached);
 
 	const permSys = new PermissionSystem(realm);

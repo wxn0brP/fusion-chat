@@ -1,4 +1,3 @@
-import NodeCache from "node-cache";
 import db from "#db";
 import { combineId } from "../chatMgmt";
 import sendMessage from "../sendMessage";
@@ -6,8 +5,9 @@ import Id from "#id";
 import { Message } from "#types/sendMessage";
 import Db_RealmData from "#types/db/realmData";
 import getCacheSettings from "../cacheSettings";
+import { AnotherCache } from "@wxn0brp/ac";
 
-const announcementSubscribeCache = new NodeCache(
+const announcementSubscribeCache = new AnotherCache(
 	getCacheSettings("AnnouncementSubscribe"),
 );
 
@@ -69,7 +69,7 @@ async function getSubscribed(
 }
 
 export function clearEventCache(realm: string) {
-	announcementSubscribeCache.del(realm);
+	announcementSubscribeCache.delete(realm);
 }
 
 export default announcementChnl;

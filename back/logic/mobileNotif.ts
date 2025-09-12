@@ -1,12 +1,12 @@
-import nodeCache from "node-cache";
 import { decode, create, KeyIndex } from "./token/index";
 import { randomBytes } from "crypto";
 import { genId } from "@wxn0brp/db";
 import Id from "#id";
+import { AnotherCache } from "@wxn0brp/ac";
 
-export const cache = new nodeCache({
-	stdTTL: 2 * 60,
-	checkperiod: 15 * 60,
+export const cache = new AnotherCache({
+	ttl: 2 * 60,
+	cleanupInterval: 15 * 60,
 });
 
 export async function createTokenPointer(userId: Id, token: string) {

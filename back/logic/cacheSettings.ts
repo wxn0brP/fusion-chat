@@ -1,4 +1,4 @@
-import NodeCache from "node-cache";
+import { AnotherCacheOptions } from "@wxn0brp/ac";
 
 // @ts-ignore
 const configFile = await import("../../config/cache.js").then(
@@ -7,13 +7,13 @@ const configFile = await import("../../config/cache.js").then(
 
 export default function getCacheSettings(
 	settingsId: string,
-): Partial<NodeCache.Options> {
+): Partial<AnotherCacheOptions> {
 	const config = configFile[settingsId];
 	if (!config) return {};
 	if (!Array.isArray(config) && config.length == 0) return {};
 
-	const conf: Partial<NodeCache.Options> = {};
-	if (config[0]) conf.stdTTL = config[0];
-	if (config[1]) conf.checkperiod = config[1];
+	const conf: Partial<AnotherCacheOptions> = {};
+	if (config[0]) conf.ttl = config[0];
+	if (config[1]) conf.cleanupInterval = config[1];
 	return conf;
 }

@@ -46,7 +46,7 @@ router.post("/fireToken", async (req, res) => {
 		false,
 	);
 
-	cache.del(fcToken);
+	cache.delete(fcToken);
 	res.json({ err: false, msg: "ok" });
 });
 

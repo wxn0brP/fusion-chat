@@ -1,14 +1,14 @@
 import { Router } from "express";
-import NodeCache from "node-cache";
 import db from "#db";
 import valid from "#logic/validData";
 import { combineId } from "#logic/chatMgmt";
 import Id from "#id";
 import InternalCode from "#codes";
 import getCacheSettings from "#logic/cacheSettings";
+import { AnotherCache } from "@wxn0brp/ac";
 
 const router = Router();
-const cache = new NodeCache(getCacheSettings("EventId"));
+const cache = new AnotherCache(getCacheSettings("EventId"));
 
 router.get("/id/event", async (req, res) => {
 	const { id } = req.query as { id: Id };
