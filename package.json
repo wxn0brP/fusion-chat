@@ -5,8 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "tsc && tsc-alias",
-        "start": "node .",
-        "bun": "bun run ."
+        "start": "node ."
     },
     "author": "wxn0brP",
     "license": "MIT",

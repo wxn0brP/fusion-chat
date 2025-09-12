@@ -13,15 +13,14 @@ export interface SpamThresholds {
 }
 
 class SocketEventLimiter {
-	socket: Socket;
 	eventCounters: Record<string, number>;
 	resetTimers: Record<string, NodeJS.Timeout>;
 	spamThresholds: SpamThresholds;
 
-	constructor(socket: Socket, spamThresholds: Partial<SpamThresholds> = {}) {
-		this.socket = socket;
+	constructor(public socket: Socket, spamThresholds: Partial<SpamThresholds> = {}) {
 		this.eventCounters = {};
 		this.resetTimers = {};
+
 		this.spamThresholds = {
 			warningDelay: 100, // ms
 			warnLimit: 1,
