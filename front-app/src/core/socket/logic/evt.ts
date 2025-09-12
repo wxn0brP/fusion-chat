@@ -1,24 +1,25 @@
 import hub from "../../../hub";
 hub("socket/evt");
 
-import socket from "../socket";
-import Id from "../../../types/Id";
-import vars from "../../../var/var";
-import debugFunc, { LogLevel } from "../../debug";
 import apis from "../../../api/apis";
-import coreFunc from "../../coreFunc";
-import render_dm from "../../../ui/render/dm";
-import uiFunc from "../../../ui/helpers/uiFunc";
-import render_user from "../../../ui/render/user";
-import render_realm from "../../../ui/render/realm";
-import render_events from "../../../ui/render/event";
-import { Ui_UserState } from "../../../types/ui/render";
-import LangPkg, { langFunc } from "../../../utils/translate";
-import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
 import { Core_socket__refresh, Core_socket__user_status_type } from "../../../types/core/socket";
-import changeCodeToString from "../../../utils/code";
-import apiVars from "../../../var/api";
+import Id from "../../../types/Id";
+import { Ui_UserState } from "../../../types/ui/render";
+import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
+import uiFunc from "../../../ui/helpers/uiFunc";
 import UserStateManager from "../../../ui/helpers/userStateManager";
+import render_dm from "../../../ui/render/dm";
+import render_events from "../../../ui/render/event";
+import render_realm from "../../../ui/render/realm";
+import render_user from "../../../ui/render/user";
+import changeCodeToString from "../../../utils/code";
+import LangPkg, { langFunc } from "../../../utils/translate";
+import apiVars from "../../../var/api";
+import vars from "../../../var/var";
+import coreFunc from "../../coreFunc";
+import debugFunc, { LogLevel } from "../../debug";
+import messStyle from "../../mess/style";
+import socket from "../socket";
 
 export function connect() {
     debugFunc.msg(LogLevel.INFO, "connected to socket");
@@ -97,19 +98,17 @@ export async function refreshData(settings: string | string[] | Core_socket__ref
 
     if (Array.isArray(settings)) {
         events = settings;
-    } else
-        if (typeof settings == "string") {
-            events = [settings];
-        } else
-            if (typeof settings == "object") {
-                const { realm, chnl, evt, wait } = settings as Core_socket__refresh;
-                events = typeof evt == "string" ? [evt] : Array.isArray(evt) ? evt : [];
+    } else if (typeof settings == "string") {
+        events = [settings];
+    } else if (typeof settings == "object") {
+        const { realm, chnl, evt, wait } = settings as Core_socket__refresh;
+        events = typeof evt == "string" ? [evt] : Array.isArray(evt) ? evt : [];
 
-                if (realm && realm != vars.chat.to && realm !== "*") return;
-                if (chnl && chnl != vars.chat.chnl && chnl !== "*") return;
-                if (wait) await delay(wait);
-            }
-            else return;
+        if (realm && realm != vars.chat.to && realm !== "*") return;
+        if (chnl && chnl != vars.chat.chnl && chnl !== "*") return;
+        if (wait) await delay(wait);
+    }
+    else return;
 
     events.forEach(evt => {
         socket.emit(evt, ...moreData);
@@ -138,6 +137,7 @@ export function realm_users_sync(users: Vars_realm__user[], roles: Vars_realm__r
     vars.realm.users = users;
     vars.realm.roles = roles;
     render_realm.usersInChat();
+    messStyle.colorRole();
 }
 
 interface Core_socket__realm_users_activity_sync extends Ui_UserState {

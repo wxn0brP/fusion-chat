@@ -44,7 +44,7 @@ export async function realm_setup(suser: Socket_User, id: Id): Promise<Socket_St
         let chnlsByDb = channels
             .filter(c => c.category == category.cid)
             .sort((a, b) => a.i - b.i);
-        
+
         const allChnls = await Promise.all(chnlsByDb.map(async c => {
             const perms = await getChnlPerm(suser._id, id, c.chid);
             if (!perms) return null;
@@ -550,4 +550,56 @@ export async function realm_event_get_topic(suser: Socket_User, realmId: Id, eve
     if (!event) return validE.err(InternalCode.UserError.Socket.RealmEventGetTopic_NotFound);
 
     return { err: false, res: [event.topic] };
+}
+
+export async function realm_user_role_remove(suser: Socket_User, realmId: Id, uid: Id, roleIdOrLvl: Id | number): Promise<Socket_StandardRes> {
+    const validE = new ValidError("realm.user.role.remove");
+    if (!valid.id(realmId)) return validE.valid("realmId");
+    if (!valid.id(uid)) return validE.valid("uid");
+    if (!valid.id(roleIdOrLvl as Id) && !valid.num(roleIdOrLvl as number)) return validE.valid("roleId");
+
+    const permSys = new permissionSystem(realmId);
+    const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.manageRoles);
+    if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
+
+    const roleId =
+        typeof roleIdOrLvl === "number" ?
+            (await permSys.getAllRolesSorted())[roleIdOrLvl]?._id :
+            roleIdOrLvl;
+
+    if (!roleId) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
+
+    try {
+        await permSys.removeRoleFromUser(uid, roleId, suser._id);
+        sendToChatUsers(realmId, "refreshData", "realm.users.sync", realmId);
+    } catch {
+        return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
+    }
+    return { err: false };
+}
+
+export async function realm_user_role_add(suser: Socket_User, realmId: Id, uid: Id, roleIdOrLvl: Id | number): Promise<Socket_StandardRes> {
+    const validE = new ValidError("realm.user.role.add");
+    if (!valid.id(realmId)) return validE.valid("realmId");
+    if (!valid.id(uid)) return validE.valid("uid");
+    if (!valid.id(roleIdOrLvl as Id) && !valid.num(roleIdOrLvl as number)) return validE.valid("roleId");
+
+    const permSys = new permissionSystem(realmId);
+    const userPerm = await permSys.canUserPerformAction(suser._id, Permissions.manageRoles);
+    if (!userPerm) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
+
+    const roleId =
+        typeof roleIdOrLvl === "number" ?
+            (await permSys.getAllRolesSorted())[roleIdOrLvl]?._id :
+            roleIdOrLvl;
+
+    if (!roleId) return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
+
+    try {
+        await permSys.assignRoleToUser(uid, roleId, suser._id);
+        sendToChatUsers(realmId, "refreshData", "realm.users.sync", realmId);
+    } catch {
+        return validE.err(InternalCode.UserError.Socket.RealmEdit_NotAuthorized);
+    }
+    return { err: false };
 }

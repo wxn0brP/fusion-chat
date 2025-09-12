@@ -57,6 +57,7 @@ function render() {
         events,
         events__container: qd("#realmEvents__container", events),
         events__add: qd("#realmEvents__add", events),
+        realmUserProfile: qd("#realmUserProfile"),
     }
 }
 

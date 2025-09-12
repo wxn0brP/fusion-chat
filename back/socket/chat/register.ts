@@ -69,6 +69,8 @@ import {
     realm_event_join,
     realm_event_leave,
     realm_event_get_topic,
+    realm_user_role_remove,
+    realm_user_role_add,
 } from "./logic/realms";
 
 import {
@@ -117,7 +119,8 @@ export const generalEvents: Events[] = [
     ["realm.event.delete", 1000, false, realm_event_delete],
     ["realm.event.list", 1000, true, realm_event_list],
     ["realm.event.get.topic", 1000, true, realm_event_get_topic],
-
+    ["realm.user.role.remove", 1000, false, realm_user_role_remove],
+    ["realm.user.role.add", 1000, false, realm_user_role_add],
 ];
 
 export const userEvents: Events[] = [

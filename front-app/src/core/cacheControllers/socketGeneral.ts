@@ -12,37 +12,41 @@ class SocketController {
         this.cb = cb;
     }
 
-    private async sendToSocket(key: string, ...data: any[]) {
+    private async sendToSocket(key: string, resolve: () => void, ...data: any[]) {
         const customCb = typeof data[data.length - 1] === "function" ? data.pop() : null;
         socket.emit(this.evtName, ...data, async (...socketReturnData: any[]) => {
             await saveToDB({ id: key, data: [...socketReturnData] });
             if (customCb) customCb(...socketReturnData);
             else this.cb(...socketReturnData);
+            resolve();
         });
     }
 
-    async emitId(id: string="", ...data: any[]) {
-        const key = this.evtName + (id ? "-" + id : "");
-        if (socket.connected) {
-            await this.sendToSocket(key, ...data);
-        } else {
-            const cachedData = await getFromDB(key);
-            const customCb = typeof data[data.length - 1] === "function" ? data.pop() : null;
-            if (cachedData) {
-                if (customCb) customCb(...cachedData.data);
-                else this.cb(...cachedData.data);
+    async emitId(id: string="", ...data: any[]): Promise<void> {
+        return new Promise(async (resolve) => {
+            const key = this.evtName + (id ? "-" + id : "");
+            if (socket.connected) {
+                await this.sendToSocket(key, resolve, ...data);
             } else {
-                await this.sendToSocket(key, ...data);
+                const cachedData = await getFromDB(key);
+                const customCb = typeof data[data.length - 1] === "function" ? data.pop() : null;
+                if (cachedData) {
+                    if (customCb) customCb(...cachedData.data);
+                    else this.cb(...cachedData.data);
+                    resolve();
+                } else {
+                    await this.sendToSocket(key, resolve, ...data);
+                }
             }
-        }
+        })
     }
 
     async emit(...data: any[]) {
-        this.emitId("", ...data);
+        await this.emitId("", ...data);
     }
 
     async emitDataId(id: string, ...data: any[]) {
-        this.emitId(id, ...[id, ...data]);
+        await this.emitId(id, ...[id, ...data]);
     }
 }
 

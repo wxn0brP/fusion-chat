@@ -18,6 +18,7 @@ await import("./ui/settings/settings.js");
 await import("./ui/interact/context.js");
 await import("./ui/interact/mainView.js");
 await import("./ui/interact/relations.js");
+await import("./ui/interact/realmUser.js");
 await import("./ui/interact/subscribeEventChnl.js");
 
 // start app

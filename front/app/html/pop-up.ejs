@@ -72,3 +72,20 @@
     </div>
     <div id="realmEvents__container"></div>
 </div>
+
+<div id="realmUserProfile" style="display: none;">
+    <div id="realmUserProfile__user">
+        <img src="/favicon.svg" alt="User avatar">
+        <div style="width: 100%;">
+            <h2 data-id="name"></h2>
+            <div data-id="status"></div>
+        </div>
+    </div>
+    <h2>Roles:</h2>
+    <ul data-id="roles"></ul>
+    <br />
+    <div>
+        <button onclick="mglInt.realmUserProfile.addRole()" translate data-role="role" class="btn">ui.realm_user_profile.add_role</button>
+        <button onclick="mglInt.realmUserProfile.kick()" translate data-role="kick" class="btn">ui.realm_user_profile.kick_user</button>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+{
+    "cmd": "yarn build && yarn start",
+    "args": [],
+    "watch": [
+        "back"
+    ],
+    "restart_cmd": "clear",
+    "events": {
+        "clean": "rm -rf dist-back"
+    }
+}
