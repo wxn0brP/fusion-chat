@@ -1,20 +1,13 @@
 import hub from "../../hub";
 import { mglVar } from "../../var/mgl";
+import { GLC } from "@wxn0brp/gloves-link-client/index";
 hub("socket");
 
-import type SocketIOClient from "socket.io-client";
-declare var io: typeof SocketIOClient;
-
-const socket = io("/", {
-    transports: ["websocket"],
-    auth: {
-        token: localStorage.getItem("token")
-    },
+const socket = new GLC("/", {
+    token: localStorage.getItem("token"),
+    reConnect: true,
+    reConnectInterval: 1000,
     autoConnect: false,
-    reconnection: true,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
-    reconnectionAttempts: Infinity,
 });
 
 export default socket;

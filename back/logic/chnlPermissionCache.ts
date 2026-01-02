@@ -30,9 +30,8 @@ async function fetchChannelsPermissions(
 		channelPermissionsCache.get(realm);
 	if (cachedPermissions) return cachedPermissions;
 
-	const channels = await db.realmConf.find<Db_RealmConf.channel>(realm, {
-		$exists: { chid: true },
-	});
+	// @ts-ignore
+	const channels = await db.realmConf.find<Db_RealmConf.channel>(realm, { $exists: { chid: true } });
 	const permissions = channels.reduce(
 		(
 			acc: Logic_ChnlPerm.ChannelPermissions,

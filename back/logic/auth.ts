@@ -12,7 +12,7 @@ import { create, decode, KeyIndex } from "./token/index";
 export async function authUser(
 	token: string,
 	tokenDecoded = { data: null },
-): Promise<boolean | Socket_User> {
+): Promise<false | Socket_User> {
 	try {
 		const data = (await decode(token, KeyIndex.USER_TOKEN)) as { id: Id };
 		if (!data) return false;

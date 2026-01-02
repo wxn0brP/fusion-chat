@@ -1,7 +1,7 @@
-import { Socket } from "socket.io";
+import { FCSocket } from "#types/socket";
 
 class SocketEventEngine {
-	constructor(public socket: Socket) { }
+	constructor(public socket: FCSocket) { }
 
 	add(evt: string, time: number, isReturn: boolean, cpu: Function) {
 		this.socket.onLimit(evt, time, async (...args: any) => {

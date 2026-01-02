@@ -14,8 +14,8 @@ async function emitUserStatusUpdate(id: Id, status: string, text: string) {
 
 	const realms = await db.userData.find<Db_UserData.realm>(
 		id,
+		// @ts-ignore
 		{ $exists: { realm: true } },
-		{},
 		{},
 		{ select: ["realm"] },
 	);
@@ -23,8 +23,8 @@ async function emitUserStatusUpdate(id: Id, status: string, text: string) {
 	for (const realm of realms) {
 		const users = await db.realmUser.find<Db_RealmUser.user>(
 			realm.realm,
+			// @ts-ignore
 			{ $exists: { u: true } },
-			{},
 			{},
 			{ select: ["u"] },
 		);

@@ -1,1 +1,1 @@
-import "./dist-back/index.js";
+import "./dist-back/app.js";

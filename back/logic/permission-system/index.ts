@@ -236,9 +236,9 @@ export default class PermissionSystem {
 		return await this.realmUser.updateOneOrAdd(
 			{ u: userId },
 			{ $pushset: { r: roleId } },
-			{},
-			{},
-			false,
+			{
+				id_gen: false,
+			},
 		);
 	}
 

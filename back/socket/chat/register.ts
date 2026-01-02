@@ -1,86 +1,86 @@
-import { Socket } from "socket.io";
 import SocketEventEngine from "./engine";
 
 import {
+	dm_block,
+	dm_create,
+	dm_get,
 	realm_create,
 	realm_exit,
 	realm_get,
 	realm_join,
 	realm_mute,
-	dm_block,
-	dm_create,
-	dm_get,
 } from "./logic/chats";
 
 import {
 	friend_get_all,
-	friend_requests_get,
 	friend_remove,
 	friend_request,
-	friend_response,
 	friend_request_remove,
+	friend_requests_get,
+	friend_response,
 	user_profile,
 } from "./logic/friends";
 
 import sendMessage from "#logic/sendMessage";
 import {
 	message_delete,
-	messages_delete,
 	message_edit,
 	message_fetch,
+	message_fetch_id,
 	message_fetch_pinned,
 	message_mark_read,
 	message_pin,
 	message_react,
 	message_search,
-	message_fetch_id,
+	messages_delete,
 } from "./logic/mess";
 
 import {
-	get_ogs,
-	send_embed_og,
-	send_embed_data,
 	fireToken_get,
-	status_activity_set,
+	get_ogs,
+	send_embed_data,
+	send_embed_og,
 	status_activity_get,
 	status_activity_gets,
 	status_activity_remove,
+	status_activity_set,
 	user_delete,
 } from "./logic/other";
 
 import {
-	realm_delete,
-	realm_emojis_sync,
-	realm_users_sync,
-	realm_setup,
-	realm_user_kick,
-	realm_user_unban,
-	realm_announcement_channel_subscribe,
-	realm_announcement_channel_unsubscribe,
 	realm_announcement_channel_available,
 	realm_announcement_channel_list,
+	realm_announcement_channel_subscribe,
+	realm_announcement_channel_unsubscribe,
+	realm_delete,
+	realm_emojis_sync,
+	realm_event_create,
+	realm_event_delete,
+	realm_event_get_topic,
+	realm_event_join,
+	realm_event_leave,
+	realm_event_list,
+	realm_setup,
 	realm_thread_create,
 	realm_thread_delete,
 	realm_thread_list,
-	realm_users_activity_sync,
-	realm_event_create,
-	realm_event_delete,
-	realm_event_list,
-	realm_event_join,
-	realm_event_leave,
-	realm_event_get_topic,
-	realm_user_role_remove,
+	realm_user_kick,
 	realm_user_role_add,
+	realm_user_role_remove,
+	realm_user_unban,
+	realm_users_activity_sync,
+	realm_users_sync,
 } from "./logic/realms";
 
+import { Request } from "#types/sendMessage";
+import { FCSocket } from "#types/socket";
+import { Socket_StandardRes } from "#types/socket/res";
+import { Socket_User } from "#types/socket/user";
 import {
+	profile_set_nickname,
 	self_status_get,
 	self_status_update,
-	profile_set_nickname,
 } from "./logic/settings";
-import { Request } from "#types/sendMessage";
-import { Socket_User } from "#types/socket/user";
-import { Socket_StandardRes } from "#types/socket/res";
 
 export type Events = [
 	string,
@@ -190,7 +190,7 @@ export const userEvents: Events[] = [
 	["profile.set_nickname", 100, false, profile_set_nickname],
 ];
 
-export default (socket: Socket) => {
+export default (socket: FCSocket) => {
 	const engine = new SocketEventEngine(socket);
 
 	for (const event of generalEvents) {

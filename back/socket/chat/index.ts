@@ -1,56 +1,53 @@
-import evt from "./evt";
-import voice from "./voice";
 import db from "#db";
-import register from "./register";
-import { Socket } from "socket.io";
-import realmSettings from "./realmSettings";
-import { Socket_User } from "#types/socket/user";
 import { authUser, createUser } from "#logic/auth";
-import SocketEventLimiter, { bannedUsers } from "./limiter";
 import {
 	Socket_StandardRes,
 	Socket_StandardRes_Error,
 } from "#types/socket/res";
+import evt from "./evt";
+import SocketEventLimiter, { bannedUsers } from "./limiter";
+import realmSettings from "./realmSettings";
+import register from "./register";
+import { FCSocket } from "#types/socket";
 
-global.io.of("/").use(async (socket: Socket, next: Function) => {
-	const authData = socket.handshake.auth;
-	if (!authData)
-		return next(
-			new Error("Authentication error: Missing authentication data."),
-		);
-
-	const token = authData.token;
-	if (!token)
-		return next(
-			new Error("Authentication error: Missing authentication data."),
-		);
+global.io.of("/").auth(async ({ token }) => {
+	if (!token) return {
+		status: 401,
+		msg: "Unauthorized1",
+	}
 
 	const tokenData = { data: null };
-	const user = (await authUser(token, tokenData)) as Socket_User;
-	if (!user)
-		return next(
-			new Error("Authentication error: Missing authentication data."),
-		);
+	const user = await authUser(token, tokenData);
+	if (!user) return {
+		status: 401,
+		msg: "Unauthorized2",
+	}
 
 	if (bannedUsers.has(user._id)) {
 		const userTime = bannedUsers.get(user._id) as number;
 		const remainingTime = userTime - Date.now();
+
 		if (remainingTime > 0) {
 			const time = Math.ceil(remainingTime / 1000 / 60) + 1;
-			return next(
-				new Error(
-					`Ban: You are temporarily banned. Please try again after ${time} minutes.`,
-				),
-			);
+			return {
+				status: 403,
+				msg: `Ban: You are temporarily banned. Please try again after ${time} minutes.`,
+			}
+		} else {
+			bannedUsers.delete(user._id);
 		}
 	}
 
-	socket.user = user;
-	socket.isShouldRefresh = shouldRefreshToken(tokenData.data);
-	next();
+	return {
+		status: 200,
+		toSet: {
+			isShouldRefresh: shouldRefreshToken(tokenData.data),
+		},
+		user
+	}
 });
 
-global.io.of("/").on("connection", (socket: Socket) => {
+io.of("/").onConnect(async (socket: FCSocket) => {
 	socket.logError = (e) => {
 		lo("Error: ", e);
 		db.logs.add("socket.io", {
@@ -74,11 +71,11 @@ global.io.of("/").on("connection", (socket: Socket) => {
 
 	register(socket);
 	realmSettings(socket);
-	voice(socket);
 	evt(socket);
 
 	setTimeout(async () => {
 		if (socket.isShouldRefresh) {
+			// @ts-ignore
 			const oldToken = socket.handshake.auth.token;
 			const newToken = await createUser({ _id: socket.user._id });
 			socket.emit(

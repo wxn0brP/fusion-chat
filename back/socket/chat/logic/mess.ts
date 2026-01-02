@@ -148,9 +148,8 @@ export async function messages_delete(
 		? combineId(suser._id, chatId.replace("$", ""))
 		: chatId;
 
-	const messages = await db.mess.find<Db_Mess.Message>(dbChatId, {
-		$in: { _id: ids },
-	});
+	// @ts-ignore
+	const messages = await db.mess.find<Db_Mess.Message>(dbChatId, { $in: { _id: ids } });
 	if (messages.some((mess) => mess.fr !== suser._id)) {
 		if (isDmChat)
 			return validE.err(
@@ -191,9 +190,8 @@ export async function messages_delete(
 		);
 	} else {
 		global.sendToChatUsers(dbChatId, "messages.delete", ids, dbChatId);
-		const threads = await db.realmData.find<Db_RealmData.thread>(dbChatId, {
-			$in: { reply: ids },
-		});
+		// @ts-ignore
+		const threads = await db.realmData.find<Db_RealmData.thread>(dbChatId, { $in: { reply: ids }, });
 		for (const thread of threads) {
 			await realm_thread_delete(suser, dbChatId, thread._id);
 		}
@@ -231,8 +229,7 @@ export async function message_fetch(
 	const responeAll = await db.mess.find(
 		dbChatId,
 		{ chnl },
-		{},
-		{ reverse: true, max: end + start },
+		{ reverse: true, limit: end + start },
 	);
 	const res = responeAll.slice(start, end);
 
@@ -294,8 +291,7 @@ export async function message_mark_read(
 		const lastIdMess = await db.mess.find<Db_Mess.Message>(
 			dbChatId,
 			{ chnl },
-			{},
-			{ reverse: true, max: 1 },
+			{ reverse: true, limit: 1 },
 		);
 		if (lastIdMess.length == 0) return { err: false, res: [0] };
 		mess_id = lastIdMess[0]._id;
@@ -304,6 +300,7 @@ export async function message_mark_read(
 
 	await db.userData.updateOne(suser._id, search, {
 		$merge: {
+			// @ts-ignore
 			last: {
 				[chnl]: mess_id,
 			},
@@ -410,6 +407,8 @@ export async function message_search(
 			if (data.chnl != chnl) return false;
 			return context.filterMessages(context.query, data);
 		},
+		{},
+		{},
 		{ query, filterMessages },
 	);
 

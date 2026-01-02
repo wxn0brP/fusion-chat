@@ -1,22 +1,11 @@
-await import("./setUp.js");
-import { configDotenv } from "dotenv";
-configDotenv({ quiet: true });
-await import("./env.js");
-import sourceMapSupport from "source-map-support";
-sourceMapSupport.install();
-
-global.dir = "file://" + process.cwd() + "/";
-await import("./global.js");
-await import("./dataBase.js");
-await import("./firebase.js");
-await import("./logs.js");
-
-const app = (await import("./express/index.js")).default;
 import http from "http";
-const server = http.createServer(app);
-global.server = server;
+import { app } from "./http";
+Error.stackTraceLimit = 100;
 
-await import("./socket/index.js");
+app.setVar("layout", "front/main/layout.html");
+
+const server = http.createServer(app.getApp());
+globalThis.server = server;
 
 lo("__________________" + (new Date() + "").split(" ").slice(1, 5).join(" "));
 server.listen(parseInt(process.env.PORT), function () {
@@ -25,4 +14,16 @@ server.listen(parseInt(process.env.PORT), function () {
 		lo("http://localhost:" + process.env.PORT + "/app");
 	}
 });
+
+await import("./socket/index.js");
 await import("./schedule/index.js");
+
+const statusRouter = globalThis.io.statusRouter();
+app.use("/gloves-link", statusRouter);
+
+app.use((req, res) => {
+	res.status(404);
+	res.render("front/main/404", {
+		title: "Fusion Chat | Page Not Found",
+	});
+});

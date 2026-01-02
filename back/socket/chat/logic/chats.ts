@@ -32,7 +32,8 @@ export async function realm_get(
 ): Promise<Socket_StandardRes> {
 	const realms = await db.userData.find<Db_UserData.realm>(
 		suser._id,
-		(r) => !!r.realm,
+		// @ts-ignore
+		{ $exists: { realm: true } },
 	);
 	if (realms.length == 0) return { err: false, res: [[]] };
 
@@ -57,9 +58,8 @@ export async function realm_get(
 }
 
 export async function dm_get(suser: Socket_User): Promise<Socket_StandardRes> {
-	const privs = await db.userData.find<Db_UserData.priv>(suser._id, {
-		$exists: { priv: true },
-	});
+	// @ts-ignore
+	const privs = await db.userData.find<Db_UserData.priv>(suser._id, { $exists: { priv: true } });
 	if (privs.length == 0) return { err: false, res: [[]] };
 
 	for (let i = 0; i < privs.length; i++) {
@@ -68,8 +68,7 @@ export async function dm_get(suser: Socket_User): Promise<Socket_StandardRes> {
 		const lastMess = await db.mess.find<Db_Mess.Message>(
 			id,
 			{},
-			{},
-			{ reverse: true, max: 1 },
+			{ reverse: true, limit: 1 },
 		);
 		if (lastMess.length == 0) continue;
 		priv.lastMessId = lastMess[0]._id;

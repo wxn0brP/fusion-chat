@@ -1,65 +1,64 @@
 import db from "#db";
-import register from "./register";
-import { Socket } from "socket.io";
 import Id from "#id";
-import Db_BotData from "#types/db/botData";
-import SocketEventLimiter, { bannedUsers } from "../chat/limiter";
 import { decode, KeyIndex } from "#logic/token/index";
-import { Socket_User } from "#types/socket/user";
+import Db_BotData from "#types/db/botData";
+import { FCSocket } from "#types/socket";
 import {
 	Socket_StandardRes,
 	Socket_StandardRes_Error,
 } from "#types/socket/res";
-import voice from "../chat/voice";
+import { Socket_User } from "#types/socket/user";
+import SocketEventLimiter, { bannedUsers } from "../chat/limiter";
+import register from "./register";
 
-global.io.of("/bot").use(async (socket: Socket, next: Function) => {
-	const authData = socket.handshake.auth;
-	if (!authData)
-		return next(
-			new Error("Authentication error: Missing authentication data."),
-		);
+global.io.of("/bot").auth(async ({ headers }) => {
+	const token = headers.auth as string;
+	if (!token) return {
+		status: 401,
+		msg: "Unauthorized",
+	}
 
-	const token = authData.token;
-	if (!token)
-		return next(
-			new Error("Authentication error: Missing authentication data."),
-		);
 
 	const tokenData = await decode(token, KeyIndex.BOT_TOKEN);
 	const _id = tokenData._id as Id;
 
 	const isValid = await db.botData.findOne(_id, { token });
 	if (!isValid)
-		return next(
-			new Error("Authentication error: Missing authentication data."),
-		);
+		return {
+			status: 401,
+			msg: "Unauthorized",
+		}
+
+	const userName = await db.botData.findOne<Db_BotData.name>(_id, { _id: "name" }).then((d) => d.name);
 
 	const user: Socket_User = {
 		_id,
-		name: await db.botData
-			.findOne<Db_BotData.name>(_id, { _id: "name" })
-			.then((d) => d.name),
+		name: userName,
 		email: undefined,
 	};
 
 	if (bannedUsers.has(user._id)) {
 		const userTime = bannedUsers.get(user._id) as number;
 		const remainingTime = userTime - Date.now();
+
 		if (remainingTime > 0) {
 			const time = Math.ceil(remainingTime / 1000 / 60) + 1;
-			return next(
-				new Error(
-					`Ban: You are temporarily banned. Please try again after ${time} minutes.`,
-				),
-			);
+			return {
+				status: 403,
+				msg: `Ban: You are temporarily banned. Please try again after ${time} minutes.`,
+			}
+		} else {
+			bannedUsers.delete(user._id);
 		}
 	}
 
-	socket.user = user;
-	next();
+	return {
+		status: 200,
+		user
+	}
 });
 
-global.io.of("/bot").on("connection", (socket: Socket) => {
+global.io.of("/bot").onConnect((socket: FCSocket) => {
 	socket.logError = (e) => {
 		lo("Error: ", e);
 		db.logs.add("socket.io", {
@@ -82,7 +81,4 @@ global.io.of("/bot").on("connection", (socket: Socket) => {
 	socket.onLimit = limiter.onLimit.bind(limiter);
 
 	register(socket);
-	voice(socket);
 });
-
-export {};

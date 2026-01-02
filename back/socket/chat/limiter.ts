@@ -1,5 +1,5 @@
 import { AnotherCache } from "@wxn0brp/ac";
-import { Socket } from "socket.io";
+import { GLSocket } from "@wxn0brp/gloves-link-server";
 
 export const bannedUsers = new AnotherCache();
 
@@ -17,7 +17,7 @@ class SocketEventLimiter {
 	resetTimers: Record<string, NodeJS.Timeout>;
 	spamThresholds: SpamThresholds;
 
-	constructor(public socket: Socket, spamThresholds: Partial<SpamThresholds> = {}) {
+	constructor(public socket: GLSocket, spamThresholds: Partial<SpamThresholds> = {}) {
 		this.eventCounters = {};
 		this.resetTimers = {};
 
@@ -116,6 +116,7 @@ class SocketEventLimiter {
 						"ban",
 						spamThresholds.banDuration,
 					);
+					// @ts-ignore fix
 					socket.disconnect();
 				});
 				return;

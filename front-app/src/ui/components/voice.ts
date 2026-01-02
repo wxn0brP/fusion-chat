@@ -59,7 +59,7 @@ const voiceFunc = {
         mediaRecorder.onstop = () => {
             if (buffer.length == 0) return debugFunc.msg(LogLevel.WARN, "no voice data");
 
-            socket.volatile.emit("voice.sendData", buffer);
+            socket.emit("voice.sendData", buffer);
             buffer = [];
         };
 

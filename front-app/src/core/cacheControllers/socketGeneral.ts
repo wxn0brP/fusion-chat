@@ -22,7 +22,7 @@ class SocketController {
         });
     }
 
-    async emitId(id: string="", ...data: any[]): Promise<void> {
+    async emitId(id: string = "", ...data: any[]): Promise<void> {
         return new Promise(async (resolve) => {
             const key = this.evtName + (id ? "-" + id : "");
             if (socket.connected) {

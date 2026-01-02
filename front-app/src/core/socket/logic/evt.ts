@@ -89,7 +89,7 @@ export function connect_error(data: Error) {
 
 export function system_refreshToken(newToken: string, cb: (value: boolean) => void) {
     localStorage.setItem("token", newToken);
-    socket.auth["token"] = newToken;
+    socket.opts.token = newToken;
     cb(true);
 }
 

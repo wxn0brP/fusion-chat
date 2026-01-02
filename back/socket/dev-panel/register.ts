@@ -1,6 +1,7 @@
-import { Socket } from "socket.io";
+import { FCSocket } from "#types/socket";
 import SocketEventEngine from "../chat/engine";
 import { Events } from "../chat/register";
+import { bots_create, bots_delete, bots_get } from "./logic/mainList";
 import {
 	bot_edit,
 	bot_generate_token,
@@ -8,7 +9,6 @@ import {
 	bot_profile_remove,
 	bot_realm_exit,
 } from "./logic/menageBot";
-import { bots_create, bots_delete, bots_get } from "./logic/mainList";
 
 const events: Events[] = [
 	["bots.get", 1000, true, bots_get],
@@ -22,7 +22,7 @@ const events: Events[] = [
 	["bot.profile.remove", 1000, true, bot_profile_remove],
 ];
 
-export default (socket: Socket) => {
+export default (socket: FCSocket) => {
 	const engine = new SocketEventEngine(socket);
 
 	for (const event of events) {

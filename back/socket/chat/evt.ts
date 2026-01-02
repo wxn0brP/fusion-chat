@@ -2,9 +2,9 @@ import { rm } from "fs";
 import { rmCache as statusMgmtRmCache } from "#logic/status";
 import db from "#db";
 import Id from "#id";
-import { Socket } from "socket.io";
+import { GLSocket } from "@wxn0brp/gloves-link-server";
 
-export default (socket: Socket) => {
+export default (socket: GLSocket) => {
 	const uid = socket.user._id;
 	socket.on("disconnect", () => {
 		const sockets = global.getSocket(uid);
@@ -19,12 +19,14 @@ export default (socket: Socket) => {
 	});
 
 	socket.on("logout", async (cb?: Function) => {
+		// @ts-ignore
 		const token = socket.handshake.auth.token;
 		db.data.removeOne("token", { token });
 		db.data.removeOne("fireToken", { fc: token });
 		socket.user = null;
 		if (cb) cb();
 		setTimeout(() => {
+			// @ts-ignore
 			if (socket.connected) socket.disconnect();
 		}, 100);
 	});

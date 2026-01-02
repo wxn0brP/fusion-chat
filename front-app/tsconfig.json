@@ -5,7 +5,7 @@
         "outDir": "dist",
         "paths": {},
         "skipLibCheck": true,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "sourceMap": true,
         "removeComments": true,
     },

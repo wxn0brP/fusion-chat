@@ -47,9 +47,8 @@ export async function realm_setup(
 	const categories = await db.realmConf.find<Db_RealmConf.category>(id, {
 		$exists: { cid: true },
 	});
-	const channels = await db.realmConf.find<Db_RealmConf.channel>(id, {
-		$exists: { chid: true },
-	});
+	// @ts-ignore
+	const channels = await db.realmConf.find<Db_RealmConf.channel>(id, { $exists: { chid: true } });
 	const sortedCategories = categories.sort((a, b) => a.i - b.i);
 
 	for (let i = 0; i < sortedCategories.length; i++) {
@@ -359,9 +358,8 @@ export async function realm_announcement_channel_unsubscribe(
 export async function realm_announcement_channel_available(
 	suser: Socket_User,
 ): Promise<Socket_StandardRes> {
-	const userRealms = await db.userData.find<Db_UserData.realm>(suser._id, {
-		$exists: { realm: true },
-	});
+	// @ts-ignore
+	const userRealms = await db.userData.find<Db_UserData.realm>(suser._id, { $exists: { realm: true } });
 	const realmsWithAdmin = [];
 	for (const userRealmId of userRealms) {
 		const permSys = new permissionSystem(userRealmId.realm);

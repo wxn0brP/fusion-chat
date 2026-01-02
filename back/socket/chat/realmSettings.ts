@@ -1,12 +1,13 @@
-import { Socket } from "socket.io";
+import { GLSocket } from "@wxn0brp/gloves-link-server";
 import {
 	realm_settings_get,
 	realm_settings_set,
 	realm_webhook_token_get,
 } from "./logic/realmSettings";
 import Id from "#id";
+import { FCSocket } from "#types/socket";
 
-export default (socket: Socket) => {
+export default (socket: FCSocket) => {
 	socket.onLimit(
 		"realm.settings.get",
 		5_000,

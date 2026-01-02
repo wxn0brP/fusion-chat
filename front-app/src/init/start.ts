@@ -25,7 +25,7 @@ setTimeout(async () => {
     const unregistered = reqButNotReg();
     const reg = getReg().length;
     const req = getReq().length;
-    debugFunc.msg(LogLevel.INFO, `Loaded ${reg}/${req} (${Math.round(reg/req*100)}%) modules.`);
-    if(unexpected.length > 0) debugFunc.msg(LogLevel.WARN, "Unexpected modules:", unexpected);
-    if(unregistered.length > 0) debugFunc.msg(LogLevel.WARN, "Unregistered modules:", unregistered);
+    debugFunc.msg(LogLevel.INFO, `Loaded ${reg}/${req} (${Math.round(reg / req * 100)}%) modules.`);
+    if (unexpected.length > 0) debugFunc.msg(LogLevel.WARN, "Unexpected modules:", unexpected);
+    if (unregistered.length > 0) debugFunc.msg(LogLevel.WARN, "Unregistered modules:", unregistered);
 }, 1000);

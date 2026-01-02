@@ -161,6 +161,7 @@ async function sendReamNotification(to: Id, user: User, data: Message) {
 	data.to = to;
 
 	db.realmUser
+		// @ts-ignore
 		.find<Db_RealmUser.user>(to, { $exists: { u: true } })
 		.then((chat) => {
 			chat.forEach(async (chat_user) => {
@@ -195,6 +196,7 @@ async function sendReamNotification(to: Id, user: User, data: Message) {
 		});
 
 	db.realmUser
+		// @ts-ignore
 		.find<Db_RealmUser.bot>(to, { $exists: { bot: true } })
 		.then((botUsers) => {
 			botUsers.forEach((user) => {

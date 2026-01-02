@@ -25,20 +25,20 @@ loginW();
 
 const s_id = createCode();
 qrcodeC(location.protocol + '//' + location.host + "/qr-code-login?k=" + s_id);
-const socket = io("/qrCodeLogin", {
-    auth: {
-        role: "get",
-        id: s_id,
-        device: navigator.userAgent
-    }
-});
-socket.connect();
-socket.on("get", (token, from, user_id) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("from", from);
-    localStorage.setItem("user_id", user_id);
-    locationNext();
-});
+// const socket = io("/qrCodeLogin", {
+//     auth: {
+//         role: "get",
+//         id: s_id,
+//         device: navigator.userAgent
+//     }
+// });
+// socket.connect();
+// socket.on("get", (token, from, user_id) => {
+//     localStorage.setItem("token", token);
+//     localStorage.setItem("from", from);
+//     localStorage.setItem("user_id", user_id);
+//     locationNext();
+// });
 
 const loginDiv = document.querySelector("#login");
 const passDiv = document.querySelector("#pass");

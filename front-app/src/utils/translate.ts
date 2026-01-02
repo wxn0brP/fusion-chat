@@ -23,7 +23,7 @@ export async function init_translate() {
         ele.setAttribute("translate", ele.innerHTML.trim());
     });
 
-    LangRef.localesList = cw.get("lang/list.txt").split("\n");
+    LangRef.localesList = cw.get("/app/lang/list.txt").split("\n");
     LangRef.localesList.unshift("en");
 
     let lang = localStorage.getItem("lang");
