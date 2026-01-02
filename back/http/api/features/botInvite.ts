@@ -1,20 +1,20 @@
 import InternalCode from "#codes";
 import db from "#db";
+import { Id } from "#id";
 import { invite } from "#logic/inviteBot";
-import Id from "#id";
 import { Router } from "@wxn0brp/falcon-frame";
-const router = new Router();
+import { authenticateMiddleware } from "../auth";
 
-export const path = "iv/bot";
+export const inviteBotRouter = new Router();
 
-router.get("/", global.authenticateMiddleware, async (req, res) => {
+inviteBotRouter.get("/", authenticateMiddleware, async (req, res) => {
 	const { id, realm } = req.query as { id: Id; realm: Id };
 	const { err, msg } = await invite(req.user, id, realm);
 
 	res.json({ err, msg });
 });
 
-router.get("/meta", global.authenticateMiddleware, async (req, res) => {
+inviteBotRouter.get("/meta", authenticateMiddleware, async (req, res) => {
 	const { id } = req.query as { id: Id };
 	if (!id)
 		return res.json({
@@ -54,4 +54,4 @@ router.get("/meta", global.authenticateMiddleware, async (req, res) => {
 	res.json({ err: false, data: botRes });
 });
 
-export default router;
+export default inviteBotRouter;

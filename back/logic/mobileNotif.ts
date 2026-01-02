@@ -1,7 +1,7 @@
 import { decode, create, KeyIndex } from "./token/index";
 import { randomBytes } from "crypto";
 import { genId } from "@wxn0brp/db";
-import Id from "#id";
+import { Id } from "#id";
 import { AnotherCache } from "@wxn0brp/ac";
 
 export const cache = new AnotherCache({

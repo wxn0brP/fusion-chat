@@ -1,7 +1,7 @@
 import { Router } from "@wxn0brp/falcon-frame";
 import FileUploadEngine from "../../profileUpload";
 
-const router = new Router();
+export const userProfileRouter = new Router();
 const UPLOAD_DIR = "userFiles/profiles";
 
 const userProfileEngine = new FileUploadEngine({
@@ -18,8 +18,5 @@ const imageGetterRouter = userProfileEngine.createImageGetter(
 	"front/static/defaultProfile.png",
 );
 
-router.use(userProfileEngine.getRouter());
-router.use(imageGetterRouter);
-
-export const path = "profile";
-export default router;
+userProfileRouter.use(userProfileEngine.getRouter());
+userProfileRouter.use(imageGetterRouter);

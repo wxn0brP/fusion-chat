@@ -3,9 +3,9 @@ import db from "#db";
 import valid, { validChannelId } from "#logic/validData";
 import { Router } from "@wxn0brp/falcon-frame";
 
-const router = new Router();
+export const announcementRouter = new Router();
 
-router.get("/announcement", async (req, res) => {
+announcementRouter.get("/announcement", async (req, res) => {
 	let {
 		realm,
 		chnl,
@@ -73,5 +73,3 @@ router.get("/announcement", async (req, res) => {
 
 	res.json({ err: false, data });
 });
-
-export default router;

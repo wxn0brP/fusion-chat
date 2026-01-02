@@ -2,9 +2,10 @@ import InternalCode from "#codes";
 import db from "#db";
 import { cache, getTokenFromPointer } from "#logic/mobileNotif";
 import { Router } from "@wxn0brp/falcon-frame";
-const router = new Router();
 
-router.post("/fireToken", async (req, res) => {
+export const fireTokenRouter = new Router();
+
+fireTokenRouter.post("/fireToken", async (req, res) => {
 	const { fcToken, fireToken } = req.body;
 	if (!fcToken)
 		return res.json({
@@ -49,5 +50,3 @@ router.post("/fireToken", async (req, res) => {
 	cache.delete(fcToken);
 	res.json({ err: false, msg: "ok" });
 });
-
-export default router;

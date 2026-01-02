@@ -10,7 +10,7 @@ import Db_UserData from "#types/db/userData";
 import Db_RealmUser from "#types/db/realmUser";
 import { Message, Options, Request, User } from "#types/sendMessage";
 import { Socket_StandardRes } from "#types/socket/res";
-import Id from "#id";
+import { Id } from "#id";
 import InternalCode from "#codes";
 import firebaseSend from "#firebase";
 

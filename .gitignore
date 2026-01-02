@@ -7,7 +7,7 @@ userFiles
 !docs/**
 
 # dist
-front/app/css
+front/css
 front-app/dist
 dist-back
 

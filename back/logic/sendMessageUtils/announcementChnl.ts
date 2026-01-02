@@ -1,7 +1,7 @@
 import db from "#db";
 import { combineId } from "../chatMgmt";
 import sendMessage from "../sendMessage";
-import Id from "#id";
+import { Id } from "#id";
 import { Message } from "#types/sendMessage";
 import Db_RealmData from "#types/db/realmData";
 import getCacheSettings from "../cacheSettings";

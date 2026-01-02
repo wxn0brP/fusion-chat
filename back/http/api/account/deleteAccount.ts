@@ -5,11 +5,10 @@ import { addTask, cancelTask } from "#schedule";
 import Db_Data from "#types/db/data";
 import { Router } from "@wxn0brp/falcon-frame";
 import { comparePasswords, randomDelay } from "./login";
-const router = new Router();
 
-export const path = "account/delete";
+export const deleteAccountRouter = new Router();
 
-router.get("/get", async (req, res) => {
+deleteAccountRouter.get("/get", async (req, res) => {
 	const { token } = req.query as { token: string };
 	if (!token)
 		return res.json({
@@ -41,7 +40,7 @@ router.get("/get", async (req, res) => {
 	res.json({ err: false, name: user.name });
 });
 
-router.post("/confirm", async (req, res) => {
+deleteAccountRouter.post("/confirm", async (req, res) => {
 	const { token, pass } = req.body;
 	if (!token)
 		return res.json({
@@ -112,7 +111,7 @@ router.post("/confirm", async (req, res) => {
 	res.json({ err: false, msg: "account pending to be deleted" });
 });
 
-router.post("/undo", async (req, res) => {
+deleteAccountRouter.post("/undo", async (req, res) => {
 	const { token } = req.body;
 	if (!token)
 		return res.json({
@@ -147,5 +146,3 @@ router.post("/undo", async (req, res) => {
 	await cancelTask(task._id);
 	res.json({ err: false, msg: "successfully remove pending to be deleted" });
 });
-
-export default router;

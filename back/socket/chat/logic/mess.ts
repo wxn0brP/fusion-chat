@@ -7,7 +7,7 @@ import Permissions from "#logic/permission-system/permission";
 import { extractTimeFromId } from "#logic/utils";
 import valid, { validChannelId } from "#logic/validData";
 import ValidError from "#logic/validError";
-import Id from "#id";
+import { Id } from "#id";
 import Db_Mess from "#types/db/mess";
 import Db_RealmData from "#types/db/realmData";
 import Socket__Mess from "#types/socket/chat/mess";

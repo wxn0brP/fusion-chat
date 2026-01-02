@@ -1,4 +1,4 @@
-import Id from "#id";
+import { Id } from "#id";
 import { db } from "../realmSettings/set/imports";
 import Db_UserData from "#types/db/userData";
 import Db_RealmUser from "#types/db/realmUser";

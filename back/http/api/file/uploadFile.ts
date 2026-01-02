@@ -4,12 +4,13 @@ import { existsSync, readdirSync, mkdirSync } from "fs";
 import { join } from "path";
 import { genId } from "@wxn0brp/db";
 import InternalCode from "#codes";
+import { authenticateMiddleware } from "../auth";
 
 const { maxUserFiles, maxUserFileSize } = global.fileConfig;
-const router = new Router();
+export const fileUploadRouter = new Router();
 const uploadDir = "userFiles/users";
 
-function separateFileName(name) {
+function separateFileName(name: string) {
 	return name.replace(/[^a-zA-Z0-9.]/g, "_");
 }
 
@@ -52,9 +53,9 @@ const upload = multer({
 	limits: { fileSize: maxUserFileSize },
 }).single("file");
 
-router.post(
+fileUploadRouter.post(
 	"/file/upload",
-	global.authenticateMiddleware,
+	authenticateMiddleware,
 	limitUploads,
 	(req, res) => {
 		upload(req, res, (err) => {
@@ -91,5 +92,3 @@ router.post(
 		});
 	},
 );
-
-export default router;

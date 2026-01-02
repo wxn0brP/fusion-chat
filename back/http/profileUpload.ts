@@ -5,6 +5,7 @@ import { existsSync, readFileSync } from "fs";
 import { Image } from "image-js";
 import multer, { FileFilterCallback, memoryStorage } from "multer";
 import { join } from "path";
+import { authenticateMiddleware } from "./api/auth";
 
 interface FileUploadConfig {
 	maxFileSize: number;
@@ -50,7 +51,7 @@ class FileUploadEngine {
 
 		this.router.post(
 			this.config.routePath,
-			global.authenticateMiddleware,
+			authenticateMiddleware,
 			async (req: FFRequest, res: FFResponse) => {
 				if (this.config.permissionCheck) {
 					const hasPermission =

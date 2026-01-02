@@ -1,6 +1,6 @@
 import db from "#db";
 import { combineId } from "../chatMgmt";
-import Id from "#id";
+import { Id } from "#id";
 import ValidError from "../validError";
 import { Socket_StandardRes } from "#types/socket/res";
 import InternalCode from "#codes";

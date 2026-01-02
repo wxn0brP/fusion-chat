@@ -1,4 +1,4 @@
-import Id from "#id";
+import { Id } from "#id";
 
 export interface FireBaseSend_Data {
 	to: Id;

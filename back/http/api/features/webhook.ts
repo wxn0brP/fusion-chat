@@ -2,9 +2,10 @@ import valid from "#logic/validData";
 import { handleCustom } from "#logic/webhooks/index";
 import Logic_Webhook from "#types/logic/webhook";
 import { Router } from "@wxn0brp/falcon-frame";
-const router = new Router();
 
-router.post("/custom", async (req, res) => {
+export const webhookRouter = new Router();
+
+webhookRouter.post("/webhook/custom", async (req, res) => {
 	const { query, body } = req as { query: object; body: object };
 	const queryData = query as Logic_Webhook.webhook_query;
 
@@ -14,7 +15,3 @@ router.post("/custom", async (req, res) => {
 	const { code, msg } = await handleCustom(queryData, body);
 	res.status(code).send(msg);
 });
-
-const exportRouter = new Router();
-exportRouter.use("/webhook", router);
-export default exportRouter;

@@ -1,13 +1,13 @@
 import InternalCode from "#codes";
 import db from "#db";
-import Id from "#id";
+import { Id } from "#id";
 import permissionSystem from "#logic/permission-system/index";
 import Permissions from "#logic/permission-system/permission";
 import valid from "#logic/validData";
 import { FFRequest, Router } from "@wxn0brp/falcon-frame";
 import FileUploadEngine from "../../profileUpload";
 
-const router = new Router();
+export const realmProfileRouter = new Router();
 const UPLOAD_DIR = "userFiles/realms";
 
 const realmProfileEngine = new FileUploadEngine({
@@ -41,8 +41,5 @@ const realmImageGetterRouter = realmProfileEngine.createImageGetter(
 	"front/static/defaultProfile.png",
 );
 
-router.use(realmProfileEngine.getRouter());
-router.use(realmImageGetterRouter);
-
-export const path = "realm";
-export default router;
+realmProfileRouter.use(realmProfileEngine.getRouter());
+realmProfileRouter.use(realmImageGetterRouter);

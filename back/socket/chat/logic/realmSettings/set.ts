@@ -8,7 +8,7 @@ import db from "#db";
 import { Socket_StandardRes } from "#types/socket/res";
 import InternalCode from "#codes";
 import { Socket_User } from "#types/socket/user";
-import Id from "#id";
+import { Id } from "#id";
 import { Socket_RealmSettings } from "#types/socket/chat/realmSettings";
 import { ValidateFunction } from "ajv";
 import { Db_RealmConf } from "./set/imports";

@@ -2,7 +2,7 @@ import { genId } from "@wxn0brp/db";
 import PermissionSystem from "./permission-system/index";
 import Permissions, { getAllPermissions } from "./permission-system/permission";
 import db from "#db";
-import Id from "#id";
+import { Id } from "#id";
 
 /**
  * A function to combine two user ids into a new chat id.

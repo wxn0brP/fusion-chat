@@ -9,7 +9,7 @@
         "build": "tsc --noEmit && bun build src/startApp.ts --outdir dist --minify --sourcemap"
     },
     "dependencies": {
-        "@wxn0brp/gloves-link-client": "^0.0.8",
+        "@wxn0brp/gloves-link-client": "^0.0.9",
         "idb": "^8.0.3"
     },
     "devDependencies": {

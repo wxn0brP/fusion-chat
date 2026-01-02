@@ -1,5 +1,5 @@
 import db from "#db";
-import Id from "#id";
+import { Id } from "#id";
 import { decode, KeyIndex } from "#logic/token/index";
 import Db_BotData from "#types/db/botData";
 import { FCSocket } from "#types/socket";

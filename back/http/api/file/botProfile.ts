@@ -5,10 +5,10 @@ import valid from "#logic/validData";
 import { canUserEditBot } from "../../../socket/dev-panel/logic/menageBot";
 import db from "#db";
 
-const router = new Router();
+export const botProfileRouter = new Router();
 const UPLOAD_DIR = "userFiles/profiles";
 
-const userProfileEngine = new FileUploadEngine({
+const botProfileEngine = new FileUploadEngine({
 	maxFileSize: global.fileConfig.maxBotProfileFileSize,
 	allowedFileTypes: ["image/png", "image/jpeg", "image/jpg", "image/gif"],
 	uploadDir: UPLOAD_DIR,
@@ -37,7 +37,4 @@ const userProfileEngine = new FileUploadEngine({
 	},
 });
 
-router.use(userProfileEngine.getRouter());
-
-export const path = "bot/profile";
-export default router;
+botProfileRouter.use(botProfileEngine.getRouter());

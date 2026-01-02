@@ -1,4 +1,4 @@
-import Id from "#id";
+import { Id } from "#id";
 import db from "#db";
 import Db_RealmUser from "#types/db/realmUser";
 import getCacheSettings from "./cacheSettings";

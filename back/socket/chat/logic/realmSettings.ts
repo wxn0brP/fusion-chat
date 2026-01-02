@@ -4,7 +4,7 @@ import { create } from "#logic/token/index";
 import { KeyIndex } from "#logic/token/KeyManager";
 import valid from "#logic/validData";
 import ValidError from "#logic/validError";
-import Id from "#id";
+import { Id } from "#id";
 import Db_RealmConf from "#types/db/realmConf";
 import { Socket_StandardRes } from "#types/socket/res";
 import { Socket_User } from "#types/socket/user";

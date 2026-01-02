@@ -1,16 +1,15 @@
-import { Router } from "@wxn0brp/falcon-frame";
-import db from "#db";
-import valid from "#logic/validData";
-import { combineId } from "#logic/chatMgmt";
-import Id from "#id";
 import InternalCode from "#codes";
+import db from "#db";
+import { Id } from "#id";
 import getCacheSettings from "#logic/cacheSettings";
+import { combineId } from "#logic/chatMgmt";
+import valid from "#logic/validData";
 import { AnotherCache } from "@wxn0brp/ac";
+import { RouteHandler } from "@wxn0brp/falcon-frame";
 
-const router = new Router();
 const cache = new AnotherCache(getCacheSettings("EventId"));
 
-router.get("/id/event", async (req, res) => {
+export const eventIdRoute: RouteHandler = async (req, res) => {
 	const { id } = req.query as { id: Id };
 	if (!valid.id(id))
 		return res.json({
@@ -54,6 +53,4 @@ router.get("/id/event", async (req, res) => {
 	}
 
 	res.json({ err: false, name });
-});
-
-export default router;
+}

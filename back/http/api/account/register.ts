@@ -3,9 +3,10 @@ import db from "#db";
 import mailer from "#logic/mail";
 import { createHash } from "crypto";
 import { Router } from "@wxn0brp/falcon-frame";
-const router = new Router();
 
-router.post("/register", async function (req, res) {
+export const registerRouter = new Router();
+
+registerRouter.post("/register", async function (req, res) {
 	const { name, password, email } = req.body;
 	if (!name)
 		return res.json({
@@ -89,7 +90,7 @@ router.post("/register", async function (req, res) {
 	res.json({ err: false, msg: "Verification code sent" });
 });
 
-router.post("/register/verify", async function (req, res) {
+registerRouter.post("/register/verify", async function (req, res) {
 	if (!req.session.tmp_user)
 		return res.json({
 			err: true,
@@ -147,5 +148,3 @@ function generateHash(password: string) {
 function generateVerificationCode() {
 	return Math.floor(100000 + Math.random() * 900000).toString();
 }
-
-export default router;

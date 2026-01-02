@@ -3,7 +3,7 @@ import * as customWebhookUtils from "./custom";
 import sendMessage from "../sendMessage";
 import { decode, KeyIndex } from "#logic/token/index";
 import db from "#db";
-import Id from "#id";
+import { Id } from "#id";
 import { Socket_StandardRes_Error } from "#types/socket/res";
 import Db_RealmConf from "#types/db/realmConf";
 import Logic_Webhook from "#types/logic/webhook";

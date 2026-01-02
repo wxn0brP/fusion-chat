@@ -1,18 +1,19 @@
-import { Router } from "@wxn0brp/falcon-frame";
-import multer, { memoryStorage, MulterError } from "multer";
-import { existsSync, mkdirSync } from "fs";
-import { join } from "path";
-import valid from "#logic/validData";
+import InternalCode from "#codes";
+import db from "#db";
+import { Id } from "#id";
 import permissionSystem from "#logic/permission-system/index";
 import Permissions from "#logic/permission-system/permission";
-import db from "#db";
-import Id from "#id";
-import InternalCode from "#codes";
-import { genId } from "@wxn0brp/db";
+import valid from "#logic/validData";
 import Db_RealmConf from "#types/db/realmConf";
+import { genId } from "@wxn0brp/db";
+import { Router } from "@wxn0brp/falcon-frame";
+import { existsSync, mkdirSync } from "fs";
 import { Image } from "image-js";
+import multer, { memoryStorage, MulterError } from "multer";
+import { join } from "path";
+import { authenticateMiddleware } from "../auth";
 
-const router = new Router();
+export const emojiRouter = new Router();
 
 const baseRealmPath = "userFiles/realms";
 const formats = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
@@ -38,9 +39,9 @@ async function checkUserPermission(userId: Id, realm: Id) {
 	return userPerm;
 }
 
-router.post(
+emojiRouter.post(
 	"/emoji/upload",
-	global.authenticateMiddleware,
+	authenticateMiddleware,
 	async (req, res) => {
 		const userId = req.user;
 		const realm = req.headers.realm as Id;
@@ -126,5 +127,3 @@ router.post(
 		});
 	},
 );
-
-export default router;

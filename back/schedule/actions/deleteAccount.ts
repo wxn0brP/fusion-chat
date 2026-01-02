@@ -1,7 +1,7 @@
 import db from "#db";
 import deleteAccount from "#logic/deleteAccount";
 import sendMail from "#logic/mail";
-import Id from "#id";
+import { Id } from "#id";
 import Db_Data from "#types/db/data";
 import { activeTasks } from "../index";
 

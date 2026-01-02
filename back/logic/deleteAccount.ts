@@ -1,5 +1,5 @@
 import db from "#db";
-import Id from "#id";
+import { Id } from "#id";
 
 export default async (id: Id) => {
 	await db.data.removeOne("user", { _id: id });

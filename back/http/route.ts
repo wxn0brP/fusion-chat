@@ -1,24 +1,6 @@
 import { Router } from "@wxn0brp/falcon-frame";
-import { readdirSync } from "fs";
 
-const frontRouter = new Router();
-const apiRouter = new Router();
-global.app.use("/", frontRouter);
-global.app.use("/api", apiRouter);
-
-const apiPath = `${import.meta.dirname}/api/`;
-for (const file of readdirSync(apiPath, {
-	recursive: true,
-	withFileTypes: true,
-})) {
-	if (!file.isFile() || !file.name.endsWith(".js")) continue;
-	const filePath = file.parentPath.replace(apiPath, "") + "/" + file.name;
-	const { path: routerPath, default: router } = await import(
-		"./api/" + filePath
-	);
-
-	apiRouter.use("/" + (routerPath || ""), router);
-}
+export const frontRouter = new Router();
 
 const cards = [
 	{ title: "Easy to Use", body: "Simple interface, easy to navigate." },

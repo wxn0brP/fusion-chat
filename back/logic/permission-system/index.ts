@@ -8,7 +8,7 @@ import {
 } from "./permission";
 import Logic_PermSys from "#types/logic/perm-sys";
 import Db_RealmRoles from "#types/db/realmRoles";
-import Id from "#id";
+import { Id } from "#id";
 import Db_RealmUser from "#types/db/realmUser";
 import Db_RealmConf from "#types/db/realmConf";
 import CollectionManager from "@wxn0brp/db-core/helpers/CollectionManager";

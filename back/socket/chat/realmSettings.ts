@@ -4,7 +4,7 @@ import {
 	realm_settings_set,
 	realm_webhook_token_get,
 } from "./logic/realmSettings";
-import Id from "#id";
+import { Id } from "#id";
 import { FCSocket } from "#types/socket";
 
 export default (socket: FCSocket) => {

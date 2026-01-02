@@ -1,7 +1,7 @@
 // import { GLSocket } from "@wxn0brp/gloves-link-server";
 // import { authUser, createUser } from "#logic/auth";
 // import { Socket_User } from "#types/socket/user";
-// import Id from "#id";
+// import { Id } from "#id";
 // import db from "#db";
 // import ValidError from "#logic/validError";
 

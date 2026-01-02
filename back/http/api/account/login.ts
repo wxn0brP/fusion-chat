@@ -5,9 +5,10 @@ import mailer from "#logic/mail";
 import Db_Data from "#types/db/data";
 import { createHash, timingSafeEqual } from "crypto";
 import { Router } from "@wxn0brp/falcon-frame";
-const router = new Router();
 
-router.post("/login", async (req, res) => {
+export const loginRouter = new Router();
+
+loginRouter.post("/login", async (req, res) => {
 	const { name, password } = req.body as { name: string; password: string };
 	if (!name)
 		return res.json({
@@ -76,5 +77,3 @@ export function generateHash(password) {
 export function randomDelay(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
-
-export default router;

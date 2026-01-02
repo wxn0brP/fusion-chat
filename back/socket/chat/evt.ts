@@ -1,7 +1,7 @@
 import { rm } from "fs";
 import { rmCache as statusMgmtRmCache } from "#logic/status";
 import db from "#db";
-import Id from "#id";
+import { Id } from "#id";
 import { GLSocket } from "@wxn0brp/gloves-link-server";
 
 export default (socket: GLSocket) => {

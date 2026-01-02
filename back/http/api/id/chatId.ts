@@ -1,10 +1,9 @@
-import { Router } from "@wxn0brp/falcon-frame";
-import db from "#db";
-import Id from "#id";
 import InternalCode from "#codes";
-const router = new Router();
+import db from "#db";
+import { Id } from "#id";
+import { RouteHandler } from "@wxn0brp/falcon-frame";
 
-router.get("/id/chat", async (req, res) => {
+export const chatIdRoute: RouteHandler = async (req, res) => {
 	const { chat } = req.query as { chat: Id };
 	if (!chat)
 		return res.json({
@@ -25,6 +24,4 @@ router.get("/id/chat", async (req, res) => {
 	}
 
 	res.json({ err: false, name: chatI.name });
-});
-
-export default router;
+}

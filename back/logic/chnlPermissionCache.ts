@@ -5,7 +5,7 @@ import rolePermissions, {
 } from "./permission-system/permission";
 import db from "#db";
 import Db_RealmConf from "#types/db/realmConf";
-import Id from "#id";
+import { Id } from "#id";
 import getCacheSettings from "./cacheSettings";
 import Logic_ChnlPerm from "#types/logic/chnlPerm";
 import { AnotherCache } from "@wxn0brp/ac";

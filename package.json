@@ -4,7 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "tsc && tsc-alias",
+        "build": "./build.sh",
+        "build:scss": "sass front/scss:front/css --style compressed",
         "start": "node ."
     },
     "author": "wxn0brP",

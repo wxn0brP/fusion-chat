@@ -1,11 +1,10 @@
-import { Router } from "@wxn0brp/falcon-frame";
-import valid from "#logic/validData";
-import db from "#db";
-import Id from "#id";
 import InternalCode from "#codes";
-const router = new Router();
+import db from "#db";
+import { Id } from "#id";
+import valid from "#logic/validData";
+import { RouteHandler } from "@wxn0brp/falcon-frame";
 
-router.get("/id/u", async (req, res) => {
+export const userIdRoute: RouteHandler = async (req, res) => {
 	const { id, chat } = req.query as { id: Id; chat?: Id };
 	if (!valid.id(id))
 		return res.json({
@@ -44,6 +43,4 @@ router.get("/id/u", async (req, res) => {
 	if (nickData) return res.json({ err: false, name: nickData.nick, c: 0 });
 
 	return res.json({ err: false, name: user.name, c: 0 });
-});
-
-export default router;
+}

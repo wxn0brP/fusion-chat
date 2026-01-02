@@ -1,6 +1,6 @@
 import InternalCode from "#codes";
 import db from "#db";
-import Id from "#id";
+import { Id } from "#id";
 import Db_BotData from "#types/db/botData";
 import permissionSystem from "./permission-system/index";
 import Permissions from "./permission-system/permission";

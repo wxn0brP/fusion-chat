@@ -1,0 +1,14 @@
+[
+    {
+        cmd: "tsc --noEmit",
+        watch: [
+            "back"
+        ]
+    },
+    {
+        cmd: "bun run build:scss",
+        watch: [
+            "front/scss"
+        ]
+    }
+]

@@ -1,6 +1,6 @@
 export { default as PermissionSystem } from "#logic/permission-system/index";
 export { default as processDbChanges } from "#logic/processDbChanges";
-import Id from "#id";
+import { Id } from "#id";
 import { Socket_RealmSettings } from "#types/socket/chat/realmSettings";
 import { Socket_User } from "#types/socket/user";
 import Db_RealmConf from "#types/db/realmConf";

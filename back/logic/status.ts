@@ -1,4 +1,4 @@
-import Id from "#id";
+import { Id } from "#id";
 import Status from "#types/socket/chat/status";
 import { AnotherCache } from "@wxn0brp/ac";
 import getCacheSettings from "./cacheSettings";

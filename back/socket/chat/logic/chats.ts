@@ -17,7 +17,7 @@ import {
 } from "#logic/sendMessageUtils/dm";
 import valid from "#logic/validData";
 import ValidError from "#logic/validError";
-import Id from "#id";
+import { Id } from "#id";
 import Db_Data from "#types/db/data";
 import Db_Mess from "#types/db/mess";
 import Db_RealmConf from "#types/db/realmConf";

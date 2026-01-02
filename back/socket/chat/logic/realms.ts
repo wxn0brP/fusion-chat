@@ -9,7 +9,7 @@ import { getCache as statusMgmtGetCache } from "#logic/status";
 import valid from "#logic/validData";
 import ValidError from "#logic/validError";
 import { addTask, cancelTask } from "#schedule";
-import Id from "#id";
+import { Id } from "#id";
 import Db_RealmConf from "#types/db/realmConf";
 import Db_RealmData from "#types/db/realmData";
 import Db_System from "#types/db/system";

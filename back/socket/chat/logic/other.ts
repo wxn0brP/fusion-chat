@@ -7,7 +7,7 @@ import * as statusMgmt from "#logic/status";
 import * as tokenFunc from "#logic/token/index";
 import valid, { validChannelId } from "#logic/validData";
 import ValidError from "#logic/validError";
-import Id from "#id";
+import { Id } from "#id";
 import Db_Mess from "#types/db/mess";
 import Status from "#types/socket/chat/status";
 import { Socket_StandardRes } from "#types/socket/res";

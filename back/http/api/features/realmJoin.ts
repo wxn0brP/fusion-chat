@@ -1,16 +1,16 @@
 import InternalCode from "#codes";
 import db from "#db";
 import { realm_join } from "#scl/chats";
-import Id from "#id";
+import { Id } from "#id";
 import Db_RealmConf from "#types/db/realmConf";
 import { Socket_StandardRes_Error } from "#types/socket/res";
 import { Socket_User } from "#types/socket/user";
 import { Router } from "@wxn0brp/falcon-frame";
-const router = new Router();
+import { authenticateMiddleware } from "../auth";
 
-export const path = "realm/join";
+export const realmJoinRouter = new Router();
 
-router.get("/meta", global.authenticateMiddleware, async (req, res) => {
+realmJoinRouter.get("/meta", authenticateMiddleware, async (req, res) => {
 	const { id } = req.query as { id: Id };
 	if (!id)
 		return res.json({
@@ -39,7 +39,7 @@ router.get("/meta", global.authenticateMiddleware, async (req, res) => {
 	res.json({ err: false, state: 0, data: realmRes });
 });
 
-router.get("/", global.authenticateMiddleware, async (req, res) => {
+realmJoinRouter.get("/", authenticateMiddleware, async (req, res) => {
 	const { id } = req.query as { id: Id };
 	const suser: Socket_User = {
 		_id: req.user,
@@ -65,5 +65,3 @@ router.get("/", global.authenticateMiddleware, async (req, res) => {
 
 	res.json({ err: false, msg: "ok" });
 });
-
-export default router;

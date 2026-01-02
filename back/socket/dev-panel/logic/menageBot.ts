@@ -1,6 +1,6 @@
 import InternalCode from "#codes";
 import db from "#db";
-import Id from "#id";
+import { Id } from "#id";
 import { create, KeyIndex } from "#logic/token/index";
 import valid from "#logic/validData";
 import ValidError from "#logic/validError";
