@@ -6,23 +6,24 @@ on:
       - main
       - dev
     paths:
-      - 'back/**'
-      - 'front/**'
-      - 'front-app/**'
-      - 'front-scripts/**'
-      - 'package.json'
-      - 'tsconfig.json'
+      - "back/**"
+      - "front/**"
+      - "front-app/**"
+      - "front-scripts/**"
+      - "package.json"
+      - "tsconfig.json"
+
   pull_request:
     branches:
       - main
       - dev
     paths:
-      - 'back/**'
-      - 'front/**'
-      - 'front-app/**'
-      - 'front-scripts/**'
-      - 'package.json'
-      - 'tsconfig.json'
+      - "back/**"
+      - "front/**"
+      - "front-app/**"
+      - "front-scripts/**"
+      - "package.json"
+      - "tsconfig.json"
   workflow_dispatch:
 
 concurrency:
@@ -35,12 +36,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: "22"
+
+      - name: Bun Setup
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
         run: |
@@ -57,7 +61,7 @@ jobs:
         run: |
           npm install
           npm run build
-        
+
       - name: Install and Build (Front-Scripts)
         working-directory: ./front-scripts
         run: |
