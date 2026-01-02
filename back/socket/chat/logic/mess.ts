@@ -15,6 +15,7 @@ import { Socket_StandardRes } from "#types/socket/res";
 import { Socket_User } from "#types/socket/user";
 import messageSearchData from "../valid/messageSearch";
 import { realm_thread_delete } from "./realms";
+import { sendToUser } from "../..";
 
 const messageSearchSchemat = valid.objAjv(messageSearchData);
 
@@ -57,8 +58,8 @@ export async function message_edit(
 	await db.mess.updateOne(dbChatId, { _id }, { msg, lastEdit: time });
 
 	if (isDmChat) {
-		global.sendToSocket(suser._id, "message.edit", _id, msg, time, chatId);
-		global.sendToSocket(
+		sendToUser(suser._id, "message.edit", _id, msg, time, chatId);
+		sendToUser(
 			chatId.replace("$", ""),
 			"message.edit",
 			_id,
@@ -114,8 +115,8 @@ export async function message_delete(
 
 	await db.mess.removeOne(dbChatId, { _id });
 	if (isDmChat) {
-		global.sendToSocket(suser._id, "message.delete", _id, chatId);
-		global.sendToSocket(
+		sendToUser(suser._id, "message.delete", _id, chatId);
+		sendToUser(
 			chatId.replace("$", ""),
 			"message.delete",
 			_id,
@@ -181,8 +182,8 @@ export async function messages_delete(
 	}
 	await db.mess.remove(dbChatId, { $in: { _id: ids } });
 	if (isDmChat) {
-		global.sendToSocket(suser._id, "messages.delete", ids, chatId);
-		global.sendToSocket(
+		sendToUser(suser._id, "messages.delete", ids, chatId);
+		sendToUser(
 			chatId.replace("$", ""),
 			"messages.delete",
 			ids,
@@ -354,7 +355,7 @@ export async function message_react(
 	await db.mess.updateOne(dbChatId, { _id: msgId }, { reacts });
 
 	if (chatId.startsWith("$")) {
-		global.sendToSocket(
+		sendToUser(
 			suser._id,
 			"message.react",
 			suser._id,
@@ -362,7 +363,7 @@ export async function message_react(
 			msgId,
 			react,
 		);
-		global.sendToSocket(
+		sendToUser(
 			chatId.replace("$", ""),
 			"message.react",
 			suser._id,
@@ -441,7 +442,7 @@ export async function message_pin(
 	};
 
 	if (isDmChat) {
-		global.sendToSocket(
+		sendToUser(
 			suser._id,
 			"refreshData",
 			refreshData,
@@ -449,7 +450,7 @@ export async function message_pin(
 			chnl,
 		);
 		refreshData.realm = "$" + suser._id;
-		global.sendToSocket(
+		sendToUser(
 			chatId.replace("$", ""),
 			"refreshData",
 			refreshData,

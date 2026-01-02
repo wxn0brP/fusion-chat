@@ -1,26 +1,27 @@
 import db from "#db";
 import { authUser, createUser } from "#logic/auth";
+import { FCSocket } from "#types/socket";
 import {
 	Socket_StandardRes,
 	Socket_StandardRes_Error,
 } from "#types/socket/res";
+import { io } from "../server";
 import evt from "./evt";
 import SocketEventLimiter, { bannedUsers } from "./limiter";
 import realmSettings from "./realmSettings";
 import register from "./register";
-import { FCSocket } from "#types/socket";
 
-global.io.of("/").auth(async ({ token }) => {
+io.of("/").auth(async ({ token }) => {
 	if (!token) return {
 		status: 401,
-		msg: "Unauthorized1",
+		msg: "Token not provided",
 	}
 
 	const tokenData = { data: null };
 	const user = await authUser(token, tokenData);
 	if (!user) return {
 		status: 401,
-		msg: "Unauthorized2",
+		msg: "Unauthorized",
 	}
 
 	if (bannedUsers.has(user._id)) {
@@ -48,6 +49,8 @@ global.io.of("/").auth(async ({ token }) => {
 });
 
 io.of("/").onConnect(async (socket: FCSocket) => {
+	socket.joinRoom("user-" + socket.user._id);
+
 	socket.logError = (e) => {
 		lo("Error: ", e);
 		db.logs.add("socket.io", {

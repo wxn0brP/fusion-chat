@@ -1,5 +1,6 @@
 import { AnotherCache } from "@wxn0brp/ac";
 import { GLSocket } from "@wxn0brp/gloves-link-server";
+import { io } from "../server";
 
 export const bannedUsers = new AnotherCache();
 
@@ -109,16 +110,12 @@ class SocketEventLimiter {
 					banTime,
 					spamThresholds.banDuration,
 				);
-				const sockets = global.getSocket(this.socket.user._id);
-				sockets.forEach((socket) => {
-					socket.emit(
-						"error.spam",
-						"ban",
-						spamThresholds.banDuration,
-					);
-					// @ts-ignore fix
-					socket.disconnect();
-				});
+
+				const room = io.room("user-" + this.socket.user._id);
+				room.emit("error.spam", "ban", spamThresholds.banDuration);
+				room.clients.forEach((socket) => {
+					socket.ws.close();
+				})
 				return;
 			}
 

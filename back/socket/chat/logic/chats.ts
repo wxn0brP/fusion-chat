@@ -26,6 +26,7 @@ import { Socket_StandardRes } from "#types/socket/res";
 import { Socket_User } from "#types/socket/user";
 import { friend_remove } from "./friends";
 import { PermissionSystem } from "./realmSettings/set/imports";
+import { sendToUser } from "../..";
 
 export async function realm_get(
 	suser: Socket_User,
@@ -111,7 +112,7 @@ export async function realm_exit(
 	if (!valid.id(id)) return validE.valid("id");
 
 	await exitChat(id, suser._id);
-	global.sendToSocket(suser._id, "refreshData", "realm.get");
+	sendToUser(suser._id, "refreshData", "realm.get");
 	userInRealmClearCache(suser._id, id);
 	return { err: false };
 }
@@ -142,8 +143,8 @@ export async function dm_create(
 
 	await createPriv(toId, suser._id);
 
-	global.sendToSocket(suser._id, "refreshData", "dm.get");
-	global.sendToSocket(toId, "refreshData", "dm.get");
+	sendToUser(suser._id, "refreshData", "dm.get");
+	sendToUser(toId, "refreshData", "dm.get");
 	clearUserDmCache(suser._id, toId);
 
 	return { err: false };
@@ -167,7 +168,7 @@ export async function realm_join(
 		return validE.err(InternalCode.UserError.Socket.RealmJoin_UserIsBanned);
 
 	await addUserToChat(id, suser._id);
-	global.sendToSocket(suser._id, "refreshData", "realm.get");
+	sendToUser(suser._id, "refreshData", "realm.get");
 	userInRealmClearCache(suser._id, id);
 	return { err: false };
 }
@@ -215,8 +216,8 @@ export async function dm_block(
 	}
 	clearBlockedCache(suser._id, id);
 
-	global.sendToSocket(suser._id, "refreshData", "dm.get");
-	global.sendToSocket(id, "refreshData", "dm.get");
+	sendToUser(suser._id, "refreshData", "dm.get");
+	sendToUser(id, "refreshData", "dm.get");
 
 	return { err: false };
 }

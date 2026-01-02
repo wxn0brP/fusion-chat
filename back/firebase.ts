@@ -2,6 +2,7 @@ import admin from "firebase-admin";
 import fs from "fs";
 import db from "./dataBase";
 import { FireBaseSend_Data } from "./types/firebase";
+import { io } from "./socket/server";
 
 try {
 	const serviceAccount = JSON.parse(
@@ -23,10 +24,9 @@ export default async function firebaseSend(options: FireBaseSend_Data) {
 	if (!title) return false;
 	if (!body) return false;
 
-	if (checkSocket) {
-		const socket = global.getSocket(to);
-		if (socket.length > 0) return;
-	}
+	if (checkSocket)
+		if (io.room("user-" + to).size > 0)
+			return;
 
 	let tokens = await db.data.find<any>("fireToken", { user: to });
 	if (tokens.length == 0) return;

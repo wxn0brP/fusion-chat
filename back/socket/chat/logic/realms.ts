@@ -1,5 +1,6 @@
 import InternalCode from "#codes";
 import db from "#db";
+import { Id } from "#id";
 import { checkIsUserOnRealm } from "#logic/checkIsUserOnRealm";
 import getChnlPerm from "#logic/chnlPermissionCache";
 import permissionSystem from "#logic/permission-system/index";
@@ -9,7 +10,6 @@ import { getCache as statusMgmtGetCache } from "#logic/status";
 import valid from "#logic/validData";
 import ValidError from "#logic/validError";
 import { addTask, cancelTask } from "#schedule";
-import { Id } from "#id";
 import Db_RealmConf from "#types/db/realmConf";
 import Db_RealmData from "#types/db/realmData";
 import Db_System from "#types/db/system";
@@ -17,6 +17,8 @@ import Db_UserData from "#types/db/userData";
 import Socket__Realms from "#types/socket/chat/realms";
 import { Socket_StandardRes } from "#types/socket/res";
 import { Socket_User } from "#types/socket/user";
+import { sendToRealmUsers, sendToUser } from "../..";
+import { io } from "../../server";
 import eventCreateData from "../valid/event";
 
 const eventCreateSchema = valid.objAjv(eventCreateData);
@@ -140,8 +142,8 @@ export async function realm_users_activity_sync(
 		if (u.bot) symbolUID = "^" + u.bot;
 
 		let userOnline = false;
-		if (u.u) userOnline = global.getSocket(uid).length > 0;
-		if (u.bot) userOnline = global.getSocket(uid, "bot").length > 0;
+		if (u.u) userOnline = io.room("user-" + uid).size > 0;
+		if (u.bot) userOnline = io.room("bot-" + uid).size > 0;
 		if (!userOnline) return { uid: symbolUID };
 
 		const st = await db.userData.findOne<Db_UserData.status>(uid, {
@@ -198,7 +200,7 @@ export async function realm_delete(
 	db.realmData.removeCollection(id);
 
 	for (const user of users)
-		global.sendToSocket(user, "refreshData", "realm.get");
+		sendToUser(user, "refreshData", "realm.get");
 
 	return { err: false };
 }
@@ -232,7 +234,7 @@ export async function realm_user_kick(
 		await db.realmUser.add(realmId, { ban: uid }, false);
 	}
 
-	global.sendToSocket(uid, "refreshData", "realm.get");
+	sendToUser(uid, "refreshData", "realm.get");
 
 	return { err: false };
 }
@@ -799,7 +801,7 @@ export async function realm_user_role_remove(
 
 	try {
 		await permSys.removeRoleFromUser(uid, roleId, suser._id);
-		sendToChatUsers(realmId, "refreshData", "realm.users.sync", realmId);
+		sendToRealmUsers(realmId, "refreshData", "realm.users.sync", realmId);
 	} catch {
 		return validE.err(
 			InternalCode.UserError.Socket.RealmEdit_NotAuthorized,
@@ -842,7 +844,7 @@ export async function realm_user_role_add(
 
 	try {
 		await permSys.assignRoleToUser(uid, roleId, suser._id);
-		sendToChatUsers(realmId, "refreshData", "realm.users.sync", realmId);
+		sendToRealmUsers(realmId, "refreshData", "realm.users.sync", realmId);
 	} catch {
 		return validE.err(
 			InternalCode.UserError.Socket.RealmEdit_NotAuthorized,

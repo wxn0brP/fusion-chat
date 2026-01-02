@@ -6,9 +6,10 @@ import {
 	Socket_StandardRes_Error,
 } from "#types/socket/res";
 import SocketEventLimiter, { bannedUsers } from "../chat/limiter";
+import { io } from "../server";
 import register from "./register";
 
-global.io.of("/dev-panel").auth(async ({ headers }) => {
+io.of("/dev-panel").auth(async ({ headers }) => {
 	// @ts-ignore
 	const authData = socket.handshake.auth;
 	if (!authData)
@@ -50,7 +51,7 @@ global.io.of("/dev-panel").auth(async ({ headers }) => {
 	};
 });
 
-global.io.of("/dev-panel").onConnect((socket: FCSocket) => {
+io.of("/dev-panel").onConnect((socket: FCSocket) => {
 	socket.logError = (e) => {
 		lo("Error: ", e);
 		db.logs.add("socket.io", {

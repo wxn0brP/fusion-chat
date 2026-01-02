@@ -13,6 +13,8 @@ import { Socket_StandardRes } from "#types/socket/res";
 import { Id } from "#id";
 import InternalCode from "#codes";
 import firebaseSend from "#firebase";
+import { io } from "../socket/server";
+import { sendToUser } from "../socket";
 
 const validE = new ValidError("mess");
 
@@ -57,7 +59,7 @@ export default async function sendMessage(
 
 	if (req.silent) data.silent = req.silent || false;
 
-	global.sendToSocket(
+	sendToUser(
 		user._id,
 		"mess",
 		Object.assign({ to: originalTo }, data),
@@ -180,7 +182,7 @@ async function sendReamNotification(to: Id, user: User, data: Message) {
 					if (muted > new Date().getTime()) return;
 				}
 
-				global.sendToSocket(uid, "mess", data);
+				sendToUser(uid, "mess", data);
 				if (data.silent) return;
 
 				firebaseSend({
@@ -199,10 +201,8 @@ async function sendReamNotification(to: Id, user: User, data: Message) {
 		// @ts-ignore
 		.find<Db_RealmUser.bot>(to, { $exists: { bot: true } })
 		.then((botUsers) => {
-			botUsers.forEach((user) => {
-				global.getSocket(user.bot, "bot").forEach((connection) => {
-					connection.emit("mess", data);
-				});
+			botUsers.forEach((bot) => {
+				io.room("bot-" + bot.bot).emit("mess", data);
 			});
 		});
 
@@ -212,7 +212,7 @@ async function sendReamNotification(to: Id, user: User, data: Message) {
 function sendDmNotification(to: Id, user: User, data: Message) {
 	const toSend = to.replace("$", "");
 	data.to = "$" + user._id;
-	global.sendToSocket(toSend, "mess", data);
+	sendToUser(toSend, "mess", data);
 
 	if (data.silent) return;
 

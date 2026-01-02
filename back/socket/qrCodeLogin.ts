@@ -26,7 +26,7 @@
 // 	fr: string;
 // }
 
-// global.io.of("/qrCodeLogin").onConnect((socket: Socket_QRCodeLogin) => {
+// io.of("/qrCodeLogin").onConnect((socket: Socket_QRCodeLogin) => {
 // 	// @ts-ignore
 // 	const auth = socket.handshake.auth as
 // 		| RoleGet_handshake

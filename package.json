@@ -15,7 +15,7 @@
         "@wxn0brp/ac": "^0.0.3",
         "@wxn0brp/db": "^0.41.0",
         "@wxn0brp/falcon-frame": "^0.5.7",
-        "@wxn0brp/gloves-link-server": "^0.0.8",
+        "@wxn0brp/gloves-link-server": "^0.0.13",
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
         "cors": "^2.8.5",

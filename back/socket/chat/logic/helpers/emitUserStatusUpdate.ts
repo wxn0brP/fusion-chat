@@ -2,6 +2,7 @@ import { Id } from "#id";
 import { db } from "../realmSettings/set/imports";
 import Db_UserData from "#types/db/userData";
 import Db_RealmUser from "#types/db/realmUser";
+import { sendToUser } from "../../..";
 
 async function emitUserStatusUpdate(id: Id, status: string, text: string) {
 	const relation_users = new Map<Id, true>();
@@ -36,7 +37,7 @@ async function emitUserStatusUpdate(id: Id, status: string, text: string) {
 	const users = Array.from(relation_users.keys());
 
 	for (const user of users) {
-		global.sendToSocket(user, "user.status.update", id, status, text);
+		sendToUser(user, "user.status.update", id, status, text);
 	}
 }
 

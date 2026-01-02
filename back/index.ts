@@ -1,11 +1,14 @@
+import { loadTasks } from "#schedule";
 import http from "http";
 import { app } from "./http";
+import { io } from "./socket/server";
+import "./socket";
 Error.stackTraceLimit = 100;
 
 app.setVar("layout", "front/main/layout.html");
 
 const server = http.createServer(app.getApp());
-globalThis.server = server;
+io.createServer(server);
 
 lo("__________________" + (new Date() + "").split(" ").slice(1, 5).join(" "));
 server.listen(parseInt(process.env.PORT), function () {
@@ -15,12 +18,9 @@ server.listen(parseInt(process.env.PORT), function () {
 	}
 });
 
-await import("./socket/index.js");
-await import("./schedule/index.js");
+loadTasks();
 
-const statusRouter = globalThis.io.statusRouter();
-app.use("/gloves-link", statusRouter);
-
+app.use("/gloves-link", io.statusRouter());
 app.use((req, res) => {
 	res.status(404);
 	res.render("front/main/404", {

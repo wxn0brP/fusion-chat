@@ -41,6 +41,10 @@ export function error(evt_name: string, ...data: any[]) {
     uiFunc.uiMsg(first);
 }
 
+export function connection_error(type: string, msg: string) {
+    debugFunc.msg(LogLevel.ERROR, type, msg);
+}
+
 export function error_valid(evt: string, name: string, ...data: any[]) {
     uiFunc.uiMsgT(LangPkg.socket.valid_error);
     debugFunc.msg(LogLevel.ERROR, `Valid error: ${evt} - ${name}`, ...data)

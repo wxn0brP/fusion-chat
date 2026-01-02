@@ -3,12 +3,14 @@ import { rmCache as statusMgmtRmCache } from "#logic/status";
 import db from "#db";
 import { Id } from "#id";
 import { GLSocket } from "@wxn0brp/gloves-link-server";
+import { io } from "../server";
+import { sendToUser } from "..";
 
 export default (socket: GLSocket) => {
 	const uid = socket.user._id;
 	socket.on("disconnect", () => {
-		const sockets = global.getSocket(uid);
-		if (sockets.length > 0) return;
+		const sockets = io.room("user-" + uid).size;
+		if (sockets > 0) return;
 
 		rm(`userFiles/${uid}`, { recursive: true, force: true }, (err) => {
 			if (err) console.log(err);
@@ -31,7 +33,7 @@ export default (socket: GLSocket) => {
 		}, 100);
 	});
 
-	if (global.getSocket(uid).length == 1) updateFriendList(uid);
+	if (io.room("user-" + uid).size == 1) updateFriendList(uid);
 };
 
 async function updateFriendList(id: Id) {
@@ -42,6 +44,6 @@ async function updateFriendList(id: Id) {
 	});
 
 	friends.forEach((f) => {
-		global.sendToSocket(f, "refreshData", "friend.get.all");
+		sendToUser(f, "refreshData", "friend.get.all");
 	});
 }

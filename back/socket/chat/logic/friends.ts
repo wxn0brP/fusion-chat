@@ -9,6 +9,8 @@ import Db_Data from "#types/db/data";
 import Db_UserData from "#types/db/userData";
 import { Socket_StandardRes } from "#types/socket/res";
 import { Socket_User } from "#types/socket/user";
+import { io } from "../../server";
+import { sendToUser } from "../..";
 
 enum friendStatusEnum {
 	NOT_FRIEND,
@@ -54,7 +56,7 @@ export async function friend_request(
 		);
 
 	await db.data.add("friendRequests", { from: suser._id, to: id }, false);
-	global.sendToSocket(id, "friend.request", suser._id);
+	sendToUser(id, "friend.request", suser._id);
 	await firebaseSend({
 		to: id,
 		title: "Friend request",
@@ -82,8 +84,8 @@ export async function friend_response(
 
 	if (accept) await db.dataGraph.add("friends", id, suser._id);
 
-	global.sendToSocket(id, "friend.response", suser._id, accept);
-	if (accept) global.sendToSocket(suser._id, "refreshData", "friend.get.all");
+	sendToUser(id, "friend.response", suser._id, accept);
+	if (accept) sendToUser(suser._id, "refreshData", "friend.get.all");
 	firebaseSend({
 		to: id,
 		title: "Friend request",
@@ -105,7 +107,7 @@ export async function friend_request_remove(
 
 	await db.data.removeOne("friendRequests", { from: suser._id, to: id });
 
-	global.sendToSocket(id, "refreshData", "friend.requests.get");
+	sendToUser(id, "refreshData", "friend.requests.get");
 	return { err: false };
 }
 
@@ -124,8 +126,8 @@ export async function friend_remove(
 
 	await db.dataGraph.remove("friends", suser._id, id);
 
-	global.sendToSocket(id, "refreshData", "friend.get.all");
-	global.sendToSocket(suser._id, "refreshData", "friend.get.all");
+	sendToUser(id, "refreshData", "friend.get.all");
+	sendToUser(suser._id, "refreshData", "friend.get.all");
 	return { err: false };
 }
 
@@ -139,8 +141,8 @@ export async function friend_get_all(
 	});
 
 	const friendsStatusPromises = friends.map(async (f) => {
-		const userOnline = global.getSocket(f);
-		if (userOnline.length == 0)
+		const userOnline = io.room("user-" + f).size;
+		if (userOnline == 0)
 			return {
 				_id: f,
 				status: "offline",
@@ -191,7 +193,7 @@ export async function user_profile(
 			_id: "status",
 		},
 	);
-	const userOnline = global.getSocket(id).length > 0;
+	const userOnline = io.room("user-" + id).size > 0;
 	if (!userStatus) userStatus = {};
 
 	let userStatusType = "";

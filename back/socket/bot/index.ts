@@ -9,9 +9,10 @@ import {
 } from "#types/socket/res";
 import { Socket_User } from "#types/socket/user";
 import SocketEventLimiter, { bannedUsers } from "../chat/limiter";
+import { io } from "../server";
 import register from "./register";
 
-global.io.of("/bot").auth(async ({ headers }) => {
+io.of("/bot").auth(async ({ headers }) => {
 	const token = headers.auth as string;
 	if (!token) return {
 		status: 401,
@@ -58,7 +59,7 @@ global.io.of("/bot").auth(async ({ headers }) => {
 	}
 });
 
-global.io.of("/bot").onConnect((socket: FCSocket) => {
+io.of("/bot").onConnect((socket: FCSocket) => {
 	socket.logError = (e) => {
 		lo("Error: ", e);
 		db.logs.add("socket.io", {

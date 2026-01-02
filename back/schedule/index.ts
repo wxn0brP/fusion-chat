@@ -41,9 +41,11 @@ function processTask(task: Db_System.task) {
 	if (task.sType === "one-time") scheduleOneTimeTask(task);
 }
 
-db.system.find<Db_System.task>("tasks", {}).then((tasks) => {
-	tasks.forEach((task) => processTask(task));
-});
+export function loadTasks() {
+	db.system.find<Db_System.task>("tasks", {}).then((tasks) => {
+		tasks.forEach((task) => processTask(task));
+	});
+}
 
 export async function cancelTask(taskId: Id) {
 	activeTasks.get(taskId)?.cancel();
