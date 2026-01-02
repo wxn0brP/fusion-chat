@@ -6,6 +6,7 @@ import Permissions from "#logic/permission-system/permission";
 import valid from "#logic/validData";
 import { FFRequest, Router } from "@wxn0brp/falcon-frame";
 import FileUploadEngine from "../../profileUpload";
+import { sendToRealmUsers } from "../../../socket";
 
 export const realmProfileRouter = new Router();
 const UPLOAD_DIR = "userFiles/realms";
@@ -31,7 +32,7 @@ const realmProfileEngine = new FileUploadEngine({
 	postProcessCallback: async (filePath: string, req: FFRequest) => {
 		const realmId = req.headers.realm as Id;
 		await db.realmConf.updateOne(realmId, { _id: "set" }, { img: true });
-		global.sendToChatUsers(realmId, "refreshData", "realm.get");
+		sendToRealmUsers(realmId, "refreshData", "realm.get");
 	},
 });
 

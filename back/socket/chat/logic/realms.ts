@@ -510,7 +510,7 @@ export async function realm_thread_delete(
 
 	await db.realmData.removeOne(realmId, { _id: threadId });
 	await db.mess.remove(realmId, { chnl: "&" + threadId });
-	global.sendToChatUsers(realmId, "realm.thread.delete", threadId);
+	sendToRealmUsers(realmId, "realm.thread.delete", threadId);
 
 	return { err: false };
 }

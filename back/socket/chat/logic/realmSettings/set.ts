@@ -1,16 +1,17 @@
-import valid from "#logic/validData";
-import ValidError from "#logic/validError";
+import InternalCode from "#codes";
+import db from "#db";
+import { Id } from "#id";
 import permissionSystem from "#logic/permission-system/index";
 import Permissions, * as PermissionFunctions from "#logic/permission-system/permission";
+import valid from "#logic/validData";
+import ValidError from "#logic/validError";
+import { Socket_RealmSettings } from "#types/socket/chat/realmSettings";
+import { Socket_StandardRes } from "#types/socket/res";
+import { Socket_User } from "#types/socket/user";
+import { ValidateFunction } from "ajv";
+import { sendToRealmUsers } from "../../..";
 import setRealmSettingsData from "../../valid/realmsSettings";
 import cpu from "./set/cpu";
-import db from "#db";
-import { Socket_StandardRes } from "#types/socket/res";
-import InternalCode from "#codes";
-import { Socket_User } from "#types/socket/user";
-import { Id } from "#id";
-import { Socket_RealmSettings } from "#types/socket/chat/realmSettings";
-import { ValidateFunction } from "ajv";
 import { Db_RealmConf } from "./set/imports";
 
 const sect_req_perms = {
@@ -163,7 +164,7 @@ async function processAllSections(
  * @param sections - The sections which were changed.
  */
 function notifyUsersAboutChanges(id: Id, sections: Section[]) {
-	global.sendToChatUsers(
+	sendToRealmUsers(
 		id,
 		"refreshData",
 		{
@@ -174,7 +175,7 @@ function notifyUsersAboutChanges(id: Id, sections: Section[]) {
 	);
 
 	if (sections.includes("meta")) {
-		global.sendToChatUsers(id, "refreshData", {
+		sendToRealmUsers(id, "refreshData", {
 			evt: "realm.get",
 			wait: 1000,
 		});

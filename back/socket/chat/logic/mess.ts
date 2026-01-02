@@ -15,7 +15,7 @@ import { Socket_StandardRes } from "#types/socket/res";
 import { Socket_User } from "#types/socket/user";
 import messageSearchData from "../valid/messageSearch";
 import { realm_thread_delete } from "./realms";
-import { sendToUser } from "../..";
+import { sendToRealmUsers, sendToUser } from "../..";
 
 const messageSearchSchemat = valid.objAjv(messageSearchData);
 
@@ -68,7 +68,7 @@ export async function message_edit(
 			"$" + suser._id,
 		);
 	} else {
-		global.sendToChatUsers(
+		sendToRealmUsers(
 			dbChatId,
 			"message.edit",
 			_id,
@@ -123,7 +123,7 @@ export async function message_delete(
 			"$" + suser._id,
 		);
 	} else {
-		global.sendToChatUsers(dbChatId, "message.delete", _id, dbChatId);
+		sendToRealmUsers(dbChatId, "message.delete", _id, dbChatId);
 		const threads = await db.realmData.find<Db_RealmData.thread>(dbChatId, {
 			reply: _id,
 		});
@@ -190,7 +190,7 @@ export async function messages_delete(
 			"$" + suser._id,
 		);
 	} else {
-		global.sendToChatUsers(dbChatId, "messages.delete", ids, dbChatId);
+		sendToRealmUsers(dbChatId, "messages.delete", ids, dbChatId);
 		// @ts-ignore
 		const threads = await db.realmData.find<Db_RealmData.thread>(dbChatId, { $in: { reply: ids }, });
 		for (const thread of threads) {
@@ -372,7 +372,7 @@ export async function message_react(
 			react,
 		);
 	} else {
-		global.sendToChatUsers(
+		sendToRealmUsers(
 			chatId,
 			"message.react",
 			suser._id,
@@ -458,7 +458,7 @@ export async function message_pin(
 			chnl,
 		);
 	} else {
-		global.sendToChatUsers(
+		sendToRealmUsers(
 			chatId,
 			"refreshData",
 			refreshData,
