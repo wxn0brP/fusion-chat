@@ -1,3 +1,4 @@
+import "@wxn0brp/flanker-ui/html";
 import vars from "./var/var";
 import socket from "./core/ws";
 import "./core/copy";
