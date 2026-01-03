@@ -21,4 +21,4 @@ bun build back/app.ts \
   --external source-map-support \
   --external '#runtime/*'
 
-tsc ./back/config-base/*.ts --outDir ./dist-back/config-base --module ES2022
+bun build back/config-base/* --outdir ./dist-back/config-base
