@@ -24,7 +24,7 @@ function loginW() {
 }
 loginW();
 
-const s_id = "code"// createCode();
+const s_id = createCode();
 const qrUrl = location.protocol + '//' + location.host + "/qr-code-login?k=" + s_id;
 console.log("qrUrl", qrUrl);
 qrcodeC(qrUrl);
