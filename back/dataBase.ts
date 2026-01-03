@@ -1,7 +1,8 @@
-// @ts-ignore
-import config from "../config/database.js";
 import { Valthera, Graph, ValtheraRemote, GraphRemote } from "@wxn0brp/db";
 import { FC_DataBases } from "./types/dataBase";
+import { loadConfig } from "./loadConfig";
+
+const config = await loadConfig("database");
 
 const db: FC_DataBases = {};
 

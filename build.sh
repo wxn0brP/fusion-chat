@@ -18,4 +18,5 @@ bun build back/index.ts \
   --external nodemailer \
   --external open-graph-scraper \
   --external sass \
-  --external source-map-support
+  --external source-map-support \
+  --external '#runtime/*'

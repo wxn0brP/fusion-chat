@@ -1,9 +1,7 @@
 import { AnotherCacheOptions } from "@wxn0brp/ac";
+import { loadConfig } from "../loadConfig";
 
-// @ts-ignore
-const configFile = await import("../../config/cache.js").then(
-	(module) => module.default,
-);
+const configFile = await loadConfig("cache");
 
 export default function getCacheSettings(
 	settingsId: string,

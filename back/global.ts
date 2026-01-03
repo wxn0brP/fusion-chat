@@ -1,3 +1,5 @@
+import { loadConfig } from "./loadConfig";
+
 global.lo = function (...data) {
 	let line = new Error().stack.split("\n")[2].trim();
 	let path = line
@@ -13,13 +15,7 @@ global.lo = function (...data) {
 
 global.delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-// @ts-ignore
-global.fileConfig = (await import("../config/file.js").then(
-	(module) => module.default,
-)) as typeof global.fileConfig;
-// @ts-ignore
-global.logsConfig = (await import("../config/logs.js").then(
-	(module) => module.default,
-)) as typeof global.logsConfig;
+global.fileConfig = await loadConfig("file") as typeof global.fileConfig;
+global.logsConfig = await loadConfig("logs") as typeof global.logsConfig;
 
-export {};
+export { };
