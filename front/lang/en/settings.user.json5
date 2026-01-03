@@ -1,6 +1,4 @@
-import { Lang_Settings__User } from "../../types/lang/settings.user";
-
-const su: Lang_Settings__User = {
+{
     user_settings: "User settings",
     status: "Status",
     status_text: "Status text",
@@ -25,5 +23,3 @@ const su: Lang_Settings__User = {
     },
     after_delete: "Check your email to confirm the deletion",
 }
-
-export default su;

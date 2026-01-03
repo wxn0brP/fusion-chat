@@ -1,6 +1,4 @@
-import { Lang_UI } from "../../types/lang/ui";
-
-const ui: Lang_UI = {
+{
     voice_show: "Voice Show",
     add_dm: "Add Direct Message",
     reply_to_message: "Reply to message",
@@ -55,8 +53,7 @@ const ui: Lang_UI = {
     failed_to_load_messages: "Failed to load all messages",
     confirm: {
         remove_friend: "Do you really want to remove $ from your friends list",
-        removeF_friend_request:
-            "Do you really want to remove $ from your friend requests list",
+        removeF_friend_request: "Do you really want to remove $ from your friend requests list",
         sure: "Are you sure",
         call_to: "Are you sure you want to call $",
         exit_realm: "Are you sure you want to exit from $ realm",
@@ -134,5 +131,3 @@ const ui: Lang_UI = {
         kick_user: "Kick User",
     }
 }
-
-export default ui;

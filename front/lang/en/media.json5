@@ -1,6 +1,4 @@
-import { Lang_Media } from "../../types/lang/media";
-
-const media: Lang_Media = {
+{
     zoom: "Zoom",
     zoom_in: "Zoom In",
     zoom_out: "Zoom Out",
@@ -15,5 +13,3 @@ const media: Lang_Media = {
     saturation: "Saturation",
     blur: "Blur"
 }
-
-export default media;

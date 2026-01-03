@@ -1,6 +1,4 @@
-import { Lang_uni } from "../../types/lang/uni";
-
-const uni: Lang_uni = {
+{
     show: "Show",
     all: "All",
     edit: "Edit",
@@ -18,5 +16,3 @@ const uni: Lang_uni = {
     join: "Join",
     leave: "Leave",
 }
-
-export default uni;

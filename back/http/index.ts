@@ -28,6 +28,7 @@ if (process.env.IS_TECHNICAL_BREAK == "true") {
 app.static("/", "front/public");
 app.static("/assets", "front/assets");
 app.static("/", "front/css");
+app.static("/lang", "front/lang");
 app.static("/app", "front/app");
 app.static("/app/js", "front-app/dist");
 app.static("/dev-panel", "front/dev-panel");

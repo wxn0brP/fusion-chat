@@ -1,6 +1,4 @@
-import { InternalCodeType } from "../../types/code";
-
-const InternalCode: InternalCodeType = {
+{
     Info: {
         General: {},
         Socket: {},
@@ -116,6 +114,4 @@ const InternalCode: InternalCodeType = {
             "52.004": "Upload Error"
         }
     }
-};
-
-export default InternalCode;
+}

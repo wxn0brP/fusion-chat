@@ -2,6 +2,7 @@ import hub from "../hub";
 import cw from "../core";
 import { Lang_Pkg } from "../types/utils";
 import utils from "./utils";
+import JSON5 from "json5";
 hub("translate");
 
 export const LangRef:
@@ -23,7 +24,7 @@ export async function init_translate() {
         ele.setAttribute("translate", ele.innerHTML.trim());
     });
 
-    LangRef.localesList = cw.get("/app/lang/list.txt").split("\n");
+    LangRef.localesList = cw.get("/lang/list.txt").split("\n");
     LangRef.localesList.unshift("en");
 
     let lang = localStorage.getItem("lang");
@@ -80,9 +81,8 @@ function getDataByKey(keyChain: string): string | null {
 }
 
 async function importData<T>(lang: string, pkg: string) {
-    const dynamicImport = new Function("path", "return import(path);");
-    const data = await dynamicImport(`./lang/${lang}/${pkg}.js`)
-    return data.default as T;
+    const data = await fetch(`/lang/${lang}/${pkg}.json5`).then(res => res.text());
+    return JSON5.parse(data) as T;
 }
 
 export default LangPkg;
