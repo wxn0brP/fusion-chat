@@ -6,7 +6,7 @@
     "license": "MIT",
     "type": "module",
     "scripts": {
-        "build": "tsc && bun build src/startApp.ts --outdir dist --minify --sourcemap"
+        "build": "tsc --noEmit && bun build src/startApp.ts --outdir dist --minify --sourcemap"
     },
     "dependencies": {
         "idb": "^8.0.3"
