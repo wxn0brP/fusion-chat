@@ -1,85 +1,90 @@
-// import { GLSocket } from "@wxn0brp/gloves-link-server";
-// import { authUser, createUser } from "#logic/auth";
-// import { Socket_User } from "#types/socket/user";
-// import { Id } from "#id";
-// import db from "#db";
-// import ValidError from "#logic/validError";
+import db from "#db";
+import { Id } from "#id";
+import { authUser, createUser } from "#logic/auth";
+import ValidError from "#logic/validError";
+import { GLSocket } from "@wxn0brp/gloves-link-server";
+import { io } from "./server";
 
-// interface Socket_QRCodeLogin extends GLSocket {
-// 	device: string;
-// }
+interface Socket_QRCodeLogin extends GLSocket {
+    device: string;
+}
 
-// interface RoleGet_handshake {
-// 	role: "get";
-// 	id: string;
-// 	device: string;
-// }
+interface RoleGet_handshake {
+    role: "get";
+    id: string;
+    device: string;
+}
 
-// interface RoleAuth_handshake {
-// 	role: "auth";
-// 	to: string;
-// }
+interface RoleAuth_handshake {
+    role: "auth";
+    to: string;
+}
 
-// interface Auth_data {
-// 	token: string;
-// 	_id: Id;
-// 	fr: string;
-// }
+interface Auth_data {
+    token: string;
+    _id: Id;
+    fr: string;
+}
 
-// io.of("/qrCodeLogin").onConnect((socket: Socket_QRCodeLogin) => {
-// 	// @ts-ignore
-// 	const auth = socket.handshake.auth as
-// 		| RoleGet_handshake
-// 		| RoleAuth_handshake;
-// 	if (!auth || !auth.role) return;
+io.of("/qrCodeLogin").auth(async ({ data }) => {
+    if (!data) return { status: 401, msg: "Role not provided" };
 
-// 	if (auth.role == "get") roleGet(socket);
-// 	else if (auth.role == "auth") roleAuth(socket);
-// });
+    const role = data.role as "get" | "auth";
+    if (!role) return { status: 401, msg: "Role not provided" };
 
-// function roleGet(socket: Socket_QRCodeLogin) {
-// 	// @ts-ignore
-// 	const auth = socket.handshake.auth as RoleGet_handshake;
+    if (role == "auth") {
+        if (!data.to) return { status: 401, msg: "To not provided" };
+        return { status: 200 };
+    }
+    if (role == "get") {
+        if (!data.id) return { status: 401, msg: "Id not provided" };
+        if (!data.device) return { status: 401, msg: "Device not provided" };
+        return { status: 200 };
+    }
 
-// 	if (!auth.id) return;
-// 	if (!auth.device) return;
-// 	socket.device = auth.device;
-// 	socket.joinRoom("qrCodeLogin-" + auth.id);
-// }
+    return { status: 401, msg: "Role not provided" };
+});
 
-// function emitError(socket: Socket_QRCodeLogin, error: any) {
-// 	const err = error.err;
-// 	socket.emit(err[0], ...err.slice(1));
-// }
+io.of("/qrCodeLogin").onConnect((socket: Socket_QRCodeLogin, authData) => {
+    const auth = authData.data;
+    if (auth.role == "get") roleGet(socket, auth as RoleGet_handshake);
+    else if (auth.role == "auth") roleAuth(socket, auth as RoleAuth_handshake);
+});
 
-// async function roleAuth(socket: Socket_QRCodeLogin) {
-// 	// @ts-ignore
-// 	const auth = socket.handshake.auth as RoleAuth_handshake;
-// 	if (!auth.to) return;
+function roleGet(socket: Socket_QRCodeLogin, data: RoleGet_handshake) {
+    socket.device = data.device;
+    socket.joinRoom("qrCodeLogin-" + data.id);
+}
 
-// 	const room = socket.server.rooms.get("qrCodeLogin-" + auth.to); 
-// 	if (room.size !== 1)
-// 		return emitError(socket, new ValidError("socket").valid("socket"));
+function emitError(socket: Socket_QRCodeLogin, error: any) {
+    const err = error.err;
+    socket.emit(err[0], ...err.slice(1));
+}
 
-// 	const to_socket = room.sockets[0] as Socket_QRCodeLogin;
-// 	socket.emit("device", to_socket.device);
+async function roleAuth(socket: Socket_QRCodeLogin, data: RoleAuth_handshake) {
+    const room = io.room("qrCodeLogin-" + data.to);
+    if (room.size !== 1)
+        return emitError(socket, new ValidError("socket").valid("socket"));
 
-// 	socket.on("auth", async (data: Auth_data, cb?: Function) => {
-// 		const validE = new ValidError("auth");
-// 		if (!data.token) return emitError(socket, validE.valid("token"));
-// 		if (!data._id) return emitError(socket, validE.valid("_id"));
-// 		if (!data.fr) return emitError(socket, validE.valid("fr"));
+    const to_socket = room.sockets[0] as Socket_QRCodeLogin;
+    socket.emit("device", to_socket.device);
 
-// 		const user = (await authUser(data.token)) as Socket_User;
-// 		if (!user) return emitError(socket, validE.err("auth"));
+    socket.on("auth", async (data: Auth_data, cb?: Function) => {
+        const validE = new ValidError("auth");
+        if (!data.token) return emitError(socket, validE.valid("token"));
+        if (!data._id) return emitError(socket, validE.valid("_id"));
+        if (!data.fr) return emitError(socket, validE.valid("fr"));
 
-// 		if (user._id !== data._id) return emitError(socket, validE.err("auth"));
-// 		if (user.name !== data.fr) return emitError(socket, validE.err("auth"));
+        const user = await authUser(data.token);
+        if (!user) return emitError(socket, validE.err("auth"));
 
-// 		const newToken = await createUser(user);
-// 		await db.data.add("token", { token: newToken }, false);
-// 		to_socket.emit("get", newToken, user.name, user._id);
+        if (user._id !== data._id) return emitError(socket, validE.err("auth"));
+        if (user.name !== data.fr) return emitError(socket, validE.err("auth"));
 
-// 		if (cb && typeof cb === "function") cb();
-// 	});
-// }
+        const newToken = await createUser(user);
+        await db.data.add("token", { token: newToken }, false);
+        to_socket.emit("get", newToken, user.name, user._id);
+
+        if (cb && typeof cb === "function") cb();
+    });
+}

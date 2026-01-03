@@ -1,6 +1,7 @@
+import { GLC } from "@wxn0brp/gloves-link-client";
+
 function locationNext() {
-    let urlParam = new URLSearchParams(location.search);
-    urlParam = urlParam.get("next");
+    let urlParam = new URLSearchParams(location.search).get("next");
     let next = "/app";
     if (urlParam) {
         next = window.location.protocol + "//" + window.location.host;
@@ -23,22 +24,24 @@ function loginW() {
 }
 loginW();
 
-const s_id = createCode();
-qrcodeC(location.protocol + '//' + location.host + "/qr-code-login?k=" + s_id);
-// const socket = io("/qrCodeLogin", {
-//     auth: {
-//         role: "get",
-//         id: s_id,
-//         device: navigator.userAgent
-//     }
-// });
-// socket.connect();
-// socket.on("get", (token, from, user_id) => {
-//     localStorage.setItem("token", token);
-//     localStorage.setItem("from", from);
-//     localStorage.setItem("user_id", user_id);
-//     locationNext();
-// });
+const s_id = "code"// createCode();
+const qrUrl = location.protocol + '//' + location.host + "/qr-code-login?k=" + s_id;
+console.log("qrUrl", qrUrl);
+qrcodeC(qrUrl);
+const socket = new GLC("/qrCodeLogin", {
+    connectionData: {
+        role: "get",
+        id: s_id,
+        device: navigator.userAgent
+    }
+});
+
+socket.on("get", (token, from, user_id) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("from", from);
+    localStorage.setItem("user_id", user_id);
+    locationNext();
+});
 
 const loginDiv = document.querySelector("#login");
 const passDiv = document.querySelector("#pass");

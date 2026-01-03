@@ -14,36 +14,49 @@ const cards = [
 ]
 
 const pages = {
-	index: {
-		title: "Welcome to Fusion Chat",
-		description: "Fusion Chat is a free, open source, and privacy-friendly chat application.",
-		cards: renderCards()
+	"rm/account-confirm": {
+		title: "Fusion Chat | Confirm delete your account"
+	},
+	"rm/account-undo": {
+		title: "Fusion Chat | Undo delete your account"
+	},
+	"iv/bot": {
+		title: "Fusion Chat | Invite bot"
+	},
+
+	"404": {
+		title: "Fusion Chat | 404 Page Not Found"
+	},
+	announcement: {
+		title: "Fusion Chat | Announcement"
 	},
 	get: {
 		title: "Download Fusion Chat",
 		description: "Download Fusion Chat for free"
 	},
-	register: {
-		title: "Fusion Chat | Register"
+	index: {
+		title: "Welcome to Fusion Chat",
+		description: "Fusion Chat is a free, open source, and privacy-friendly chat application.",
+		cards: renderCards()
+	},
+	ir: {
+		title: "Fusion Chat | Join To realm"
 	},
 	login: {
 		title: "Login to Fusion Chat"
 	},
+	"qr-code-login": {
+		title: "Fusion Chat | Login by QR Code"
+	},
 	"register-code": {
+		title: "Fusion Chat | Register"
+	},
+	register: {
 		title: "Fusion Chat | Register"
 	},
 	tos: {
 		title: "Fusion Chat | Terms of Service"
 	},
-	"privacy-policy": {
-		title: "Fusion Chat | Privacy Policy"
-	},
-	ir: {
-		title: "Join To realm"
-	},
-	"iv/bot": {
-		title: "Invite bot"
-	}
 }
 
 function renderCards() {

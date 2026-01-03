@@ -9,7 +9,6 @@
         "build": "tsc && bun build src/startApp.ts --outdir dist --minify --sourcemap"
     },
     "dependencies": {
-        "@wxn0brp/gloves-link-client": "^0.0.10",
         "idb": "^8.0.3"
     },
     "devDependencies": {

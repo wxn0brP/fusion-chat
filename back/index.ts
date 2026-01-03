@@ -20,9 +20,8 @@ server.listen(parseInt(process.env.PORT), function () {
 
 loadTasks();
 
-app.use("/gloves-link", io.statusRouter());
-app.use((req, res) => {
-	res.status(404);
+io.falconFrame(app);
+app.set404((req, res) => {
 	res.render("front/main/404", {
 		title: "Fusion Chat | Page Not Found",
 	});

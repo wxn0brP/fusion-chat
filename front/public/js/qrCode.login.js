@@ -1,3 +1,4 @@
+import { GLC } from "@wxn0brp/gloves-link-client";
 let s_id = null;
 let socket = null;
 
@@ -24,8 +25,8 @@ function init() {
 }
 
 function connect() {
-    socket = io("/qrCodeLogin", {
-        auth: {
+    socket = new GLC("/qrCodeLogin", {
+        connectionData: {
             role: "auth",
             to: s_id,
         }
@@ -34,9 +35,9 @@ function connect() {
     socket.on("error", (...err) => {
         alert(err[1]);
     });
-    
+
     socket.on("error.valid", (...err) => {
-        if(err[0] == "socket" && err[1] == "socket"){
+        if (err[0] == "socket" && err[1] == "socket") {
             alert("No user to auth");
             location.href = "/app";
             return
@@ -51,6 +52,7 @@ function connect() {
         setTimeout(() => {
             const btn = document.querySelector("#accept-btn");
             btn.disabled = false;
+            btn.title = "";
             btn.onclick = accept;
         }, 5_000);
     });
