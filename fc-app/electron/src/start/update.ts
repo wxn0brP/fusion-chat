@@ -1,4 +1,3 @@
-import axios from "axios";
 import vars from "../vars";
 
 async function updateApp(appVersion: string) {
@@ -37,8 +36,9 @@ function versionEngine(versionA: string, versionB: string) {
 
 async function getServerVersion(): Promise<string> {
     try {
-        const req = await axios.get(vars.confArg.link + "/meta/ele-version");
-        return req.data;
+        const req = await fetch(vars.confArg.link + "/meta/ele-version");
+        const json = await req.json();
+        return json.data;
     } catch {
         return "0.0.1";
     }
