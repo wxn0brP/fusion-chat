@@ -12,6 +12,8 @@ on:
       - "front-scripts/**"
       - "package.json"
       - "tsconfig.json"
+      - ".github/workflows/build-server.yml"
+      - "build.sh"
 
   pull_request:
     branches:
@@ -24,6 +26,9 @@ on:
       - "front-scripts/**"
       - "package.json"
       - "tsconfig.json"
+      - ".github/workflows/build-server.yml"
+      - "build.sh"
+
   workflow_dispatch:
 
 concurrency:

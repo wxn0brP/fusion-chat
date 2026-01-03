@@ -1,4 +1,4 @@
-bun build back/index.ts \
+bun build back/app.ts \
   --target node \
   --outdir dist-back \
   --sourcemap \
