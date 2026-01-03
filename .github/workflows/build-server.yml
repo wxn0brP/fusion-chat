@@ -53,13 +53,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install -g typescript tsc-alias
+          npm install -g typescript tsc-alias sass
 
       - name: Install and Build (Root)
         working-directory: .
         run: |
+          shopt -s extglob
           npm install
-          npm run build
+          ./build.sh
 
       - name: Install and Build (Front-App)
         working-directory: ./front-app
@@ -70,7 +71,6 @@ jobs:
       - name: Install and Build (SCSS)
         working-directory: .
         run: |
-          npm install -g sass
           npm run build:scss
           rm -rf front/scss
 
