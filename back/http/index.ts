@@ -33,7 +33,7 @@ app.static("/app/js", "front-app/dist");
 app.static("/dev-panel", "front/dev-panel");
 app.static("/meta", "front/meta");
 app.static("/userFiles", "userFiles");
-app.static("/app/src", "front-app/src");
+app.static("/app/src", "front-app/src", { errorIfDirNotFound: false });
 app.static("/js", "front-scripts/dist-build");
 
 global.sessions = {};
