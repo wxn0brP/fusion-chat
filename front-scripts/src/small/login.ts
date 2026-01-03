@@ -1,4 +1,6 @@
 import { GLC } from "@wxn0brp/gloves-link-client";
+declare const QRCode: any;
+import "@wxn0brp/flanker-ui/html";
 
 function locationNext() {
     let urlParam = new URLSearchParams(location.search).get("next");
@@ -43,11 +45,11 @@ socket.on("get", (token, from, user_id) => {
     locationNext();
 });
 
-const loginDiv = document.querySelector("#login");
-const passDiv = document.querySelector("#pass");
-const errDiv = document.querySelector("#err");
+const loginDiv = qi("#login");
+const passDiv = qi("#pass");
+const errDiv = qs("#err");
 
-document.querySelector("form").addEventListener("submit", (e) => {
+qs("form").addEventListener("submit", async (e) => {
     e.preventDefault();
     let login = loginDiv.value;
     if (!login) {
@@ -62,29 +64,31 @@ document.querySelector("form").addEventListener("submit", (e) => {
     login = login.trim();
     pass = pass.trim();
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/login", false);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({ name: login, password: pass }));
-    let res = xhr.responseText;
     try {
-        res = JSON.parse(res);
-        if (res.err) {
-            errDiv.innerHTML = res.msg;
+        const res = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ name: login, password: pass })
+        });
+        const json = await res.json();
+        if (json.err) {
+            errDiv.innerHTML = json.msg;
             return;
         }
-        localStorage.setItem("from", res.from);
-        localStorage.setItem("user_id", res.user_id);
-        localStorage.setItem("token", res.token);
+        localStorage.setItem("from", json.from);
+        localStorage.setItem("user_id", json.user_id);
+        localStorage.setItem("token", json.token);
         locationNext();
     } catch (e) {
-        alert(`Login error! Code ${xhr.status}.`);
-        console.log(res, e);
+        alert(`Login error! Code ${e.status}`);
+        console.log(e);
     }
 });
 
-function qrcodeC(url) {
-    const qrD = document.querySelector("#qrcode-qr");
+function qrcodeC(url: string) {
+    const qrD = qs("#qrcode-qr");
     qrD.innerHTML = "";
     const qrcode = new QRCode(qrD, {
         width: 364,
@@ -101,7 +105,9 @@ function createCode() {
     return id;
 }
 
-function changeCodeStatus(opn) {
-    document.querySelector("#qrcode-div").style.display = opn ? "block" : "none";
-    document.querySelector("#loginC").style.display = !opn ? "" : "none";
+function changeCodeStatus(opn: boolean) {
+    qs("#qrcode-div").style.display = opn ? "block" : "none";
+    qs("#loginC").style.display = !opn ? "" : "none";
 }
+
+(window as any).changeCodeStatus = changeCodeStatus;

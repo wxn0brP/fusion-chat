@@ -85,7 +85,7 @@ const formatFunc = {
     },
 
     responeMess(mess_id, div) {
-        const mess = document.querySelector(`#mess__${mess_id}`);
+        const mess = qs(`#mess__${mess_id}`);
         if (!mess) return;
 
         const messContent = mess.querySelector(".mess_content").getAttribute("_plain");
@@ -107,7 +107,7 @@ const formatFunc = {
         return matches.map(link => formatFunc.mediaPreview(link)).filter(ele => !!ele);
     },
 
-    mediaPreview(link) {
+    async mediaPreview(link) {
         if (!link) return;
 
         function check(link) {
@@ -188,7 +188,7 @@ const formatFunc = {
             link = l[0];
             if (!link.endsWith("/")) link += "/";
 
-            const api = JSON.parse(cw.get(`${link}.json?limit=2`));
+            const api = await fetch(`${link}.json?limit=2`).then(res => res.json());
             const post = api[0]?.data.children[0]?.data;
             const ele = document.createElement("div");
 
@@ -249,7 +249,8 @@ const formatFunc = {
             const customFieldsContainer = document.createElement("div");
             customFieldsContainer.classList.add("custom-fields");
 
-            for (const [key, value] of Object.entries(embedData.customFields)) {
+            for (const [key, _value] of Object.entries(embedData.customFields)) {
+                const value = _value as any;
                 const fieldContainer = document.createElement("div");
                 fieldContainer.classList.add("custom-field");
 

@@ -1,34 +1,36 @@
-const errMessesDiv = document.querySelector("#errMesses");
-const promptDiv = document.querySelector("#prompt");
+import { delay } from "@wxn0brp/flanker-ui/utils";
+
+const errMessesDiv = qs("#errMesses");
+const promptDiv = qs("#prompt");
 
 const uiFunc = {
-    async uiMessage(message: string, backgroundColor: string="", displayTime: number=6000, className: string=""){
+    async uiMessage(message: string, backgroundColor: string = "", displayTime: number = 6000, className: string = "") {
         const div = document.createElement("div");
         div.textContent = message;
-        if(backgroundColor) div.style.backgroundColor = backgroundColor;
+        if (backgroundColor) div.style.backgroundColor = backgroundColor;
 
         div.style.top = `-${div.offsetHeight + 20}px`;
-        if(className) div.classList.add(className);
+        if (className) div.classList.add(className);
 
         const padding = 10;
         let topPosition = calculateTopPosition();
 
-        function calculateTopPosition(){
+        function calculateTopPosition() {
             let top = 0;
-            for(const child of errMessesDiv.children)
+            for (const child of errMessesDiv.children)
                 top += (child as HTMLDivElement).offsetHeight + padding;
             return top;
         }
 
         let ended = false;
 
-        async function end(){
+        async function end() {
             ended = true;
             div.style.top = `-${div.offsetHeight + 20}px`;
-    
+
             await delay(700);
             const children = Array.from(errMessesDiv.children) as HTMLDivElement[];
-            for(const child of children){
+            for (const child of children) {
                 const currentTop = parseInt(child.style.top.replace("px", ""));
                 child.style.top = `${currentTop - padding - div.offsetHeight}px`;
             }
@@ -42,19 +44,19 @@ const uiFunc = {
         div.style.top = `${10 + topPosition}px`;
 
         await delay(displayTime - 700);
-        if(ended) return;
+        if (ended) return;
         await end();
     },
-    
-    uiMsg(data: string, extraTime: number=0){
-        const speed = 1/3; //1s = 3 words
+
+    uiMsg(data: string, extraTime: number = 0) {
+        const speed = 1 / 3; //1s = 3 words
         const time = data.split(" ").length * speed + 6 + extraTime;
         uiFunc.uiMessage(data, undefined, time * 1000, "uiMsgClass");
     },
 
-    prompt(text: string, defaultValue: string=""){
+    prompt(text: string, defaultValue: string = "") {
         return new Promise((resolve) => {
-            function end(){
+            function end() {
                 resolve(input.value);
                 div.fadeOut();
                 setTimeout(() => {
@@ -71,7 +73,7 @@ const uiFunc = {
             input.type = "text";
             input.value = defaultValue;
             input.addEventListener("keydown", (e) => {
-                if(e.key == "Enter") end();
+                if (e.key == "Enter") end();
             })
             div.appendChild(input);
 
@@ -87,29 +89,29 @@ const uiFunc = {
         });
     },
 
-    selectPrompt(text: string, options: string, optionsValues: string[]=[]){
+    selectPrompt(text: string, options: string, optionsValues: string[] = []) {
         return new Promise((resolve) => {
-            function end(){
+            function end() {
                 resolve(select.value);
                 div.fadeOut();
                 setTimeout(() => {
                     div.remove();
                 }, 2000);
             }
-            
+
             const div = document.createElement("div");
             div.style.opacity = "0";
             div.classList.add("prompt");
             div.innerHTML = "<p>" + text + "<p><br />";
             const select = document.createElement("select");
-            for(let i=0; i<options.length; i++){
+            for (let i = 0; i < options.length; i++) {
                 const optionElement = document.createElement("option");
                 optionElement.value = optionsValues[i] || options[i];
                 optionElement.innerHTML = options[i];
                 select.appendChild(optionElement);
             }
             select.querySelector("option").selected = true;
-            
+
             div.appendChild(select);
             div.appendChild(document.createElement("br"));
 

@@ -75,23 +75,23 @@ class EditBot {
 
     uploadProfileImg() {
         if (!vars.actualBot) return;
-        const input = document.querySelector<HTMLInputElement>("#botProfile_file");
+        const input = qs<HTMLInputElement>("#botProfile_file");
         if (!input) return;
         const file = input.files[0];
         if (!file) return uiFunc.uiMsg("No file selected");
         fileFunc.profile(file, vars.actualBot.id);
         setTimeout(() => {
-            document.querySelector<HTMLImageElement>("#botProfile_img").src = "/api/profile/img?id=" + vars.actualBot.id;
+            qs<HTMLImageElement>("#botProfile_img").src = "/api/profile/img?id=" + vars.actualBot.id;
             reloadBotProfileImg(vars.actualBot.id);
         }, 1000);
     }
 
     previewProfileImg() {
-        const input = document.querySelector<HTMLInputElement>("#botProfile_file");
+        const input = qs<HTMLInputElement>("#botProfile_file");
         if (!input) return;
         const file = input.files[0];
         if (!file) return uiFunc.uiMsg("No file selected");
-        document.querySelector<HTMLImageElement>("#botProfile_img").src = URL.createObjectURL(file);
+        qs<HTMLImageElement>("#botProfile_img").src = URL.createObjectURL(file);
     }
 
     removeProfileImg() {

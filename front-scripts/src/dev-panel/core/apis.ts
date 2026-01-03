@@ -10,16 +10,15 @@ const apiVars = {
 
 const apis = {
     www: {
-        changeChat(id: Id): string {
+        async changeChat(id: Id): Promise<string> {
             if (apiVars.temp.realm[id]) return apiVars.temp.realm[id];
-            const data = apis.www.getInServer("/api/id/chat?chat=" + id).name;
+            const data = (await apis.www.getInServer("/api/id/chat?chat=" + id)).name;
             apiVars.temp.realm[id] = data;
             return data;
         },
 
-        getInServer<T = GetInServer__Response>(url: string): T {
-            const dataS = cw.get(url);
-            const data = JSON.parse(dataS);
+        async getInServer<T = GetInServer__Response>(url: string): Promise<T> {
+            const data = await fetch(url).then(res => res.json());
             if (data.err) {
                 uiFunc.uiMsg("Error fetching data.");
                 return null;

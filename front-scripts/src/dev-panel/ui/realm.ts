@@ -5,9 +5,9 @@ import Id from "../types/Id";
 import vars from "../var/var";
 
 export function render() {
-    const container = document.querySelector<HTMLDivElement>("#bot_realms__container");
+    const container = qs<HTMLDivElement>("#bot_realms__container");
     const realms = vars.botData.realms;
-    
+
     const templateData = [];
     for (const id of realms) {
         const name = apis.www.changeChat(id);

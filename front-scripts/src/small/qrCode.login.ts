@@ -1,4 +1,6 @@
 import { GLC } from "@wxn0brp/gloves-link-client";
+import "@wxn0brp/flanker-ui/html";
+
 let s_id = null;
 let socket = null;
 
@@ -20,8 +22,8 @@ function init() {
     }
 
     connect();
-    document.querySelector("#account").innerHTML = localStorage.getItem("from");
-    document.querySelector("#avatar").src = "/api/profile/img?id=" + localStorage.getItem("user_id");
+    qs("#account").innerHTML = localStorage.getItem("from");
+    qs<HTMLImageElement>("#avatar").src = "/api/profile/img?id=" + localStorage.getItem("user_id");
 }
 
 function connect() {
@@ -46,11 +48,11 @@ function connect() {
     });
 
     socket.on("device", (device) => {
-        const deviceInfo = document.querySelector("#device");
+        const deviceInfo = qs("#device");
         deviceInfo.innerHTML = device;
 
         setTimeout(() => {
-            const btn = document.querySelector("#accept-btn");
+            const btn = qs<HTMLButtonElement>("#accept-btn");
             btn.disabled = false;
             btn.title = "";
             btn.onclick = accept;
@@ -73,4 +75,4 @@ function accept() {
 }
 
 init();
-document.querySelector("#accept-btn").disabled = true;
+export { }

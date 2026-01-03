@@ -1,16 +1,16 @@
 import Handlebars from "handlebars";
 
 const templateFunc = {
-    compile(selector: string){
-        const ele = document.querySelector(selector);
+    compile(selector: string) {
+        const ele = qs(selector);
         const template = ele.innerHTML;
         ele.remove();
         const templateFunc = Handlebars.compile(template);
         return templateFunc;
     },
 
-    registerPartial(name: string, selector: string){
-        const ele = document.querySelector(selector);
+    registerPartial(name: string, selector: string) {
+        const ele = qs(selector);
         const template = ele.innerHTML;
         ele.remove();
         Handlebars.registerPartial(name, template);

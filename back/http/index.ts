@@ -35,7 +35,7 @@ app.static("/dev-panel", "front/dev-panel");
 app.static("/meta", "front/meta");
 app.static("/userFiles", "userFiles");
 app.static("/app/src", "front-app/src", { errorIfDirNotFound: false });
-app.static("/js", "front-scripts/dist-build");
+app.static("/js", "front-scripts/dist");
 
 global.sessions = {};
 app.use((req, res, next) => {

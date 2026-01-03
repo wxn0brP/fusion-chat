@@ -1,14 +1,16 @@
-const realmInp = document.querySelector("#realm");
-const chnlInp = document.querySelector("#channel");
-const messages = document.querySelector("#messages");
-const loadMore = document.querySelector("#loadMore");
+import "@wxn0brp/flanker-ui/html";
+
+const realmInp = qi("#realm");
+const chnlInp = qi("#channel");
+const messages = qs("#messages");
+const loadMore = qs<HTMLButtonElement>("#loadMore");
 const messageStep = 20;
 let actualMessages = 0;
 let users = {}
 let actualRealm = null;
 let actualChnl = null;
 
-document.querySelector("form").addEventListener("submit", (e) => {
+qs("form").addEventListener("submit", (e) => {
     e.preventDefault();
     handleSubmit();
 });
@@ -17,7 +19,7 @@ loadMore.addEventListener("click", () => {
     loadMessages(actualRealm, actualChnl, actualMessages, actualMessages + messageStep);
 });
 
-function handleSubmit(){
+function handleSubmit() {
     actualRealm = realmInp.value;
     actualChnl = chnlInp.value;
     messages.innerHTML = "";
@@ -26,7 +28,7 @@ function handleSubmit(){
     loadMessages(actualRealm, actualChnl, 0, messageStep);
 }
 
-function loadMessages(realm, chnl, start, end){
+function loadMessages(realm, chnl, start, end) {
     const sendData = {
         realm,
         chnl,
@@ -39,23 +41,23 @@ function loadMessages(realm, chnl, start, end){
         headers: {
             "Content-Type": "application/json",
         },
-    }).then(res => res.json()).then(res => {
-        if(res.err){
+    }).then(res => res.json()).then(async res => {
+        if (res.err) {
             alert("Something went wrong. Issue please.");
             console.log(res.msg);
             return;
         }
 
         const data = res.data;
-        if(data.length == 0){
+        if (data.length == 0) {
             const p = document.createElement("p");
             p.textContent = "No more messages";
             messages.insertBefore(p, messages.firstChild);
             loadMore.disabled = true;
             return;
         }
-        for(const msg of data){
-            renderMessage(msg);
+        for (const msg of data) {
+            await renderMessage(msg);
         }
         actualMessages += data.length;
     }).catch(err => {
@@ -64,11 +66,11 @@ function loadMessages(realm, chnl, start, end){
     });
 }
 
-function renderMessage(msg){
+async function renderMessage(msg) {
     const section = document.createElement("section");
 
     const author = document.createElement("h3");
-    author.textContent = changeIdToName(msg.fr);
+    author.textContent = await changeIdToName(msg.fr);
     section.appendChild(author);
 
     const message = document.createElement("article");
@@ -78,32 +80,32 @@ function renderMessage(msg){
     messages.insertBefore(section, messages.firstChild);
 }
 
-function changeIdToName(id){
-    if(users[id]) return users[id];
+async function changeIdToName(id: string) {
+    if (users[id]) return users[id];
     const url = "/api/id/u?id=" + id + "&chat=" + actualRealm;
-    const res = JSON.parse(cw.get(url));
-    
-    if(res.err) return "error";
+    const res = await fetch(url).then(res => res.json());
+
+    if (res.err) return "error";
     users[id] = res.name;
     return res.name;
 }
 
-function loadUrlParams(){
+function loadUrlParams() {
     const urlParams = new URLSearchParams(window.location.search);
     let chnl = null;
     let realm = null;
 
-    if(urlParams.has("cc")){
-        const [chat, chnl] = urlParams.get("cc").split("_");
+    if (urlParams.has("cc")) {
+        let [chat, chnl] = urlParams.get("cc").split("_");
         realm = chat;
         chnl = chnl;
     }
-    if(urlParams.has("realm")) realm = urlParams.get("realm");
-    if(urlParams.has("r")) realm = urlParams.get("r");
-    if(urlParams.has("chnl")) chnl = urlParams.get("chnl");
-    if(urlParams.has("c")) chnl = urlParams.get("c");
+    if (urlParams.has("realm")) realm = urlParams.get("realm");
+    if (urlParams.has("r")) realm = urlParams.get("r");
+    if (urlParams.has("chnl")) chnl = urlParams.get("chnl");
+    if (urlParams.has("c")) chnl = urlParams.get("c");
 
-    if(!realm || !chnl) return;
+    if (!realm || !chnl) return;
     realmInp.value = realm;
     chnlInp.value = chnl;
     handleSubmit();
@@ -112,15 +114,15 @@ function loadUrlParams(){
 loadUrlParams();
 
 const messFunc = {
-    linkClick(e){
+    linkClick(e) {
         e.preventDefault();
         const url = e.target.getAttribute("href");
         const confirm = window.confirm("Open link? (" + url + ")");
-        if(!confirm) return;
+        if (!confirm) return;
         window.open(url, "_blank");
     },
 
-    spoiler(e){
+    spoiler(e) {
         e.preventDefault();
         const t = e.target;
         t.classList.toggle("spoiler__show");

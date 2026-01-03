@@ -1,10 +1,10 @@
-const meter = document.querySelector("#strength-meter");
-const pass1Div = document.querySelector("#pass1");
-const pass2Div = document.querySelector("#pass2");
+const meter = qi("#strength-meter");
+export const pass1Div = qi("#pass1");
+export const pass2Div = qi("#pass2");
 
 pass1Div.addEventListener("input", checkPasswordStrength);
 
-function checkPasswordStrength(){
+function checkPasswordStrength() {
     const password = pass1Div.value;
     const pass = passTest(password);
 
@@ -14,23 +14,23 @@ function checkPasswordStrength(){
     updateRequirement("number-req", pass.numberReq);
     updateRequirement("special-req", pass.specialReq);
 
-    meter.value = getStrength(pass);
+    meter.value = getStrength(pass).toString();
 }
 
-function getStrength(pass){
+export function getStrength(pass: ReturnType<typeof passTest>) {
     const { lengthReq, lowercaseReq, uppercaseReq, numberReq, specialReq } = pass;
     const strength = [lengthReq, lowercaseReq, uppercaseReq, numberReq, specialReq].filter(Boolean).length;
     return strength;
 }
 
-function updateRequirement(requirementId, isFulfilled){
-    const requirementElement = document.querySelector("#"+requirementId);
+function updateRequirement(requirementId: string, isFulfilled: boolean) {
+    const requirementElement = qs("#" + requirementId);
     requirementElement.classList.remove("v");
     requirementElement.classList.remove("x");
     requirementElement.classList.add(isFulfilled ? "v" : "x");
 }
 
-function passTest(password){
+export function passTest(password: string) {
     return {
         lengthReq: password.length >= 8,
         lowercaseReq: /[a-z]/.test(password),
@@ -42,7 +42,7 @@ function passTest(password){
 
 checkPasswordStrength();
 
-function passVis(n){
-    let ele = document.querySelector("#pass"+n);
+export function passVis(n: number) {
+    let ele = qi("#pass" + n);
     ele.type = ele.type == "text" ? "password" : "text";
 }
