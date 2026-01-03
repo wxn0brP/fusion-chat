@@ -20,3 +20,5 @@ bun build back/app.ts \
   --external sass \
   --external source-map-support \
   --external '#runtime/*'
+
+tsc ./back/config-base/**/*.ts --outDir ./dist-back/config-base
