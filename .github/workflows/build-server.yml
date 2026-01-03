@@ -62,6 +62,13 @@ jobs:
           npm install
           npm run build
 
+      - name: Install and Build (SCSS)
+        working-directory: .
+        run: |
+          npm install -g sass
+          npm run build:scss
+          rm -rf front/scss
+
       - name: Install and Build (Front-Scripts)
         working-directory: ./front-scripts
         run: |
