@@ -1,16 +1,13 @@
-import apis from "../../api/apis";
-import socket from "../../core/socket/socket";
-import hub from "../../hub";
-import Id from "../../types/Id";
-import LangPkg from "../../utils/translate";
-import utils from "../../utils/utils";
-import { renderHTML } from "../../var/html";
-import { mglInt } from "../../var/mgl";
-import vars from "../../var/var";
-import uiFunc from "../helpers/uiFunc";
-hub("interact/realmUser");
+import apis from "#api/apis";
+import socket from "#core/socket/socket";
 
-function getId() {
+import Id from "#types/Id";
+import LangPkg from "#utils/translate";
+import utils from "#utils/utils";
+import { renderHTML } from "#var/html";
+import { mglInt } from "#var/mgl";
+import vars from "#var/var";
+import uiFunc from "../helpers/uiFunc"; function getId() {
     return renderHTML.realmUserProfile.getAttribute("data-id");
 }
 

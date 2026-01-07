@@ -1,16 +1,13 @@
-import hub from "../../../hub";
-hub("rs/meta");
-
-import socket from "../../../core/socket/socket";
-import uiFunc from "../../helpers/uiFunc";
-import fileFunc from "../../../api/file";
-import coreFunc from "../../../core/coreFunc";
-import rs_dataF from "./rs_var";
-import { addSeparator, initButton, initInputText } from "./rs_utils";
-import debugFunc, { LogLevel } from "../../../core/debug";
-import staticData from "../../../var/staticData";
-import LangPkg from "../../../utils/translate";
+import fileFunc from "#api/file";
+import coreFunc from "#core/coreFunc";
+import debugFunc, { LogLevel } from "#core/debug";
+import socket from "#core/socket/socket";
+import uiFunc from "#ui/helpers/uiFunc";
+import LangPkg from "#utils/translate";
+import staticData from "#var/staticData";
 import { saveAndExitSettings } from "./rs_save";
+import { addSeparator, initButton, initInputText } from "./rs_utils";
+import rs_dataF from "./rs_var";
 
 export const renderMeta = function () {
     const rs_data = rs_dataF();

@@ -1,10 +1,7 @@
-import hub from "../../hub";
-hub("render/utils");
-
-import Id from "../../types/Id";
-import utils from "../../utils/utils";
-import { Utils_updater } from "../../types/utils";
-import apiVars from "../../var/api";
+import Id from "#types/Id";
+import utils from "#utils/utils";
+import { Utils_updater } from "#types/utils";
+import apiVars from "#var/api";
 
 const renderUtils = {
     sortPrivs(data: Id[]): Id[] {

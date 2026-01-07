@@ -1,16 +1,13 @@
-import hub from "../../hub";
-hub("interact/ui");
-
-import Id from "../../types/Id";
-import vars from "../../var/var";
-import { messHTML } from "../../var/html";
-import coreFunc from "../../core/coreFunc";
-import messStyle from "../../core/mess/style";
-import socket from "../../core/socket/socket";
+import Id from "#types/Id";
+import vars from "#var/var";
+import { messHTML } from "#var/html";
+import coreFunc from "#core/coreFunc";
+import messStyle from "#core/mess/style";
+import socket from "#core/socket/socket";
 import uiFunc, { promptDiv } from "../helpers/uiFunc";
-import KeyState from "../../var/keys";
-import LangPkg from "../../utils/translate";
-import { socketEvt } from "../../core/socket/engine";
+import KeyState from "#var/keys";
+import LangPkg from "#utils/translate";
+import { socketEvt } from "#core/socket/engine";
 
 const uiInteract = {
     editMess(id: Id) {

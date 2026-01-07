@@ -1,9 +1,6 @@
-import hub from "../../../hub";
-hub("rs/nav");
-
-import LangPkg from "../../../utils/translate";
-import permissionFunc, { PermissionFlags } from "../../../utils/perm";
-import socket from "../../../core/socket/socket";
+import LangPkg from "#utils/translate";
+import permissionFunc, { PermissionFlags } from "#utils/perm";
+import socket from "#core/socket/socket";
 import rs_dataF from "./rs_var";
 
 import { renderMeta } from "./rs_meta";
@@ -134,6 +131,3 @@ function categorySwitcherButtonOnClick(category: Settings_rs__CategorySwitcherBu
         updateDisplay();
     });
 }
-
-
-

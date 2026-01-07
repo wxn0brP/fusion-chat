@@ -1,21 +1,18 @@
-import hub from "../../../hub";
-hub("rs/channels");
-
-import rs_dataF from "./rs_var";
-import apis from "../../../api/apis";
-import genId from "../../../utils/genId";
-import uiFunc from "../../helpers/uiFunc";
-import debugFunc, { LogLevel } from "../../../core/debug";
-import socket from "../../../core/socket/socket";
-import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Role } from "./types";
-import { Channel_Type } from "../../../types/channel";
-import LangPkg, { langFunc } from "../../../utils/translate";
+import apis from "#api/apis";
+import debugFunc, { LogLevel } from "#core/debug";
+import socket from "#core/socket/socket";
+import { Channel_Type } from "#types/channel";
+import uiFunc from "#ui/helpers/uiFunc";
+import genId from "#utils/genId";
+import LangPkg, { langFunc } from "#utils/translate";
 import {
-    initInputText,
-    initButton,
     addSeparator,
+    initButton,
     initCheckbox,
+    initInputText,
 } from "./rs_utils";
+import rs_dataF from "./rs_var";
+import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Role } from "./types";
 
 export const renderChannels = function () {
     const rs_data = rs_dataF();
@@ -227,10 +224,7 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
 
         details.appendChild(ul);
         containerElement.appendChild(details);
-    }
-
-
-    addSeparator(containerElement, 15);
+    } addSeparator(containerElement, 15);
     initButton(containerElement, LangPkg.settings.save, () => {
         channel.name = nameInp.value;
         const desc = descInp.value;

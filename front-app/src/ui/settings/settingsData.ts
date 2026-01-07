@@ -1,17 +1,14 @@
-import hub from "../../hub";
-hub("settingsData");
-
-import vars from "../../var/var";
-import apis from "../../api/apis";
-import fileFunc from "../../api/file";
+import vars from "#var/var";
+import apis from "#api/apis";
+import fileFunc from "#api/file";
 import uiFunc from "../helpers/uiFunc";
 import render_user from "../render/user";
-import socket from "../../core/socket/socket";
-import staticData from "../../var/staticData";
+import socket from "#core/socket/socket";
+import staticData from "#var/staticData";
 import { reloadProfileImages } from "../helpers/reloadImages";
-import { Settings_settingsManager__category } from "../../types/ui/settings";
-import LangPkg, { LangRef, load_translate } from "../../utils/translate";
-import apiVars from "../../var/api";
+import { Settings_settingsManager__category } from "#types/ui/settings";
+import LangPkg, { LangRef, load_translate } from "#utils/translate";
+import apiVars from "#var/api";
 import UserStateManager from "../helpers/userStateManager";
 
 interface SettingsData {

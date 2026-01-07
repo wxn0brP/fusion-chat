@@ -1,16 +1,14 @@
-import hub from "../../hub";
-hub("helpers/stateManager");
-
-import apis from "../../api/apis";
-import coreFunc from "../../core/coreFunc";
-import socket from "../../core/socket/socket";
-import Id from "../../types/Id";
-import utils from "../../utils/utils";
-import vars from "../../var/var";
+import apis from "#api/apis";
+import coreFunc from "#core/coreFunc";
+import socket from "#core/socket/socket";
+import Id from "#types/Id";
+import mainView from "#ui/components/mainView";
+import render_events from "#ui/render/event";
+import LangPkg, { langFunc } from "#utils/translate";
+import utils from "#utils/utils";
+import vars from "#var/var";
+import { delay } from "@wxn0brp/flanker-ui/utils";
 import uiFunc from "./uiFunc";
-import LangPkg, { langFunc } from "../../utils/translate";
-import render_events from "../render/event";
-import mainView from "../components/mainView";
 
 const stateManager = {
     handle(type: string, ...data: string[]) {

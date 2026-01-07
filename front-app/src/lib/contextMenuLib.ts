@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("contextMenuLib");
-
 const contextMenuLib = {
     menuShower(ele: HTMLElement, e: MouseEvent) {
         ele.style.display = "block";

@@ -1,10 +1,7 @@
-import hub from "../../hub";
-import { Ui_Media__Options, Ui_Media__State } from "../../types/ui/components";
-import LangPkg from "../../utils/translate";
-import { mglInt } from "../../var/mgl";
-hub("components/media");
 
-const mediaPopupDiv = document.querySelector<HTMLElement>("#mediaPopup");
+import { Ui_Media__Options, Ui_Media__State } from "#types/ui/components";
+import LangPkg from "#utils/translate";
+import { mglInt } from "#var/mgl"; const mediaPopupDiv = document.querySelector<HTMLElement>("#mediaPopup");
 
 class MediaPopup {
     private container: HTMLElement;

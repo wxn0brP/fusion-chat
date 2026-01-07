@@ -1,20 +1,17 @@
-import hub from "../../hub";
-hub("mess/interact");
-
 import messFunc from "./mess";
 import messStyle from "./style";
-import vars from "../../var/var";
-import apis from "../../api/apis";
+import vars from "#var/var";
+import apis from "#api/apis";
 import coreFunc from "../coreFunc";
 import socket from "../socket/socket";
-import uiFunc from "../../ui/helpers/uiFunc";
-import { Vars_realm__thread } from "../../types/var";
+import uiFunc from "#ui/helpers/uiFunc";
+import { Vars_realm__thread } from "#types/var";
 import messCmd, { messCmds, setCurrentCmd } from "./cmd";
-import { emojiHTML, messHTML } from "../../var/html";
-import { mglInt } from "../../var/mgl";
-import emojiFunc, { customEmoji } from "../../ui/components/emoji";
-import LangPkg from "../../utils/translate";
-import Id from "../../types/Id";
+import { emojiHTML, messHTML } from "#var/html";
+import { mglInt } from "#var/mgl";
+import emojiFunc, { customEmoji } from "#ui/components/emoji";
+import LangPkg from "#utils/translate";
+import Id from "#types/Id";
 
 const messInteract = {
     replyClose() {
@@ -81,7 +78,7 @@ const messInteract = {
 
             const to = vars.chat.to;
             if (to == "main" || to.startsWith("$")) return;
-            socket.emit("realm.emojis.sync", to, (emojis: {name: string, emoji: Id}[]) => {
+            socket.emit("realm.emojis.sync", to, (emojis: { name: string, emoji: Id }[]) => {
                 customEmoji.categories = [{
                     id: "Custom",
                     emojis: [

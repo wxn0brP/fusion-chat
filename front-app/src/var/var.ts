@@ -1,9 +1,6 @@
-import hub from "../hub";
-import Vars, { Vars_realm } from "../types/var";
-import { mglVar } from "./mgl";
-hub("var");
 
-const vars: Vars = {
+import Vars, { Vars_realm } from "../types/var";
+import { mglVar } from "./mgl"; const vars: Vars = {
     user: {
         _id: localStorage.getItem("user_id"),
         fr: localStorage.getItem("from"),

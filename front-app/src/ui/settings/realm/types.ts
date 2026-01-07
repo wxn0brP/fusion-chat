@@ -1,5 +1,5 @@
-import { Channel_Type } from "../../../types/channel";
-import Id from "../../../types/Id";
+import { Channel_Type } from "#types/channel";
+import Id from "#types/Id";
 
 export interface Settings_rs__SubscribedChannel {
     sr: Id; // source realm ID

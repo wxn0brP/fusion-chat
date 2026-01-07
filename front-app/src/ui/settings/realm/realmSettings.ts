@@ -1,7 +1,4 @@
-import hub from "../../../hub";
-hub("realmSettings");
-
-import Id from "../../../types/Id";
+import Id from "#types/Id";
 import { setData } from "./rs_var";
 import { Settings } from "./types";
 import { renderMeta } from "./rs_meta";
@@ -12,7 +9,7 @@ import { renderWebhooks } from "./rs_webhooks";
 import { renderUserRoleManager } from "./rs_users";
 import { saveSettings, exitWithoutSaving, saveAndExitSettings } from "./rs_save";
 import { renderCategorySwitcher, changeDisplay } from "./rs_nav";
-import LangPkg from "../../../utils/translate";
+import LangPkg from "#utils/translate";
 
 class RealmSettingsManager {
     settings: Settings;

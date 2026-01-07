@@ -1,5 +1,5 @@
 {
-    "cmd": "yarn build",
+    "cmd": "tsc --noEmit && bun build src/startApp.ts --outdir dist --sourcemap",
     "args": [],
     "watch": [
         "src"

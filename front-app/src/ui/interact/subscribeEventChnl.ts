@@ -1,9 +1,6 @@
-import hub from "../../hub";
-hub("interact/subscribeEventChnl");
-
-import apis from "../../api/apis";
-import { mglInt } from "../../var/mgl";
-import socket from "../../core/socket/socket";
+import apis from "#api/apis";
+import { mglInt } from "#var/mgl";
+import socket from "#core/socket/socket";
 
 const subscribeEventChnl = {
     popup: document.querySelector("#subscribeEventChnl"),
@@ -36,13 +33,13 @@ const subscribeEventChnl = {
         this.realms.innerHTML = "";
         this.realms.onchange = () => this.loadChannels();
         const _this = this;
-        socket.emit("realm.announcement.channel.available", (data) => {
-            data.forEach((realm) => {
+        socket.emit("realm.announcement.channel.available", async (data) => {
+            for (const realm of data) {
                 const option = document.createElement("option");
                 option.value = realm;
-                option.innerHTML = apis.www.changeChat(realm);
+                option.innerHTML = await apis.www.changeChat(realm);
                 _this.realms.appendChild(option);
-            });
+            }
             this.loadChannels();
         });
 

@@ -1,6 +1,3 @@
-import hub from "../../../hub";
-hub("rs/utils");
-
 /**
  * Initializes a new settings category element
  */

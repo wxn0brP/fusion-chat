@@ -1,12 +1,9 @@
-import cw from "../../core";
-import hub from "../../hub";
-import { Ui_EmojiData, Ui_EmojiData_emoji } from "../../types/ui/components";
-import { emojiHTML } from "../../var/html";
-import { mglVar } from "../../var/mgl";
-import vars from "../../var/var";
-hub("components/emoji");
+import { Ui_EmojiData, Ui_EmojiData_emoji } from "#types/ui/components";
+import { emojiHTML } from "#var/html";
+import { mglVar } from "#var/mgl";
+import vars from "#var/var";
 
-const emojiData: Ui_EmojiData = JSON.parse(cw.get("/assets/emoji.json"));
+const emojiData: Ui_EmojiData = await fetch("/assets/emoji.json").then(res => res.json());
 
 export const customEmoji: Ui_EmojiData = {
     categories: [],

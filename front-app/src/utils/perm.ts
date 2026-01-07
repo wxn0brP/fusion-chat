@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("perm");
-
 import vars from "../var/var";
 
 export enum PermissionFlags {

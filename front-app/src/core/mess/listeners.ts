@@ -1,11 +1,8 @@
-import hub from "../../hub";
-hub("mess/listeners");
-
 import messFunc from "./mess";
 import messStyle from "./style";
-import vars from "../../var/var";
-import { messHTML } from "../../var/html";
-import uiInteract from "../../ui/interact/ui";
+import vars from "#var/var";
+import { messHTML } from "#var/html";
+import uiInteract from "#ui/interact/ui";
 
 const { input } = messHTML;
 
@@ -53,7 +50,7 @@ input.addEventListener("input", messStyle.messageHeight);
 
 // Paste
 function pasteText(e: ClipboardEvent) {
-    if(!pasteCheck()) return;
+    if (!pasteCheck()) return;
     e.preventDefault();
     const pasteText = (e.clipboardData || (window as any).clipboardData).getData("text");
     input.value += pasteText;
@@ -63,7 +60,7 @@ function pasteText(e: ClipboardEvent) {
 }
 
 function pasteImage(e: ClipboardEvent) {
-    if(!pasteCheck()) return;
+    if (!pasteCheck()) return;
     const items = (e.clipboardData || (e as any).originalEvent.clipboardData).items;
 
     for (const item of items) {

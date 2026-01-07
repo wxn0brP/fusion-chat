@@ -1,15 +1,12 @@
-import hub from "../../../hub";
-hub("rs/roles");
-
-import permissionFunc from "../../../utils/perm";
-import vars from "../../../var/var";
-import genId from "../../../utils/genId";
-import rs_dataF from "./rs_var";
-import debugFunc, { LogLevel } from "../../../core/debug";
+import debugFunc, { LogLevel } from "#core/debug";
+import uiFunc from "#ui/helpers/uiFunc";
+import genId from "#utils/genId";
+import permissionFunc from "#utils/perm";
+import LangPkg from "#utils/translate";
+import vars from "#var/var";
 import { addSeparator, initButton, initCheckbox, initInputText } from "./rs_utils";
+import rs_dataF from "./rs_var";
 import { Settings_rs__Role } from "./types";
-import LangPkg from "../../../utils/translate";
-import uiFunc from "../../helpers/uiFunc";
 
 export const renderRoles = function () {
     const rs_data = rs_dataF();
@@ -159,14 +156,14 @@ export const renderRoleEdit = function (role: Settings_rs__Role, opts: { summary
         const checkbox = initCheckbox(containerElement, LangPkg.settings_realm.role_permissions[pb], isPerm);
 
         // if user not has permission, don't allow to change
-        if(permissionFunc.hasPermission(userPermissions, (1 << i)))
+        if (permissionFunc.hasPermission(userPermissions, (1 << i)))
             checkbox.onchange = () => role.p = caclulatePermissionsByCheckBoxs();
-        else{
+        else {
             checkbox.disabled = true;
             const label = checkbox.nextElementSibling as HTMLLabelElement;
             label.style.textDecoration = "line-through";
         }
-        
+
         checkboxs.push(checkbox);
     });
 

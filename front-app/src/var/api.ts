@@ -1,9 +1,6 @@
-import hub from "../hub";
-import ApisVars from "../types/apisVars";
-import { mglVar } from "./mgl";
-hub("var/api");
 
-const apiVars: ApisVars = {
+import ApisVars from "../types/apisVars";
+import { mglVar } from "./mgl"; const apiVars: ApisVars = {
     temp: {
         user: {
             main: {},

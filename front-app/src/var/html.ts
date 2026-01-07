@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("var/html");
-
 function qd(selector: string, container?: HTMLElement) {
     return (container || document).querySelector<HTMLDivElement>(selector);
 }

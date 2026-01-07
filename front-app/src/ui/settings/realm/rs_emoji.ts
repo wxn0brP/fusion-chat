@@ -1,14 +1,11 @@
-import hub from "../../../hub";
-hub("rs/emoji");
-
-import socket from "../../../core/socket/socket";
-import fileFunc from "../../../api/file";
-import debugFunc, { LogLevel } from "../../../core/debug";
+import socket from "#core/socket/socket";
+import fileFunc from "#api/file";
+import debugFunc, { LogLevel } from "#core/debug";
 import rs_dataF from "./rs_var";
 import { initButton, initInputText } from "./rs_utils";
 import { Settings_rs__Emoji } from "./types";
-import staticData from "../../../var/staticData";
-import LangPkg from "../../../utils/translate";
+import staticData from "#var/staticData";
+import LangPkg from "#utils/translate";
 
 export const renderEmojis = function () {
     const rs_data = rs_dataF();

@@ -1,7 +1,4 @@
 import socket from "../socket/socket";
-import hub from "../../hub";
-hub("cacheControllers/socketGeneral");
-
 class SocketController {
     private evtName: string;
     private cb: (...args: any[]) => void;

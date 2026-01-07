@@ -1,8 +1,5 @@
-import hub from "../../hub";
-import socket from "../socket/socket";
-hub("mess/socket");
 
-import {
+import socket from "../socket/socket"; import {
     mess,
     message_fetch,
     message_delete,
@@ -13,8 +10,8 @@ import {
     realm_thread_delete,
 } from "../socket/logic/mess";
 import { message_mark_read } from "../socket/logic/evt";
-import vars from "../../var/var";
-import { Core_mess__dbMessage } from "../../types/core/mess";
+import vars from "#var/var";
+import { Core_mess__dbMessage } from "#types/core/mess";
 import messageCacheController from "../cacheControllers/mess";
 
 socket.on("mess", mess);

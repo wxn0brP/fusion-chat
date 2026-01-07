@@ -1,8 +1,5 @@
-import hub from "../../hub";
-hub("settingsLib");
-
-import apis from "../../api/apis";
-import LangPkg from "../../utils/translate";
+import apis from "#api/apis";
+import LangPkg from "#utils/translate";
 import {
     Settings_settingsManager__category,
     Settings_settingsManager__fns,
@@ -12,7 +9,7 @@ import {
     Settings_settingsManager__settings_checkbox,
     Settings_settingsManager__settings_select,
     Settings_settingsManager__settings_text
-} from "../../types/ui/settings";
+} from "#types/ui/settings";
 
 const fns: Settings_settingsManager__fns = {
     createCheckbox(setting: Settings_settingsManager__settings_checkbox) {

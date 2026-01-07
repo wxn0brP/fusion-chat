@@ -1,12 +1,12 @@
-import apis from "../../api/apis";
-import coreFunc from "../../core/coreFunc";
-import { realm_thread_list } from "../../core/socket/logic/mess";
-import socket from "../../core/socket/socket";
-import Id from "../../types/Id";
-import { Vars_realm__thread } from "../../types/var";
-import LangPkg from "../../utils/translate";
-import { messHTML } from "../../var/html";
-import vars from "../../var/var";
+import apis from "#api/apis";
+import coreFunc from "#core/coreFunc";
+import { realm_thread_list } from "#core/socket/logic/mess";
+import socket from "#core/socket/socket";
+import Id from "#types/Id";
+import { Vars_realm__thread } from "#types/var";
+import LangPkg from "#utils/translate";
+import { messHTML } from "#var/html";
+import vars from "#var/var";
 import uiFunc from "../helpers/uiFunc";
 
 export default function render_forum(forums: Vars_realm__thread[], chnlId: Id) {

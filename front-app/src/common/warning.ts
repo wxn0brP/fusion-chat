@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("warning");
-
 import debugFunc from "../core/debug";
 import LangPkg from "../utils/translate";
 
@@ -16,6 +13,6 @@ import LangPkg from "../utils/translate";
     ];
 
     csss.forEach((css, i) => {
-        console.log(`%c${lang["w"+(i+1)]}`, `font-size:${css}`);
+        console.log(`%c${lang["w" + (i + 1)]}`, `font-size:${css}`);
     });
 })();

@@ -6,16 +6,13 @@ import {
     realm_event_notify,
     user_status_update,
 } from "./logic/evt";
-import render_realm from "../../ui/render/realm";
-import render_user from "../../ui/render/user";
-import realmInit from "../../ui/render/realmInit";
-import render_dm from "../../ui/render/dm";
-import { friend_get_all, friend_requests_get } from "../../ui/components/mainView";
-import hub from "../../hub";
-import { message_fetch_pinned, realm_thread_list } from "./logic/mess";
-hub("socket/engine");
+import render_realm from "#ui/render/realm";
+import render_user from "#ui/render/user";
+import realmInit from "#ui/render/realmInit";
+import render_dm from "#ui/render/dm";
+import { friend_get_all, friend_requests_get } from "#ui/components/mainView";
 
-const eventsBuilder = [
+import { message_fetch_pinned, realm_thread_list } from "./logic/mess"; const eventsBuilder = [
     ["self.status.get", self_status_get],
     ["realm.users.sync", realm_users_sync],
     ["realm.users.activity.sync", realm_users_activity_sync],

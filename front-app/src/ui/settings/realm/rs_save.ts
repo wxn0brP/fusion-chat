@@ -1,9 +1,6 @@
-import hub from "../../../hub";
-hub("rs/save");
-
+import uiFunc from "#ui/helpers/uiFunc";
+import LangPkg from "#utils/translate";
 import rs_dataF from "./rs_var";
-import uiFunc from "../../helpers/uiFunc";
-import LangPkg from "../../../utils/translate";
 
 export const saveSettings = async function () {
     const rs_data = rs_dataF();

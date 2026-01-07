@@ -1,12 +1,9 @@
-import cw from "../../../core";
-import hub from "../../../hub";
-import createMediaPopup from "../../../ui/components/media";
-hub("mess/format/media");
+import createMediaPopup from "#ui/components/media";
 
-export default function format_media(link: string) {
+export default async function format_media(link: string) {
     if (!link) return;
 
-    function check(link) {
+    function check(link: string) {
         const xhr = new XMLHttpRequest();
         xhr.open("HEAD", link, false);
         xhr.send();
@@ -86,7 +83,7 @@ export default function format_media(link: string) {
         link = l[0];
         if (!link.endsWith("/")) link += "/";
 
-        const api = JSON.parse(cw.get(`${link}.json?limit=2`));
+        const api = await fetch(`${link}.json?limit=2`).then(res => res.json());
         const post = api[0]?.data.children[0]?.data;
         const ele = document.createElement("div");
 

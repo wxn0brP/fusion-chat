@@ -1,11 +1,7 @@
-import hub from "../hub";
-hub("apis");
-
 import debugFunc, { LogLevel } from "../core/debug";
 import uiFunc from "../ui/helpers/uiFunc";
 import vars from "../var/var";
 import { mglVar } from "../var/mgl";
-import cw from "../core";
 import Id from "../types/Id";
 import LangPkg from "../utils/translate";
 import { Core_Api__GetInServer__Response } from "../types/core/api";
@@ -14,13 +10,13 @@ import apiVars from "../var/api";
 
 const apis = {
     www: {
-        changeUserID(id: Id): string {
+        async changeUserID(id: Id): Promise<string> {
             const chat = vars.chat.to;
             const temp = apiVars.temp.user;
 
             if (chat.startsWith("$") || chat == "main") { // if dm or main
                 if (temp.main[id]) return temp.main[id];
-                const data = apis.www.getInServer("/api/id/u?id=" + id).name;
+                const data = (await apis.www.getInServer("/api/id/u?id=" + id)).name;
                 if (!data) return "Unknown";
                 temp.main[id] = data;
                 return data;
@@ -34,17 +30,17 @@ const apis = {
             if (issetData == 0) return temp.main[id];
 
             if (id.startsWith("%")) { // if webhook
-                const data = apis.www.getInServer("/api/id/wh?id=" + id.replace("%", "") + "&chat=" + chat).name + " (APP)";
+                const data = (await apis.www.getInServer("/api/id/wh?id=" + id.replace("%", "") + "&chat=" + chat)).name + " (APP)";
                 if (!data) return "Unknown";
                 temp[chat][id] = data;
                 return data;
             } else if (id.startsWith("^")) { // if bot
-                const data = apis.www.getInServer("/api/id/bot?id=" + id.replace("^", "") + "&chat=" + chat).name + " (BOT)";
+                const data = (await apis.www.getInServer("/api/id/bot?id=" + id.replace("^", "") + "&chat=" + chat)).name + " (BOT)";
                 if (!data) return "Unknown";
                 temp[chat][id] = data;
                 return data;
             } else if (id.startsWith("(")) { // if event chnl
-                const data = apis.www.getInServer("/api/id/event?id=" + id.replace("(", "")).name + " (EVENT)";
+                const data = (await apis.www.getInServer("/api/id/event?id=" + id.replace("(", ""))).name + " (EVENT)";
                 if (!data) return "Unknown";
                 temp[chat][id] = data;
                 return data;
@@ -53,7 +49,7 @@ const apis = {
                 interface Data extends Core_Api__GetInServer__Response {
                     c: -1 | 0 | 1
                 }
-                const data = apis.www.getInServer<Data>("/api/id/u?id=" + id + "&chat=" + chat);
+                const data = await apis.www.getInServer<Data>("/api/id/u?id=" + id + "&chat=" + chat);
                 if (!data) return "Unknown";
                 if (data.c == 1) {
                     temp[chat][id] = data.name;
@@ -62,7 +58,7 @@ const apis = {
                 else if (data.c == 0) {
                     temp[chat][id] = 0;
                     if (temp.main[id]) return temp.main[id];
-                    const name = apis.www.getInServer("/api/id/u?id=" + id).name;
+                    const name = (await apis.www.getInServer("/api/id/u?id=" + id)).name;
                     if (!name) return "Unknown";
                     temp.main[id] = name;
                     return name;
@@ -73,16 +69,15 @@ const apis = {
             }
         },
 
-        changeChat(id: Id): string {
+        async changeChat(id: Id): Promise<string> {
             if (apiVars.temp.realm[id]) return apiVars.temp.realm[id];
-            const data = apis.www.getInServer("/api/id/chat?chat=" + id).name;
+            const data = (await apis.www.getInServer("/api/id/chat?chat=" + id)).name;
             apiVars.temp.realm[id] = data;
             return data;
         },
 
-        getInServer<T = Core_Api__GetInServer__Response>(url: string): T {
-            const dataS = cw.get(url);
-            const data = JSON.parse(dataS);
+        async getInServer<T = Core_Api__GetInServer__Response>(url: string): Promise<T> {
+            const data = await fetch(url).then(res => res.json());
             if (data.err) {
                 uiFunc.uiMsgT(LangPkg.api.error_fetch, ["."]);
                 uiFunc.uiMsgT(LangPkg.api.error, changeCodeToString(data.c));
@@ -113,8 +108,8 @@ const apis = {
                 rn: () => import("./devices/rn.js"),
                 if: () => import("./devices/if.js"),
             };
-            
-            apis.api = await devices[path]();            
+
+            apis.api = await devices[path]();
             debugFunc.msg(LogLevel.INFO, "load api: " + path);
         },
         apiType: "",

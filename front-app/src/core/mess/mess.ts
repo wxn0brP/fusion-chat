@@ -1,39 +1,36 @@
-import hub from "../../hub";
-hub("mess");
-
-import messCmd from "./cmd";
-import vars from "../../var/var";
-import messStyle from "./style";
-import apis from "../../api/apis";
-import formatFunc from "./format";
+import apis from "#api/apis";
+import fileFunc from "#api/file";
+import { Api_fileFunc_read__options } from "#types/api";
+import { Core_mess__dbMessage, Core_mess__sendMessage } from "#types/core/mess";
+import contextMenu from "#ui/components/contextMenu";
+import permissionFunc, { PermissionFlags } from "#utils/perm";
+import utils from "#utils/utils";
+import { messHTML } from "#var/html";
+import { mglVar } from "#var/mgl";
+import staticData from "#var/staticData";
+import vars from "#var/var";
 import coreFunc from "../coreFunc";
-import utils from "../../utils/utils";
 import socket from "../socket/socket";
-import fileFunc from "../../api/file";
-import messInteract from "./interact";
-import { messHTML } from "../../var/html";
-import { mglVar } from "../../var/mgl";
-import contextMenu from "../../ui/components/contextMenu";
-import { Api_fileFunc_read__options } from "../../types/api";
-import permissionFunc, { PermissionFlags } from "../../utils/perm";
-import { Core_mess__dbMessage, Core_mess__sendMessage } from "../../types/core/mess";
-import staticData from "../../var/staticData";
+import messCmd from "./cmd";
+import formatFunc from "./format";
 import { format_embed } from "./format/embed";
 import format_responeMess from "./format/respone";
+import messInteract from "./interact";
+import messStyle from "./style";
 
-export const maxMessLen = 2000; 
+export const maxMessLen = 2000;
 export const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
 
 const messFunc = {
-    sendMess(){
-        if(!vars.chat.to || !vars.chat.chnl) return;
-        if(vars.chat.to == "main") return;
+    sendMess() {
+        if (!vars.chat.to || !vars.chat.chnl) return;
+        if (vars.chat.to == "main") return;
 
         const mess = messHTML.input.value.trim();
-        if(!mess) return;
-        if(mess.length > maxMessLen) return;
+        if (!mess) return;
+        if (mess.length > maxMessLen) return;
 
-        if(!vars.temp.editId){
+        if (!vars.temp.editId) {
             const data: Core_mess__sendMessage = {
                 to: vars.chat.to,
                 chnl: vars.chat.chnl,
@@ -41,8 +38,8 @@ const messFunc = {
                 res: vars.temp.replyId,
             }
             const exitCode = messCmd.send(data);
-            if(exitCode == 0) socket.emit("mess", data);
-        }else{
+            if (exitCode == 0) socket.emit("mess", data);
+        } else {
             socket.emit("message.edit", vars.chat.to, vars.temp.editId, mess);
             messInteract.editMessClose();
         }
@@ -53,8 +50,8 @@ const messFunc = {
         messStyle.messageHeight();
     },
 
-    addMess(data: Core_mess__dbMessage, scroll: boolean=true, up: boolean=false){
-        if(!data) return;
+    async addMess(data: Core_mess__dbMessage, scroll: boolean = true, up: boolean = false) {
+        if (!data) return;
 
         /*
             .mess_message #mess__$id
@@ -68,8 +65,8 @@ const messFunc = {
 
         const messDiv = document.createElement("div");
         messDiv.classList.add("mess_message");
-        messDiv.id = "mess__"+data._id;
-        if(data.res) messDiv.setAttribute("resMsgID", data.res);
+        messDiv.id = "mess__" + data._id;
+        if (data.res) messDiv.setAttribute("resMsgID", data.res);
 
         const fromDiv = document.createElement("div");
         fromDiv.classList.add("mess_meta");
@@ -83,9 +80,9 @@ const messFunc = {
         fromDivText.classList.add("mess_meta_text");
 
         const fromDivTextName = document.createElement("span");
-        fromDivTextName.innerHTML = apis.www.changeUserID(data.fr);
+        fromDivTextName.innerHTML = await apis.www.changeUserID(data.fr);
         fromDivTextName.classList.add("mess_author_name");
-        if(!["%","^","("].includes(data.fr[0])){ // if not system/api let show profile
+        if (!["%", "^", "("].includes(data.fr[0])) { // if not system/api let show profile
             fromDivTextName.addEventListener("click", () => {
                 socket.emit("user.profile", data.fr);
             });
@@ -105,19 +102,20 @@ const messFunc = {
         formatFunc.formatMess(data.msg, messContentDiv);
         messContentDiv.setAttribute("_plain", data.msg);
         messDiv.appendChild(messContentDiv);
-        if(data.lastEdit){
+
+        if (data.lastEdit) {
             const replacer = utils.formatDateFormUnix(parseInt(data.lastEdit, 36) * 1000);
             messContentDiv.innerHTML += editMessText.replace("$$", replacer);
         }
-        if(data.embed)
-           format_embed(data.embed, messContentDiv);
+        if (data.embed)
+            format_embed(data.embed, messContentDiv);
 
-        if(data.reacts){
+        if (data.reacts) {
             const reactsDiv = document.createElement("div");
             reactsDiv.classList.add("mess_reacts");
 
             const keys = Object.keys(data.reacts);
-            for(let key of keys){
+            for (let key of keys) {
                 const users = data.reacts[key];
                 const span = document.createElement("span");
                 span.setAttribute("_key", key);
@@ -137,9 +135,9 @@ const messFunc = {
         setTimeout(() => {
             const errMargin = 70; // (px)
             const isScrollAtBottom = messHTML.div.scrollTop + messHTML.div.clientHeight + messDiv.clientHeight + errMargin >= messHTML.div.scrollHeight;
-            if(data.res) format_responeMess(data.res, messDiv);
-            if(scroll && isScrollAtBottom){
-                messDiv.scrollIntoView({behavior: "smooth"});
+            if (data.res) format_responeMess(data.res, messDiv);
+            if (scroll && isScrollAtBottom) {
+                messDiv.scrollIntoView({ behavior: "smooth" });
             }
         }, 100);
 
@@ -160,11 +158,11 @@ const messFunc = {
         })
     },
 
-    sendFile(f: File | undefined){
+    sendFile(f: File | undefined) {
         // TODO add check permissions about sending files
-        if(f){
+        if (f) {
             read(f);
-        }else{
+        } else {
             const input = document.createElement("input");
             input.type = "file";
             input.click();
@@ -179,13 +177,13 @@ const messFunc = {
             });
         }
 
-        function read(f: File){
+        function read(f: File) {
             const opt: Api_fileFunc_read__options = {
                 file: f,
                 callback: (xhr: XMLHttpRequest) => {
                     const path = JSON.parse(xhr.responseText).path;
                     const mess = location.origin + path;
-                    
+
                     const data = {
                         to: vars.chat.to,
                         chnl: vars.chat.chnl,
@@ -193,7 +191,7 @@ const messFunc = {
                     }
                     socket.emit("mess", data);
                 },
-                maxSize: 8*1024*1024,
+                maxSize: 8 * 1024 * 1024,
                 maxName: 60,
                 endpoint: "/api/file/upload"
             }

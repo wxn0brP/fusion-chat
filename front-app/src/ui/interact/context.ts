@@ -1,20 +1,17 @@
-import hub from "../../hub";
-hub("interact/context");
-
 import uiInteract from "./ui";
-import vars from "../../var/var";
-import apis from "../../api/apis";
-import utils from "../../utils/utils";
+import vars from "#var/var";
+import apis from "#api/apis";
+import utils from "#utils/utils";
 import uiFunc from "../helpers/uiFunc";
-import coreFunc from "../../core/coreFunc";
-import socket from "../../core/socket/socket";
-import permissionFunc from "../../utils/perm";
-import { messHTML } from "../../var/html";
-import { mglInt } from "../../var/mgl";
-import messInteract from "../../core/mess/interact";
+import coreFunc from "#core/coreFunc";
+import socket from "#core/socket/socket";
+import permissionFunc from "#utils/perm";
+import { messHTML } from "#var/html";
+import { mglInt } from "#var/mgl";
+import messInteract from "#core/mess/interact";
 import subscribeEventChnl from "../interact/subscribeEventChnl";
-import { Context__channel, Context__message, Context__realm, Context__thread } from "../../types/context";
-import LangPkg, { langFunc } from "../../utils/translate";
+import { Context__channel, Context__message, Context__realm, Context__thread } from "#types/context";
+import LangPkg, { langFunc } from "#utils/translate";
 
 const contextFunc = {
     message(type: Context__message) {

@@ -1,33 +1,33 @@
-import hub from "../../hub";
-hub("render/realm");
-
-import vars from "../../var/var";
-import Id from "../../types/Id";
-import apis from "../../api/apis";
-import utils from "../../utils/utils";
-import coreFunc from "../../core/coreFunc";
-import socket from "../../core/socket/socket";
+import vars from "#var/var";
+import Id from "#types/Id";
+import apis from "#api/apis";
+import utils from "#utils/utils";
+import coreFunc from "#core/coreFunc";
+import socket from "#core/socket/socket";
 import contextMenu from "../components/contextMenu";
-import { navHTML, renderHTML } from "../../var/html";
+import { navHTML, renderHTML } from "#var/html";
 import { updateUserProfileMarker } from "./userStatusMarker";
-import apiVars from "../../var/api";
+import apiVars from "#var/api";
 import realmUserProfile from "../components/realmUserProfile";
-import { Vars_realms } from "../../types/var";
+import { Vars_realms } from "#types/var";
 
 const render_realm = {
-    realms(data: Vars_realms[]) {
+    async realms(data: Vars_realms[]) {
         renderHTML.realms__content.innerHTML = "";
         vars.realms = data;
-        data.forEach((realm) => {
+
+        for (const realm of data) {
             const id = realm.realm;
             const realmDiv = document.createElement("div");
             realmDiv.classList.add("realm");
             realmDiv.id = "realm_chat_" + id;
+
             if (realm.img) {
-                realmDiv.innerHTML = `<img src="/userFiles/realms/${id}.png?time=${Date.now()}" alt="${apis.www.changeChat(id)}">`;
+                realmDiv.innerHTML = `<img src="/userFiles/realms/${id}.png?time=${Date.now()}" alt="${await apis.www.changeChat(id)}">`;
             } else {
-                realmDiv.innerHTML = apis.www.changeChat(id);
+                realmDiv.innerHTML = await apis.www.changeChat(id);
             }
+
             renderHTML.realms__content.appendChild(realmDiv);
 
             realmDiv.addEventListener("click", () => {
@@ -37,11 +37,11 @@ const render_realm = {
             contextMenu.menuClickEvent(realmDiv, (e) => {
                 contextMenu.realm(e, id);
             });
-        });
+        }
         coreFunc.markSelectedChat();
     },
 
-    usersInChat() {
+    async usersInChat() {
         navHTML.realm__users.innerHTML = "";
         const roles = vars.realm.roles;
         const users = vars.realm.users;
@@ -66,7 +66,7 @@ const render_realm = {
             return "";
         }
 
-        users.map(u => u.uid).forEach((userID) => {
+        for (const userID of users.map(u => u.uid)) {
             const isBot = userID[0] == "^";
             const userDiv = document.createElement("div");
             userDiv.classList.add("realm_user_div");
@@ -90,7 +90,7 @@ const render_realm = {
             const textContainer = document.createElement("div");
 
             const nameDiv = document.createElement("div");
-            nameDiv.innerHTML = apis.www.changeUserID(userID);
+            nameDiv.innerHTML = await apis.www.changeUserID(userID);
             nameDiv.style.color = getColor(userID);
             nameDiv.classList.add("realm_user_name");
             textContainer.appendChild(nameDiv);
@@ -105,18 +105,18 @@ const render_realm = {
             navHTML.realm__users.appendChild(userDiv);
             render_realm.realmUserStatus(userID);
             updateUserProfileMarker(userID, apiVars.user_state[userID]?.status.get());
-        });
+        }
     },
 
     realmUserStatus(id: Id) {
         const ele = document.querySelector("#user_status_" + utils.escape(id));
         if (!ele) return;
         const data = apiVars.user_state[id];
-        if (!data){
+        if (!data) {
             updateUserProfileMarker(id, "offline");
             return;
         }
-        
+
         updateUserProfileMarker(id, data.status.get() || "offline");
 
         const act = data.activity.get();

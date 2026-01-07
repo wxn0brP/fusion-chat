@@ -1,24 +1,22 @@
-import hub from "../../../hub";
-hub("socket/evt");
-
-import apis from "../../../api/apis";
-import { Core_socket__refresh, Core_socket__user_status_type } from "../../../types/core/socket";
-import Id from "../../../types/Id";
-import { Ui_UserState } from "../../../types/ui/render";
-import { Vars_realm__role, Vars_realm__user } from "../../../types/var";
-import uiFunc from "../../../ui/helpers/uiFunc";
-import UserStateManager from "../../../ui/helpers/userStateManager";
-import render_dm from "../../../ui/render/dm";
-import render_events from "../../../ui/render/event";
-import render_realm from "../../../ui/render/realm";
-import render_user from "../../../ui/render/user";
-import changeCodeToString from "../../../utils/code";
-import LangPkg, { langFunc } from "../../../utils/translate";
-import apiVars from "../../../var/api";
-import vars from "../../../var/var";
-import coreFunc from "../../coreFunc";
-import debugFunc, { LogLevel } from "../../debug";
-import messStyle from "../../mess/style";
+import apis from "#api/apis";
+import coreFunc from "#core/coreFunc";
+import debugFunc, { LogLevel } from "#core/debug";
+import messStyle from "#core/mess/style";
+import { Core_socket__refresh, Core_socket__user_status_type } from "#types/core/socket";
+import Id from "#types/Id";
+import { Ui_UserState } from "#types/ui/render";
+import { Vars_realm__role, Vars_realm__user } from "#types/var";
+import uiFunc from "#ui/helpers/uiFunc";
+import UserStateManager from "#ui/helpers/userStateManager";
+import render_dm from "#ui/render/dm";
+import render_events from "#ui/render/event";
+import render_realm from "#ui/render/realm";
+import render_user from "#ui/render/user";
+import changeCodeToString from "#utils/code";
+import LangPkg, { langFunc } from "#utils/translate";
+import apiVars from "#var/api";
+import vars from "#var/var";
+import { delay } from "@wxn0brp/flanker-ui/utils";
 import socket from "../socket";
 
 export function connect() {

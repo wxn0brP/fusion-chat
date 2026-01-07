@@ -1,12 +1,9 @@
-import hub from "../hub";
+
 import Id from "../types/Id";
 import uiFunc from "../ui/helpers/uiFunc";
 import { Api_fileFunc_read__options } from "../types/api";
 import debugFunc, { LogLevel } from "../core/debug";
-import LangPkg from "../utils/translate";
-hub("file");
-
-const fileFunc = {
+import LangPkg from "../utils/translate"; const fileFunc = {
     read(options: Api_fileFunc_read__options) {
         const { file, callback, maxSize, maxName, endpoint } = options;
         if (!file || !callback || !maxSize || !maxName || !endpoint) {

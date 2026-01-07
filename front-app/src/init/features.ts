@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("features");
-
 import vars from "../var/var";
 import messFunc from "../core/mess/mess";
 import setupSwipe from "../lib/swipeLib";
@@ -18,7 +15,7 @@ navHTML.navs__user.setAttribute("data-status-id", vars.user._id);
 document.querySelector("#app").addEventListener("contextmenu", (e) => {
     const target = e.target as HTMLElement;
     const tag = target.tagName.toLowerCase();
-    if(staticData.contextmenuTags.includes(tag)) return;
+    if (staticData.contextmenuTags.includes(tag)) return;
 
     e.preventDefault();
 });

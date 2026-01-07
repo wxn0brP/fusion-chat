@@ -1,7 +1,7 @@
-import { Core_mess__dbMessage } from "../../types/core/mess";
-import Id from "../../types/Id";
-import utils from "../../utils/utils";
-import vars from "../../var/var";
+import { Core_mess__dbMessage } from "#types/core/mess";
+import Id from "#types/Id";
+import utils from "#utils/utils";
+import vars from "#var/var";
 import { message_fetch } from "../socket/logic/mess";
 import { openDB, IDBPDatabase } from "idb";
 
@@ -162,7 +162,6 @@ async function enforceChannelCacheLimit(db: IDBPDatabase, chat: Id, chnl: Id) {
 
     await tx.done;
 }
-
 
 const messageCacheController = new MessageCacheController();
 export default messageCacheController;

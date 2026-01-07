@@ -1,17 +1,14 @@
-import hub from "../../../hub";
-hub("rs/users");
-
-import apis from "../../../api/apis";
-import vars from "../../../var/var";
-import socket from "../../../core/socket/socket";
-import debugFunc, { LogLevel } from "../../../core/debug";
-import rs_dataF from "./rs_var";
+import apis from "#api/apis";
+import debugFunc, { LogLevel } from "#core/debug";
+import socket from "#core/socket/socket";
+import uiFunc from "#ui/helpers/uiFunc";
+import LangPkg, { langFunc } from "#utils/translate";
+import vars from "#var/var";
 import { addSeparator, initButton, initCheckbox } from "./rs_utils";
+import rs_dataF from "./rs_var";
 import { Settings_rs__User } from "./types";
-import LangPkg, { langFunc } from "../../../utils/translate";
-import uiFunc from "../../helpers/uiFunc";
 
-export const renderUserRoleManager = function () {
+export const renderUserRoleManager = async function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
     if (!settings || !settings.users) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
@@ -24,10 +21,10 @@ export const renderUserRoleManager = function () {
     /**
      * Creates a HTML representation for a user in the users manager.
      */
-    function renderUser(user: Settings_rs__User) {
+    async function renderUser(user: Settings_rs__User) {
         const details = document.createElement("details");
         const summary = document.createElement("summary");
-        summary.innerHTML = apis.www.changeUserID(user.u);
+        summary.innerHTML = await apis.www.changeUserID(user.u);
         details.appendChild(summary);
         const div = document.createElement("div");
 
@@ -55,7 +52,7 @@ export const renderUserRoleManager = function () {
             addSeparator(div, 10);
             initButton(div, LangPkg.settings_realm.role_permissions.kick_user, async () => {
                 const text = langFunc(LangPkg.settings_realm.user_mgmt_confirms.kick_sure, apis.www.changeUserID(user.u)) + "?";
-                const conf = await uiFunc.confirm(text); 
+                const conf = await uiFunc.confirm(text);
                 if (!conf) return;
 
                 settings.users = settings.users.filter(u => u.u !== user.u);
@@ -79,10 +76,10 @@ export const renderUserRoleManager = function () {
         return details;
     }
 
-    users.forEach(user => {
-        container.appendChild(renderUser(user));
+    for (const user of users) {
+        container.appendChild(await renderUser(user));
         addSeparator(container, 10);
-    });
+    }
 
     if (settings.banUsers.length > 0) {
         const banUsersDetails = document.createElement("details");
@@ -91,9 +88,9 @@ export const renderUserRoleManager = function () {
         banUsersSummary.innerHTML = LangPkg.settings_realm.banned_users;
         banUsersDetails.appendChild(banUsersSummary);
 
-        settings.banUsers.forEach(u => {
+        for (const u of settings.banUsers) {
             const userName = document.createElement("span");
-            userName.innerHTML = apis.www.changeUserID(u);
+            userName.innerHTML = await apis.www.changeUserID(u);
             banUsersDetails.appendChild(userName);
 
             initButton(banUsersDetails, LangPkg.settings_realm.unban_user, async () => {
@@ -105,7 +102,7 @@ export const renderUserRoleManager = function () {
                 socket.emit("realm.user.unban", rs_data.realmId, u);
                 renderUserRoleManager();
             });
-        });
+        }
 
         container.appendChild(banUsersDetails);
     }

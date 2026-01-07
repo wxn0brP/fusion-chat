@@ -1,9 +1,7 @@
-import hub from "../../hub";
-hub("helpers/uiFunc");
-
-import debugFunc, { LogLevel } from "../../core/debug";
-import LangPkg, { langFunc } from "../../utils/translate";
-import { Ui_helper_uiMessage__opts, Ui_helper_uiMsg__opts } from "../../types/ui/helpers";
+import debugFunc, { LogLevel } from "#core/debug";
+import LangPkg, { langFunc } from "#utils/translate";
+import { Ui_helper_uiMessage__opts, Ui_helper_uiMsg__opts } from "#types/ui/helpers";
+import { delay } from "@wxn0brp/flanker-ui/utils";
 
 export const errMessesDiv = document.querySelector<HTMLDivElement>("#errMesses");
 export const promptDiv = document.querySelector<HTMLDivElement>("#prompt");
@@ -128,7 +126,7 @@ const uiFunc = {
         });
     },
 
-    confirm(text: string, yesText: string=LangPkg.uni.ok, noText: string=LangPkg.uni.cancel): Promise<boolean> {
+    confirm(text: string, yesText: string = LangPkg.uni.ok, noText: string = LangPkg.uni.cancel): Promise<boolean> {
         return new Promise((resolve) => {
             function end(accept: boolean) {
                 return () => {

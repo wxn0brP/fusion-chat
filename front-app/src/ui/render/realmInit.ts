@@ -1,20 +1,17 @@
-import hub from "../../hub";
-hub("render/realmInit");
-
-import Id from "../../types/Id";
-import vars from "../../var/var";
+import Id from "#types/Id";
+import vars from "#var/var";
 import { renderState } from "./var";
 import uiFunc from "../helpers/uiFunc";
-import coreFunc from "../../core/coreFunc";
+import coreFunc from "#core/coreFunc";
 import voiceFunc from "../components/voice";
-import { Channel_Type } from "../../types/channel";
-import { navHTML } from "../../var/html";
+import { Channel_Type } from "#types/channel";
+import { navHTML } from "#var/html";
 import contextMenu from "../components/contextMenu";
-import { Ui_render__category, Ui_render__channel } from "../../types/ui/render";
-import LangPkg from "../../utils/translate";
-import socket from "../../core/socket/socket";
+import { Ui_render__category, Ui_render__channel } from "#types/ui/render";
+import LangPkg from "#utils/translate";
+import socket from "#core/socket/socket";
 import render_events from "./event";
-import { socketEvt } from "../../core/socket/engine";
+import { socketEvt } from "#core/socket/engine";
 
 function initRealmState(permission: number = 0) {
     vars.realm = {
@@ -153,7 +150,7 @@ function downPanel_events(panel: HTMLElement) {
     events.innerHTML = "🪇";
     events.title = "Events";
     events.id = "navs__realm__events";
-    events.clA("btn");
+    events.classList.add("btn");
     events.addEventListener("click", render_events.show);
     panel.appendChild(events);
 

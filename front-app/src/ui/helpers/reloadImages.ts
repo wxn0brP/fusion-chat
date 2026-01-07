@@ -1,8 +1,5 @@
-import hub from "../../hub";
-import utils from "../../utils/utils";
-hub("helpers/reloadImages");
 
-export function reloadProfileImages(id: string): void {
+import utils from "#utils/utils"; export function reloadProfileImages(id: string): void {
     const escapedUrl = utils.escape(`/api/profile/img?id=${id}`);
     const imageSelector = `img[src*="${escapedUrl}"]`;
     const imgs = document.querySelectorAll<HTMLImageElement>(imageSelector);

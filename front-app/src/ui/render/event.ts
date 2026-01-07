@@ -1,17 +1,14 @@
-import hub from "../../hub";
-hub("render/event");
-
-import vars from "../../var/var";
-import apis from "../../api/apis";
-import { mglInt } from "../../var/mgl";
+import vars from "#var/var";
+import apis from "#api/apis";
+import { mglInt } from "#var/mgl";
 import voiceFunc from "../components/voice";
-import LangPkg from "../../utils/translate";
-import socket from "../../core/socket/socket";
-import permissionFunc from "../../utils/perm";
-import formatFunc from "../../core/mess/format";
-import { navHTML, renderHTML } from "../../var/html";
+import LangPkg from "#utils/translate";
+import socket from "#core/socket/socket";
+import permissionFunc from "#utils/perm";
+import formatFunc from "#core/mess/format";
+import { navHTML, renderHTML } from "#var/html";
 import { getChannelTypeEmoticon } from "./realmInit";
-import { Ui_render__event } from "../../types/ui/render";
+import { Ui_render__event } from "#types/ui/render";
 import uiFunc from "../helpers/uiFunc";
 
 const render_events = {
@@ -152,15 +149,16 @@ const render_events = {
                 usersShow.innerHTML = LangPkg.uni.hide;
             }
         });
-        function renderJoinedUsers() {
+        async function renderJoinedUsers() {
             users.innerHTML = "";
             usersCount.textContent = event.users.length.toString();
+
             for (const user of event.users) {
                 const userDiv = document.createElement("div");
-                userDiv.textContent = apis.www.changeUserID(user);
+                userDiv.textContent = await apis.www.changeUserID(user);
                 userDiv.style.cursor = "pointer";
                 userDiv.addEventListener("click", () => {
-                     socket.emit("user.profile", user);
+                    socket.emit("user.profile", user);
                 });
                 users.appendChild(userDiv);
             }

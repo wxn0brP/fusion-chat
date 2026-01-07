@@ -1,6 +1,6 @@
-import socket from "../../core/socket/socket";
-import debugFunc, { LogLevel } from "../../core/debug";
-import stateManager from "../../ui/helpers/stateManager";
+import socket from "#core/socket/socket";
+import debugFunc, { LogLevel } from "#core/debug";
+import stateManager from "#ui/helpers/stateManager";
 
 export const send = (data) => {
     // @ts-ignore

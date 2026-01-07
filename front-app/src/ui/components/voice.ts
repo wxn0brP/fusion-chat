@@ -1,20 +1,17 @@
-import hub from "../../hub";
-hub("components/voice");
-
-import { voiceHTML } from "../../var/html";
-import { mglVar } from "../../var/mgl";
-import socket from "../../core/socket/socket";
-import apis from "../../api/apis";
+import { voiceHTML } from "#var/html";
+import { mglVar } from "#var/mgl";
+import socket from "#core/socket/socket";
+import apis from "#api/apis";
 import uiFunc from "../helpers/uiFunc";
-import vars from "../../var/var";
-import LangPkg, { langFunc } from "../../utils/translate";
-import Id from "../../types/Id";
-import debugFunc, { LogLevel } from "../../core/debug";
+import vars from "#var/var";
+import LangPkg, { langFunc } from "#utils/translate";
+import Id from "#types/Id";
+import debugFunc, { LogLevel } from "#core/debug";
 
 interface voiceFuncVar {
     local_stream: null | MediaStream;
     muteMic: boolean;
-    sending: boolean | NodeJS.Timeout;
+    sending: boolean | number;
     joined: boolean | string;
 }
 
@@ -218,13 +215,14 @@ socket.on("connect", () => {
     voiceFunc.joinToVoiceChannel(voiceFuncVar.joined as Id);
 });
 
-socket.on("voice.get.users", (users: Id[]) => {
+socket.on("voice.get.users", async (users: Id[]) => {
     voiceHTML.users.innerHTML = "";
-    users.forEach((user) => {
+
+    for (const user of users) {
         const li = document.createElement("li");
-        li.innerHTML = apis.www.changeUserID(user);
+        li.innerHTML = await apis.www.changeUserID(user);
         voiceHTML.users.appendChild(li);
-    });
+    }
 
     if (users.length > 1) {
         voiceFunc.send();

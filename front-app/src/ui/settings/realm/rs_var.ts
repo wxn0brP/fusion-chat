@@ -1,11 +1,8 @@
-import hub from "../../../hub";
-import Id from "../../../types/Id";
+
+import Id from "#types/Id";
 import RealmSettingsManager from "./realmSettings";
 import { initCategoryElement } from "./rs_utils";
-import { Settings_rs__Categories, Settings } from "./types";
-hub("rs/var");
-
-/**
+import { Settings_rs__Categories, Settings } from "./types";/**
  * Initializes a settings page for a realm.
  */
 function initCategories(container: HTMLElement) {

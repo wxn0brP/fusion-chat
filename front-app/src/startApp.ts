@@ -1,28 +1,22 @@
-// init
-await import("./init/init.js");
-await import("./var/var.js");
-await import("./var/html.js");
+import "@wxn0brp/flanker-ui/html";
+import "./common/warning";
+import "./core/mess/listeners";
+import "./core/mess/messSocket";
+import "./core/socket/engine";
+import "./core/socket/evt";
+import "./core/socket/socket";
+import "./init/features";
+import "./init/init";
+import "./init/start";
+import "./ui/components/media";
+import "./ui/components/voice";
+import "./ui/interact/context";
+import "./ui/interact/mainView";
+import "./ui/interact/realmUser";
+import "./ui/interact/relations";
+import "./ui/interact/subscribeEventChnl";
+import "./ui/settings/settings";
+import "./var/html";
+import "./var/var";
 
-// features
-await import("./core/socket/socket.js");
-await import("./core/socket/evt.js");
-await import("./core/socket/engine.js")
-await import("./core/mess/messSocket.js");
-await import("./core/mess/listeners.js");
-await import("./init/features.js");
-await import("./ui/components/media.js");
-await import("./ui/components/voice.js");
-await import("./ui/settings/settings.js");
-
-// ui interact
-await import("./ui/interact/context.js");
-await import("./ui/interact/mainView.js");
-await import("./ui/interact/relations.js");
-await import("./ui/interact/realmUser.js");
-await import("./ui/interact/subscribeEventChnl.js");
-
-// start app
-await import("./init/start.js");
-await import("./common/warning.js");
-
-export {};
+export { };

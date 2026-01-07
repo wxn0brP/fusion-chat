@@ -1,15 +1,12 @@
-import hub from "../../hub";
-hub("interact/mainView");
-
-import Id from "../../types/Id";
+import Id from "#types/Id";
 import uiFunc from "../helpers/uiFunc";
-import socket from "../../core/socket/socket";
+import socket from "#core/socket/socket";
 import mainView from "../components/mainView";
-import { mainViewHTML } from "../../var/html";
-import { mglInt } from "../../var/mgl";
-import { Vars_mainView__page } from "../../types/var";
-import LangPkg from "../../utils/translate";
-import vars from "../../var/var";
+import { mainViewHTML } from "#var/html";
+import { mglInt } from "#var/mgl";
+import { Vars_mainView__page } from "#types/var";
+import LangPkg from "#utils/translate";
+import vars from "#var/var";
 
 const mainViewInteract = {
     showNav() {

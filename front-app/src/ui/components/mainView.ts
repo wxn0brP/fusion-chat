@@ -1,19 +1,16 @@
-import hub from "../../hub";
-hub("components/mainView");
-
-import vars from "../../var/var";
-import { mainViewHTML } from "../../var/html";
-import coreFunc from "../../core/coreFunc";
-import apis from "../../api/apis";
-import socket from "../../core/socket/socket";
+import vars from "#var/var";
+import { mainViewHTML } from "#var/html";
+import coreFunc from "#core/coreFunc";
+import apis from "#api/apis";
+import socket from "#core/socket/socket";
 import uiFunc from "../helpers/uiFunc";
-import Id from "../../types/Id";
-import { Vars_mainView__friend, Vars_mainView__page } from "../../types/var";
-import LangPkg, { langFunc } from "../../utils/translate";
+import Id from "#types/Id";
+import { Vars_mainView__friend, Vars_mainView__page } from "#types/var";
+import LangPkg, { langFunc } from "#utils/translate";
 import { updateUserProfileMarker } from "../render/userStatusMarker";
-import apiVars from "../../var/api";
+import apiVars from "#var/api";
 import UserStateManager from "../helpers/userStateManager";
-import { socketEvt } from "../../core/socket/engine";
+import { socketEvt } from "#core/socket/engine";
 
 const mainView = {
     show() {

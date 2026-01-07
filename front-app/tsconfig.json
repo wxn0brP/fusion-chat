@@ -3,11 +3,18 @@
         "module": "ES2022",
         "target": "ES2022",
         "outDir": "dist",
-        "paths": {},
+        "paths": {
+            "#*": [
+                "./src/*"
+            ]
+        },
         "skipLibCheck": true,
         "moduleResolution": "bundler",
         "sourceMap": true,
         "removeComments": true,
+        "types": [
+            "@wxn0brp/flanker-ui"
+        ]
     },
     "include": [
         "src"

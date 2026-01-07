@@ -1,11 +1,6 @@
-import hub from "../hub";
-import cw from "../core";
 import { Lang_Pkg } from "../types/utils";
 import utils from "./utils";
-import JSON5 from "json5";
-hub("translate");
-
-export const LangRef:
+import JSON5 from "json5"; export const LangRef:
     { localesList: string[] } =
     { localesList: [] }
 
@@ -24,7 +19,7 @@ export async function init_translate() {
         ele.setAttribute("translate", ele.innerHTML.trim());
     });
 
-    LangRef.localesList = cw.get("/lang/list.txt").split("\n");
+    LangRef.localesList = await fetch("/lang/list.txt").then(res => res.text()).then(res => res.split("\n"));
     LangRef.localesList.unshift("en");
 
     let lang = localStorage.getItem("lang");

@@ -1,22 +1,19 @@
-import hub from "../../hub";
-hub("render/dm");
-
-import { navHTML } from "../../var/html";
-import vars from "../../var/var";
-import coreFunc from "../../core/coreFunc";
+import { navHTML } from "#var/html";
+import vars from "#var/var";
+import coreFunc from "#core/coreFunc";
 import renderUtils from "./utils";
-import utils from "../../utils/utils";
-import apis from "../../api/apis";
-import socket from "../../core/socket/socket";
-import { Core_socket__blocked, Core_socket__dm } from "../../types/core/socket";
+import utils from "#utils/utils";
+import apis from "#api/apis";
+import socket from "#core/socket/socket";
+import { Core_socket__blocked, Core_socket__dm } from "#types/core/socket";
 import { updateUserProfileMarker } from "./userStatusMarker";
-import apiVars from "../../var/api";
+import apiVars from "#var/api";
 
 const render_dm = {
-    chats() {
+    async chats() {
         navHTML.priv.innerHTML = "";
 
-        renderUtils.sortPrivs(vars.privs).forEach((id) => {
+        for (const id of renderUtils.sortPrivs(vars.privs)) {
             const privDiv = document.createElement("button");
             privDiv.classList.add("priv_chat");
             privDiv.classList.add("btn");
@@ -30,7 +27,7 @@ const render_dm = {
             profileImg.src = "/api/profile/img?id=" + id;
             structDiv.appendChild(profileImg);
 
-            structDiv.innerHTML += apis.www.changeUserID(id);
+            structDiv.innerHTML += await apis.www.changeUserID(id);
             privDiv.appendChild(structDiv);
             navHTML.priv.appendChild(privDiv);
 
@@ -46,7 +43,8 @@ const render_dm = {
                 socket.emit("user.profile", id);
             });
             updateUserProfileMarker(id, apiVars.user_state[id]?.status.get());
-        });
+        }
+
         render_dm.privsRead();
         coreFunc.markSelectedChat();
     },
@@ -70,10 +68,10 @@ const render_dm = {
         });
     },
 
-    dm_get(data: Core_socket__dm[], blocked: Core_socket__blocked[]){
+    dm_get(data: Core_socket__dm[], blocked: Core_socket__blocked[]) {
         data.forEach((priv) => {
             const id = "$" + priv.priv;
-    
+
             apiVars.lastMess[id] = apiVars.lastMess[id] || {};
             apiVars.lastMess[id].main = {
                 read: priv.last?.main ?? null,
@@ -82,9 +80,9 @@ const render_dm = {
         })
         vars.privs = data.map(d => d.priv);
         render_dm.chats();
-    
+
         vars.blocked = blocked;
-        if(vars.chat.to.startsWith("$")) coreFunc.dmPlaceholder(vars.chat.to.substring(1));
+        if (vars.chat.to.startsWith("$")) coreFunc.dmPlaceholder(vars.chat.to.substring(1));
     },
 }
 

@@ -1,16 +1,13 @@
-import hub from "../../hub";
-import vars from "../../var/var";
-import Id from "../../types/Id";
-import { renderHTML } from "../../var/html";
-import renderUtils from "../render/utils";
-import apis from "../../api/apis";
-import apiVars from "../../var/api";
-import permissionFunc, { PermissionFlags } from "../../utils/perm";
-import realmUserInteract from "../interact/realmUser";
-import utils from "../../utils/utils";
-hub("components/realmUserProfile");
 
-const popup = renderHTML.realmUserProfile;
+import vars from "#var/var";
+import Id from "#types/Id";
+import { renderHTML } from "#var/html";
+import renderUtils from "../render/utils";
+import apis from "#api/apis";
+import apiVars from "#var/api";
+import permissionFunc, { PermissionFlags } from "#utils/perm";
+import realmUserInteract from "../interact/realmUser";
+import utils from "#utils/utils"; const popup = renderHTML.realmUserProfile;
 
 const realmUserProfile = {
     renderRoles(id: Id, canEditRole: boolean = false) {
@@ -50,9 +47,9 @@ const realmUserProfile = {
         });
     },
 
-    render(id: Id) {
+    async render(id: Id) {
         popup.querySelector<HTMLImageElement>("img").src = "/api/profile/img?id=" + id.replace("^", "");
-        popup.querySelector("[data-id=name]").innerHTML = apis.www.changeUserID(id);
+        popup.querySelector("[data-id=name]").innerHTML = await apis.www.changeUserID(id);
         popup.setAttribute("data-id", id);
 
         const user_state = apiVars.user_state[id.replace("^", "")];
@@ -62,9 +59,9 @@ const realmUserProfile = {
         realmUserProfile.renderRoles(id, canEditRole);
 
         popup.querySelector<HTMLButtonElement>("[data-role=role]").style.display = canEditRole ? "" : "none";
-        popup.querySelector<HTMLButtonElement>("[data-role=kick]").style.display = 
+        popup.querySelector<HTMLButtonElement>("[data-role=kick]").style.display =
             id != vars.user._id && permissionFunc.hasPermission(vars.realm.permission || 0, PermissionFlags.KickUser)
-            ? "" : "none";
+                ? "" : "none";
         renderUtils.initPopup(popup);
     }
 }

@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("var/keys");
-
 export const KeyState = {
     shift: false,
     ctrl: false,

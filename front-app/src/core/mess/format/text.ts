@@ -1,11 +1,8 @@
-import hub from "../../../hub";
-import utils from "../../../utils/utils";
-import vars from "../../../var/var";
-import format_list from "./list";
-import format_wrapTable from "./table";
-hub("mess/format/text");
 
-export default function format_text(text: string) {
+import utils from "#utils/utils";
+import vars from "#var/var";
+import format_list from "./list";
+import format_wrapTable from "./table"; export default function format_text(text: string) {
     text = text
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")

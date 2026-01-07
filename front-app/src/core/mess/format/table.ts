@@ -1,6 +1,3 @@
-import hub from "../../../hub";
-hub("mess/format/table");
-
 export default function format_wrapTable(tableText: string) {
     const rows = tableText.trim().split("\n");
     let htmlTable = `<div class="table_wrap"><table>`;

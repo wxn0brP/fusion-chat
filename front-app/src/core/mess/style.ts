@@ -1,13 +1,10 @@
-import hub from "../../hub";
-hub("mess/style");
-
-import { messHTML } from "../../var/html";
-import utils from "../../utils/utils";
-import vars from "../../var/var";
-import apis from "../../api/apis";
+import { messHTML } from "#var/html";
+import utils from "#utils/utils";
+import vars from "#var/var";
+import apis from "#api/apis";
 import { maxMessLen } from "./mess";
 
-const { input } = messHTML
+const { input } = messHTML;
 
 const messStyle = {
     sendBtnStyle() {

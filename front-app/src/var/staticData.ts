@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("var/staticData");
-
 const staticData = {
     baseTitle: `Fusion Chat`,
     messCount: 40,

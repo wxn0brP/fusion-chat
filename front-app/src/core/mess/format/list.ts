@@ -1,6 +1,3 @@
-import hub from "../../../hub";
-hub("mess/format/list");
-
 interface ListChild {
     line: string;
     lvl: number;

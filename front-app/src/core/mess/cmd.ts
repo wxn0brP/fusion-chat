@@ -1,20 +1,17 @@
-import hub from "../../hub";
-hub("mess/cmd");
-
 import messStyle from "./style";
-import vars from "../../var/var";
+import vars from "#var/var";
 import coreFunc from "../coreFunc";
 import socket from "../socket/socket";
-import { messHTML } from "../../var/html";
-import LangPkg from "../../utils/translate";
-import uiFunc from "../../ui/helpers/uiFunc";
-import permissionFunc, { PermissionFlags } from "../../utils/perm";
+import { messHTML } from "#var/html";
+import LangPkg from "#utils/translate";
+import uiFunc from "#ui/helpers/uiFunc";
+import permissionFunc, { PermissionFlags } from "#utils/perm";
 import {
     Core_mess__command,
     Core_mess__command_arg_list,
     Core_mess__sendMessage,
-} from "../../types/core/mess";
-import apiVars from "../../var/api";
+} from "#types/core/mess";
+import apiVars from "#var/api";
 
 const barc__commads = messHTML.barc__commads;
 barc__commads.style.display = "none";

@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("swipeLib");
-
 type SwipeCallback = () => void;
 
 function setupSwipe(

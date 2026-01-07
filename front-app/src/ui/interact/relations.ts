@@ -1,12 +1,9 @@
-import hub from "../../hub";
-hub("interact/relations");
-
-import Id from "../../types/Id";
+import Id from "#types/Id";
 import uiFunc from "../helpers/uiFunc";
-import socket from "../../core/socket/socket";
-import { otherHTML } from "../../var/html";
-import { mglVar } from "../../var/mgl";
-import LangPkg from "../../utils/translate";
+import socket from "#core/socket/socket";
+import { otherHTML } from "#var/html";
+import { mglVar } from "#var/mgl";
+import LangPkg from "#utils/translate";
 
 const makeRealmDiv = otherHTML.makeRealm;
 

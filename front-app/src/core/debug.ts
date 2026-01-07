@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("debug");
-
 import apis from "../api/apis";
 import { mglInt } from "../var/mgl";
 
@@ -10,7 +7,7 @@ const debugFunc = {
 
     init() {
         setTimeout(() => {
-            if (apis.app.apiType == "rn"){
+            if (apis.app.apiType == "rn") {
                 this.isDebug = true;
                 this.lvl = 0b1111;
             }
@@ -20,9 +17,9 @@ const debugFunc = {
     msg(level: number, ...data: any) {
         if (!this.isDebug) return;
 
-        if ((this.lvl & level) === 0) return; 
+        if ((this.lvl & level) === 0) return;
 
-        lo(...data);
+        console.log(...data);
         if (apis.app.apiType == "rn") {
             apis.api.send({ type: "debug", msg: (data.length == 1 ? data[0] : data) });
         }
@@ -41,7 +38,7 @@ export default debugFunc;
 mglInt.debug = {
     enable(info: boolean, warn: boolean, error: boolean, socketError: boolean) {
         debugFunc.isDebug = info || warn || error || socketError;
-        const lvl = 
+        const lvl =
             (info ? 0b0001 : 0) |
             (warn ? 0b0010 : 0) |
             (error ? 0b0100 : 0) |

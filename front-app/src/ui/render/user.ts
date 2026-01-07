@@ -1,23 +1,20 @@
-import hub from "../../hub";
-hub("render/user");
-
-import vars from "../../var/var";
-import apis from "../../api/apis";
+import vars from "#var/var";
+import apis from "#api/apis";
 import renderUtils from "./utils";
-import coreFunc from "../../core/coreFunc";
-import socket from "../../core/socket/socket";
+import coreFunc from "#core/coreFunc";
+import socket from "#core/socket/socket";
 import mainView from "../components/mainView";
 import mainViewInteract from "../interact/mainView";
-import { navHTML, renderHTML } from "../../var/html";
-import { Core_socket__friendStatus, Core_socket__user_profile } from "../../types/core/socket";
-import utils from "../../utils/utils";
-import LangPkg from "../../utils/translate";
+import { navHTML, renderHTML } from "#var/html";
+import { Core_socket__friendStatus, Core_socket__user_profile } from "#types/core/socket";
+import utils from "#utils/utils";
+import LangPkg from "#utils/translate";
 import { updateUserProfileMarker } from "./userStatusMarker";
 import UserStateManager from "../helpers/userStateManager";
 
 const render_user = {
-    localUserProfile() {
-        navHTML.user__name.innerHTML = apis.www.changeUserID(vars.user._id);
+    async localUserProfile() {
+        navHTML.user__name.innerHTML = await apis.www.changeUserID(vars.user._id);
         navHTML.user__status.innerHTML = vars.user.statusText || vars.user.status || "Online";
         updateUserProfileMarker(vars.user._id, vars.user.status || "online");
     },

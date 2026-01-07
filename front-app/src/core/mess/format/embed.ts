@@ -1,8 +1,5 @@
-import hub from "../../../hub";
-import { Core_mess__embed } from "../../../types/core/mess";
-hub("mess/format/embed");
 
-export function format_embed(embedData: Core_mess__embed, messDiv: HTMLDivElement) {
+import { Core_mess__embed } from "#types/core/mess"; export function format_embed(embedData: Core_mess__embed, messDiv: HTMLDivElement) {
     const embedContainer = document.createElement("div");
     embedContainer.classList.add("embed");
 

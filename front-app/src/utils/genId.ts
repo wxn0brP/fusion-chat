@@ -1,8 +1,5 @@
-import hub from "../hub";
-import Id from "../types/Id";
-hub("genId");
 
-const usedIdsMap = new Map();
+import Id from "../types/Id"; const usedIdsMap = new Map();
 
 /**
  * Generates a unique identifier based on specified parts.

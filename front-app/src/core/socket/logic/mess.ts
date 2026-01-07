@@ -1,25 +1,22 @@
-import hub from "../../../hub";
-hub("socket/mess");
-
+import apis from "#api/apis";
+import messageCacheController from "#core/cacheControllers/mess";
+import coreFunc from "#core/coreFunc";
+import formatFunc from "#core/mess/format";
+import messInteract from "#core/mess/interact";
+import messFunc, { editMessText } from "#core/mess/mess";
+import messStyle from "#core/mess/style";
+import { Core_mess__dbMessage, Core_mess__receivedMessage } from "#types/core/mess";
+import Id from "#types/Id";
+import { Vars_mess__pinned, Vars_realm__thread } from "#types/var";
+import contextMenu from "#ui/components/contextMenu";
+import uiFunc from "#ui/helpers/uiFunc";
+import render_dm from "#ui/render/dm";
+import LangPkg, { langFunc } from "#utils/translate";
+import utils from "#utils/utils";
+import apiVars from "#var/api";
+import { messHTML } from "#var/html";
+import vars from "#var/var";
 import socket from "../socket";
-import Id from "../../../types/Id";
-import vars from "../../../var/var";
-import apis from "../../../api/apis";
-import coreFunc from "../../coreFunc";
-import utils from "../../../utils/utils";
-import messStyle from "../../mess/style";
-import formatFunc from "../../mess/format";
-import { messHTML } from "../../../var/html";
-import render_dm from "../../../ui/render/dm";
-import messInteract from "../../mess/interact";
-import uiFunc from "../../../ui/helpers/uiFunc";
-import messFunc, { editMessText } from "../../mess/mess";
-import contextMenu from "../../../ui/components/contextMenu";
-import { Vars_mess__pinned, Vars_realm__thread } from "../../../types/var";
-import { Core_mess__dbMessage, Core_mess__receivedMessage } from "../../../types/core/mess";
-import LangPkg, { langFunc } from "../../../utils/translate";
-import apiVars from "../../../var/api";
-import messageCacheController from "../../cacheControllers/mess";
 
 export function mess(data: Core_mess__receivedMessage) {
     // generate last message storage if needed
@@ -132,7 +129,7 @@ export function message_edit(id: Id, msg: string, time: string, chatId: Id) {
     messageCacheController.editMessage(id, msg, time, chatId);
 }
 
-export function message_react(uid: Id, realm: Id, messId: Id, react: string) {
+export async function message_react(uid: Id, realm: Id, messId: Id, react: string) {
     if (vars.chat.to != realm) return;
 
     const mess = document.querySelector("#mess__" + messId);
@@ -144,7 +141,7 @@ export function message_react(uid: Id, realm: Id, messId: Id, react: string) {
         span.setAttribute("_key", react);
         span.setAttribute("_users", uid);
         span.innerHTML = react + " 1";
-        span.title = apis.www.changeUserID(uid);
+        span.title = await apis.www.changeUserID(uid);
         span.addEventListener("click", () => {
             socket.emit("message.react", realm, messId, react);
         });

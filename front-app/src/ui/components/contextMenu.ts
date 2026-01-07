@@ -1,13 +1,10 @@
-import hub from "../../hub";
-hub("components/contextMenu");
-
-import contextMenuLib from "../../lib/contextMenuLib";
-import Id from "../../types/Id";
-import { Ui_contextMenu__channelOptions, Ui_contextMenu__messageOptions } from "../../types/ui/components";
-import { Vars_realm__thread } from "../../types/var";
-import permissionFunc, { PermissionFlags } from "../../utils/perm";
-import utils from "../../utils/utils";
-import vars from "../../var/var";
+import contextMenuLib from "#lib/contextMenuLib";
+import Id from "#types/Id";
+import { Ui_contextMenu__channelOptions, Ui_contextMenu__messageOptions } from "#types/ui/components";
+import { Vars_realm__thread } from "#types/var";
+import permissionFunc, { PermissionFlags } from "#utils/perm";
+import utils from "#utils/utils";
+import vars from "#var/var";
 
 const contextMenu = {
     showMenu(e: MouseEvent, ele: HTMLElement, id: Id) {
@@ -56,10 +53,7 @@ const contextMenu = {
         setDisplayByDataId(ele, "delete", permToDelete);
 
         this.showMenu(e, ele, thread._id);
-    },
-
-
-    menuClickEvent(
+    }, menuClickEvent(
         div: HTMLElement,
         call: (e: MouseEvent) => void,
         conditionCb?: (target: HTMLElement) => boolean
@@ -75,7 +69,7 @@ const contextMenu = {
         }
 
         let time: number;
-        let holdTimeout: NodeJS.Timeout;
+        let holdTimeout: number;
 
         div.addEventListener("mousedown", startHold);
         div.addEventListener("touchstart", startHold);

@@ -1,6 +1,3 @@
-import hub from "../hub";
-hub("utils");
-
 import apis from "../api/apis";
 import Id from "../types/Id";
 import uiInteract from "../ui/interact/ui";
@@ -84,7 +81,7 @@ const utils = {
     rmRef<T>(obj: T): T {
         return JSON.parse(JSON.stringify(obj));
     },
-    
+
     getHighestRoleIndex(userRoles: string[], roleHierarchy: string[]): number {
         for (let i = 0; i < roleHierarchy.length; i++) {
             if (userRoles.includes(roleHierarchy[i])) {
