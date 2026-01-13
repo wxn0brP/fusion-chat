@@ -1,4 +1,5 @@
 import apis from "#api/apis";
+import warning from "#common/warning";
 import coreFunc from "#core/coreFunc";
 import debugFunc from "#core/debug";
 import socket from "#core/socket/socket";
@@ -16,3 +17,5 @@ setTimeout(async () => {
     await stateManager.handleGetParam();
     stateManager.removeControlParams();
 }, 3000);
+
+warning();

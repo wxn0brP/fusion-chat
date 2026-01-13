@@ -1,7 +1,7 @@
 import debugFunc from "../core/debug";
 import LangPkg from "../utils/translate";
 
-(function () {
+export default () => {
     if (debugFunc.isDebug) return;
     const lang = LangPkg.common.console_warning;
 
@@ -15,4 +15,4 @@ import LangPkg from "../utils/translate";
     csss.forEach((css, i) => {
         console.log(`%c${lang["w" + (i + 1)]}`, `font-size:${css}`);
     });
-})();
+}

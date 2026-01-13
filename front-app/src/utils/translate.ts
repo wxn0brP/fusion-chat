@@ -1,6 +1,9 @@
+import { mglVar } from "#var/mgl";
+import JSON5 from "json5";
 import { Lang_Pkg } from "../types/utils";
 import utils from "./utils";
-import JSON5 from "json5"; export const LangRef:
+
+export const LangRef:
     { localesList: string[] } =
     { localesList: [] }
 
@@ -81,3 +84,4 @@ async function importData<T>(lang: string, pkg: string) {
 }
 
 export default LangPkg;
+mglVar.LangPkg = LangPkg;
