@@ -160,7 +160,7 @@ export const renderChannels = function () {
  * @param {Settings_rs__Channel} channel The channel object to edit.
  */
 
-export const renderEditChannel = function (channel: Settings_rs__Channel) {
+export const renderEditChannel = async function (channel: Settings_rs__Channel) {
     const rs_data = rs_dataF();
     const containerElement = rs_data.html.editChannel;
     const settings = rs_data.settings;
@@ -201,16 +201,17 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
         details.appendChild(summary);
 
         const ul = document.createElement("ul");
-        subscribed.forEach(sub => {
+        for (const sub of subscribed) {
             const li = document.createElement("li");
             li.style.marginLeft = "1.2rem";
-            li.innerHTML = apis.www.changeChat(sub.sr) + " - " + sub.name;
+            li.innerHTML = await apis.www.changeChat(sub.sr) + " - " + sub.name;
 
             const unsubscribe = document.createElement("button");
             unsubscribe.style.marginLeft = "1rem";
             unsubscribe.innerHTML = LangPkg.settings_realm.unsubscribe_channel;
+
             unsubscribe.addEventListener("click", async () => {
-                const text = langFunc(LangPkg.settings_realm.confirm_unsubscribe, apis.www.changeChat(sub.sr) + " - " + sub.name) + "?";
+                const text = langFunc(LangPkg.settings_realm.confirm_unsubscribe, await apis.www.changeChat(sub.sr) + " - " + sub.name) + "?";
                 const conf = await uiFunc.confirm(text);
                 if (!conf) return;
                 socket.emit("realm.announcement.channel.unsubscribe", sub.sr, sub.sc, rs_data.realmId, sub.tc);
@@ -220,7 +221,7 @@ export const renderEditChannel = function (channel: Settings_rs__Channel) {
             li.appendChild(unsubscribe);
 
             ul.appendChild(li);
-        });
+        }
 
         details.appendChild(ul);
         containerElement.appendChild(details);

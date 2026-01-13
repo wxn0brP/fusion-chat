@@ -57,7 +57,7 @@ const coreFunc = {
         vars.chat.actMess = 0;
 
         if (id.startsWith("$")) {
-            document.querySelector("title").innerHTML = staticData.baseTitle + " | " + apis.www.changeUserID(id.substring(1));
+            document.querySelector("title").innerHTML = staticData.baseTitle + " | " + await apis.www.changeUserID(id.substring(1));
             navHTML.main.style.display = "";
             navHTML.realms.style.display = "none";
             vars.chat.chnl = "main";
@@ -81,7 +81,7 @@ const coreFunc = {
             messHTML.nav_priv.style.display = "";
             messHTML.nav_realm.style.display = "none";
         } else {
-            document.querySelector("title").innerHTML = staticData.baseTitle + " | " + apis.www.changeChat(id);
+            document.querySelector("title").innerHTML = staticData.baseTitle + " | " + await apis.www.changeChat(id);
             navHTML.main.style.display = "none";
             navHTML.realms.style.display = "";
             messHTML.nav_priv.style.display = "none";

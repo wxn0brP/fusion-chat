@@ -18,7 +18,7 @@ import { messHTML } from "#var/html";
 import vars from "#var/var";
 import socket from "../socket";
 
-export function mess(data: Core_mess__receivedMessage) {
+export async function mess(data: Core_mess__receivedMessage) {
     // generate last message storage if needed
     apiVars.lastMess[data.to] = apiVars.lastMess[data.to] || {};
     apiVars.lastMess[data.to][data.chnl] = apiVars.lastMess[data.to][data.chnl] || { read: null, mess: null };
@@ -33,7 +33,7 @@ export function mess(data: Core_mess__receivedMessage) {
     const isSenderCurrentUser = data.fr === vars.user._id;
 
     if (isPrivateChat && !currentChatIsDM && !isSenderCurrentUser) {
-        const title = langFunc(LangPkg.ui.new_message, apis.www.changeUserID(data.fr));
+        const title = langFunc(LangPkg.ui.new_message, await apis.www.changeUserID(data.fr));
         uiFunc.uiMsg(title);
 
         if (

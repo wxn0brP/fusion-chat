@@ -12,12 +12,12 @@ import apiVars from "#var/api";
 import UserStateManager from "../helpers/userStateManager";
 
 interface SettingsData {
-    user: () => Settings_settingsManager__category[];
+    user: () => Promise<Settings_settingsManager__category[]>;
     userSave: (data: any) => void
 }
 
 const settingsData: SettingsData = {
-    user: () => [
+    user: async () => [
         {
             name: "User settings",
             txt: LangPkg.settings_user.user_settings,
@@ -40,7 +40,7 @@ const settingsData: SettingsData = {
                     name: "Nickname",
                     txt: LangPkg.settings_user.nick,
                     type: "text",
-                    defaultValue: apis.www.changeUserID(vars.user._id) || vars.user.fr
+                    defaultValue: await apis.www.changeUserID(vars.user._id) || vars.user.fr
                 },
             ]
         },

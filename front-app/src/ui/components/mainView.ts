@@ -18,7 +18,7 @@ const mainView = {
         socket.emit("friend.requests.get");
     },
 
-    renderFriends() {
+    async renderFriends() {
         mainViewHTML.friendsContainer.innerHTML = "";
 
         if (vars.mainView.friends.length == 0) {
@@ -26,7 +26,7 @@ const mainView = {
             return;
         } else mainViewHTML.noFriends.style.display = "none";
 
-        vars.mainView.friends.forEach(friend => {
+        for (const friend of vars.mainView.friends) {
             const friendDiv = document.createElement("div");
             friendDiv.classList.add("main__view__friend");
             friendDiv.classList.add("userStatusMarker");
@@ -35,7 +35,7 @@ const mainView = {
             friendDiv.innerHTML = `
                 <img class="friend__avatar" src="/api/profile/img?id=${friend._id}" />
                 <div>
-                    <span class="friend__name">${apis.www.changeUserID(friend._id)}</span>
+                    <span class="friend__name">${await apis.www.changeUserID(friend._id)}</span>
                     <br />
                     <span class="friend__status">${friend.status}</span>
                     ${friend.text ? `<span class="friend__status_text">${friend.text}</span>` : ""}
@@ -55,7 +55,7 @@ const mainView = {
                 status: friend?.status,
                 statusText: friend?.text
             });
-        });
+        }
 
         mainView.sortFriends(vars.mainView.page);
     },
@@ -105,7 +105,7 @@ const mainView = {
         if (visibleCount == 0) mainViewHTML.noFriends.style.display = "";
     },
 
-    renderRequests() {
+    async renderRequests() {
         mainViewHTML.requestsContainer.innerHTML = "";
         mainViewHTML.requestCount.innerHTML = `(${vars.mainView.requests.length})`;
 
@@ -114,7 +114,7 @@ const mainView = {
             return;
         } else mainViewHTML.noRequests.style.display = "none";
 
-        vars.mainView.requests.forEach(request => {
+        for (const request of vars.mainView.requests) {
             const requestDiv = document.createElement("div");
             requestDiv.classList.add("main__view__friend");
             requestDiv.classList.add("userStatusMarker");
@@ -123,7 +123,7 @@ const mainView = {
             requestDiv.innerHTML = `
                 <img class="friend__avatar" src="/api/profile/img?id=${request}" />
                 <div>
-                    <div class="friend__name">${apis.www.changeUserID(request)}</div>
+                    <div class="friend__name">${await apis.www.changeUserID(request)}</div>
                     <button onclick="mglInt.mainView.requestFriendResponse('${request}', true)" class="request__btn">Accept</button>
                     <button onclick="mglInt.mainView.requestFriendResponse('${request}', false)" class="request__btn">Decline</button>
                 </div>
@@ -137,15 +137,15 @@ const mainView = {
 
             mainViewHTML.requestsContainer.appendChild(requestDiv);
             updateUserProfileMarker(request, apiVars.user_state[request]?.status.get());
-        });
+        }
     },
 
     async removeFriend(friend: Id) {
         if (!friend) return;
 
-        const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
+        const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, await apis.www.changeUserID(friend)) + "?");
         if (!conf) return;
-        const conf2 = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.sure, apis.www.changeUserID(friend)) + "?");
+        const conf2 = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.sure, await apis.www.changeUserID(friend)) + "?");
         if (!conf2) return;
 
         socket.emit("friend.remove", friend);
@@ -155,7 +155,7 @@ const mainView = {
     async removeFriendRequest(friend: Id) {
         if (!friend) return;
 
-        const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, apis.www.changeUserID(friend)) + "?");
+        const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, await apis.www.changeUserID(friend)) + "?");
         if (!conf) return;
 
         socket.emit("friend.request.remove", friend);
@@ -174,8 +174,8 @@ export function friend_requests_get(requests: Id[]) {
     mainView.renderRequests();
 }
 
-socket.on("friend.request", (from) => {
-    const text = langFunc(LangPkg.ui.friend.request, apis.www.changeUserID(from));
+socket.on("friend.request", async (from: string) => {
+    const text = langFunc(LangPkg.ui.friend.request, await apis.www.changeUserID(from));
     uiFunc.uiMsg(text, {
         onClick: () => {
             coreFunc.changeChat("main");
@@ -186,12 +186,12 @@ socket.on("friend.request", (from) => {
     socket.emit("friend.requests.get");
 });
 
-socket.on("friend.response", (from, accept) => {
+socket.on("friend.response", async (from: string, accept: boolean) => {
     if (!accept) {
-        uiFunc.uiMsgT(LangPkg.ui.friend.declined, apis.www.changeUserID(from));
+        uiFunc.uiMsgT(LangPkg.ui.friend.declined, await apis.www.changeUserID(from));
         return;
     }
-    uiFunc.uiMsgT(LangPkg.ui.friend.request, apis.www.changeUserID(from));
+    uiFunc.uiMsgT(LangPkg.ui.friend.request, await apis.www.changeUserID(from));
 
     if (vars.chat.to != "main") return;
     socket.emit("friend.get.all");

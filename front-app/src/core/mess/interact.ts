@@ -143,7 +143,7 @@ const messInteract = {
         t.clT("spoiler__show");
     },
 
-    thread(thread: Vars_realm__thread, messDiv: HTMLDivElement) {
+    async thread(thread: Vars_realm__thread, messDiv: HTMLDivElement) {
         if (!thread) return;
         if (!messDiv) return;
         const { _id, name, author } = thread;
@@ -154,7 +154,7 @@ const messInteract = {
         div.classList.add("thread");
         div.id = "thread__" + _id;
         div.innerHTML = `
-            \`- <span class="thread__author">${apis.www.changeUserID(author)}</span> |  
+            \`- <span class="thread__author">${await apis.www.changeUserID(author)}</span> |  
             <span class="thread__name">${name}</span>`;
         div.addEventListener("click", () => {
             coreFunc.changeChnl("&" + _id);

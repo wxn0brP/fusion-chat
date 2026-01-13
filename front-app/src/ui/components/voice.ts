@@ -97,7 +97,7 @@ const voiceFunc = {
         const id = vars.chat.to.replace("$", "");
         if (id == "main") return;
 
-        const isConfirm = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.call_to, apis.www.changeUserID(id)) + "?");
+        const isConfirm = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.call_to, await apis.www.changeUserID(id)) + "?");
         if (!isConfirm) return;
 
         socket.emit("call.dm.init", id);
@@ -233,16 +233,16 @@ socket.on("voice.get.users", async (users: Id[]) => {
     }
 });
 
-socket.on("call.dm.init", (id: Id, userOffline: boolean = false) => {
+socket.on("call.dm.init", async (id: Id, userOffline: boolean = false) => {
     if (userOffline) {
-        uiFunc.uiMsgT(LangPkg.ui.call.offline, apis.www.changeUserID(id));
+        uiFunc.uiMsgT(LangPkg.ui.call.offline, await apis.www.changeUserID(id));
         const join = confirm(LangPkg.ui.call.wait + "?");
         if (!join) return;
     } else { // if user is online
         if (voiceFunc.isInUserCall(id))
             return socket.emit("call.dm.answer", id, true);
 
-        const isConfirm = confirm(langFunc(LangPkg.ui.call.called, apis.www.changeUserID(id)) + "?");
+        const isConfirm = confirm(langFunc(LangPkg.ui.call.called, await apis.www.changeUserID(id)) + "?");
         socket.emit("call.dm.answer", id, isConfirm);
 
         if (!isConfirm) return;
@@ -252,23 +252,23 @@ socket.on("call.dm.init", (id: Id, userOffline: boolean = false) => {
     voiceFunc.joinToVoiceChannel(room);
 });
 
-socket.on("call.dm.answer", (id: Id, answer: boolean) => {
+socket.on("call.dm.answer", async (id: Id, answer: boolean) => {
     if (!answer)
         return alert(LangPkg.ui.call.rejected);
 
-    const isConfirm = confirm(langFunc(LangPkg.ui.call.answer, apis.www.changeUserID(id)) + "?");
+    const isConfirm = confirm(langFunc(LangPkg.ui.call.answer, await apis.www.changeUserID(id)) + "?");
     if (!isConfirm) return;
 
     const room = "user_" + [id, vars.user._id].sort().join("=");
     voiceFunc.joinToVoiceChannel(room);
 });
 
-socket.on("voice.leave", (id: Id) => {
-    uiFunc.uiMsgT(LangPkg.ui.call.left, apis.www.changeUserID(id));
+socket.on("voice.leave", async (id: Id) => {
+    uiFunc.uiMsgT(LangPkg.ui.call.left, await apis.www.changeUserID(id));
 });
 
-socket.on("voice.join", (to: Id) => {
-    uiFunc.uiMsgT(LangPkg.ui.call.joined, apis.www.changeUserID(to));
+socket.on("voice.join", async (to: Id) => {
+    uiFunc.uiMsgT(LangPkg.ui.call.joined, await apis.www.changeUserID(to));
 });
 
 export default voiceFunc;

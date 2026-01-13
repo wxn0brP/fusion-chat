@@ -84,9 +84,9 @@ const messStyle = {
         mess.querySelector<HTMLElement>(".mess_author_name").style.color = color;
     },
 
-    styleMessReacts(reactsDiv: HTMLElement) {
+    async styleMessReacts(reactsDiv: HTMLElement) {
         const spans = reactsDiv.querySelectorAll("span");
-        spans.forEach(span => {
+        for (const span of spans) {
             const users = span.getAttribute("_users").split(",");
 
             if (users.length == 0 || users[0] == "") {
@@ -99,9 +99,9 @@ const messStyle = {
                 span.classList.add("userReacted");
             }
 
-            span.title = users.map(u => apis.www.changeUserID(u)).join(", ");
+            span.title = (await Promise.all(users.map(u => apis.www.changeUserID(u)))).join(", ");
             span.innerHTML = span.getAttribute("_key") + " " + users.length;
-        });
+        }
     },
 
     setSelectionStart(position: number | undefined = undefined) {

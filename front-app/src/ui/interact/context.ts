@@ -78,7 +78,7 @@ const contextFunc = {
                 });
                 break;
             case "exit":
-                const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.exit_realm, apis.www.changeChat(id)) + "?");
+                const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.exit_realm, await apis.www.changeChat(id)) + "?");
                 if (conf) {
                     socket.emit("realm.exit", id);
                     coreFunc.changeChat("main");
@@ -116,7 +116,7 @@ const contextFunc = {
                 }
 
                 const text = `
-                    ${langFunc(LangPkg.ui.mute.realm, apis.www.changeChat(id))}
+                    ${langFunc(LangPkg.ui.mute.realm, await apis.www.changeChat(id))}
                     <br />
                     ${LangPkg.ui.status}: ${muteStatus}
                     ${endTimeText ? "<br />" + endTimeText : ''}

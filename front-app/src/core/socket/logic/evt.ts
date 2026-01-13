@@ -156,8 +156,8 @@ export function realm_users_activity_sync(userActivity: Core_socket__realm_users
 }
 
 export function realm_event_notify(realm: Id, evt: Id) {
-    socket.emit("realm.event.get.topic", realm, evt, (topic: string) => {
-        const text = langFunc(LangPkg.ui.event.notif, `<b>"${topic}"</b>`, `<b>${apis.www.changeChat(realm)}</b>`);
+    socket.emit("realm.event.get.topic", realm, evt, async (topic: string) => {
+        const text = langFunc(LangPkg.ui.event.notif, `<b>"${topic}"</b>`, `<b>${await apis.www.changeChat(realm)}</b>`);
         uiFunc.uiMsg(text, {
             onClick: () => {
                 coreFunc.changeChat(realm).then(() => {

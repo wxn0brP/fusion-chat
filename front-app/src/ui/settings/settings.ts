@@ -9,9 +9,9 @@ import RealmSettingsManager from "./realm/realmSettings";
 const settingDiv = document.querySelector<HTMLDivElement>("#settings");
 
 const settingsFunc = {
-    showUserSettings() {
+    async showUserSettings() {
         new SettingsManager(
-            settingsData.user(),
+            await settingsData.user(),
             settingDiv,
             settingsData.userSave,
             () => { }

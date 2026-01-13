@@ -42,7 +42,7 @@ const realmUserInteract = {
 
     async kick() {
         const id = getId();
-        const conf = await uiFunc.confirm(LangPkg.settings_realm.kick_user + "? <b>" + apis.www.changeUserID(id) + "</b>");
+        const conf = await uiFunc.confirm(LangPkg.settings_realm.kick_user + "? <b>" + await apis.www.changeUserID(id) + "</b>");
         if (!conf) return;
         socket.emit("realm.user.kick", vars.chat.to, id);
     }
