@@ -1,7 +1,7 @@
 import debugFunc, { LogLevel } from "#core/debug";
 import socket from "#core/socket/socket";
 import Id from "#types/Id";
-import uiFunc from "#ui/helpers/uiFunc";
+import { uiFunc } from "#ui/helpers/uiFunc";
 import genId from "#utils/genId";
 import LangPkg from "#utils/translate";
 import utils from "#utils/utils";

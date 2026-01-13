@@ -1,5 +1,5 @@
-import apis from "#api/apis";
-import fileFunc from "#api/file";
+import { apis } from "#api/apis";
+import { fileFunc } from "#api/file";
 import { Api_fileFunc_read__options } from "#types/api";
 import { Core_mess__dbMessage, Core_mess__sendMessage } from "#types/core/mess";
 import contextMenu from "#ui/components/contextMenu";
@@ -12,11 +12,11 @@ import vars from "#var/var";
 import coreFunc from "../coreFunc";
 import socket from "../socket/socket";
 import messCmd from "./cmd";
-import formatFunc from "./format";
+import { formatMess } from "./format";
 import { format_embed } from "./format/embed";
 import format_responeMess from "./format/respone";
 import messInteract from "./interact";
-import messStyle from "./style";
+import { messStyle } from "./style";
 
 export const maxMessLen = 2000;
 export const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
@@ -99,7 +99,7 @@ const messFunc = {
 
         const messContentDiv = document.createElement("div");
         messContentDiv.classList.add("mess_content");
-        formatFunc.formatMess(data.msg, messContentDiv);
+        await formatMess(data.msg, messContentDiv);
         messContentDiv.setAttribute("_plain", data.msg);
         messDiv.appendChild(messContentDiv);
 

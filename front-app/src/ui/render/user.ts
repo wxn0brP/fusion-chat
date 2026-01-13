@@ -1,23 +1,23 @@
 import vars from "#var/var";
-import apis from "#api/apis";
-import renderUtils from "./utils";
+import { apis } from "#api/apis";
 import coreFunc from "#core/coreFunc";
 import socket from "#core/socket/socket";
-import mainView from "../components/mainView";
-import mainViewInteract from "../interact/mainView";
+import { mainView } from "../components/mainView";
+import { mainViewInteract } from "../interact/mainView";
 import { navHTML, renderHTML } from "#var/html";
 import { Core_socket__friendStatus, Core_socket__user_profile } from "#types/core/socket";
 import utils from "#utils/utils";
 import LangPkg from "#utils/translate";
 import { updateUserProfileMarker } from "./userStatusMarker";
-import UserStateManager from "../helpers/userStateManager";
+import { setUserState } from "#ui/helpers/userStateManager";
+import { initPopup } from "./utils";
 
-const render_user = {
+class Render_user {
     async localUserProfile() {
         navHTML.user__name.innerHTML = await apis.www.changeUserID(vars.user._id);
         navHTML.user__status.innerHTML = vars.user.statusText || vars.user.status || "Online";
         updateUserProfileMarker(vars.user._id, vars.user.status || "online");
-    },
+    }
 
     userProfile(data: Core_socket__user_profile) {
         if (!data) return;
@@ -37,7 +37,7 @@ const render_user = {
             <div id="userProfileAbout"></div>
         `.trim();
 
-        if (data.statusText || data.status) UserStateManager.set(data._id, { status: data.status, statusText: data.statusText });
+        if (data.statusText || data.status) setUserState(data._id, { status: data.status, statusText: data.statusText });
         renderHTML.userProfile.querySelector("#userProfileInfo").setAttribute("data-status-id", data._id);
 
         if (!targetIsMe) {
@@ -106,7 +106,7 @@ const render_user = {
                     : ""}
             `.trim();
 
-            UserStateManager.set(data._id, { activity: utils.rmRef(act) });
+            setUserState(data._id, { activity: utils.rmRef(act) });
 
             if (act.startTime) {
                 const timeP = activityDiv.querySelector("#userProfileActivityTime");
@@ -125,9 +125,9 @@ const render_user = {
             }
         }
 
-        renderUtils.initPopup(renderHTML.userProfile);
-        UserStateManager.set(data._id, data);
-    },
+        initPopup(renderHTML.userProfile);
+        setUserState(data._id, data);
+    }
 }
 
-export default render_user;
+export const render_user = new Render_user();

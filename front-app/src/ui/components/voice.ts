@@ -1,8 +1,8 @@
 import { voiceHTML } from "#var/html";
 import { mglVar } from "#var/mgl";
 import socket from "#core/socket/socket";
-import apis from "#api/apis";
-import uiFunc from "../helpers/uiFunc";
+import { apis } from "#api/apis";
+import { uiFunc } from "../helpers/uiFunc";
 import vars from "#var/var";
 import LangPkg, { langFunc } from "#utils/translate";
 import Id from "#types/Id";

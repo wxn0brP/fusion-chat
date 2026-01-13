@@ -1,10 +1,10 @@
-import messStyle from "./style";
+import { messStyle } from "./style";
 import vars from "#var/var";
 import coreFunc from "../coreFunc";
 import socket from "../socket/socket";
 import { messHTML } from "#var/html";
 import LangPkg from "#utils/translate";
-import uiFunc from "#ui/helpers/uiFunc";
+import { uiFunc } from "#ui/helpers/uiFunc";
 import permissionFunc, { PermissionFlags } from "#utils/perm";
 import {
     Core_mess__command,

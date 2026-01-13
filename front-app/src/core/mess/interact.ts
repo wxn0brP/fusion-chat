@@ -1,15 +1,15 @@
 import messFunc from "./mess";
-import messStyle from "./style";
+import { messStyle } from "./style";
 import vars from "#var/var";
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import coreFunc from "../coreFunc";
 import socket from "../socket/socket";
-import uiFunc from "#ui/helpers/uiFunc";
+import { uiFunc } from "#ui/helpers/uiFunc";
 import { Vars_realm__thread } from "#types/var";
 import messCmd, { messCmds, setCurrentCmd } from "./cmd";
 import { emojiHTML, messHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
-import emojiFunc, { customEmoji } from "#ui/components/emoji";
+import { emojiFunc, customEmoji } from "#ui/components/emoji";
 import LangPkg from "#utils/translate";
 import Id from "#types/Id";
 

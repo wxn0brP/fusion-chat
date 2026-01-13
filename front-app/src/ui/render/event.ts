@@ -1,29 +1,29 @@
 import vars from "#var/var";
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import { mglInt } from "#var/mgl";
 import voiceFunc from "../components/voice";
 import LangPkg from "#utils/translate";
 import socket from "#core/socket/socket";
 import permissionFunc from "#utils/perm";
-import formatFunc from "#core/mess/format";
 import { navHTML, renderHTML } from "#var/html";
 import { getChannelTypeEmoticon } from "./realmInit";
 import { Ui_render__event } from "#types/ui/render";
-import uiFunc from "../helpers/uiFunc";
+import { uiFunc } from "../helpers/uiFunc";
+import { formatMess } from "#core/mess/format";
 
-const render_events = {
+class Render_events {
     show() {
         if (vars.chat.to == "main" || vars.chat.to.startsWith("$")) return;
         socket.emit("realm.event.list", vars.chat.to, false, (events: Ui_render__event[]) => {
             renderHTML.events__container.innerHTML = "";
             renderHTML.events__add.style.display = permissionFunc.isAdmin() ? "" : "none";
-            events.forEach(render_events.renderEvent);
+            events.forEach(this.renderEvent);
             renderHTML.events.fadeIn();
             navHTML.realm__panel.querySelector("#navs__realm__events").setAttribute("data-count", events.length.toString());
         });
-    },
+    }
 
-    renderEvent(event: Ui_render__event) {
+    async renderEvent(event: Ui_render__event) {
         const { type, where, topic, time: timeShort, desc, img, _id, author } = event;
         const time = timeShort * 1000;
         const eventTime = new Date(time).getTime();
@@ -56,7 +56,7 @@ const render_events = {
 
         if (desc) {
             const eventDesc = eventDiv.querySelector<HTMLDivElement>("[data-id='eventDesc']");
-            formatFunc.formatMess(desc, eventDesc);
+            await formatMess(desc, eventDesc);
         }
 
         if (permissionFunc.isAdmin()) {
@@ -68,7 +68,7 @@ const render_events = {
                 if (!conf) return;
                 socket.emit("realm.event.delete", vars.chat.to, _id);
                 setTimeout(() => {
-                    render_events.show();
+                    this.show();
                 }, 100);
             });
             const div = document.createElement("div");
@@ -82,8 +82,8 @@ const render_events = {
         }
 
         const cutdown = eventDiv.querySelector("[data-id='cutdown']");
-        let interval;
-        const updateCutdown = () => {
+        let interval: number;
+        const updateCutdown = async () => {
             const now = new Date().getTime();
             const diff = eventTime - now;
 
@@ -91,7 +91,7 @@ const render_events = {
                 cutdown.textContent = "0h 0m 0s";
                 if (type == "custom") {
                     const div = document.createElement("div");
-                    formatFunc.formatMess(where, div);
+                    await formatMess(where, div);
                     info.appendChild(div);
                 } else if (type == "voice") {
                     const button = document.createElement("button");
@@ -166,13 +166,13 @@ const render_events = {
         renderJoinedUsers();
 
         renderHTML.events__container.appendChild(eventDiv);
-    },
+    }
 
     exit() {
         renderHTML.events.fadeOut(() => {
             renderHTML.events__container.innerHTML = "";
         });
-    },
+    }
 
     async create() {
         if (vars.chat.to == "main" || vars.chat.to.startsWith("$")) return;
@@ -313,7 +313,7 @@ const render_events = {
             }
             socket.emit("realm.event.create", vars.chat.to, req);
             setTimeout(() => {
-                render_events.show();
+                this.show();
             }, 100)
         });
         container.appendChild(submit);
@@ -321,5 +321,6 @@ const render_events = {
     }
 }
 
-export default render_events;
+export const render_events = new Render_events();
+
 mglInt.realmEvents = render_events;

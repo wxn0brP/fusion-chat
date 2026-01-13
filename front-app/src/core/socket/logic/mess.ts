@@ -1,15 +1,15 @@
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import messageCacheController from "#core/cacheControllers/mess";
 import coreFunc from "#core/coreFunc";
-import formatFunc from "#core/mess/format";
+import { formatMess } from "#core/mess/format";
 import messInteract from "#core/mess/interact";
 import messFunc, { editMessText } from "#core/mess/mess";
-import messStyle from "#core/mess/style";
+import { messStyle } from "#core/mess/style";
 import { Core_mess__dbMessage, Core_mess__receivedMessage } from "#types/core/mess";
 import Id from "#types/Id";
 import { Vars_mess__pinned, Vars_realm__thread } from "#types/var";
 import contextMenu from "#ui/components/contextMenu";
-import uiFunc from "#ui/helpers/uiFunc";
+import { uiFunc } from "#ui/helpers/uiFunc";
 import render_dm from "#ui/render/dm";
 import LangPkg, { langFunc } from "#utils/translate";
 import utils from "#utils/utils";
@@ -114,11 +114,11 @@ export function messages_delete(ids: Id[], chatId: Id) {
     messageCacheController.deleteMessages(chatId, ids);
 }
 
-export function message_edit(id: Id, msg: string, time: string, chatId: Id) {
+export async function message_edit(id: Id, msg: string, time: string, chatId: Id) {
     const messageDiv = document.querySelector("#mess__" + id + " .mess_content") as HTMLDivElement;
     if (!messageDiv) return;
     messageDiv.setAttribute("_plain", msg);
-    formatFunc.formatMess(msg, messageDiv);
+    await formatMess(msg, messageDiv);
     messageDiv.innerHTML += editMessText.replace("$$", utils.formatDateFormUnix(parseInt(time, 36) * 1000));
 
     const responeMessages = document.querySelectorAll(`[resMsgID=${id}] .res_msg`);

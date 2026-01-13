@@ -1,7 +1,7 @@
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import debugFunc, { LogLevel } from "#core/debug";
 import socket from "#core/socket/socket";
-import uiFunc from "#ui/helpers/uiFunc";
+import { uiFunc } from "#ui/helpers/uiFunc";
 import LangPkg, { langFunc } from "#utils/translate";
 import vars from "#var/var";
 import { addSeparator, initButton, initCheckbox } from "./rs_utils";

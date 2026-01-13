@@ -1,7 +1,7 @@
 import vars from "#var/var";
 import debugFunc, { LogLevel } from "#core/debug";
 import socket from "#core/socket/socket";
-import stateManager from "#ui/helpers/stateManager";
+import { stateManager } from "#ui/helpers/stateManager";
 
 export const send = (data) => {
     // @ts-ignore

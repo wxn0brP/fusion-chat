@@ -1,29 +1,29 @@
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import coreFunc from "#core/coreFunc";
 import socket from "#core/socket/socket";
 import Id from "#types/Id";
-import mainView from "#ui/components/mainView";
-import render_events from "#ui/render/event";
+import { mainView } from "#ui/components/mainView";
+import { render_events } from "#ui/render/event";
 import LangPkg, { langFunc } from "#utils/translate";
 import utils from "#utils/utils";
 import vars from "#var/var";
 import { delay } from "@wxn0brp/flanker-ui/utils";
-import uiFunc from "./uiFunc";
+import { uiFunc } from "./uiFunc";
 
-const stateManager = {
+class StateManager {
     handle(type: string, ...data: string[]) {
         const fn = stateManagerFunc[type];
         if (!fn) return false;
         return fn(...data) || true;
-    },
+    }
 
     async handleArray(arr: { type: string, value: any }[]) {
         for (const data of arr) {
             const val = Array.isArray(data.value) ? data.value : [data.value];
-            await stateManager.handle(data.type, ...val);
+            await this.handle(data.type, ...val);
             await delay(100);
         }
-    },
+    }
 
     async handleGetParam() {
         const params = new URLSearchParams(window.location.search);
@@ -42,8 +42,8 @@ const stateManager = {
         }
 
         ctrls.sort((a, b) => a.num - b.num);
-        await stateManager.handleArray(ctrls);
-    },
+        await this.handleArray(ctrls);
+    }
 
     removeControlParams() {
         const getParam = new URLSearchParams(window.location.search);
@@ -55,7 +55,7 @@ const stateManager = {
         const newParams = getParam.toString();
         const newUrl = window.location.origin + window.location.pathname + (newParams ? "?" + newParams : "");
         window.history.replaceState({}, '', newUrl);
-    },
+    }
 
     extractUrl() {
         const path = window.location.origin + window.location.pathname;
@@ -109,4 +109,4 @@ const stateManagerFunc = {
     },
 }
 
-export default stateManager;
+export const stateManager = new StateManager();

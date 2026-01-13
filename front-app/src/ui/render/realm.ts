@@ -1,6 +1,6 @@
 import vars from "#var/var";
 import Id from "#types/Id";
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import utils from "#utils/utils";
 import coreFunc from "#core/coreFunc";
 import socket from "#core/socket/socket";

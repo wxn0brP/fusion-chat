@@ -1,8 +1,8 @@
-import fileFunc from "#api/file";
+import { fileFunc } from "#api/file";
 import coreFunc from "#core/coreFunc";
 import debugFunc, { LogLevel } from "#core/debug";
 import socket from "#core/socket/socket";
-import uiFunc from "#ui/helpers/uiFunc";
+import { uiFunc } from "#ui/helpers/uiFunc";
 import LangPkg from "#utils/translate";
 import staticData from "#var/staticData";
 import { saveAndExitSettings } from "./rs_save";

@@ -1,5 +1,5 @@
 import debugFunc, { LogLevel } from "#core/debug";
-import uiFunc from "#ui/helpers/uiFunc";
+import { uiFunc } from "#ui/helpers/uiFunc";
 import genId from "#utils/genId";
 import permissionFunc from "#utils/perm";
 import LangPkg from "#utils/translate";

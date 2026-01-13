@@ -1,20 +1,21 @@
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import socket from "#core/socket/socket";
-
 import Id from "#types/Id";
 import LangPkg from "#utils/translate";
 import utils from "#utils/utils";
 import { renderHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
 import vars from "#var/var";
-import uiFunc from "../helpers/uiFunc"; function getId() {
+import { uiFunc } from "../helpers/uiFunc";
+
+function getId() {
     return renderHTML.realmUserProfile.getAttribute("data-id");
 }
 
-const realmUserInteract = {
+class RealmUserInteract {
     removeRole(id: Id, role: number) {
         socket.emit("realm.user.role.remove", vars.chat.to, id, role);
-    },
+    }
 
     async addRole() {
         const id = getId();
@@ -38,7 +39,7 @@ const realmUserInteract = {
         const lvl = availableRoles.find(r => r.name == roleName);
         if (!lvl) return;
         socket.emit("realm.user.role.add", vars.chat.to, id, lvl.i);
-    },
+    }
 
     async kick() {
         const id = getId();
@@ -48,5 +49,5 @@ const realmUserInteract = {
     }
 }
 
-export default realmUserInteract;
+export const realmUserInteract = new RealmUserInteract();
 mglInt.realmUserProfile = realmUserInteract;

@@ -10,7 +10,7 @@ export const customEmoji: Ui_EmojiData = {
     emojis: {},
 }
 
-const emojiFunc = {
+class EmojiFunc {
     getMathEmojisName(searchEmojiName: string) {
         const categories = [...customEmoji.categories, ...emojiData.categories];
         const maths = {};
@@ -20,7 +20,7 @@ const emojiFunc = {
                 if (!maths[cid]) maths[cid] = [];
                 maths[cid].push(emojiName);
             } else {
-                const emoji = emojiFunc.getEmojiFromName(emojiName);
+                const emoji = this.getEmojiFromName(emojiName);
                 if (emoji.keywords.filter(k => k.includes(searchEmojiName)).length > 0) {
                     if (!maths[cid]) maths[cid] = [];
                     maths[cid].push(emojiName);
@@ -35,7 +35,7 @@ const emojiFunc = {
         }
 
         return maths;
-    },
+    }
 
     getEmojiFromName(emojiName: string): Ui_EmojiData_emoji | null {
         let emoji = customEmoji.emojis[emojiName];
@@ -43,11 +43,11 @@ const emojiFunc = {
 
         emoji = emojiData.emojis[emojiName];
         return emoji ? emoji : null;
-    },
+    }
 
     renderEmoji() {
         const input = emojiHTML.input.value;
-        const maths = emojiFunc.getMathEmojisName(input);
+        const maths = this.getMathEmojisName(input);
         emojiHTML.container.innerHTML = "";
         emojiHTML.nav.innerHTML = "";
 
@@ -68,7 +68,7 @@ const emojiFunc = {
             catDiv.appendChild(catContainer);
 
             for (const emojiName of category) {
-                const emoji = emojiFunc.getEmojiFromName(emojiName);
+                const emoji = this.getEmojiFromName(emojiName);
                 if (!emoji) continue;
 
                 let emojiDiv;
@@ -84,7 +84,7 @@ const emojiFunc = {
                 emojiDiv.classList.add("emoji__item");
                 catContainer.appendChild(emojiDiv);
 
-                emojiDiv.addEventListener("click", emojiFunc.emojiClick);
+                emojiDiv.addEventListener("click", this.emojiClick);
             }
 
             emojiHTML.container.appendChild(catDiv);
@@ -93,7 +93,7 @@ const emojiFunc = {
                 emojiHTML.container.scrollTop = catDiv.offsetTop - emojiHTML.container.offsetTop - 5;
             });
         }
-    },
+    }
 
     emojiClick(e: MouseEvent) {
         let emoji = "";
@@ -101,7 +101,7 @@ const emojiFunc = {
             const target = e.target as HTMLElement;
             const emojiName = target.getAttribute("data-name");
             if (emojiName) {
-                const emojiData = emojiFunc.getEmojiFromName(emojiName);
+                const emojiData = this.getEmojiFromName(emojiName);
                 if (emojiData)
                     emoji = `:${emojiData.id}:`;
             } else {
@@ -115,9 +115,10 @@ const emojiFunc = {
     }
 }
 
+export const emojiFunc = new EmojiFunc();
+
 emojiHTML.input.addEventListener("input", emojiFunc.renderEmoji);
 emojiFunc.renderEmoji();
 
-export default emojiFunc;
 mglVar.emojiFunc = emojiFunc;
 mglVar.customEmoji = customEmoji;

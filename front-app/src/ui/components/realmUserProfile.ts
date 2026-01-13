@@ -2,12 +2,12 @@
 import vars from "#var/var";
 import Id from "#types/Id";
 import { renderHTML } from "#var/html";
-import renderUtils from "../render/utils";
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import apiVars from "#var/api";
 import permissionFunc, { PermissionFlags } from "#utils/perm";
-import realmUserInteract from "../interact/realmUser";
-import utils from "#utils/utils"; const popup = renderHTML.realmUserProfile;
+import { realmUserInteract } from "../interact/realmUser";
+import utils from "#utils/utils"; import { initPopup } from "#ui/render/utils";
+const popup = renderHTML.realmUserProfile;
 
 const realmUserProfile = {
     renderRoles(id: Id, canEditRole: boolean = false) {
@@ -62,7 +62,7 @@ const realmUserProfile = {
         popup.querySelector<HTMLButtonElement>("[data-role=kick]").style.display =
             id != vars.user._id && permissionFunc.hasPermission(vars.realm.permission || 0, PermissionFlags.KickUser)
                 ? "" : "none";
-        renderUtils.initPopup(popup);
+        initPopup(popup);
     }
 }
 

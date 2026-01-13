@@ -1,12 +1,12 @@
 import { messHTML } from "#var/html";
 import utils from "#utils/utils";
 import vars from "#var/var";
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import { maxMessLen } from "./mess";
 
 const { input } = messHTML;
 
-const messStyle = {
+class MessStyle {
     sendBtnStyle() {
         const len = input.value.trim().length;
         let prop = "";
@@ -17,13 +17,13 @@ const messStyle = {
 
         messHTML.sendBtnImg.style.setProperty("--fil", prop);
         messHTML.sendBtn.disabled = len == 0 || len > maxMessLen;
-    },
+    }
 
     messageHeight() {
         let len = input.value.split("\n").length - 1;
         len = len >= 2 ? Math.min(len, 20) : 0;
         input.style.setProperty("--messHeight", len + "rem");
-    },
+    }
 
     hideFromMessageInfo() {
         function getTimeFromMess(mess: HTMLElement) {
@@ -47,7 +47,7 @@ const messStyle = {
             const messageFromText = message.querySelector<HTMLElement>(".mess_meta");
             messageFromText.style.display = time - timeBefore < delayTime ? "none" : "";
         }
-    },
+    }
 
     colorRole() {
         const messages = document.querySelectorAll(".mess_message") as NodeListOf<HTMLElement>;
@@ -59,7 +59,7 @@ const messStyle = {
             const author = mess.querySelector(".mess_meta").getAttribute("_author");
 
             if (userColor.has(author)) {
-                messStyle.colorRoleMess(mess, userColor.get(author));
+                colorRoleMess(mess, userColor.get(author));
                 return;
             }
 
@@ -72,17 +72,13 @@ const messStyle = {
                 if (user.roles.includes(roles[i].name)) {
                     color = roles[i].c;
                     userColor.set(author, color);
-                    messStyle.colorRoleMess(mess, color);
+                    colorRoleMess(mess, color);
                     return;
                 }
             }
-            messStyle.colorRoleMess(mess, "");
+            colorRoleMess(mess, "");
         });
-    },
-
-    colorRoleMess(mess: HTMLElement, color: string) {
-        mess.querySelector<HTMLElement>(".mess_author_name").style.color = color;
-    },
+    }
 
     async styleMessReacts(reactsDiv: HTMLElement) {
         const spans = reactsDiv.querySelectorAll("span");
@@ -102,7 +98,7 @@ const messStyle = {
             span.title = (await Promise.all(users.map(u => apis.www.changeUserID(u)))).join(", ");
             span.innerHTML = span.getAttribute("_key") + " " + users.length;
         }
-    },
+    }
 
     setSelectionStart(position: number | undefined = undefined) {
         if (!position) position = input.value.length;
@@ -110,9 +106,13 @@ const messStyle = {
     }
 }
 
+function colorRoleMess(mess: HTMLElement, color: string) {
+    mess.querySelector<HTMLElement>(".mess_author_name").style.color = color;
+}
+
+export const messStyle = new MessStyle();
+
 setTimeout(() => {
     messStyle.sendBtnStyle();
     messStyle.messageHeight();
 }, 100); // Delay of 100ms to accommodate any cached input values in the browser
-
-export default messStyle;

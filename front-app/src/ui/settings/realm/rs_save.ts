@@ -1,4 +1,4 @@
-import uiFunc from "#ui/helpers/uiFunc";
+import { uiFunc } from "#ui/helpers/uiFunc";
 import LangPkg from "#utils/translate";
 import rs_dataF from "./rs_var";
 

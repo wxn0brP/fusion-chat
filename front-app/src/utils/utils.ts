@@ -1,4 +1,4 @@
-import apis from "../api/apis";
+import { apis } from "../api/apis";
 import Id from "../types/Id";
 import uiInteract from "../ui/interact/ui";
 

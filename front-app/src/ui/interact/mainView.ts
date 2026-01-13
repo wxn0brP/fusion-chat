@@ -1,31 +1,31 @@
 import Id from "#types/Id";
-import uiFunc from "../helpers/uiFunc";
+import { uiFunc } from "../helpers/uiFunc";
 import socket from "#core/socket/socket";
-import mainView from "../components/mainView";
+import { mainView } from "../components/mainView";
 import { mainViewHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
 import { Vars_mainView__page } from "#types/var";
 import LangPkg from "#utils/translate";
 import vars from "#var/var";
 
-const mainViewInteract = {
+class MainViewInteract {
     showNav() {
         if (mainViewHTML.nav.clientHeight == 0) {
             mainViewHTML.nav.fadeIn();
         } else {
             mainViewHTML.nav.fadeOut();
         }
-    },
+    }
 
     async addFriend(friend: Id) {
         if (!friend) friend = await uiFunc.prompt(LangPkg.ui.enter_friend);
         if (!friend) return;
         socket.emit("friend.request", friend);
-    },
+    }
 
     changeView(page: Vars_mainView__page) {
         mainView.changeView(page);
-    },
+    }
 
     requestFriendResponse(user_id: Id, accept: boolean) {
         if (!user_id) return;
@@ -38,8 +38,8 @@ const mainViewInteract = {
         mainViewHTML.requestCount.innerHTML = `(${vars.mainView.requests.length})`;
 
         if (accept) socket.emit("friend.get.all");
-    },
+    }
 }
 
-export default mainViewInteract;
+export const mainViewInteract = new MainViewInteract();
 mglInt.mainView = mainViewInteract;

@@ -1,7 +1,7 @@
 import Id from "#types/Id";
 import vars from "#var/var";
 import { renderState } from "./var";
-import uiFunc from "../helpers/uiFunc";
+import { uiFunc } from "../helpers/uiFunc";
 import coreFunc from "#core/coreFunc";
 import voiceFunc from "../components/voice";
 import { Channel_Type } from "#types/channel";
@@ -10,7 +10,7 @@ import contextMenu from "../components/contextMenu";
 import { Ui_render__category, Ui_render__channel } from "#types/ui/render";
 import LangPkg from "#utils/translate";
 import socket from "#core/socket/socket";
-import render_events from "./event";
+import { render_events } from "./event";
 import { socketEvt } from "#core/socket/engine";
 
 function initRealmState(permission: number = 0) {

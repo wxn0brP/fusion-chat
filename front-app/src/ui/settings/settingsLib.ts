@@ -1,4 +1,4 @@
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import LangPkg from "#utils/translate";
 import {
     Settings_settingsManager__category,

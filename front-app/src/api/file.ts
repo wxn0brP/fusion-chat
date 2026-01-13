@@ -1,9 +1,11 @@
 
 import Id from "../types/Id";
-import uiFunc from "../ui/helpers/uiFunc";
+import { uiFunc } from "../ui/helpers/uiFunc";
 import { Api_fileFunc_read__options } from "../types/api";
 import debugFunc, { LogLevel } from "../core/debug";
-import LangPkg from "../utils/translate"; const fileFunc = {
+import LangPkg from "../utils/translate";
+
+class FileFunc {
     read(options: Api_fileFunc_read__options) {
         const { file, callback, maxSize, maxName, endpoint } = options;
         if (!file || !callback || !maxSize || !maxName || !endpoint) {
@@ -51,7 +53,7 @@ import LangPkg from "../utils/translate"; const fileFunc = {
         };
 
         reader.readAsArrayBuffer(file);
-    },
+    }
 
     profile(file: File) {
         const opt: Api_fileFunc_read__options = {
@@ -64,8 +66,8 @@ import LangPkg from "../utils/translate"; const fileFunc = {
             endpoint: "/api/profile/upload"
         }
 
-        fileFunc.read(opt);
-    },
+        this.read(opt);
+    }
 
     realm(file: File, id: Id) {
         const opt: Api_fileFunc_read__options = {
@@ -81,8 +83,8 @@ import LangPkg from "../utils/translate"; const fileFunc = {
             }
         }
 
-        fileFunc.read(opt);
-    },
+        this.read(opt);
+    }
 
     emocji(file: File, realmId: Id) {
         const opts: Api_fileFunc_read__options = {
@@ -98,8 +100,8 @@ import LangPkg from "../utils/translate"; const fileFunc = {
             }
         };
 
-        fileFunc.read(opts);
-    },
+        this.read(opts);
+    }
 };
 
-export default fileFunc;
+export const fileFunc = new FileFunc();

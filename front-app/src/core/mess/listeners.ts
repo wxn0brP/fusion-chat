@@ -1,5 +1,5 @@
 import messFunc from "./mess";
-import messStyle from "./style";
+import { messStyle } from "./style";
 import vars from "#var/var";
 import { messHTML } from "#var/html";
 import uiInteract from "#ui/interact/ui";

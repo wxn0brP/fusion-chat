@@ -7,7 +7,7 @@ import {
     user_status_update,
 } from "./logic/evt";
 import render_realm from "#ui/render/realm";
-import render_user from "#ui/render/user";
+import { render_user } from "#ui/render/user";
 import realmInit from "#ui/render/realmInit";
 import render_dm from "#ui/render/dm";
 import { friend_get_all, friend_requests_get } from "#ui/components/mainView";

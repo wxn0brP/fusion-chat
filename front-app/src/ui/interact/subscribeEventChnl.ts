@@ -1,17 +1,22 @@
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import { mglInt } from "#var/mgl";
 import socket from "#core/socket/socket";
+import Id from "#types/Id";
 
-const subscribeEventChnl = {
-    popup: document.querySelector("#subscribeEventChnl"),
+class SubscribeEventChnl {
+    popup: HTMLDivElement;
+    realms: HTMLSelectElement;
+    channels: HTMLSelectElement;
+    okBtn: HTMLButtonElement;
+    cancelBtn: HTMLButtonElement;
 
     init() {
-        const p = this.popup;
-        this.realms = p.querySelector("#subscribeEventChnl_realms");
-        this.channels = p.querySelector("#subscribeEventChnl_channels");
-        this.okBtn = p.querySelector("#subscribeEventChnl_subscribe");
-        this.cancelBtn = p.querySelector("#subscribeEventChnl_exit");
-    },
+        this.popup = document.querySelector("#subscribeEventChnl");
+        this.realms = this.popup.querySelector("#subscribeEventChnl_realms");
+        this.channels = this.popup.querySelector("#subscribeEventChnl_channels");
+        this.okBtn = this.popup.querySelector("#subscribeEventChnl_subscribe");
+        this.cancelBtn = this.popup.querySelector("#subscribeEventChnl_exit");
+    }
 
     loadChannels() {
         const realm = this.realms.value;
@@ -27,9 +32,9 @@ const subscribeEventChnl = {
                 _this.channels.appendChild(option);
             });
         });
-    },
+    }
 
-    show(sourceRealmId, sourceChannelId) {
+    show(sourceRealmId: Id, sourceChannelId: Id) {
         this.realms.innerHTML = "";
         this.realms.onchange = () => this.loadChannels();
         const _this = this;
@@ -59,6 +64,8 @@ const subscribeEventChnl = {
         this.popup.fadeIn();
     }
 }
+
+export const subscribeEventChnl = new SubscribeEventChnl();
+
 subscribeEventChnl.init();
-export default subscribeEventChnl;
 mglInt.subscribeEventChnl = subscribeEventChnl;

@@ -1,15 +1,15 @@
 import vars from "#var/var";
-import apis from "#api/apis";
-import fileFunc from "#api/file";
-import uiFunc from "../helpers/uiFunc";
-import render_user from "../render/user";
+import { apis } from "#api/apis";
+import { fileFunc } from "#api/file";
+import { uiFunc } from "../helpers/uiFunc";
+import { render_user } from "../render/user";
 import socket from "#core/socket/socket";
 import staticData from "#var/staticData";
 import { reloadProfileImages } from "../helpers/reloadImages";
 import { Settings_settingsManager__category } from "#types/ui/settings";
 import LangPkg, { LangRef, load_translate } from "#utils/translate";
 import apiVars from "#var/api";
-import UserStateManager from "../helpers/userStateManager";
+import { setUserState } from "../helpers/userStateManager";
 
 interface SettingsData {
     user: () => Promise<Settings_settingsManager__category[]>;
@@ -198,7 +198,7 @@ const settingsData: SettingsData = {
         if (settings["Status"] != undefined || settings["Status text"] != undefined) {
             socket.emit("self.status.update", vars.user.status, vars.user.statusText);
             render_user.localUserProfile();
-            UserStateManager.set(vars.user._id, { status: vars.user.status, statusText: vars.user.statusText });
+            setUserState(vars.user._id, { status: vars.user.status, statusText: vars.user.statusText });
         }
 
         if (settings["Nickname"] != undefined) {

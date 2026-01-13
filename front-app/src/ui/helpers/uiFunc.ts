@@ -6,7 +6,7 @@ import { delay } from "@wxn0brp/flanker-ui/utils";
 export const errMessesDiv = document.querySelector<HTMLDivElement>("#errMesses");
 export const promptDiv = document.querySelector<HTMLDivElement>("#prompt");
 
-const uiFunc = {
+class UiFunc {
     async uiMessage(message: string, opts: Ui_helper_uiMessage__opts = {}) {
         opts = {
             displayTime: 6000,
@@ -54,7 +54,7 @@ const uiFunc = {
         await delay(opts.displayTime - 700);
         if (ended) return;
         await end();
-    },
+    }
 
     uiMsg(data: string, opts: Ui_helper_uiMsg__opts = {}) {
         debugFunc.msg(LogLevel.INFO, "uiMsg:", data);
@@ -73,8 +73,8 @@ const uiFunc = {
         }
         if (opts.onClick) msgOpts.onClick = opts.onClick;
 
-        uiFunc.uiMessage(data, msgOpts);
-    },
+        this.uiMessage(data, msgOpts);
+    }
 
     uiMsgT(text: string, ...data: any) {
         let lastText = "";
@@ -85,10 +85,10 @@ const uiFunc = {
         }
 
         text = langFunc(text, ...data) + lastText;
-        uiFunc.uiMsg(text);
-    },
+        this.uiMsg(text);
+    }
 
-    prompt(text, defaultValue = ""): Promise<string> {
+    prompt(text: string, defaultValue = ""): Promise<string> {
         return new Promise((resolve) => {
             function end() {
                 resolve(input.value);
@@ -124,7 +124,7 @@ const uiFunc = {
             promptDiv.appendChild(div);
             div.fadeIn();
         });
-    },
+    }
 
     confirm(text: string, yesText: string = LangPkg.uni.ok, noText: string = LangPkg.uni.cancel): Promise<boolean> {
         return new Promise((resolve) => {
@@ -161,7 +161,7 @@ const uiFunc = {
             promptDiv.appendChild(div);
             div.fadeIn();
         });
-    },
+    }
 
     selectPrompt<T>(text: string, options, optionsValues = [], categories: { name: string; options: T[], value?: T }[] = []): Promise<string | T> {
         return new Promise((resolve) => {
@@ -209,7 +209,7 @@ const uiFunc = {
             promptDiv.appendChild(div);
             div.fadeIn();
         });
-    },
+    }
 
     promptTime(
         text: string,
@@ -258,4 +258,4 @@ const uiFunc = {
     }
 }
 
-export default uiFunc;
+export const uiFunc = new UiFunc();

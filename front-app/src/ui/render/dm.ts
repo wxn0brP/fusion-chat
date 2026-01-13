@@ -1,19 +1,19 @@
 import { navHTML } from "#var/html";
 import vars from "#var/var";
 import coreFunc from "#core/coreFunc";
-import renderUtils from "./utils";
 import utils from "#utils/utils";
-import apis from "#api/apis";
+import { apis } from "#api/apis";
 import socket from "#core/socket/socket";
 import { Core_socket__blocked, Core_socket__dm } from "#types/core/socket";
 import { updateUserProfileMarker } from "./userStatusMarker";
 import apiVars from "#var/api";
+import { sortPrivs } from "./utils";
 
 const render_dm = {
     async chats() {
         navHTML.priv.innerHTML = "";
 
-        for (const id of renderUtils.sortPrivs(vars.privs)) {
+        for (const id of sortPrivs(vars.privs)) {
             const privDiv = document.createElement("button");
             privDiv.classList.add("priv_chat");
             privDiv.classList.add("btn");

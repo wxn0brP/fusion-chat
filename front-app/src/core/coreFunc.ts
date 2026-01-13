@@ -1,10 +1,10 @@
 import { delay } from "@wxn0brp/flanker-ui/utils";
-import apis from "../api/apis";
+import { apis } from "../api/apis";
 import { Core_socket__blocked, Core_socket__dm } from "../types/core/socket";
 import Id from "../types/Id";
 import { Vars_realm__thread } from "../types/var";
 import { customEmoji } from "../ui/components/emoji";
-import mainView from "../ui/components/mainView";
+import { mainView } from "../ui/components/mainView";
 import render_dm from "../ui/render/dm";
 import render_forum from "../ui/render/forum";
 import { renderState } from "../ui/render/var";
@@ -15,7 +15,7 @@ import { mglVar } from "../var/mgl";
 import staticData from "../var/staticData";
 import vars, { getEmptyRealmConfig } from "../var/var";
 import messageCacheController from "./cacheControllers/mess";
-import messStyle from "./mess/style";
+import { messStyle } from "./mess/style";
 import { socketEvt } from "./socket/engine";
 import socket from "./socket/socket";
 

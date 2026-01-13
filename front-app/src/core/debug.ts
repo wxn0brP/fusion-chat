@@ -1,4 +1,4 @@
-import apis from "../api/apis";
+import { apis } from "../api/apis";
 import { mglInt } from "../var/mgl";
 
 const debugFunc = {
