@@ -60,7 +60,7 @@ jobs:
         run: |
           shopt -s extglob
           npm install
-          ./build.sh
+          bun run build
 
       - name: Install and Build (Front-App)
         working-directory: ./front-app
@@ -71,7 +71,7 @@ jobs:
       - name: Install and Build (SCSS)
         working-directory: .
         run: |
-          npm run build:scss
+          bun run build:scss
           rm -rf front/scss
 
       - name: Install and Build (Front-Scripts)
