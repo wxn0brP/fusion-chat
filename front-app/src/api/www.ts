@@ -35,10 +35,10 @@ export async function changeUserID(id: Id): Promise<string> {
 
     if (chat.startsWith("$") || chat == "main") { // if dm or main
         if (temp.main[id]) return temp.main[id];
-        const data = (await getInServer("/api/id/u?id=" + id)).name;
-        if (!data) return "Unknown";
-        temp.main[id] = data;
-        return data;
+        const data = await getInServer("/api/id/u?id=" + id);
+        const name = data ? data.name : "Unknown";
+        temp.main[id] = name;
+        return name;
     }
 
     // if realm
@@ -62,6 +62,7 @@ export async function changeUserID(id: Id): Promise<string> {
 
         const data = await getInServer<Data>("/api/id/u?id=" + id + "&chat=" + chat);
         if (!data) return "Unknown";
+
         if (data.c == 1) {
             temp[chat][id] = data.name;
             return data.name;
@@ -92,14 +93,26 @@ export async function changeChat(id: Id): Promise<string> {
     return name;
 }
 
+const pendingRequests = new Map<string, Promise<any>>();
+
 export async function getInServer<T = Core_Api__GetInServer__Response>(url: string): Promise<T> {
-    const data = await fetch(url).then(res => res.json());
-    if (data.err) {
-        uiFunc.uiMsgT(LangPkg.api.error_fetch, ["."]);
-        uiFunc.uiMsgT(LangPkg.api.error, changeCodeToString(data.c));
-        debugFunc.msg(LogLevel.ERROR, data);
-        return null;
+    if (pendingRequests.has(url)) {
+        return pendingRequests.get(url);
     }
 
-    return data;
+    const request = fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            if (data.err) {
+                uiFunc.uiMsgT(LangPkg.api.error_fetch, ["."]);
+                uiFunc.uiMsgT(LangPkg.api.error, changeCodeToString(data.c));
+                debugFunc.msg(LogLevel.ERROR, data);
+                return null;
+            }
+            return data;
+        })
+        .finally(() => pendingRequests.delete(url));
+
+    pendingRequests.set(url, request);
+    return request;
 }
