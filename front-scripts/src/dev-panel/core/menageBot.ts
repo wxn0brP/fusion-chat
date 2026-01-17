@@ -6,7 +6,7 @@ import Id from "../types/Id";
 import { page_menageBot, page_menageBot__container, page_listBot } from "../var/html";
 import { render_botRealms } from "../ui/realm";
 import uiFunc from "../utils/uiFunc";
-import fileFunc from "../features/fileFunc";
+import { fileFunc } from "../features/fileFunc";
 import { reloadBotProfileImg } from "../features/ui";
 
 class EditBot {
