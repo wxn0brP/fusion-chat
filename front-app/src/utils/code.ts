@@ -1,4 +1,4 @@
-import LangPkg from "./translate";
+import { LangPkg } from "./translate";
 
 export enum InternalCodeCategory {
     Info = 1,
@@ -14,11 +14,9 @@ export enum InternalCodeSubcategory {
     Express,
 }
 
-function changeCodeToString(code: string): string {
+export function changeCodeToString(code: string): string {
     const category = InternalCodeCategory[code[0]];
     const subcategory = InternalCodeSubcategory[code[1]];
 
     return LangPkg.InternalCode[category][subcategory][code] || code;
 }
-
-export default changeCodeToString;

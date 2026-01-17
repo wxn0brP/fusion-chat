@@ -1,6 +1,8 @@
 
-import ApisVars from "../types/apisVars";
-import { mglVar } from "./mgl"; const apiVars: ApisVars = {
+import { ApisVars } from "../types/apisVars";
+import { mglVar } from "./mgl";
+
+export const apiVars: ApisVars = {
     temp: {
         user: {
             main: {},
@@ -11,5 +13,4 @@ import { mglVar } from "./mgl"; const apiVars: ApisVars = {
     lastMess: {},
 }
 
-export default apiVars;
 mglVar.apiVars = apiVars;

@@ -1,18 +1,18 @@
-import vars from "#var/var";
-import Id from "#types/Id";
+import { vars } from "#var/var";
+import { Id } from "#types/Id";
 import { apis } from "#api/apis";
-import utils from "#utils/utils";
-import coreFunc from "#core/coreFunc";
-import socket from "#core/socket/socket";
-import contextMenu from "../components/contextMenu";
+import { utils } from "#utils/utils";
+import { coreFunc } from "#core/coreFunc";
+import { socket } from "#core/socket/socket";
+import { contextMenu } from "../components/contextMenu";
 import { navHTML, renderHTML } from "#var/html";
 import { updateUserProfileMarker } from "./userStatusMarker";
-import apiVars from "#var/api";
-import realmUserProfile from "../components/realmUserProfile";
+import { apiVars } from "#var/api";
+import { realmUserProfile } from "../components/realmUserProfile";
 import { Vars_realms } from "#types/var";
 
-const render_realm = {
-    async realms(data: Vars_realms[]) {
+export namespace render_realm {
+    export async function realms(data: Vars_realms[]) {
         renderHTML.realms__content.innerHTML = "";
         vars.realms = data;
 
@@ -39,9 +39,9 @@ const render_realm = {
             });
         }
         coreFunc.markSelectedChat();
-    },
+    }
 
-    async usersInChat() {
+    export async function usersInChat() {
         navHTML.realm__users.innerHTML = "";
         const roles = vars.realm.roles;
         const users = vars.realm.users;
@@ -106,9 +106,9 @@ const render_realm = {
             render_realm.realmUserStatus(userID);
             updateUserProfileMarker(userID, apiVars.user_state[userID]?.status.get());
         }
-    },
+    }
 
-    realmUserStatus(id: Id) {
+    export function realmUserStatus(id: Id) {
         const ele = document.querySelector("#user_status_" + utils.escape(id));
         if (!ele) return;
         const data = apiVars.user_state[id];
@@ -127,5 +127,3 @@ const render_realm = {
         ele.innerHTML = act.state + " | " + act.name;
     }
 }
-
-export default render_realm;

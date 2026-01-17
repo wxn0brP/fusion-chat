@@ -1,10 +1,10 @@
 import { apis } from "#api/apis";
-import debugFunc, { LogLevel } from "#core/debug";
-import socket from "#core/socket/socket";
+import { debugFunc, LogLevel } from "#core/debug";
+import { socket } from "#core/socket/socket";
 import { Channel_Type } from "#types/channel";
 import { uiFunc } from "#ui/helpers/uiFunc";
-import genId from "#utils/genId";
-import LangPkg, { langFunc } from "#utils/translate";
+import { genId } from "#utils/genId";
+import { LangPkg, langFunc } from "#utils/translate";
 import {
     addSeparator,
     initButton,

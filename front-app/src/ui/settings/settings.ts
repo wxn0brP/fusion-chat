@@ -1,24 +1,24 @@
-import Id from "#types/Id";
+import { Id } from "#types/Id";
 import { mglInt } from "#var/mgl";
 import { Settings } from "./realm/types";
-import debugFunc, { LogLevel } from "#core/debug";
-import settingsData from "./settingsData";
-import SettingsManager from "./settingsLib";
-import socket from "#core/socket/socket";
-import RealmSettingsManager from "./realm/realmSettings";
+import { debugFunc, LogLevel } from "#core/debug";
+import { settingsData } from "./settingsData";
+import { SettingsManager } from "./settingsLib";
+import { socket } from "#core/socket/socket";
+import { RealmSettingsManager } from "./realm/realmSettings";
 const settingDiv = document.querySelector<HTMLDivElement>("#settings");
 
-const settingsFunc = {
-    async showUserSettings() {
+export namespace settingsFunc {
+    export async function showUserSettings() {
         new SettingsManager(
             await settingsData.user(),
             settingDiv,
             settingsData.userSave,
             () => { }
         );
-    },
+    }
 
-    showRealmSettings(settings: Settings, id: Id) {
+    export function showRealmSettings(settings: Settings, id: Id) {
         const settingsManager = new RealmSettingsManager(
             settings,
             id,
@@ -35,9 +35,9 @@ const settingsFunc = {
             () => { }
         );
         settingsManager.init();
-    },
+    }
 }
 
 socket.on("realm.settings.get", settingsFunc.showRealmSettings);
-export default settingsFunc;
+
 mglInt.settingsFunc = settingsFunc;

@@ -1,5 +1,5 @@
 import { apis } from "#api/apis";
-import LangPkg from "#utils/translate";
+import { LangPkg } from "#utils/translate";
 import {
     Settings_settingsManager__category,
     Settings_settingsManager__fns,
@@ -49,7 +49,7 @@ const fns: Settings_settingsManager__fns = {
     }
 }
 
-class SettingsManager {
+export class SettingsManager {
     settings: Settings_settingsManager__category[];
     saveCallback: (settings: Settings_settingsManager__category) => void;
     exitCallback: () => void;
@@ -241,5 +241,3 @@ class SettingsManager {
         return currentSettings;
     }
 }
-
-export default SettingsManager;

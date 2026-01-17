@@ -1,13 +1,13 @@
-import debugFunc, { LogLevel } from "#core/debug";
-import LangPkg, { langFunc } from "#utils/translate";
+import { debugFunc, LogLevel } from "#core/debug";
+import { LangPkg, langFunc } from "#utils/translate";
 import { Ui_helper_uiMessage__opts, Ui_helper_uiMsg__opts } from "#types/ui/helpers";
 import { delay } from "@wxn0brp/flanker-ui/utils";
 
 export const errMessesDiv = document.querySelector<HTMLDivElement>("#errMesses");
 export const promptDiv = document.querySelector<HTMLDivElement>("#prompt");
 
-class UiFunc {
-    async uiMessage(message: string, opts: Ui_helper_uiMessage__opts = {}) {
+export namespace uiFunc {
+    export async function uiMessage(message: string, opts: Ui_helper_uiMessage__opts = {}) {
         opts = {
             displayTime: 6000,
             ...opts,
@@ -56,7 +56,7 @@ class UiFunc {
         await end();
     }
 
-    uiMsg(data: string, opts: Ui_helper_uiMsg__opts = {}) {
+    export function uiMsg(data: string, opts: Ui_helper_uiMsg__opts = {}) {
         debugFunc.msg(LogLevel.INFO, "uiMsg:", data);
 
         opts = {
@@ -76,7 +76,7 @@ class UiFunc {
         this.uiMessage(data, msgOpts);
     }
 
-    uiMsgT(text: string, ...data: any) {
+    export function uiMsgT(text: string, ...data: any) {
         let lastText = "";
         if (data.length > 0) {
             if (Array.isArray(data[0])) {
@@ -88,7 +88,7 @@ class UiFunc {
         this.uiMsg(text);
     }
 
-    prompt(text: string, defaultValue = ""): Promise<string> {
+    export function prompt(text: string, defaultValue = ""): Promise<string> {
         return new Promise((resolve) => {
             function end() {
                 resolve(input.value);
@@ -126,7 +126,7 @@ class UiFunc {
         });
     }
 
-    confirm(text: string, yesText: string = LangPkg.uni.ok, noText: string = LangPkg.uni.cancel): Promise<boolean> {
+    export function confirm(text: string, yesText: string = LangPkg.uni.ok, noText: string = LangPkg.uni.cancel): Promise<boolean> {
         return new Promise((resolve) => {
             function end(accept: boolean) {
                 return () => {
@@ -163,7 +163,7 @@ class UiFunc {
         });
     }
 
-    selectPrompt<T>(text: string, options, optionsValues = [], categories: { name: string; options: T[], value?: T }[] = []): Promise<string | T> {
+    export function selectPrompt<T>(text: string, options, optionsValues = [], categories: { name: string; options: T[], value?: T }[] = []): Promise<string | T> {
         return new Promise((resolve) => {
             function end() {
                 resolve(select.value);
@@ -211,7 +211,7 @@ class UiFunc {
         });
     }
 
-    promptTime(
+    export function promptTime(
         text: string,
         inputType: "time" | "date" | "datetime" | "datetime-local" = "datetime-local",
         min?: number,
@@ -257,5 +257,3 @@ class UiFunc {
         });
     }
 }
-
-export const uiFunc = new UiFunc();

@@ -1,4 +1,4 @@
-import vars from "../var/var";
+import { vars } from "../var/var";
 
 export enum PermissionFlags {
     Admin = 1 << 0,
@@ -13,28 +13,26 @@ export enum PermissionFlags {
     ManageChannels = 1 << 9,
 }
 
-const permissionFunc = {
-    hasAllPermissions(userPermissions: number, requiredPermissions: number[]): boolean {
+export namespace permissionFunc {
+    export function hasAllPermissions(userPermissions: number, requiredPermissions: number[]): boolean {
         return requiredPermissions.every(permission => (userPermissions & permission) !== 0);
-    },
+    }
 
-    hasAnyPermission(userPermissions: number, requiredPermissions: number[]): boolean {
+    export function hasAnyPermission(userPermissions: number, requiredPermissions: number[]): boolean {
         return requiredPermissions.some(permission => (userPermissions & permission) !== 0);
-    },
+    }
 
-    canAction(permissions: number | number[]): boolean {
+    export function canAction(permissions: number | number[]): boolean {
         const userPermissions = vars.realm.permission || 0;
         if (!Array.isArray(permissions)) permissions = [permissions];
         return this.hasPermission(userPermissions, PermissionFlags.Admin) || this.hasAnyPermission(userPermissions, permissions);
-    },
+    }
 
-    isAdmin(): boolean {
+    export function isAdmin(): boolean {
         return this.hasPermission(vars.realm.permission || 0, PermissionFlags.Admin);
-    },
+    }
 
-    hasPermission(userPermissions: number, permission: number): boolean {
+    export function hasPermission(userPermissions: number, permission: number): boolean {
         return (userPermissions & permission) !== 0;
-    },
+    }
 }
-
-export default permissionFunc;

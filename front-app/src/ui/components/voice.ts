@@ -1,12 +1,12 @@
 import { voiceHTML } from "#var/html";
 import { mglVar } from "#var/mgl";
-import socket from "#core/socket/socket";
+import { socket } from "#core/socket/socket";
 import { apis } from "#api/apis";
 import { uiFunc } from "../helpers/uiFunc";
-import vars from "#var/var";
-import LangPkg, { langFunc } from "#utils/translate";
-import Id from "#types/Id";
-import debugFunc, { LogLevel } from "#core/debug";
+import { vars } from "#var/var";
+import { LangPkg, langFunc } from "#utils/translate";
+import { Id } from "#types/Id";
+import { debugFunc, LogLevel } from "#core/debug";
 
 interface voiceFuncVar {
     local_stream: null | MediaStream;
@@ -22,7 +22,7 @@ const voiceFuncVar: voiceFuncVar = {
     joined: false,
 }
 
-const voiceFunc = {
+export const voiceFunc = {
     async initCall() {
         try {
             voiceHTML.voiceShow.style.display = "";
@@ -271,5 +271,4 @@ socket.on("voice.join", async (to: Id) => {
     uiFunc.uiMsgT(LangPkg.ui.call.joined, await apis.www.changeUserID(to));
 });
 
-export default voiceFunc;
 mglVar.voiceFunc = voiceFunc;

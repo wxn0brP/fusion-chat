@@ -1,6 +1,8 @@
 
-import Vars, { Vars_realm } from "../types/var";
-import { mglVar } from "./mgl"; const vars: Vars = {
+import { Vars, Vars_realm } from "../types/var";
+import { mglVar } from "./mgl";
+
+export const vars: Vars = {
     user: {
         _id: localStorage.getItem("user_id"),
         fr: localStorage.getItem("from"),
@@ -34,7 +36,6 @@ import { mglVar } from "./mgl"; const vars: Vars = {
     blocked: []
 }
 
-export default vars;
 mglVar.vars = vars;
 
 export function getEmptyRealmConfig(): Vars_realm {

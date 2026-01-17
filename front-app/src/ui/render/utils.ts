@@ -1,7 +1,7 @@
-import Id from "#types/Id";
-import utils from "#utils/utils";
+import { Id } from "#types/Id";
+import { utils } from "#utils/utils";
 import { Utils_updater } from "#types/utils";
-import apiVars from "#var/api";
+import { apiVars } from "#var/api";
 
 export function sortPrivs(data: Id[]): Id[] {
     const sortedData = [...data];

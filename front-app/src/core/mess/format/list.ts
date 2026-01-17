@@ -3,8 +3,8 @@ interface ListChild {
     lvl: number;
 }
 
-const format_list = {
-    calculateLevels(lines: string[]) {
+export namespace format_list {
+    export function calculateLevels(lines: string[]) {
         const result = [];
         let spacePerLvl = null;
 
@@ -36,9 +36,9 @@ const format_list = {
         });
 
         return result;
-    },
+    }
 
-    buildTree(linesWithLevels: ListChild[]) {
+    export function buildTree(linesWithLevels: ListChild[]) {
         const listItemRegex = /^(?:[-*]|\d+[.)]?|[a-zA-Z][.)])\s/;
         const root = [];
         const stack = [{ children: root, lvl: -1 }];
@@ -68,9 +68,9 @@ const format_list = {
         });
 
         return root;
-    },
+    }
 
-    treeToHtml(tree: ListChild[], marginValue: number, marginUnits: string) {
+    export function treeToHtml(tree: ListChild[], marginValue: number, marginUnits: string) {
         let html = "";
         const listMapOl = ["decimal", "lower-alpha", "upper-alpha", "lower-roman", "upper-roman"];
         let listEnd = true;
@@ -103,9 +103,9 @@ const format_list = {
         });
 
         return html;
-    },
+    }
 
-    cpu(text: string, marginValue: number = 0, marginUnits: string = "") {
+    export function cpu(text: string, marginValue: number = 0, marginUnits: string = "") {
         const lines = text.split(/\n|\<br\>|\<br\/\>|\<br \/>/);
         const levels = format_list.calculateLevels(lines);
         const tree = format_list.buildTree(levels);
@@ -113,5 +113,3 @@ const format_list = {
         return html.replace(/<br\s*\/?>\s*$/i, "");
     }
 }
-
-export default format_list;

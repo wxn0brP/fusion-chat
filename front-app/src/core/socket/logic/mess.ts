@@ -1,22 +1,22 @@
 import { apis } from "#api/apis";
-import messageCacheController from "#core/cacheControllers/mess";
-import coreFunc from "#core/coreFunc";
+import { messageCacheController } from "#core/cacheControllers/mess";
+import { coreFunc } from "#core/coreFunc";
 import { formatMess } from "#core/mess/format";
-import messInteract from "#core/mess/interact";
-import messFunc, { editMessText } from "#core/mess/mess";
+import { messInteract } from "#core/mess/interact";
+import { messFunc, editMessText } from "#core/mess/mess";
 import { messStyle } from "#core/mess/style";
 import { Core_mess__dbMessage, Core_mess__receivedMessage } from "#types/core/mess";
-import Id from "#types/Id";
+import { Id } from "#types/Id";
 import { Vars_mess__pinned, Vars_realm__thread } from "#types/var";
-import contextMenu from "#ui/components/contextMenu";
+import { contextMenu } from "#ui/components/contextMenu";
 import { uiFunc } from "#ui/helpers/uiFunc";
-import render_dm from "#ui/render/dm";
-import LangPkg, { langFunc } from "#utils/translate";
-import utils from "#utils/utils";
-import apiVars from "#var/api";
+import { render_dm } from "#ui/render/dm";
+import { LangPkg, langFunc } from "#utils/translate";
+import { utils } from "#utils/utils";
+import { apiVars } from "#var/api";
 import { messHTML } from "#var/html";
-import vars from "#var/var";
-import socket from "../socket";
+import { vars } from "#var/var";
+import { socket } from "../socket";
 
 export async function mess(data: Core_mess__receivedMessage) {
     // generate last message storage if needed

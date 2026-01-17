@@ -1,13 +1,13 @@
 import { messHTML } from "#var/html";
-import utils from "#utils/utils";
-import vars from "#var/var";
+import { utils } from "#utils/utils";
+import { vars } from "#var/var";
 import { apis } from "#api/apis";
 import { maxMessLen } from "./mess";
 
 const { input } = messHTML;
 
-class MessStyle {
-    sendBtnStyle() {
+export namespace messStyle {
+    export function sendBtnStyle() {
         const len = input.value.trim().length;
         let prop = "";
 
@@ -19,13 +19,13 @@ class MessStyle {
         messHTML.sendBtn.disabled = len == 0 || len > maxMessLen;
     }
 
-    messageHeight() {
+    export function messageHeight() {
         let len = input.value.split("\n").length - 1;
         len = len >= 2 ? Math.min(len, 20) : 0;
         input.style.setProperty("--messHeight", len + "rem");
     }
 
-    hideFromMessageInfo() {
+    export function hideFromMessageInfo() {
         function getTimeFromMess(mess: HTMLElement) {
             const id = mess.id.replace("mess__", "");
             return utils.extractTimeFromId(id);
@@ -49,7 +49,7 @@ class MessStyle {
         }
     }
 
-    colorRole() {
+    export function colorRole() {
         const messages = document.querySelectorAll(".mess_message") as NodeListOf<HTMLElement>;
         const roles = vars.realm.roles;
         const users = vars.realm.users;
@@ -80,7 +80,7 @@ class MessStyle {
         });
     }
 
-    async styleMessReacts(reactsDiv: HTMLElement) {
+    export async function styleMessReacts(reactsDiv: HTMLElement) {
         const spans = reactsDiv.querySelectorAll("span");
         for (const span of spans) {
             const users = span.getAttribute("_users").split(",");
@@ -100,7 +100,7 @@ class MessStyle {
         }
     }
 
-    setSelectionStart(position: number | undefined = undefined) {
+    export function setSelectionStart(position: number | undefined = undefined) {
         if (!position) position = input.value.length;
         input.setSelectionRange(position, position);
     }
@@ -109,8 +109,6 @@ class MessStyle {
 function colorRoleMess(mess: HTMLElement, color: string) {
     mess.querySelector<HTMLElement>(".mess_author_name").style.color = color;
 }
-
-export const messStyle = new MessStyle();
 
 setTimeout(() => {
     messStyle.sendBtnStyle();

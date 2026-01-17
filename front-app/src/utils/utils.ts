@@ -1,24 +1,24 @@
 import { apis } from "../api/apis";
-import Id from "../types/Id";
-import uiInteract from "../ui/interact/ui";
+import { Id } from "../types/Id";
+import { uiInteract } from "../ui/interact/ui";
 
-const utils = {
-    ss(): boolean {
+export namespace utils {
+    export function ss(): boolean {
         return window.innerWidth < 800;
-    },
+    }
 
-    isMobile(): boolean {
+    export function isMobile(): boolean {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    },
+    }
 
-    extractTimeFromId(id: Id): number {
+    export function extractTimeFromId(id: Id): number {
         if (!id) return 0;
         const timePart = id.split("-")[0];
         const timeUnix = parseInt(timePart, 36);
         return timeUnix;
-    },
+    }
 
-    formatDateFormUnix(unixTimestamp: number): string {
+    export function formatDateFormUnix(unixTimestamp: number): string {
         const date = new Date(unixTimestamp);
 
         const day = date.getDate();
@@ -29,16 +29,16 @@ const utils = {
 
         const formattedDate = `${day}.${month}.${year} ${hours}:${(minutes < 10 ? '0' : '')}${minutes}`;
         return formattedDate;
-    },
+    }
 
-    validId(id: Id): boolean {
+    export function validId(id: Id): boolean {
         if (!id) return false;
         if (typeof id !== "string") return false;
         if (id.split("-").length != 3) return false;
         return true;
-    },
+    }
 
-    writeToClipboard(text: string): Promise<boolean> {
+    export function writeToClipboard(text: string): Promise<boolean> {
         return new Promise((resolve) => {
             navigator.clipboard.writeText(text).then(() => {
                 resolve(true);
@@ -47,9 +47,9 @@ const utils = {
                 resolve(false);
             });
         })
-    },
+    }
 
-    sendNotification(title: string, body: string, payload: Record<string, any> = {}): void {
+    export function sendNotification(title: string, body: string, payload: Record<string, any> = {}): void {
         switch (apis.app.apiType) {
             case "rn":
             case "ele":
@@ -72,17 +72,17 @@ const utils = {
             default:
                 break;
         }
-    },
+    }
 
-    escape(selector: string): string {
+    export function escape(selector: string): string {
         return selector.replace(/([.&*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-    },
+    }
 
-    rmRef<T>(obj: T): T {
+    export function rmRef<T>(obj: T): T {
         return JSON.parse(JSON.stringify(obj));
-    },
+    }
 
-    getHighestRoleIndex(userRoles: string[], roleHierarchy: string[]): number {
+    export function getHighestRoleIndex(userRoles: string[], roleHierarchy: string[]): number {
         for (let i = 0; i < roleHierarchy.length; i++) {
             if (userRoles.includes(roleHierarchy[i])) {
                 return i;
@@ -91,5 +91,3 @@ const utils = {
         return -1;
     }
 }
-
-export default utils;

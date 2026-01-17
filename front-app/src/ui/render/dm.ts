@@ -1,16 +1,16 @@
 import { navHTML } from "#var/html";
-import vars from "#var/var";
-import coreFunc from "#core/coreFunc";
-import utils from "#utils/utils";
+import { vars } from "#var/var";
+import { coreFunc } from "#core/coreFunc";
+import { utils } from "#utils/utils";
 import { apis } from "#api/apis";
-import socket from "#core/socket/socket";
+import { socket } from "#core/socket/socket";
 import { Core_socket__blocked, Core_socket__dm } from "#types/core/socket";
 import { updateUserProfileMarker } from "./userStatusMarker";
-import apiVars from "#var/api";
+import { apiVars } from "#var/api";
 import { sortPrivs } from "./utils";
 
-const render_dm = {
-    async chats() {
+export namespace render_dm {
+    export async function chats() {
         navHTML.priv.innerHTML = "";
 
         for (const id of sortPrivs(vars.privs)) {
@@ -34,7 +34,7 @@ const render_dm = {
             privDiv.addEventListener("click", () => {
                 coreFunc.changeChat("$" + id);
                 setTimeout(() => {
-                    render_dm.privsRead();
+                    privsRead();
                 }, 100);
             });
 
@@ -45,11 +45,11 @@ const render_dm = {
             updateUserProfileMarker(id, apiVars.user_state[id]?.status.get());
         }
 
-        render_dm.privsRead();
+        privsRead();
         coreFunc.markSelectedChat();
-    },
+    }
 
-    privsRead() {
+    export function privsRead() {
         vars.privs.forEach((id) => {
             const cl = document.querySelector("#priv_chat_" + id)?.classList;
             if (!cl) return;
@@ -66,9 +66,9 @@ const render_dm = {
 
             unreadPriv ? cl.add("unreadPriv") : cl.remove("unreadPriv");
         });
-    },
+    }
 
-    dm_get(data: Core_socket__dm[], blocked: Core_socket__blocked[]) {
+    export function dm_get(data: Core_socket__dm[], blocked: Core_socket__blocked[]) {
         data.forEach((priv) => {
             const id = "$" + priv.priv;
 
@@ -83,7 +83,5 @@ const render_dm = {
 
         vars.blocked = blocked;
         if (vars.chat.to.startsWith("$")) coreFunc.dmPlaceholder(vars.chat.to.substring(1));
-    },
+    }
 }
-
-export default render_dm;

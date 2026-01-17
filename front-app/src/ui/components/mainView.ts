@@ -1,24 +1,24 @@
-import vars from "#var/var";
+import { vars } from "#var/var";
 import { mainViewHTML } from "#var/html";
-import coreFunc from "#core/coreFunc";
+import { coreFunc } from "#core/coreFunc";
 import { apis } from "#api/apis";
-import socket from "#core/socket/socket";
+import { socket } from "#core/socket/socket";
 import { uiFunc } from "../helpers/uiFunc";
-import Id from "#types/Id";
+import { Id } from "#types/Id";
 import { Vars_mainView__friend, Vars_mainView__page } from "#types/var";
-import LangPkg, { langFunc } from "#utils/translate";
+import { LangPkg, langFunc } from "#utils/translate";
 import { updateUserProfileMarker } from "../render/userStatusMarker";
-import apiVars from "#var/api";
+import { apiVars } from "#var/api";
 import { socketEvt } from "#core/socket/engine";
 import { setUserState } from "#ui/helpers/userStateManager";
 
-class MainView {
-    show() {
+export namespace mainView {
+    export function show() {
         socket.emit("friend.get.all");
         socket.emit("friend.requests.get");
     }
 
-    changeView(page: Vars_mainView__page) {
+    export function changeView(page: Vars_mainView__page) {
         vars.mainView.page = page;
         if (["all", "online", "offline"].includes(page)) {
             sortFriends(page);
@@ -36,7 +36,7 @@ class MainView {
         document.querySelector<HTMLElement>(`[main_view="${page}"]`).style.backgroundColor = "var(--accent)";
     }
 
-    async removeFriend(friend: Id) {
+    export async function removeFriend(friend: Id) {
         if (!friend) return;
 
         const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, await apis.www.changeUserID(friend)) + "?");
@@ -48,7 +48,7 @@ class MainView {
         socket.emit("friend.get.all");
     }
 
-    async removeFriendRequest(friend: Id) {
+    export async function removeFriendRequest(friend: Id) {
         if (!friend) return;
 
         const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.remove_friend, await apis.www.changeUserID(friend)) + "?");
@@ -161,8 +161,6 @@ async function renderRequests() {
         updateUserProfileMarker(request, apiVars.user_state[request]?.status.get());
     }
 }
-
-export const mainView = new MainView();
 
 mainView.changeView("online");
 

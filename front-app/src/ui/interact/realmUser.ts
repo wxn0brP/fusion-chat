@@ -1,23 +1,23 @@
 import { apis } from "#api/apis";
-import socket from "#core/socket/socket";
-import Id from "#types/Id";
-import LangPkg from "#utils/translate";
-import utils from "#utils/utils";
+import { socket } from "#core/socket/socket";
+import { Id } from "#types/Id";
+import { LangPkg } from "#utils/translate";
+import { utils } from "#utils/utils";
 import { renderHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
-import vars from "#var/var";
+import { vars } from "#var/var";
 import { uiFunc } from "../helpers/uiFunc";
 
 function getId() {
     return renderHTML.realmUserProfile.getAttribute("data-id");
 }
 
-class RealmUserInteract {
-    removeRole(id: Id, role: number) {
+export namespace realmUserInteract {
+    export function removeRole(id: Id, role: number) {
         socket.emit("realm.user.role.remove", vars.chat.to, id, role);
     }
 
-    async addRole() {
+    export async function addRole() {
         const id = getId();
         const roles = vars.realm.roles;
         const selfHighestRoleIndex = utils.getHighestRoleIndex(vars.realm.users.find(u => u.uid == vars.user._id)?.roles || [], vars.realm.roles.map(r => r.name));
@@ -41,7 +41,7 @@ class RealmUserInteract {
         socket.emit("realm.user.role.add", vars.chat.to, id, lvl.i);
     }
 
-    async kick() {
+    export async function kick() {
         const id = getId();
         const conf = await uiFunc.confirm(LangPkg.settings_realm.kick_user + "? <b>" + await apis.www.changeUserID(id) + "</b>");
         if (!conf) return;
@@ -49,5 +49,4 @@ class RealmUserInteract {
     }
 }
 
-export const realmUserInteract = new RealmUserInteract();
 mglInt.realmUserProfile = realmUserInteract;

@@ -1,4 +1,4 @@
-import Id from "../Id";
+import { Id } from "../Id";
 import { Vars_user__activity } from "../var";
 
 export interface Core_socket__refresh {

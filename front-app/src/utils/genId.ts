@@ -1,12 +1,13 @@
+import { Id } from "../types/Id";
 
-import Id from "../types/Id"; const usedIdsMap = new Map();
+const usedIdsMap = new Map();
 
 /**
  * Generates a unique identifier based on specified parts.
  * @param [parts] - The number of parts or an array of parts. Defaults to [1, 1].
  * @returns The generated unique identifier.
  */
-function genId(parts: number[] = [1, 1]): Id {
+export function genId(parts: number[] = [1, 1]): Id {
     const time = getTime();
     const id = getUniqueRandom(time, parts);
     return id;
@@ -41,5 +42,3 @@ function getRandom(unix: number) {
 function getTime() {
     return new Date().getTime().toString(36);
 }
-
-export default genId;

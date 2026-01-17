@@ -1,5 +1,7 @@
 
-import Id from "#types/Id"; export default function format_responeMess(mess_id: Id, div: HTMLDivElement) {
+import { Id } from "#types/Id";
+
+export function format_responeMess(mess_id: Id, div: HTMLDivElement) {
     const mess = document.querySelector(`#mess__${mess_id}`);
     if (!mess) return;
 

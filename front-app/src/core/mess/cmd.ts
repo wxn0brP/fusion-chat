@@ -1,17 +1,17 @@
 import { messStyle } from "./style";
-import vars from "#var/var";
-import coreFunc from "../coreFunc";
-import socket from "../socket/socket";
+import { vars } from "#var/var";
+import { coreFunc } from "../coreFunc";
+import { socket } from "../socket/socket";
 import { messHTML } from "#var/html";
-import LangPkg from "#utils/translate";
+import { LangPkg } from "#utils/translate";
 import { uiFunc } from "#ui/helpers/uiFunc";
-import permissionFunc, { PermissionFlags } from "#utils/perm";
+import { permissionFunc, PermissionFlags } from "#utils/perm";
 import {
     Core_mess__command,
     Core_mess__command_arg_list,
     Core_mess__sendMessage,
 } from "#types/core/mess";
-import apiVars from "#var/api";
+import { apiVars } from "#var/api";
 
 const barc__commads = messHTML.barc__commads;
 barc__commads.style.display = "none";
@@ -135,7 +135,7 @@ export function setCurrentCmd(cmd: Core_mess__command | null) {
     currentCmd = cmd;
 }
 
-const messCmd = {
+export const messCmd = {
     temp: [],
 
     check() {
@@ -510,4 +510,3 @@ const messCmd = {
 };
 
 messHTML.input.addEventListener("input", messCmd.check);
-export default messCmd;

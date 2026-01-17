@@ -1,4 +1,4 @@
-import utils from "#utils/utils";
+import { utils } from "#utils/utils";
 
 export function reloadProfileImages(id: string): void {
     const escapedUrl = utils.escape(`/api/profile/img?id=${id}`);

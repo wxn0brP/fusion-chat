@@ -1,26 +1,26 @@
-import messFunc from "./mess";
+import { messFunc } from "./mess";
 import { messStyle } from "./style";
-import vars from "#var/var";
+import { vars } from "#var/var";
 import { apis } from "#api/apis";
-import coreFunc from "../coreFunc";
-import socket from "../socket/socket";
+import { coreFunc } from "../coreFunc";
+import { socket } from "../socket/socket";
 import { uiFunc } from "#ui/helpers/uiFunc";
 import { Vars_realm__thread } from "#types/var";
-import messCmd, { messCmds, setCurrentCmd } from "./cmd";
+import { messCmd, messCmds, setCurrentCmd } from "./cmd";
 import { emojiHTML, messHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
 import { emojiFunc, customEmoji } from "#ui/components/emoji";
-import LangPkg from "#utils/translate";
-import Id from "#types/Id";
+import { LangPkg } from "#utils/translate";
+import { Id } from "#types/Id";
 
-const messInteract = {
-    replyClose() {
+export namespace messInteract {
+    export function replyClose() {
         messHTML.replyClose.style.display = "none";
         if (vars.temp.replyId) (document.querySelector("#mess__" + vars.temp.replyId) as HTMLElement).style.backgroundColor = "";
         vars.temp.replyId = null;
-    },
+    }
 
-    editMessClose() {
+    export function editMessClose() {
         messHTML.editClose.style.display = "none";
         messHTML.input.value = "";
         vars.temp.editId = null;
@@ -28,9 +28,9 @@ const messInteract = {
         messStyle.sendBtnStyle();
         messStyle.messageHeight();
         messStyle.setSelectionStart();
-    },
+    }
 
-    linkClick(e: MouseEvent) {
+    export function linkClick(e: MouseEvent) {
         e.preventDefault();
         let url = (e.target as HTMLElement).getAttribute("href");
         if (!url) return;
@@ -57,9 +57,9 @@ const messInteract = {
         messHTML.linkClick.querySelector("#linkClick_link").innerHTML = urlColored;
         messHTML.linkClick.querySelector("#linkClick_yes").addEventListener("click", handleYesClick);
         messHTML.linkClick.querySelector("#linkClick_no").addEventListener("click", end);
-    },
+    }
 
-    emocjiPopup(cb: (emoticon: string) => void) {
+    export function emocjiPopup(cb: (emoticon: string) => void) {
         emojiHTML.div.fadeIn();
         function evt(e: CustomEvent) {
             cb(e.detail);
@@ -100,23 +100,23 @@ const messInteract = {
                 emojiFunc.renderEmoji();
             });
         }, 100);
-    },
+    }
 
-    emocji() {
+    export function emocji() {
         messInteract.emocjiPopup((emoticon: string) => {
             messInteract.handleEmocji(emoticon);
             setTimeout(() => {
                 messStyle.setSelectionStart();
             }, 100);
         });
-    },
+    }
 
-    handleEmocji(emoji: string) {
+    export function handleEmocji(emoji: string) {
         if (!emoji) return;
         messHTML.input.value += emoji;
-    },
+    }
 
-    search() {
+    export function search() {
         messHTML.input.value = "/search ";
         setCurrentCmd(messCmds.system.search);
 
@@ -124,9 +124,9 @@ const messInteract = {
         messHTML.input.dispatchEvent(evt);
 
         messCmd.handleCommandInput();
-    },
+    }
 
-    displayPinned() {
+    export function displayPinned() {
         messHTML.div.innerHTML = "<h2>" + LangPkg.ui.pinned_messages + "</h2>";
         if (vars.chat.pinned.length == 0) {
             messHTML.div.innerHTML += LangPkg.ui.no_pinned_messages;
@@ -135,15 +135,15 @@ const messInteract = {
         vars.chat.pinned.forEach((m) => {
             messFunc.addMess(m);
         });
-    },
+    }
 
-    spoiler(e: MouseEvent) {
+    export function spoiler(e: MouseEvent) {
         e.preventDefault();
         const t = e.target as HTMLElement;
         t.clT("spoiler__show");
-    },
+    }
 
-    async thread(thread: Vars_realm__thread, messDiv: HTMLDivElement) {
+    export async function thread(thread: Vars_realm__thread, messDiv: HTMLDivElement) {
         if (!thread) return;
         if (!messDiv) return;
         const { _id, name, author } = thread;
@@ -164,5 +164,4 @@ const messInteract = {
 }
 
 messInteract.replyClose();
-export default messInteract;
 mglInt.mess = messInteract;

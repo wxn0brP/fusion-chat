@@ -2,27 +2,27 @@ import { apis } from "#api/apis";
 import { fileFunc } from "#api/file";
 import { Api_fileFunc_read__options } from "#types/api";
 import { Core_mess__dbMessage, Core_mess__sendMessage } from "#types/core/mess";
-import contextMenu from "#ui/components/contextMenu";
-import permissionFunc, { PermissionFlags } from "#utils/perm";
-import utils from "#utils/utils";
+import { contextMenu } from "#ui/components/contextMenu";
+import { permissionFunc, PermissionFlags } from "#utils/perm";
+import { utils } from "#utils/utils";
 import { messHTML } from "#var/html";
 import { mglVar } from "#var/mgl";
-import staticData from "#var/staticData";
-import vars from "#var/var";
-import coreFunc from "../coreFunc";
-import socket from "../socket/socket";
-import messCmd from "./cmd";
+import { staticData } from "#var/staticData";
+import { vars } from "#var/var";
+import { coreFunc } from "../coreFunc";
+import { socket } from "../socket/socket";
+import { messCmd } from "./cmd";
 import { formatMess } from "./format";
 import { format_embed } from "./format/embed";
-import format_responeMess from "./format/respone";
-import messInteract from "./interact";
+import { format_responeMess } from "./format/respone";
+import { messInteract } from "./interact";
 import { messStyle } from "./style";
 
 export const maxMessLen = 2000;
 export const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
 
-const messFunc = {
-    sendMess() {
+export namespace messFunc {
+    export function sendMess() {
         if (!vars.chat.to || !vars.chat.chnl) return;
         if (vars.chat.to == "main") return;
 
@@ -48,9 +48,9 @@ const messFunc = {
         coreFunc.focusInp();
         messStyle.sendBtnStyle();
         messStyle.messageHeight();
-    },
+    }
 
-    async addMess(data: Core_mess__dbMessage, scroll: boolean = true, up: boolean = false) {
+    export async function addMess(data: Core_mess__dbMessage, scroll: boolean = true, up: boolean = false) {
         if (!data) return;
 
         /*
@@ -156,9 +156,9 @@ const messFunc = {
         messDiv.addEventListener("click", () => {
             vars.chat.selectedMess = data._id;
         })
-    },
+    }
 
-    sendFile(f: File | undefined) {
+    export function sendFile(f: File | undefined) {
         // TODO add check permissions about sending files
         if (f) {
             read(f);
@@ -198,8 +198,7 @@ const messFunc = {
 
             fileFunc.read(opt);
         }
-    },
+    }
 }
 
-export default messFunc;
 mglVar.messFunc = messFunc;

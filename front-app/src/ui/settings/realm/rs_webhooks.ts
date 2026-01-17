@@ -1,10 +1,10 @@
-import debugFunc, { LogLevel } from "#core/debug";
-import socket from "#core/socket/socket";
-import Id from "#types/Id";
+import { debugFunc, LogLevel } from "#core/debug";
+import { socket } from "#core/socket/socket";
+import { Id } from "#types/Id";
 import { uiFunc } from "#ui/helpers/uiFunc";
-import genId from "#utils/genId";
-import LangPkg from "#utils/translate";
-import utils from "#utils/utils";
+import { genId } from "#utils/genId";
+import { LangPkg } from "#utils/translate";
+import { utils } from "#utils/utils";
 import { addSeparator, initButton, initInputText } from "./rs_utils";
 import rs_dataF from "./rs_var";
 import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Webhook } from "./types";

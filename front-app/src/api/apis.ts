@@ -1,4 +1,4 @@
-import debugFunc, { LogLevel } from "../core/debug";
+import { debugFunc, LogLevel } from "../core/debug";
 import { mglVar } from "../var/mgl";
 import { changeChat, changeUserID, getInServer } from "./www";
 

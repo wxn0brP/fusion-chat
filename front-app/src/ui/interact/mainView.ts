@@ -1,15 +1,15 @@
-import Id from "#types/Id";
+import { Id } from "#types/Id";
 import { uiFunc } from "../helpers/uiFunc";
-import socket from "#core/socket/socket";
+import { socket } from "#core/socket/socket";
 import { mainView } from "../components/mainView";
 import { mainViewHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
 import { Vars_mainView__page } from "#types/var";
-import LangPkg from "#utils/translate";
-import vars from "#var/var";
+import { LangPkg } from "#utils/translate";
+import { vars } from "#var/var";
 
-class MainViewInteract {
-    showNav() {
+export namespace mainViewInteract {
+    export function showNav() {
         if (mainViewHTML.nav.clientHeight == 0) {
             mainViewHTML.nav.fadeIn();
         } else {
@@ -17,17 +17,17 @@ class MainViewInteract {
         }
     }
 
-    async addFriend(friend: Id) {
+    export async function addFriend(friend: Id) {
         if (!friend) friend = await uiFunc.prompt(LangPkg.ui.enter_friend);
         if (!friend) return;
         socket.emit("friend.request", friend);
     }
 
-    changeView(page: Vars_mainView__page) {
+    export function changeView(page: Vars_mainView__page) {
         mainView.changeView(page);
     }
 
-    requestFriendResponse(user_id: Id, accept: boolean) {
+    export function requestFriendResponse(user_id: Id, accept: boolean) {
         if (!user_id) return;
         const div = mainViewHTML.div.querySelector(`.main__view__friend[data-status-id="${user_id}"]`);
         if (!div) return;
@@ -41,5 +41,4 @@ class MainViewInteract {
     }
 }
 
-export const mainViewInteract = new MainViewInteract();
 mglInt.mainView = mainViewInteract;

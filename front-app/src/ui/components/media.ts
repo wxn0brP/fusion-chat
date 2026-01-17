@@ -1,6 +1,6 @@
 
 import { Ui_Media__Options, Ui_Media__State } from "#types/ui/components";
-import LangPkg from "#utils/translate";
+import { LangPkg } from "#utils/translate";
 import { mglInt } from "#var/mgl"; const mediaPopupDiv = document.querySelector<HTMLElement>("#mediaPopup");
 
 class MediaPopup {
@@ -382,10 +382,8 @@ class MediaPopup {
     }
 }
 
-function createMediaPopup(media: string, options = {}) {
+export function createMediaPopup(media: string, options = {}) {
     return new MediaPopup(mediaPopupDiv, media, options);
 }
 
-export default createMediaPopup;
-export { MediaPopup };
 mglInt.createMediaPopup = createMediaPopup;

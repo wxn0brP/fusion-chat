@@ -1,5 +1,5 @@
-const contextMenuLib = {
-    menuShower(ele: HTMLElement, e: MouseEvent) {
+export namespace contextMenuLib {
+    export function menuShower(ele: HTMLElement, e: MouseEvent) {
         ele.style.display = "block";
         _handleClick(e);
 
@@ -17,9 +17,9 @@ const contextMenuLib = {
         function _removeClick() {
             document.body.removeEventListener("click", _click);
         }
-    },
+    }
 
-    menuMax(e: MouseEvent, doc: HTMLElement) {
+    export function menuMax(e: MouseEvent, doc: HTMLElement) {
         const x = e.clientX;
         const y = e.clientY;
         const w = doc.clientWidth;
@@ -45,5 +45,3 @@ const contextMenuLib = {
         }
     }
 }
-
-export default contextMenuLib;

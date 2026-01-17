@@ -1,11 +1,11 @@
-import debugFunc, { LogLevel } from "#core/debug";
+import { debugFunc, LogLevel } from "#core/debug";
 import { Core_Api__GetInServer__Response } from "#types/core/api";
-import Id from "#types/Id";
+import { Id } from "#types/Id";
 import { uiFunc } from "#ui/helpers/uiFunc";
-import changeCodeToString from "#utils/code";
-import LangPkg from "#utils/translate";
-import apiVars from "#var/api";
-import vars from "#var/var";
+import { changeCodeToString } from "#utils/code";
+import { LangPkg } from "#utils/translate";
+import { apiVars } from "#var/api";
+import { vars } from "#var/var";
 
 async function changeIdUtil(
     endpoint: string,

@@ -1,4 +1,4 @@
-import Id from "../Id";
+import { Id } from "../Id";
 
 // message
 
@@ -10,7 +10,7 @@ export interface Core_mess__dbMessage extends Core_mess__MessageBase {
     _id: Id;
     fr: Id;
     msg: string;
-    
+
     lastEdit?: string; // edit time (36 system format)
     res?: Id; // response message id
     reacts?: {
@@ -38,7 +38,7 @@ export interface Core_mess__receivedMessage extends Core_mess__MessageBase {
     res?: Id;
 }
 
-export interface Core_mess__command_arg_base{
+export interface Core_mess__command_arg_base {
     name: string;
     type: "text" | "number" | "boolean" | "user" | "date" | "map" | "date-time" | "time" | "list";
     optional?: boolean;

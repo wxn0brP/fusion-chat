@@ -1,26 +1,26 @@
 import { delay } from "@wxn0brp/flanker-ui/utils";
 import { apis } from "../api/apis";
 import { Core_socket__blocked, Core_socket__dm } from "../types/core/socket";
-import Id from "../types/Id";
+import { Id } from "../types/Id";
 import { Vars_realm__thread } from "../types/var";
 import { customEmoji } from "../ui/components/emoji";
 import { mainView } from "../ui/components/mainView";
-import render_dm from "../ui/render/dm";
-import render_forum from "../ui/render/forum";
+import { render_dm } from "../ui/render/dm";
+import { render_forum } from "../ui/render/forum";
 import { renderState } from "../ui/render/var";
-import LangPkg from "../utils/translate";
-import utils from "../utils/utils";
+import { LangPkg } from "../utils/translate";
+import { utils } from "../utils/utils";
 import { coreHTML, mainViewHTML, messHTML, navHTML } from "../var/html";
 import { mglVar } from "../var/mgl";
-import staticData from "../var/staticData";
-import vars, { getEmptyRealmConfig } from "../var/var";
-import messageCacheController from "./cacheControllers/mess";
+import { staticData } from "../var/staticData";
+import { vars, getEmptyRealmConfig } from "../var/var";
+import { messageCacheController } from "./cacheControllers/mess";
 import { messStyle } from "./mess/style";
 import { socketEvt } from "./socket/engine";
-import socket from "./socket/socket";
+import { socket } from "./socket/socket";
 
-const coreFunc = {
-    async changeChat(id: Id, chnl: Id | "main" | null = null) {
+export namespace coreFunc {
+    export async function changeChat(id: Id, chnl: Id | "main" | null = null) {
         messHTML.div.innerHTML = "";
         customEmoji.categories = [];
         customEmoji.emojis = {};
@@ -97,9 +97,9 @@ const coreFunc = {
             });
         }
         coreFunc.markSelectedChat();
-    },
+    }
 
-    changeChnl(id: Id) {
+    export function changeChnl(id: Id) {
         vars.chat.chnl = id;
         vars.chat.actMess = 0;
         vars.chat.selectedMess = null;
@@ -140,26 +140,26 @@ const coreFunc = {
             LangPkg.ui.message.read_only + "!";
         messHTML.input.disabled = !permToWrite;
         messHTML.bar.style.display = "";
-    },
+    }
 
-    loadChat() {
+    export function loadChat() {
         coreFunc.loadMess();
         setTimeout(coreFunc.focusInp, 100);
         setTimeout(() => {
             messHTML.div.scrollTop = messHTML.div.scrollHeight;
         }, 300);
-    },
+    }
 
-    focusInp(end: boolean = false) {
+    export function focusInp(end: boolean = false) {
         if (utils.ss()) return;
         setTimeout(() => {
             messHTML.input.focus();
             // move cursor to end
             if (end) messStyle.setSelectionStart();
         }, 100);
-    },
+    }
 
-    loadMess() {
+    export function loadMess() {
         messHTML.div.innerHTML = "";
         const tmp = vars.chat.actMess;
         vars.chat.actMess += staticData.messCount;
@@ -171,9 +171,9 @@ const coreFunc = {
         } else {
             messageCacheController.getMessages();
         }
-    },
+    }
 
-    scrollToBottom() {
+    export function scrollToBottom() {
         if (vars.temp.scrollBlock) return;
         vars.temp.scrollBlock = true;
         setTimeout(() => {
@@ -182,9 +182,9 @@ const coreFunc = {
         setTimeout(() => {
             vars.temp.scrollBlock = false;
         }, 300);
-    },
+    }
 
-    markSelectedChat() {
+    export function markSelectedChat() {
         document.querySelectorAll(".priv_chat").forEach((ele) => {
             ele.classList.remove("priv_chatActive")
         });
@@ -196,9 +196,9 @@ const coreFunc = {
         if (to == "main") { }
         else if (to.startsWith("$")) document.querySelector("#priv_chat_" + to.substring(1)).classList.add("priv_chatActive");
         else document.querySelector("#realm_chat_" + to).classList.add("realm_chatActive");
-    },
+    }
 
-    dmPlaceholder(id: Id) {
+    export function dmPlaceholder(id: Id) {
         function set(text: string, disabled: boolean) {
             messHTML.input.placeholder = text;
             messHTML.input.disabled = disabled;
@@ -211,24 +211,25 @@ const coreFunc = {
         if (frBlocked) return set(LangPkg.ui.message.block_placeholder.blocked + "!", true);
 
         set(LangPkg.ui.message.placeholder + "...", false);
-    },
+    }
 
-    async changeToForum(id: Id) {
+    export async function changeToForum(id: Id) {
         vars.chat.chnl = "";
+
         const forms = await new Promise(r => {
             socketEvt["realm.thread.list"].emitId(vars.chat.to + "=" + id, vars.chat.to, id, r);
         }) as Vars_realm__thread[];
+
         messHTML.div.innerHTML = "";
         render_forum(forms, id);
         messHTML.input.placeholder = LangPkg.ui.message.read_only + "!";
         messHTML.input.disabled = true;
         messHTML.bar.style.display = "none";
-    },
+    }
 
-    fetchPinned() {
+    export function fetchPinned() {
         socketEvt["message.fetch.pinned"].emitId(vars.chat.to + "=" + vars.chat.chnl, vars.chat.to, vars.chat.chnl);
     }
 }
 
-export default coreFunc;
 mglVar.coreFunc = coreFunc;

@@ -1,8 +1,9 @@
-
-import Id from "#types/Id";
-import RealmSettingsManager from "./realmSettings";
+import { Id } from "#types/Id";
+import { RealmSettingsManager } from "./realmSettings";
 import { initCategoryElement } from "./rs_utils";
-import { Settings_rs__Categories, Settings } from "./types";/**
+import { Settings_rs__Categories, Settings } from "./types";
+
+/**
  * Initializes a settings page for a realm.
  */
 function initCategories(container: HTMLElement) {

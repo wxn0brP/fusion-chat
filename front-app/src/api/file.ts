@@ -1,12 +1,12 @@
 
-import Id from "../types/Id";
+import { Id } from "../types/Id";
 import { uiFunc } from "../ui/helpers/uiFunc";
 import { Api_fileFunc_read__options } from "../types/api";
-import debugFunc, { LogLevel } from "../core/debug";
-import LangPkg from "../utils/translate";
+import { debugFunc, LogLevel } from "../core/debug";
+import { LangPkg } from "../utils/translate";
 
-class FileFunc {
-    read(options: Api_fileFunc_read__options) {
+export namespace fileFunc {
+    export function read(options: Api_fileFunc_read__options) {
         const { file, callback, maxSize, maxName, endpoint } = options;
         if (!file || !callback || !maxSize || !maxName || !endpoint) {
             return;
@@ -55,7 +55,7 @@ class FileFunc {
         reader.readAsArrayBuffer(file);
     }
 
-    profile(file: File) {
+    export function profile(file: File) {
         const opt: Api_fileFunc_read__options = {
             file,
             callback: () => {
@@ -66,10 +66,10 @@ class FileFunc {
             endpoint: "/api/profile/upload"
         }
 
-        this.read(opt);
+        read(opt);
     }
 
-    realm(file: File, id: Id) {
+    export function realm(file: File, id: Id) {
         const opt: Api_fileFunc_read__options = {
             file,
             callback: () => {
@@ -83,10 +83,10 @@ class FileFunc {
             }
         }
 
-        this.read(opt);
+        read(opt);
     }
 
-    emocji(file: File, realmId: Id) {
+    export function emocji(file: File, realmId: Id) {
         const opts: Api_fileFunc_read__options = {
             file: file,
             callback: () => {
@@ -100,8 +100,6 @@ class FileFunc {
             }
         };
 
-        this.read(opts);
+        read(opts);
     }
-};
-
-export const fileFunc = new FileFunc();
+}

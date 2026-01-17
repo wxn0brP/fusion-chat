@@ -1,25 +1,25 @@
-import vars from "#var/var";
+import { vars } from "#var/var";
 import { apis } from "#api/apis";
-import coreFunc from "#core/coreFunc";
-import socket from "#core/socket/socket";
+import { coreFunc } from "#core/coreFunc";
+import { socket } from "#core/socket/socket";
 import { mainView } from "../components/mainView";
 import { mainViewInteract } from "../interact/mainView";
 import { navHTML, renderHTML } from "#var/html";
 import { Core_socket__friendStatus, Core_socket__user_profile } from "#types/core/socket";
-import utils from "#utils/utils";
-import LangPkg from "#utils/translate";
+import { utils } from "#utils/utils";
+import { LangPkg } from "#utils/translate";
 import { updateUserProfileMarker } from "./userStatusMarker";
 import { setUserState } from "#ui/helpers/userStateManager";
 import { initPopup } from "./utils";
 
-class Render_user {
-    async localUserProfile() {
+export namespace render_user {
+    export async function localUserProfile() {
         navHTML.user__name.innerHTML = await apis.www.changeUserID(vars.user._id);
         navHTML.user__status.innerHTML = vars.user.statusText || vars.user.status || "Online";
         updateUserProfileMarker(vars.user._id, vars.user.status || "online");
     }
 
-    userProfile(data: Core_socket__user_profile) {
+    export function userProfile(data: Core_socket__user_profile) {
         if (!data) return;
         const targetIsMe = data._id == vars.user._id;
         const imgLink = "/api/profile/img?id=" + data._id;
@@ -129,5 +129,3 @@ class Render_user {
         setUserState(data._id, data);
     }
 }
-
-export const render_user = new Render_user();

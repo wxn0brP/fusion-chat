@@ -1,23 +1,23 @@
 import { apis } from "#api/apis";
-import coreFunc from "#core/coreFunc";
-import socket from "#core/socket/socket";
-import Id from "#types/Id";
+import { coreFunc } from "#core/coreFunc";
+import { socket } from "#core/socket/socket";
+import { Id } from "#types/Id";
 import { mainView } from "#ui/components/mainView";
 import { render_events } from "#ui/render/event";
-import LangPkg, { langFunc } from "#utils/translate";
-import utils from "#utils/utils";
-import vars from "#var/var";
+import { LangPkg, langFunc } from "#utils/translate";
+import { utils } from "#utils/utils";
+import { vars } from "#var/var";
 import { delay } from "@wxn0brp/flanker-ui/utils";
 import { uiFunc } from "./uiFunc";
 
-class StateManager {
-    handle(type: string, ...data: string[]) {
+export namespace stateManager {
+    export function handle(type: string, ...data: string[]) {
         const fn = stateManagerFunc[type];
         if (!fn) return false;
         return fn(...data) || true;
     }
 
-    async handleArray(arr: { type: string, value: any }[]) {
+    export async function handleArray(arr: { type: string, value: any }[]) {
         for (const data of arr) {
             const val = Array.isArray(data.value) ? data.value : [data.value];
             await this.handle(data.type, ...val);
@@ -25,7 +25,7 @@ class StateManager {
         }
     }
 
-    async handleGetParam() {
+    export async function handleGetParam() {
         const params = new URLSearchParams(window.location.search);
         const ctrls = [];
 
@@ -45,7 +45,7 @@ class StateManager {
         await this.handleArray(ctrls);
     }
 
-    removeControlParams() {
+    export function removeControlParams() {
         const getParam = new URLSearchParams(window.location.search);
 
         Array.from(getParam.entries()).forEach(([key]) => {
@@ -57,7 +57,7 @@ class StateManager {
         window.history.replaceState({}, '', newUrl);
     }
 
-    extractUrl() {
+    export function extractUrl() {
         const path = window.location.origin + window.location.pathname;
         const params = new URLSearchParams(window.location.search);
         if (vars.chat.to.startsWith("$")) {
@@ -108,5 +108,3 @@ const stateManagerFunc = {
         mainView.changeView("requests");
     },
 }
-
-export const stateManager = new StateManager();

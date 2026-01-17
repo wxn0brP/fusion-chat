@@ -1,20 +1,20 @@
-import Id from "#types/Id";
+import { Id } from "#types/Id";
 import { uiFunc } from "../helpers/uiFunc";
-import socket from "#core/socket/socket";
+import { socket } from "#core/socket/socket";
 import { otherHTML } from "#var/html";
 import { mglVar } from "#var/mgl";
-import LangPkg from "#utils/translate";
+import { LangPkg } from "#utils/translate";
 
 const makeRealmDiv = otherHTML.makeRealm;
 
-class ButtonFunc {
-    async addDm() {
+export namespace buttonFunc {
+    export async function addDm() {
         const to = await uiFunc.prompt(LangPkg.ui.enter_dm);
         if (!to) return;
         socket.emit("dm.create", to);
     }
 
-    async createRealm() {
+    export async function createRealm() {
         makeRealmDiv.fadeOut();
         const name = await uiFunc.prompt(LangPkg.ui.create_realm_name);
         if (!name) return;
@@ -24,7 +24,7 @@ class ButtonFunc {
         }, 1500);
     }
 
-    async joinRealm() {
+    export async function joinRealm() {
         makeRealmDiv.fadeOut();
         let id = await uiFunc.prompt(LangPkg.ui.enter_realm_invite) as Id;
         if (!id) return;
@@ -38,5 +38,4 @@ class ButtonFunc {
     }
 }
 
-const buttonFunc = new ButtonFunc();
 mglVar.buttonFunc = buttonFunc;

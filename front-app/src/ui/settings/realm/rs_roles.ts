@@ -1,9 +1,9 @@
-import debugFunc, { LogLevel } from "#core/debug";
+import { debugFunc, LogLevel } from "#core/debug";
 import { uiFunc } from "#ui/helpers/uiFunc";
-import genId from "#utils/genId";
-import permissionFunc from "#utils/perm";
-import LangPkg from "#utils/translate";
-import vars from "#var/var";
+import { genId } from "#utils/genId";
+import { permissionFunc } from "#utils/perm";
+import { LangPkg } from "#utils/translate";
+import { vars } from "#var/var";
 import { addSeparator, initButton, initCheckbox, initInputText } from "./rs_utils";
 import rs_dataF from "./rs_var";
 import { Settings_rs__Role } from "./types";

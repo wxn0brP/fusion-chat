@@ -1,8 +1,7 @@
-import LangPkg from "#utils/translate";
-import permissionFunc, { PermissionFlags } from "#utils/perm";
-import socket from "#core/socket/socket";
+import { LangPkg } from "#utils/translate";
+import { permissionFunc, PermissionFlags } from "#utils/perm";
+import { socket } from "#core/socket/socket";
 import rs_dataF from "./rs_var";
-
 import { renderMeta } from "./rs_meta";
 import { renderWebhooks } from "./rs_webhooks";
 import { renderEmojis } from "./rs_emoji";

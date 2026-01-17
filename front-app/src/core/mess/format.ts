@@ -1,6 +1,6 @@
 
-import format_media from "./format/media";
-import format_text from "./format/text";
+import { format_media } from "./format/media";
+import { format_text } from "./format/text";
 
 export async function formatMess(mess_plain: string, div: HTMLDivElement) {
     let mess = format_text(mess_plain);

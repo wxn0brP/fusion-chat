@@ -1,16 +1,16 @@
-import Id from "#types/Id";
-import vars from "#var/var";
+import { Id } from "#types/Id";
+import { vars } from "#var/var";
 import { messHTML } from "#var/html";
-import coreFunc from "#core/coreFunc";
+import { coreFunc } from "#core/coreFunc";
 import { messStyle } from "#core/mess/style";
-import socket from "#core/socket/socket";
+import { socket } from "#core/socket/socket";
 import { uiFunc, promptDiv } from "../helpers/uiFunc";
-import KeyState from "#var/keys";
-import LangPkg from "#utils/translate";
+import { KeyState } from "#var/keys";
+import { LangPkg } from "#utils/translate";
 import { socketEvt } from "#core/socket/engine";
 
-const uiInteract = {
-    editMess(id: Id) {
+export namespace uiInteract {
+    export function editMess(id: Id) {
         const messageDiv = document.querySelector("#mess__" + id + " .mess_content");
         if (!messageDiv) return;
         const message = messageDiv.getAttribute("_plain");
@@ -22,9 +22,9 @@ const uiInteract = {
         messStyle.sendBtnStyle();
         messStyle.messageHeight();
         messStyle.setSelectionStart();
-    },
+    }
 
-    clipboardError(text: string) {
+    export function clipboardError(text: string) {
         const div = document.createElement("div");
         div.style.opacity = "0";
         div.classList.add("prompt");
@@ -53,9 +53,9 @@ const uiInteract = {
         div.fadeIn(() => {
             textarea.select();
         });
-    },
+    }
 
-    async createThread(messId: Id = null) {
+    export async function createThread(messId: Id = null) {
         const { to, chnl } = vars.chat;
         if (!to || !chnl) return;
         if (to.startsWith("$")) return;
@@ -67,9 +67,9 @@ const uiInteract = {
         socket.emit("realm.thread.create", to, chnl, name, messId, () => {
             socketEvt["realm.thread.list"].emitId(to + "=" + chnl, to, chnl);
         });
-    },
+    }
 
-    async deleteMess(id: Id) {
+    export async function deleteMess(id: Id) {
         const keys = KeyState.shift || KeyState.ctrl; // if shift or ctrl is pressed skip confirmation
         if (!keys) {
             const conf = await uiFunc.confirm(LangPkg.ui.confirm.delete_message + "?"); // TODO rm mess confirm make better (popup with content) 
@@ -78,5 +78,3 @@ const uiInteract = {
         socket.emit("message.delete", vars.chat.to, id);
     }
 }
-
-export default uiInteract;

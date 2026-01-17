@@ -1,5 +1,6 @@
-import socket from "../socket/socket";
-class SocketController {
+import { socket } from "../socket/socket";
+
+export class SocketController {
     private evtName: string;
     private cb: (...args: any[]) => void;
 
@@ -46,8 +47,6 @@ class SocketController {
         await this.emitId(id, ...[id, ...data]);
     }
 }
-
-export default SocketController;
 
 export function openDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {

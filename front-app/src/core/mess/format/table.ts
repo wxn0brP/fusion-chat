@@ -1,4 +1,4 @@
-export default function format_wrapTable(tableText: string) {
+export function format_wrapTable(tableText: string) {
     const rows = tableText.trim().split("\n");
     let htmlTable = `<div class="table_wrap"><table>`;
 

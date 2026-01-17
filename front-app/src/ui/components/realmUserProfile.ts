@@ -1,16 +1,16 @@
 
-import vars from "#var/var";
-import Id from "#types/Id";
+import { vars } from "#var/var";
+import { Id } from "#types/Id";
 import { renderHTML } from "#var/html";
 import { apis } from "#api/apis";
-import apiVars from "#var/api";
-import permissionFunc, { PermissionFlags } from "#utils/perm";
+import { apiVars } from "#var/api";
+import { permissionFunc, PermissionFlags } from "#utils/perm";
 import { realmUserInteract } from "../interact/realmUser";
-import utils from "#utils/utils"; import { initPopup } from "#ui/render/utils";
+import { utils } from "#utils/utils"; import { initPopup } from "#ui/render/utils";
 const popup = renderHTML.realmUserProfile;
 
-const realmUserProfile = {
-    renderRoles(id: Id, canEditRole: boolean = false) {
+export namespace realmUserProfile {
+    export function renderRoles(id: Id, canEditRole: boolean = false) {
         const userRoles = vars.realm.users.find(u => u.uid == id)?.roles || [];
         const roles = vars.realm.roles;
         const colorMap = new Map<string, string>();
@@ -45,9 +45,9 @@ const realmUserProfile = {
             });
             li.prepend(btn);
         });
-    },
+    }
 
-    async render(id: Id) {
+    export async function render(id: Id) {
         popup.querySelector<HTMLImageElement>("img").src = "/api/profile/img?id=" + id.replace("^", "");
         popup.querySelector("[data-id=name]").innerHTML = await apis.www.changeUserID(id);
         popup.setAttribute("data-id", id);
@@ -65,5 +65,3 @@ const realmUserProfile = {
         initPopup(popup);
     }
 }
-
-export default realmUserProfile;

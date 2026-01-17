@@ -1,5 +1,5 @@
-import debugFunc from "../core/debug";
-import LangPkg from "../utils/translate";
+import { debugFunc } from "../core/debug";
+import { LangPkg } from "../utils/translate";
 
 export default () => {
     if (debugFunc.isDebug) return;

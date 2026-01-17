@@ -1,9 +1,9 @@
 import { Core_mess__dbMessage } from "./core/mess";
 import { Core_socket__blocked, Core_socket__user_status_type } from "./core/socket";
-import Id from "./Id";
+import { Id } from "./Id";
 import { Utils_updater } from "./utils";
 
-interface Vars {
+export interface Vars {
     user: {
         _id: Id;
         fr: Id;
@@ -47,7 +47,7 @@ export interface Vars_realm__user {
     roles: Id[];
 }
 
-export interface Vars_realm__thread{
+export interface Vars_realm__thread {
     _id: Id;
     thread: Id;
     name: string;
@@ -118,5 +118,3 @@ export interface Vars_mainView__friend {
 }
 
 export type Vars_mainView__page = "all" | "online" | "offline" | "requests";
-
-export default Vars;

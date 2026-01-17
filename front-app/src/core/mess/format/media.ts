@@ -1,6 +1,6 @@
-import createMediaPopup from "#ui/components/media";
+import { createMediaPopup } from "#ui/components/media";
 
-export default async function format_media(link: string) {
+export async function format_media(link: string) {
     if (!link) return;
 
     function check(link: string) {

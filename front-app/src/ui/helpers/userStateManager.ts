@@ -1,10 +1,10 @@
 import { Core_socket__user_status_type } from "#types/core/socket";
-import Id from "#types/Id";
+import { Id } from "#types/Id";
 import { Ui_UserState } from "#types/ui/render";
 import { Vars_user__activity } from "#types/var";
 import { createUpdater } from "#ui/render/utils";
-import apiVars from "#var/api";
-import render_realm from "../render/realm";
+import { apiVars } from "#var/api";
+import { render_realm } from "../render/realm";
 import { updateUserProfileMarker } from "../render/userStatusMarker";
 
 const dataTemp = apiVars.user_state;

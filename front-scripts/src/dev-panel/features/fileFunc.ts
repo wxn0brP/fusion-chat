@@ -2,8 +2,8 @@ import Id from "../types/Id";
 import { Api_fileFunc_read__options } from "../types/api";
 import uiFunc from "../utils/uiFunc";
 
-const fileFunc = {
-    read(options: Api_fileFunc_read__options) {
+export namespace fileFunc {
+    export function read(options: Api_fileFunc_read__options) {
         const { file, callback, maxSize, maxName, endpoint } = options;
         if (!file || !callback || !maxSize || !maxName || !endpoint) {
             return;
@@ -50,9 +50,9 @@ const fileFunc = {
         };
 
         reader.readAsArrayBuffer(file);
-    },
+    }
 
-    profile(file: File, id: Id) {
+    export function profile(file: File, id: Id) {
         const opt: Api_fileFunc_read__options = {
             file,
             callback: () => {
@@ -67,7 +67,5 @@ const fileFunc = {
         }
 
         fileFunc.read(opt);
-    },
+    }
 }
-
-export default fileFunc;

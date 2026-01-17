@@ -1,7 +1,7 @@
 import { Ui_EmojiData, Ui_EmojiData_emoji } from "#types/ui/components";
 import { emojiHTML } from "#var/html";
 import { mglVar } from "#var/mgl";
-import vars from "#var/var";
+import { vars } from "#var/var";
 
 const emojiData: Ui_EmojiData = await fetch("/assets/emoji.json").then(res => res.json());
 
@@ -10,8 +10,8 @@ export const customEmoji: Ui_EmojiData = {
     emojis: {},
 }
 
-class EmojiFunc {
-    getMathEmojisName(searchEmojiName: string) {
+export namespace emojiFunc {
+    export function getMathEmojisName(searchEmojiName: string) {
         const categories = [...customEmoji.categories, ...emojiData.categories];
         const maths = {};
 
@@ -37,7 +37,7 @@ class EmojiFunc {
         return maths;
     }
 
-    getEmojiFromName(emojiName: string): Ui_EmojiData_emoji | null {
+    export function getEmojiFromName(emojiName: string): Ui_EmojiData_emoji | null {
         let emoji = customEmoji.emojis[emojiName];
         if (emoji) return emoji;
 
@@ -45,7 +45,7 @@ class EmojiFunc {
         return emoji ? emoji : null;
     }
 
-    renderEmoji() {
+    export function renderEmoji() {
         const input = emojiHTML.input.value;
         const maths = this.getMathEmojisName(input);
         emojiHTML.container.innerHTML = "";
@@ -95,7 +95,7 @@ class EmojiFunc {
         }
     }
 
-    emojiClick(e: MouseEvent) {
+    export function emojiClick(e: MouseEvent) {
         let emoji = "";
         if (e) {
             const target = e.target as HTMLElement;
@@ -114,8 +114,6 @@ class EmojiFunc {
         emojiHTML.div.dispatchEvent(event);
     }
 }
-
-export const emojiFunc = new EmojiFunc();
 
 emojiHTML.input.addEventListener("input", emojiFunc.renderEmoji);
 emojiFunc.renderEmoji();

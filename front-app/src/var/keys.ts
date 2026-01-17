@@ -3,7 +3,6 @@ export const KeyState = {
     ctrl: false,
     alt: false,
 }
-export default KeyState;
 
 document.addEventListener("keydown", (e) => {
     KeyState.shift = e.shiftKey;

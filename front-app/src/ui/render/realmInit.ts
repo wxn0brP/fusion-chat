@@ -1,15 +1,15 @@
-import Id from "#types/Id";
-import vars from "#var/var";
+import { Id } from "#types/Id";
+import { vars } from "#var/var";
 import { renderState } from "./var";
 import { uiFunc } from "../helpers/uiFunc";
-import coreFunc from "#core/coreFunc";
-import voiceFunc from "../components/voice";
+import { coreFunc } from "#core/coreFunc";
+import { voiceFunc } from "../components/voice";
 import { Channel_Type } from "#types/channel";
 import { navHTML } from "#var/html";
-import contextMenu from "../components/contextMenu";
+import { contextMenu } from "../components/contextMenu";
 import { Ui_render__category, Ui_render__channel } from "#types/ui/render";
-import LangPkg from "#utils/translate";
-import socket from "#core/socket/socket";
+import { LangPkg } from "#utils/translate";
+import { socket } from "#core/socket/socket";
 import { render_events } from "./event";
 import { socketEvt } from "#core/socket/engine";
 
@@ -159,7 +159,7 @@ function downPanel_events(panel: HTMLElement) {
     });
 }
 
-function realmInit(sid: Id, name: string, categories: Ui_render__category[], permission: number) {
+export function realmInit(sid: Id, name: string, categories: Ui_render__category[], permission: number) {
     initRealmState(permission);
     createRealmNameSection(name, sid);
 
@@ -181,5 +181,3 @@ function realmInit(sid: Id, name: string, categories: Ui_render__category[], per
 
     socketEvt["realm.thread.list"].emitId(sid + "=null", sid, null);
 }
-
-export default realmInit;

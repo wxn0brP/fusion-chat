@@ -1,18 +1,18 @@
-import vars from "#var/var";
+import { vars } from "#var/var";
 import { apis } from "#api/apis";
 import { mglInt } from "#var/mgl";
-import voiceFunc from "../components/voice";
-import LangPkg from "#utils/translate";
-import socket from "#core/socket/socket";
-import permissionFunc from "#utils/perm";
+import { voiceFunc } from "../components/voice";
+import { LangPkg } from "#utils/translate";
+import { socket } from "#core/socket/socket";
+import { permissionFunc } from "#utils/perm";
 import { navHTML, renderHTML } from "#var/html";
 import { getChannelTypeEmoticon } from "./realmInit";
 import { Ui_render__event } from "#types/ui/render";
 import { uiFunc } from "../helpers/uiFunc";
 import { formatMess } from "#core/mess/format";
 
-class Render_events {
-    show() {
+export namespace render_events {
+    export function show() {
         if (vars.chat.to == "main" || vars.chat.to.startsWith("$")) return;
         socket.emit("realm.event.list", vars.chat.to, false, (events: Ui_render__event[]) => {
             renderHTML.events__container.innerHTML = "";
@@ -23,7 +23,7 @@ class Render_events {
         });
     }
 
-    async renderEvent(event: Ui_render__event) {
+    export async function renderEvent(event: Ui_render__event) {
         const { type, where, topic, time: timeShort, desc, img, _id, author } = event;
         const time = timeShort * 1000;
         const eventTime = new Date(time).getTime();
@@ -168,13 +168,13 @@ class Render_events {
         renderHTML.events__container.appendChild(eventDiv);
     }
 
-    exit() {
+    export function exit() {
         renderHTML.events.fadeOut(() => {
             renderHTML.events__container.innerHTML = "";
         });
     }
 
-    async create() {
+    export async function create() {
         if (vars.chat.to == "main" || vars.chat.to.startsWith("$")) return;
         if (!permissionFunc.isAdmin()) return;
 
@@ -320,7 +320,5 @@ class Render_events {
         br();
     }
 }
-
-export const render_events = new Render_events();
 
 mglInt.realmEvents = render_events;

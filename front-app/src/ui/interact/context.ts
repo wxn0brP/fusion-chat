@@ -1,20 +1,20 @@
-import uiInteract from "./ui";
-import vars from "#var/var";
+import { uiInteract } from "./ui";
+import { vars } from "#var/var";
 import { apis } from "#api/apis";
-import utils from "#utils/utils";
+import { utils } from "#utils/utils";
 import { uiFunc } from "../helpers/uiFunc";
-import coreFunc from "#core/coreFunc";
-import socket from "#core/socket/socket";
-import permissionFunc from "#utils/perm";
+import { coreFunc } from "#core/coreFunc";
+import { socket } from "#core/socket/socket";
+import { permissionFunc } from "#utils/perm";
 import { messHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
-import messInteract from "#core/mess/interact";
+import { messInteract } from "#core/mess/interact";
 import { subscribeEventChnl } from "../interact/subscribeEventChnl";
 import { Context__channel, Context__message, Context__realm, Context__thread } from "#types/context";
-import LangPkg, { langFunc } from "#utils/translate";
+import { LangPkg, langFunc } from "#utils/translate";
 
-class ContextFunc {
-    message(type: Context__message) {
+export namespace contextFunc {
+    export function message(type: Context__message) {
         const id = document.querySelector("#message_context_menu").getAttribute("_id");
         switch (type) {
             case "copy":
@@ -62,7 +62,7 @@ class ContextFunc {
         }
     }
 
-    async realm(type: Context__realm) {
+    export async function realm(type: Context__realm) {
         const id = document.querySelector("#realm_context_menu").getAttribute("_id");
         switch (type) {
             case "copy_id":
@@ -174,7 +174,7 @@ class ContextFunc {
         }
     }
 
-    channel(type: Context__channel) {
+    export function channel(type: Context__channel) {
         const id = document.querySelector("#channel_context_menu").getAttribute("_id");
         switch (type) {
             case "copy_id":
@@ -194,7 +194,7 @@ class ContextFunc {
         }
     }
 
-    async thread(type: Context__thread) {
+    export async function thread(type: Context__thread) {
         const id = document.querySelector("#thread_context_menu").getAttribute("_id");
         switch (type) {
             case "copy_id":
@@ -225,5 +225,4 @@ class ContextFunc {
     }
 }
 
-const contextFunc = new ContextFunc();
 mglInt.contextFunc = contextFunc;

@@ -1,13 +1,13 @@
 import { mglVar } from "#var/mgl";
 import JSON5 from "json5";
 import { Lang_Pkg } from "../types/utils";
-import utils from "./utils";
+import { utils } from "./utils";
 
 export const LangRef:
     { localesList: string[] } =
     { localesList: [] }
 
-const LangPkg: Lang_Pkg = {};
+export const LangPkg: Lang_Pkg = {};
 
 export function langFunc(text: string, ...data: any[]): string {
     return text.replace(/\\\$|(?<!\\)\$/g, (match) => {
@@ -83,5 +83,4 @@ async function importData<T>(lang: string, pkg: string) {
     return JSON5.parse(data) as T;
 }
 
-export default LangPkg;
 mglVar.LangPkg = LangPkg;

@@ -1,7 +1,7 @@
-import vars from "../var/var";
-import messFunc from "../core/mess/mess";
-import setupSwipe from "../lib/swipeLib";
-import staticData from "../var/staticData";
+import { vars } from "../var/var";
+import { messFunc } from "../core/mess/mess";
+import { setupSwipe } from "../lib/swipeLib";
+import { staticData } from "../var/staticData";
 import { navHTML } from "../var/html";
 
 document.querySelector("#nav__toggle").addEventListener("click", () => {

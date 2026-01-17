@@ -1,6 +1,6 @@
 type SwipeCallback = () => void;
 
-function setupSwipe(
+export function setupSwipe(
     element: HTMLElement,
     onSwipeLeft: SwipeCallback,
     onSwipeRight: SwipeCallback,
@@ -72,5 +72,3 @@ function setupSwipe(
         return false;
     }
 }
-
-export default setupSwipe;

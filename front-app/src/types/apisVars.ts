@@ -1,9 +1,9 @@
 import { Core_socket__user_status_type } from "./core/socket";
-import Id from "./Id";
+import { Id } from "./Id";
 import { Utils_updater } from "./utils";
 import { Vars_user__activity } from "./var";
 
-interface ApisVars {
+export interface ApisVars {
     temp: {
         user: {
             main: {
@@ -37,5 +37,3 @@ interface ApisVars {
         }
     };
 }
-
-export default ApisVars;
