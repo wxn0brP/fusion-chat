@@ -1,102 +1,99 @@
-function qd(selector: string, container?: HTMLElement) {
-    return (container || document).querySelector<HTMLDivElement>(selector);
-}
-
 function mess() {
-    const nav = qd("#messages_nav");
+    const nav = qs("#messages_nav");
 
     return {
-        div: qd("#messages"),
-        input: document.querySelector<HTMLTextAreaElement>("#mess-input"),
-        replyClose: qd("#replyClose"),
-        editClose: qd("#editClose"),
-        sendBtn: document.querySelector<HTMLButtonElement>("#barc__sendBtn"),
-        linkClick: qd("#linkClick"),
+        div: qs("#messages"),
+        input: qs<HTMLTextAreaElement>("#mess-input"),
+        replyClose: qs("#replyClose"),
+        editClose: qs("#editClose"),
+        sendBtn: qs<HTMLButtonElement>("#barc__sendBtn"),
+        linkClick: qs("#linkClick"),
         nav,
-        nav_priv: qd("#messages_nav__priv", nav),
-        nav_realm: qd("#messages_nav__realm", nav),
-        sendBtnImg: document.querySelector<SVGElement>("#barc__sendBtn__img"),
-        bar: qd("#bar"),
-        barc__commads: qd("#barc__commads")
+        nav_priv: nav.qs("#messages_nav__priv"),
+        nav_realm: nav.qs("#messages_nav__realm"),
+        sendBtnImg: qs<SVGElement>("#barc__sendBtn__img"),
+        bar: qs("#bar"),
+        barc__commads: qs("#barc__commads")
     }
 }
 
 function nav() {
     return {
-        nav: qd("#navs"),
-        priv: qd("#navs__priv"),
-        realm: qd("#navs__realm"),
-        main: qd("#navs__main"),
-        realms: qd("#navs__realms"),
-        main__call: qd("#navs__main__call"),
-        navs__user: qd("#navs__user"),
-        user__name: qd("#navs__user__name"),
-        user__status: qd("#navs__user__status"),
-        realm__name: qd("#navs__realm__name"),
-        realm__panel: qd("#navs__realm__panel"),
-        realm__channels: qd("#navs__realm__channels"),
-        realm__users: qd("#navs__realms__users"),
+        nav: qs("#navs"),
+        priv: qs("#navs__priv"),
+        realm: qs("#navs__realm"),
+        main: qs("#navs__main"),
+        realms: qs("#navs__realms"),
+        main__call: qs("#navs__main__call"),
+        navs__user: qs("#navs__user"),
+        user__name: qs("#navs__user__name"),
+        user__status: qs("#navs__user__status"),
+        realm__name: qs("#navs__realm__name"),
+        realm__panel: qs("#navs__realm__panel"),
+        realm__channels: qs("#navs__realm__channels"),
+        realm__users: qs("#navs__realms__users"),
     }
 }
 
 function core() {
     return {
-        messages_nav__realm__description: qd("#messages_nav__realm__description"),
+        messages_nav__realm__description: qs("#messages_nav__realm__description"),
     }
 }
 
 function render() {
-    const events = qd("#realmEvents");
+    const events = qs("#realmEvents");
     return {
-        navs__priv: qd("#navs__priv"),
-        realms__content: qd("#realms__content"),
-        userProfile: qd("#userProfile"),
+        navs__priv: qs("#navs__priv"),
+        realms__content: qs("#realms__content"),
+        userProfile: qs("#userProfile"),
         events,
-        events__container: qd("#realmEvents__container", events),
-        events__add: qd("#realmEvents__add", events),
-        realmUserProfile: qd("#realmUserProfile"),
+        events__container: events.qs("#realmEvents__container"),
+        events__add: events.qs("#realmEvents__add"),
+        realmUserProfile: qs("#realmUserProfile"),
     }
 }
 
 function mainView() {
-    const div = qd("#main__view");
+    const div = qs("#main__view");
     return {
         div,
-        nav: qd("#main__view__nav"),
-        friends: qd("#main__view__friends", div),
-        requests: qd("#main__view__requests", div),
-        requestCount: qd("#main__view__requests__count", div),
-        noFriends: qd("#main__view__noFriends", div),
-        noRequests: qd("#main__view__noRequests", div),
-        friendsContainer: qd("#main__view__friends_container", div),
-        requestsContainer: qd("#main__view__requests_container", div),
+        nav: qs("#main__view__nav"),
+        friends: div.qs("#main__view__friends"),
+        requests: div.qs("#main__view__requests"),
+        requestCount: div.qs("#main__view__requests__count"),
+        noFriends: div.qs("#main__view__noFriends"),
+        noRequests: div.qs("#main__view__noRequests"),
+        friendsContainer: div.qs("#main__view__friends_container"),
+        requestsContainer: div.qs("#main__view__requests_container"),
     }
 }
 
 function other() {
     return {
-        makeRealm: qd("#makeRealm"),
+        makeRealm: qs("#makeRealm"),
     }
 }
 
 function voice() {
     return {
-        div: qd("#voice_call"),
-        mediaContainer: qd("#voice_call_media"),
-        users: qd("#voice_call_users"),
-        muteMic: qd("#voice_call_mute_mic"),
-        voiceShow: qd("#realms__voice_show"),
+        div: qs("#voice_call"),
+        mediaContainer: qs("#voice_call_media"),
+        users: qs("#voice_call_users"),
+        muteMic: qs("#voice_call_mute_mic"),
+        voiceShow: qs("#realms__voice_show"),
     }
 }
 
 function emoji() {
     return {
-        div: qd("#emojiDiv"),
-        input: document.querySelector("#emocji-input") as HTMLInputElement,
-        container: qd("#emoji__container"),
-        nav: qd("#emoji__nav"),
+        div: qs("#emojiDiv"),
+        input: qi("#emocji-input"),
+        container: qs("#emoji__container"),
+        nav: qs("#emoji__nav"),
     }
 }
+
 export const messHTML = mess();
 export const navHTML = nav();
 export const coreHTML = core();
