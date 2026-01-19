@@ -3,7 +3,6 @@ import { vars } from "#var/var";
 import { renderState } from "./var";
 import { uiFunc } from "../helpers/uiFunc";
 import { core_func } from "#core/coreFunc";
-import { voiceFunc } from "../components/voice";
 import { Channel_Type } from "#types/channel";
 import { navHTML } from "#var/html";
 import { uic_contextMenu } from "../components/contextMenu";
@@ -111,7 +110,8 @@ function handleVoiceChannelJoin(cid: Id, sid: Id) {
         uiFunc.uiMsgT(LangPkg.ui.channel.no_permission, ["!"]);
         return;
     }
-    voiceFunc.joinToVoiceChannel(sid + "=" + cid);
+    // voiceFunc.joinToVoiceChannel(sid + "=" + cid);
+    uiFunc.uiMsg("Voice call is not supported yet.");
 }
 
 function createCategory(category: Ui_render__category, root: HTMLElement, sid: Id) {

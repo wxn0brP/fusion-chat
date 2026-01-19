@@ -9,7 +9,6 @@ import "./init/features";
 import "./init/init";
 import "./init/start";
 import "./ui/components/media";
-import "./ui/components/voice";
 import "./ui/interact/context";
 import "./ui/interact/mainView";
 import "./ui/interact/realmUser";

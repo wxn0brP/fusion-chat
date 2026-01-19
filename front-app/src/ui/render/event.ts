@@ -1,7 +1,6 @@
 import { vars } from "#var/var";
 import { apis } from "#api/apis";
 import { mglInt } from "#var/mgl";
-import { voiceFunc } from "../components/voice";
 import { LangPkg } from "#utils/translate";
 import { socket } from "#core/socket/socket";
 import { permissionFunc } from "#utils/perm";
@@ -99,7 +98,8 @@ export namespace uir_events {
                     button.clA("btn");
                     button.style.marginTop = "5px";
                     button.addEventListener("click", () => {
-                        voiceFunc.joinToVoiceChannel(where);
+                        // voiceFunc.joinToVoiceChannel(where);
+                        uiFunc.uiMsg("Voice call is not supported yet.");
                     });
 
                     info.appendChild(button);
