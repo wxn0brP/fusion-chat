@@ -15,7 +15,7 @@ import { mglVar } from "../var/mgl";
 import { staticData } from "../var/staticData";
 import { vars, getEmptyRealmConfig } from "../var/var";
 import { messageCacheController } from "./cacheControllers/mess";
-import { messStyle } from "./mess/style";
+import { core_messStyle } from "./mess/style";
 import { socketEvt } from "./socket/engine";
 import { socket } from "./socket/socket";
 
@@ -155,7 +155,7 @@ export namespace core_func {
         setTimeout(() => {
             messHTML.input.focus();
             // move cursor to end
-            if (end) messStyle.setSelectionStart();
+            if (end) core_messStyle.setSelectionStart();
         }, 100);
     }
 

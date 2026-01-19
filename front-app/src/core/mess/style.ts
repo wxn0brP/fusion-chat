@@ -6,7 +6,7 @@ import { maxMessLen } from "./mess";
 
 const { input } = messHTML;
 
-export namespace messStyle {
+export namespace core_messStyle {
     export function sendBtnStyle() {
         const len = input.value.trim().length;
         let prop = "";
@@ -111,6 +111,6 @@ function colorRoleMess(mess: HTMLElement, color: string) {
 }
 
 setTimeout(() => {
-    messStyle.sendBtnStyle();
-    messStyle.messageHeight();
+    core_messStyle.sendBtnStyle();
+    core_messStyle.messageHeight();
 }, 100); // Delay of 100ms to accommodate any cached input values in the browser

@@ -106,7 +106,7 @@ class MessageCacheController {
         const data = await this.getMessagesRaw(to, chnl);
         vars.chat.actMess = data.length;
         data.reverse();
-        sck_message_fetch(data);
+        await sck_message_fetch(data);
     }
 
     async deleteMessage(chat: Id, id: Id) {

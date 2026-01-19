@@ -4,7 +4,7 @@ import { core_func } from "#core/coreFunc";
 import { formatMess } from "#core/mess/format";
 import { core_messInteract } from "#core/mess/interact";
 import { core_messFunc, editMessText } from "#core/mess/mess";
-import { messStyle } from "#core/mess/style";
+import { core_messStyle } from "#core/mess/style";
 import { Core_mess__dbMessage, Core_mess__receivedMessage } from "#types/core/mess";
 import { Id } from "#types/Id";
 import { Vars_mess__pinned, Vars_realm__thread } from "#types/var";
@@ -51,9 +51,9 @@ export async function sck_mess(data: Core_mess__receivedMessage) {
     if (isPrivateChat) uir_dm.privsRead();
 
     // add message to chat
-    core_messFunc.addMess(convertReceivedMessageToDbMessage(data));
-    messStyle.hideFromMessageInfo();
-    messStyle.colorRole();
+    await core_messFunc.addMess(convertReceivedMessageToDbMessage(data));
+    core_messStyle.hideFromMessageInfo();
+    core_messStyle.colorRole();
 
     setTimeout(() => {
         const lastMessageId = apiVars.lastMess[data.to][data.chnl].mess;
@@ -76,11 +76,11 @@ function convertReceivedMessageToDbMessage(data: Core_mess__receivedMessage): Co
     return mess;
 }
 
-export function sck_message_fetch(data: Core_mess__dbMessage[]) {
+export async function sck_message_fetch(data: Core_mess__dbMessage[]) {
     try {
-        data.forEach((mess) => {
+        for (const mess of data) {
             try {
-                core_messFunc.addMess(mess, false, true);
+                await core_messFunc.addMess(mess, false, true);
             } catch (e) {
                 console.error(e);
                 console.error(mess);
@@ -88,8 +88,8 @@ export function sck_message_fetch(data: Core_mess__dbMessage[]) {
                 div.innerHTML = `<span style="color: red;">${LangPkg.ui.failed_to_load_message}!</span>`;
                 messHTML.div.add(div);
             }
-        });
-        messStyle.hideFromMessageInfo();
+        }
+        core_messStyle.hideFromMessageInfo();
         setTimeout(core_func.scrollToBottom, 30);
     } catch (e) {
         console.error(e);
@@ -97,12 +97,12 @@ export function sck_message_fetch(data: Core_mess__dbMessage[]) {
         div.innerHTML = `<span style="color: red;">${LangPkg.ui.failed_to_load_messages}! :(</span>`;
         messHTML.div.add(div);
     }
-    messStyle.colorRole();
+    core_messStyle.colorRole();
 }
 
 export function sck_message_delete(id: Id, chatId: Id) {
     document.querySelector("#mess__" + id)?.remove();
-    messStyle.hideFromMessageInfo();
+    core_messStyle.hideFromMessageInfo();
     messageCacheController.deleteMessage(chatId, id);
 }
 
@@ -110,7 +110,7 @@ export function sck_messages_delete(ids: Id[], chatId: Id) {
     ids.forEach(id => {
         document.querySelector("#mess__" + id)?.remove();
     })
-    messStyle.hideFromMessageInfo();
+    core_messStyle.hideFromMessageInfo();
     messageCacheController.deleteMessages(chatId, ids);
 }
 
@@ -125,7 +125,7 @@ export async function sck_message_edit(id: Id, msg: string, time: string, chatId
     responeMessages.forEach(mess => {
         mess.innerHTML = msg;
     });
-    messStyle.hideFromMessageInfo();
+    core_messStyle.hideFromMessageInfo();
     messageCacheController.editMessage(id, msg, time, chatId);
 }
 
@@ -146,7 +146,7 @@ export async function sck_message_react(uid: Id, realm: Id, messId: Id, react: s
             socket.emit("message.react", realm, messId, react);
         });
         mess.querySelector(".mess_reacts").appendChild(span);
-        messStyle.styleMessReacts(mess.querySelector(".mess_reacts"));
+        core_messStyle.styleMessReacts(mess.querySelector(".mess_reacts"));
         return;
     }
 
@@ -158,19 +158,19 @@ export async function sck_message_react(uid: Id, realm: Id, messId: Id, react: s
     }
 
     reactSpan.setAttribute("_users", users.join(","));
-    messStyle.styleMessReacts(mess.querySelector(".mess_reacts"));
+    core_messStyle.styleMessReacts(mess.querySelector(".mess_reacts"));
 }
 
-export function sck_message_search(data: Core_mess__dbMessage[]) {
+export async function sck_message_search(data: Core_mess__dbMessage[]) {
     if (data.length == 0) {
         messHTML.div.innerHTML += LangPkg.ui.message.search_no_results;
         return;
     }
     messHTML.div.innerHTML = "<h2>" + LangPkg.ui.message.search_results + ":</h2>";
 
-    data.forEach((mess) => {
-        core_messFunc.addMess(mess, false);
-    });
+    for (const mess of data) {
+        await core_messFunc.addMess(mess, false);
+    }
 }
 
 export function sck_message_fetch_pinned(data: Vars_mess__pinned[]) {

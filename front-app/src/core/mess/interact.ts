@@ -1,5 +1,5 @@
 import { core_messFunc } from "./mess";
-import { messStyle } from "./style";
+import { core_messStyle } from "./style";
 import { vars } from "#var/var";
 import { apis } from "#api/apis";
 import { core_func } from "../coreFunc";
@@ -25,9 +25,9 @@ export namespace core_messInteract {
         messHTML.input.value = "";
         vars.temp.editId = null;
         core_func.focusInp();
-        messStyle.sendBtnStyle();
-        messStyle.messageHeight();
-        messStyle.setSelectionStart();
+        core_messStyle.sendBtnStyle();
+        core_messStyle.messageHeight();
+        core_messStyle.setSelectionStart();
     }
 
     export function linkClick(e: MouseEvent) {
@@ -67,7 +67,7 @@ export namespace core_messInteract {
             emojiHTML.div.fadeOut();
             setTimeout(() => {
                 core_func.focusInp();
-                messStyle.setSelectionStart();
+                core_messStyle.setSelectionStart();
             }, 100);
         }
 
@@ -106,7 +106,7 @@ export namespace core_messInteract {
         core_messInteract.emocjiPopup((emoticon: string) => {
             core_messInteract.handleEmocji(emoticon);
             setTimeout(() => {
-                messStyle.setSelectionStart();
+                core_messStyle.setSelectionStart();
             }, 100);
         });
     }
@@ -126,15 +126,15 @@ export namespace core_messInteract {
         messCmd.handleCommandInput();
     }
 
-    export function displayPinned() {
+    export async function displayPinned() {
         messHTML.div.innerHTML = "<h2>" + LangPkg.ui.pinned_messages + "</h2>";
         if (vars.chat.pinned.length == 0) {
             messHTML.div.innerHTML += LangPkg.ui.no_pinned_messages;
             return;
         }
-        vars.chat.pinned.forEach((m) => {
-            core_messFunc.addMess(m);
-        });
+        for (const message of vars.chat.pinned) {
+            await core_messFunc.addMess(message);
+        }
     }
 
     export function spoiler(e: MouseEvent) {

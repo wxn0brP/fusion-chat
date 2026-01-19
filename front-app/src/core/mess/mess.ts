@@ -16,7 +16,7 @@ import { formatMess } from "./format";
 import { format_embed } from "./format/embed";
 import { format_responeMess } from "./format/respone";
 import { core_messInteract } from "./interact";
-import { messStyle } from "./style";
+import { core_messStyle } from "./style";
 
 export const maxMessLen = 2000;
 export const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
@@ -46,8 +46,8 @@ export namespace core_messFunc {
         messHTML.input.value = "";
         core_messInteract.replyClose();
         core_func.focusInp();
-        messStyle.sendBtnStyle();
-        messStyle.messageHeight();
+        core_messStyle.sendBtnStyle();
+        core_messStyle.messageHeight();
     }
 
     export async function addMess(data: Core_mess__dbMessage, scroll: boolean = true, up: boolean = false) {
@@ -126,7 +126,7 @@ export namespace core_messFunc {
                 reactsDiv.appendChild(span);
             }
 
-            messStyle.styleMessReacts(reactsDiv);
+            core_messStyle.styleMessReacts(reactsDiv);
             messDiv.appendChild(reactsDiv);
         }
 

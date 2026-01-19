@@ -1,5 +1,5 @@
 import { core_messFunc } from "./mess";
-import { messStyle } from "./style";
+import { core_messStyle } from "./style";
 import { vars } from "#var/var";
 import { messHTML } from "#var/html";
 import { uii_main } from "#ui/interact/ui";
@@ -45,8 +45,8 @@ input.addEventListener("keydown", (e) => {
     lastMessage.style.backgroundColor = "var(--panel)";
 });
 
-input.addEventListener("input", messStyle.sendBtnStyle);
-input.addEventListener("input", messStyle.messageHeight);
+input.addEventListener("input", core_messStyle.sendBtnStyle);
+input.addEventListener("input", core_messStyle.messageHeight);
 
 // Paste
 function pasteText(e: ClipboardEvent) {
@@ -54,9 +54,9 @@ function pasteText(e: ClipboardEvent) {
     e.preventDefault();
     const pasteText = (e.clipboardData || (window as any).clipboardData).getData("text");
     input.value += pasteText;
-    messStyle.setSelectionStart();
-    messStyle.sendBtnStyle();
-    messStyle.messageHeight();
+    core_messStyle.setSelectionStart();
+    core_messStyle.sendBtnStyle();
+    core_messStyle.messageHeight();
 }
 
 function pasteImage(e: ClipboardEvent) {
@@ -86,7 +86,7 @@ document.addEventListener("paste", () => {
     if (tag == "input" || tag == "textarea") return;
 
     input.focus();
-    messStyle.setSelectionStart();
+    core_messStyle.setSelectionStart();
 })
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -98,7 +98,7 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
     if (tag == "input" || tag == "textarea") return;
 
     input.focus();
-    messStyle.setSelectionStart();
+    core_messStyle.setSelectionStart();
 });
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {

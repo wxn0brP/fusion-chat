@@ -1,4 +1,4 @@
-import { messStyle } from "./style";
+import { core_messStyle } from "./style";
 import { vars } from "#var/var";
 import { core_func } from "../coreFunc";
 import { socket } from "../socket/socket";
@@ -191,7 +191,7 @@ export const messCmd = {
             messCmd.handleCommandInput();
 
             setTimeout(() => {
-                messStyle.setSelectionStart();
+                core_messStyle.setSelectionStart();
             }, 100)
 
             core_func.focusInp();
@@ -226,7 +226,7 @@ export const messCmd = {
                     messCmd.handleCommandInput();
 
                     setTimeout(() => {
-                        messStyle.setSelectionStart();
+                        core_messStyle.setSelectionStart();
                     }, 100)
 
                     core_func.focusInp();

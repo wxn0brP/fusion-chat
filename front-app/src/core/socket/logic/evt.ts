@@ -1,7 +1,7 @@
 import { apis } from "#api/apis";
 import { core_func } from "#core/coreFunc";
 import { core_debug, LogLevel } from "#core/debug";
-import { messStyle } from "#core/mess/style";
+import { core_messStyle } from "#core/mess/style";
 import { Core_socket__refresh, Core_socket__user_status_type } from "#types/core/socket";
 import { Id } from "#types/Id";
 import { Ui_UserState } from "#types/ui/render";
@@ -139,7 +139,7 @@ export function sck_realm_users_sync(users: Vars_realm__user[], roles: Vars_real
     vars.realm.users = users;
     vars.realm.roles = roles;
     uir_realm.usersInChat();
-    messStyle.colorRole();
+    core_messStyle.colorRole();
 }
 
 interface Core_socket__realm_users_activity_sync extends Ui_UserState {

@@ -2,7 +2,7 @@ import { Id } from "#types/Id";
 import { vars } from "#var/var";
 import { messHTML } from "#var/html";
 import { core_func } from "#core/coreFunc";
-import { messStyle } from "#core/mess/style";
+import { core_messStyle } from "#core/mess/style";
 import { socket } from "#core/socket/socket";
 import { uiFunc, promptDiv } from "../helpers/uiFunc";
 import { KeyState } from "#var/keys";
@@ -19,9 +19,9 @@ export namespace uii_main {
 
         messHTML.editClose.style.display = "block";
         core_func.focusInp(true);
-        messStyle.sendBtnStyle();
-        messStyle.messageHeight();
-        messStyle.setSelectionStart();
+        core_messStyle.sendBtnStyle();
+        core_messStyle.messageHeight();
+        core_messStyle.setSelectionStart();
     }
 
     export function clipboardError(text: string) {
