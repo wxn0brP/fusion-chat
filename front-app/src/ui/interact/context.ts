@@ -1,19 +1,19 @@
-import { uiInteract } from "./ui";
+import { uii_main } from "./ui";
 import { vars } from "#var/var";
 import { apis } from "#api/apis";
 import { utils } from "#utils/utils";
 import { uiFunc } from "../helpers/uiFunc";
-import { coreFunc } from "#core/coreFunc";
+import { core_func } from "#core/coreFunc";
 import { socket } from "#core/socket/socket";
 import { permissionFunc } from "#utils/perm";
 import { messHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
-import { messInteract } from "#core/mess/interact";
-import { subscribeEventChnl } from "../interact/subscribeEventChnl";
+import { core_messInteract } from "#core/mess/interact";
+import { uii_subscribeEventChnl } from "../interact/subscribeEventChnl";
 import { Context__channel, Context__message, Context__realm, Context__thread } from "#types/context";
 import { LangPkg, langFunc } from "#utils/translate";
 
-export namespace contextFunc {
+export namespace uii_context {
     export function message(type: Context__message) {
         const id = document.querySelector("#message_context_menu").getAttribute("_id");
         switch (type) {
@@ -24,10 +24,10 @@ export namespace contextFunc {
                 });
                 break;
             case "edit":
-                uiInteract.editMess(id);
+                uii_main.editMess(id);
                 break;
             case "delete":
-                uiInteract.deleteMess(id);
+                uii_main.deleteMess(id);
                 break;
             case "reply":
                 vars.temp.replyId = id;
@@ -44,7 +44,7 @@ export namespace contextFunc {
                 if (chnl) {
                     if (!vars.realm.chnlPerms[chnl].react) return uiFunc.uiMsgT(LangPkg.ui.message.no_react, ["!"]);
                 }
-                messInteract.emocjiPopup((e) => {
+                core_messInteract.emocjiPopup((e) => {
                     if (!e) return;
                     socket.emit("message.react", vars.chat.to, id, e);
                 });
@@ -54,7 +54,7 @@ export namespace contextFunc {
                 socket.emit("message.pin", vars.chat.to, vars.chat.chnl, id, type === "pin");
                 break;
             case "create_thread":
-                uiInteract.createThread(id);
+                uii_main.createThread(id);
                 break;
             default:
                 const n: never = type;
@@ -81,7 +81,7 @@ export namespace contextFunc {
                 const conf = await uiFunc.confirm(langFunc(LangPkg.ui.confirm.exit_realm, await apis.www.changeChat(id)) + "?");
                 if (conf) {
                     socket.emit("realm.exit", id);
-                    coreFunc.changeChat("main");
+                    core_func.changeChat("main");
                 }
                 break;
             case "mute":
@@ -183,10 +183,10 @@ export namespace contextFunc {
                 });
                 break;
             case "subscribe":
-                subscribeEventChnl.show(vars.chat.to, id);
+                uii_subscribeEventChnl.show(vars.chat.to, id);
                 break;
             case "create_thread":
-                uiInteract.createThread();
+                uii_main.createThread();
                 break;
             default:
                 const n: never = type;
@@ -215,7 +215,7 @@ export namespace contextFunc {
                 document.querySelector("#channel_\\&" + thread._id)?.remove();
                 document.querySelector("#thread__" + thread._id)?.remove();
                 if (vars.chat.chnl == "&" + thread._id) {
-                    coreFunc.changeChnl(thread.thread);
+                    core_func.changeChnl(thread.thread);
                 }
                 break;
             default:
@@ -225,4 +225,4 @@ export namespace contextFunc {
     }
 }
 
-mglInt.contextFunc = contextFunc;
+mglInt.contextFunc = uii_context;

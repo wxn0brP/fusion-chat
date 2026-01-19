@@ -1,5 +1,5 @@
 import { apis } from "#api/apis";
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_debug, LogLevel } from "#core/debug";
 import { socket } from "#core/socket/socket";
 import { uiFunc } from "#ui/helpers/uiFunc";
 import { LangPkg, langFunc } from "#utils/translate";
@@ -11,7 +11,7 @@ import { Settings_rs__User } from "./types";
 export const renderUserRoleManager = async function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.users) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
+    if (!settings || !settings.users) return core_debug.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
 
     const container = rs_data.html.usersManager;
     container.innerHTML = `<h1>${LangPkg.settings_realm.users_manager}</h1>`;

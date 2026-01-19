@@ -1,35 +1,36 @@
+import { sck_friend_get_all, sck_friend_requests_get } from "#ui/components/mainView";
+import { uir_dm } from "#ui/render/dm";
+import { uir_realm } from "#ui/render/realm";
+import { sck_realmInit } from "#ui/render/realmInit";
+import { uir_user } from "#ui/render/user";
 import { SocketController } from "../cacheControllers/socketGeneral";
 import {
-    self_status_get,
-    realm_users_sync,
-    realm_users_activity_sync,
-    realm_event_notify,
-    user_status_update,
+    sck_realm_event_notify,
+    sck_realm_users_activity_sync,
+    sck_realm_users_sync,
+    sck_self_status_get,
+    sck_user_status_update
 } from "./logic/evt";
-import { render_realm } from "#ui/render/realm";
-import { render_user } from "#ui/render/user";
-import { realmInit } from "#ui/render/realmInit";
-import { render_dm } from "#ui/render/dm";
-import { friend_get_all, friend_requests_get } from "#ui/components/mainView";
+import { sck_message_fetch_pinned, sck_realm_thread_list } from "./logic/mess";
 
-import { message_fetch_pinned, realm_thread_list } from "./logic/mess"; const eventsBuilder = [
-    ["self.status.get", self_status_get],
-    ["realm.users.sync", realm_users_sync],
-    ["realm.users.activity.sync", realm_users_activity_sync],
-    ["realm.event.notify", realm_event_notify],
-    ["user.status.update", user_status_update],
-    ["user.status.update", user_status_update],
+const eventsBuilder = [
+    ["self.status.get", sck_self_status_get],
+    ["realm.users.sync", sck_realm_users_sync],
+    ["realm.users.activity.sync", sck_realm_users_activity_sync],
+    ["realm.event.notify", sck_realm_event_notify],
+    ["user.status.update", sck_user_status_update],
+    ["user.status.update", sck_user_status_update],
 
-    ["dm.get", render_dm.dm_get],
-    ["realm.get", render_realm.realms],
-    ["realm.setup", realmInit],
-    ["user.profile", render_user.userProfile],
+    ["dm.get", uir_dm.sck_dm_get],
+    ["realm.get", uir_realm.sck_realms],
+    ["realm.setup", sck_realmInit],
+    ["user.profile", uir_user.sck_userProfile],
 
-    ["friend.get.all", friend_get_all],
-    ["friend.requests.get", friend_requests_get],
+    ["friend.get.all", sck_friend_get_all],
+    ["friend.requests.get", sck_friend_requests_get],
 
-    ["message.fetch.pinned", message_fetch_pinned],
-    ["realm.thread.list", realm_thread_list],
+    ["message.fetch.pinned", sck_message_fetch_pinned],
+    ["realm.thread.list", sck_realm_thread_list],
 ] as const;
 
 type EventKeys = (typeof eventsBuilder)[number][0];

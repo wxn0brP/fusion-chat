@@ -1,4 +1,4 @@
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_debug, LogLevel } from "#core/debug";
 import { Core_Api__GetInServer__Response } from "#types/core/api";
 import { Id } from "#types/Id";
 import { uiFunc } from "#ui/helpers/uiFunc";
@@ -106,7 +106,7 @@ export async function getInServer<T = Core_Api__GetInServer__Response>(url: stri
             if (data.err) {
                 uiFunc.uiMsgT(LangPkg.api.error_fetch, ["."]);
                 uiFunc.uiMsgT(LangPkg.api.error, changeCodeToString(data.c));
-                debugFunc.msg(LogLevel.ERROR, data);
+                core_debug.msg(LogLevel.ERROR, data);
                 return null;
             }
             return data;

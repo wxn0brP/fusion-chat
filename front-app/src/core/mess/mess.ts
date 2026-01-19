@@ -1,27 +1,27 @@
 import { apis } from "#api/apis";
-import { fileFunc } from "#api/file";
+import { api_file } from "#api/file";
 import { Api_fileFunc_read__options } from "#types/api";
 import { Core_mess__dbMessage, Core_mess__sendMessage } from "#types/core/mess";
-import { contextMenu } from "#ui/components/contextMenu";
+import { uic_contextMenu } from "#ui/components/contextMenu";
 import { permissionFunc, PermissionFlags } from "#utils/perm";
 import { utils } from "#utils/utils";
 import { messHTML } from "#var/html";
 import { mglVar } from "#var/mgl";
 import { staticData } from "#var/staticData";
 import { vars } from "#var/var";
-import { coreFunc } from "../coreFunc";
+import { core_func } from "../coreFunc";
 import { socket } from "../socket/socket";
 import { messCmd } from "./cmd";
 import { formatMess } from "./format";
 import { format_embed } from "./format/embed";
 import { format_responeMess } from "./format/respone";
-import { messInteract } from "./interact";
+import { core_messInteract } from "./interact";
 import { messStyle } from "./style";
 
 export const maxMessLen = 2000;
 export const editMessText = `<span class="editMessText noneselect" title="edit $$">(edit)</span>`;
 
-export namespace messFunc {
+export namespace core_messFunc {
     export function sendMess() {
         if (!vars.chat.to || !vars.chat.chnl) return;
         if (vars.chat.to == "main") return;
@@ -41,11 +41,11 @@ export namespace messFunc {
             if (exitCode == 0) socket.emit("mess", data);
         } else {
             socket.emit("message.edit", vars.chat.to, vars.temp.editId, mess);
-            messInteract.editMessClose();
+            core_messInteract.editMessClose();
         }
         messHTML.input.value = "";
-        messInteract.replyClose();
-        coreFunc.focusInp();
+        core_messInteract.replyClose();
+        core_func.focusInp();
         messStyle.sendBtnStyle();
         messStyle.messageHeight();
     }
@@ -141,10 +141,10 @@ export namespace messFunc {
             }
         }, 100);
 
-        contextMenu.menuClickEvent(messDiv, (e) => {
+        uic_contextMenu.menuClickEvent(messDiv, (e) => {
             const isMessPinned = vars.chat.pinned.findIndex((m) => m._id == data._id) != -1;
             const canDelete = data.fr == vars.user._id || permissionFunc.canAction(PermissionFlags.ManageMessages);
-            contextMenu.message(e, data._id, {
+            uic_contextMenu.message(e, data._id, {
                 pin: !isMessPinned,
                 edit: data.fr == vars.user._id,
                 delete: canDelete
@@ -196,9 +196,9 @@ export namespace messFunc {
                 endpoint: "/api/file/upload"
             }
 
-            fileFunc.read(opt);
+            api_file.read(opt);
         }
     }
 }
 
-mglVar.messFunc = messFunc;
+mglVar.messFunc = core_messFunc;

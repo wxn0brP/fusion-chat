@@ -1,4 +1,4 @@
-import { debugFunc, LogLevel } from "../core/debug";
+import { core_debug, LogLevel } from "../core/debug";
 import { mglVar } from "../var/mgl";
 import { changeChat, changeUserID, getInServer } from "./www";
 
@@ -31,13 +31,13 @@ export const apis = {
             };
 
             apis.api = await devices[path]();
-            debugFunc.msg(LogLevel.INFO, "load api: " + path);
+            core_debug.msg(LogLevel.INFO, "load api: " + path);
         },
         apiType: "",
     },
     api: {
         send(data: any): void {
-            debugFunc.msg(LogLevel.INFO, "default api: " + JSON.stringify(data));
+            core_debug.msg(LogLevel.INFO, "default api: " + JSON.stringify(data));
         }
     }
 }

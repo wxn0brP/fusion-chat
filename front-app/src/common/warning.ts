@@ -1,8 +1,8 @@
-import { debugFunc } from "../core/debug";
+import { core_debug } from "../core/debug";
 import { LangPkg } from "../utils/translate";
 
 export default () => {
-    if (debugFunc.isDebug) return;
+    if (core_debug.isDebug) return;
     const lang = LangPkg.common.console_warning;
 
     const csss = [

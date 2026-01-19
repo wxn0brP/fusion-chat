@@ -1,6 +1,6 @@
 import { utils } from "#utils/utils";
 
-export function reloadProfileImages(id: string): void {
+export function uih_reloadProfileImages(id: string): void {
     const escapedUrl = utils.escape(`/api/profile/img?id=${id}`);
     const imageSelector = `img[src*="${escapedUrl}"]`;
     const imgs = document.querySelectorAll<HTMLImageElement>(imageSelector);

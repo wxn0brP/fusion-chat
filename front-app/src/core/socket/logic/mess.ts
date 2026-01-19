@@ -1,16 +1,16 @@
 import { apis } from "#api/apis";
 import { messageCacheController } from "#core/cacheControllers/mess";
-import { coreFunc } from "#core/coreFunc";
+import { core_func } from "#core/coreFunc";
 import { formatMess } from "#core/mess/format";
-import { messInteract } from "#core/mess/interact";
-import { messFunc, editMessText } from "#core/mess/mess";
+import { core_messInteract } from "#core/mess/interact";
+import { core_messFunc, editMessText } from "#core/mess/mess";
 import { messStyle } from "#core/mess/style";
 import { Core_mess__dbMessage, Core_mess__receivedMessage } from "#types/core/mess";
 import { Id } from "#types/Id";
 import { Vars_mess__pinned, Vars_realm__thread } from "#types/var";
-import { contextMenu } from "#ui/components/contextMenu";
+import { uic_contextMenu } from "#ui/components/contextMenu";
 import { uiFunc } from "#ui/helpers/uiFunc";
-import { render_dm } from "#ui/render/dm";
+import { uir_dm } from "#ui/render/dm";
 import { LangPkg, langFunc } from "#utils/translate";
 import { utils } from "#utils/utils";
 import { apiVars } from "#var/api";
@@ -18,7 +18,7 @@ import { messHTML } from "#var/html";
 import { vars } from "#var/var";
 import { socket } from "../socket";
 
-export async function mess(data: Core_mess__receivedMessage) {
+export async function sck_mess(data: Core_mess__receivedMessage) {
     // generate last message storage if needed
     apiVars.lastMess[data.to] = apiVars.lastMess[data.to] || {};
     apiVars.lastMess[data.to][data.chnl] = apiVars.lastMess[data.to][data.chnl] || { read: null, mess: null };
@@ -41,17 +41,17 @@ export async function mess(data: Core_mess__receivedMessage) {
             vars.user.status !== "dnd"
         ) utils.sendNotification(title, data.msg, { msg: data });
     }
-    if (isPrivateChat) render_dm.chats();
+    if (isPrivateChat) uir_dm.chats();
 
     // end if not in chat
     if (vars.chat.to !== data.to || vars.chat.chnl !== data.chnl) return;
 
     // update last message read
     apiVars.lastMess[data.to][data.chnl].read = data._id;
-    if (isPrivateChat) render_dm.privsRead();
+    if (isPrivateChat) uir_dm.privsRead();
 
     // add message to chat
-    messFunc.addMess(convertReceivedMessageToDbMessage(data));
+    core_messFunc.addMess(convertReceivedMessageToDbMessage(data));
     messStyle.hideFromMessageInfo();
     messStyle.colorRole();
 
@@ -76,11 +76,11 @@ function convertReceivedMessageToDbMessage(data: Core_mess__receivedMessage): Co
     return mess;
 }
 
-export function message_fetch(data: Core_mess__dbMessage[]) {
+export function sck_message_fetch(data: Core_mess__dbMessage[]) {
     try {
         data.forEach((mess) => {
             try {
-                messFunc.addMess(mess, false, true);
+                core_messFunc.addMess(mess, false, true);
             } catch (e) {
                 console.error(e);
                 console.error(mess);
@@ -90,7 +90,7 @@ export function message_fetch(data: Core_mess__dbMessage[]) {
             }
         });
         messStyle.hideFromMessageInfo();
-        setTimeout(coreFunc.scrollToBottom, 30);
+        setTimeout(core_func.scrollToBottom, 30);
     } catch (e) {
         console.error(e);
         const div = document.createElement("div");
@@ -100,13 +100,13 @@ export function message_fetch(data: Core_mess__dbMessage[]) {
     messStyle.colorRole();
 }
 
-export function message_delete(id: Id, chatId: Id) {
+export function sck_message_delete(id: Id, chatId: Id) {
     document.querySelector("#mess__" + id)?.remove();
     messStyle.hideFromMessageInfo();
     messageCacheController.deleteMessage(chatId, id);
 }
 
-export function messages_delete(ids: Id[], chatId: Id) {
+export function sck_messages_delete(ids: Id[], chatId: Id) {
     ids.forEach(id => {
         document.querySelector("#mess__" + id)?.remove();
     })
@@ -114,7 +114,7 @@ export function messages_delete(ids: Id[], chatId: Id) {
     messageCacheController.deleteMessages(chatId, ids);
 }
 
-export async function message_edit(id: Id, msg: string, time: string, chatId: Id) {
+export async function sck_message_edit(id: Id, msg: string, time: string, chatId: Id) {
     const messageDiv = document.querySelector("#mess__" + id + " .mess_content") as HTMLDivElement;
     if (!messageDiv) return;
     messageDiv.setAttribute("_plain", msg);
@@ -129,7 +129,7 @@ export async function message_edit(id: Id, msg: string, time: string, chatId: Id
     messageCacheController.editMessage(id, msg, time, chatId);
 }
 
-export async function message_react(uid: Id, realm: Id, messId: Id, react: string) {
+export async function sck_message_react(uid: Id, realm: Id, messId: Id, react: string) {
     if (vars.chat.to != realm) return;
 
     const mess = document.querySelector("#mess__" + messId);
@@ -161,7 +161,7 @@ export async function message_react(uid: Id, realm: Id, messId: Id, react: strin
     messStyle.styleMessReacts(mess.querySelector(".mess_reacts"));
 }
 
-export function message_search(data: Core_mess__dbMessage[]) {
+export function sck_message_search(data: Core_mess__dbMessage[]) {
     if (data.length == 0) {
         messHTML.div.innerHTML += LangPkg.ui.message.search_no_results;
         return;
@@ -169,15 +169,15 @@ export function message_search(data: Core_mess__dbMessage[]) {
     messHTML.div.innerHTML = "<h2>" + LangPkg.ui.message.search_results + ":</h2>";
 
     data.forEach((mess) => {
-        messFunc.addMess(mess, false);
+        core_messFunc.addMess(mess, false);
     });
 }
 
-export function message_fetch_pinned(data: Vars_mess__pinned[]) {
+export function sck_message_fetch_pinned(data: Vars_mess__pinned[]) {
     vars.chat.pinned = data;
 }
 
-export function realm_thread_list(data: Vars_realm__thread[]) {
+export function sck_realm_thread_list(data: Vars_realm__thread[]) {
     vars.realm.threads = [
         ...new Set(
             [...vars.realm.threads, ...data]
@@ -196,22 +196,22 @@ export function realm_thread_list(data: Vars_realm__thread[]) {
             div.style.paddingLeft = "2.4rem";
             div.innerHTML = `\`- ${t.name}`;
             div.addEventListener("click", () => {
-                coreFunc.changeChnl("&" + t._id);
+                core_func.changeChnl("&" + t._id);
             });
             chnlDiv.insertAdjacentElement("afterend", div);
-            contextMenu.menuClickEvent(div, (e) => {
-                contextMenu.thread(e, t);
+            uic_contextMenu.menuClickEvent(div, (e) => {
+                uic_contextMenu.thread(e, t);
             })
         }
 
         if (t.reply) {
             const mess = document.querySelector<HTMLDivElement>("#mess__" + t.reply);
-            if (mess) messInteract.thread(t, mess);
+            if (mess) core_messInteract.thread(t, mess);
         }
     })
 }
 
-export function realm_thread_delete(id: Id) {
+export function sck_realm_thread_delete(id: Id) {
     document.querySelector("#channel_\\&" + id)?.remove();
     document.querySelector("#thread__" + id)?.remove();
 }

@@ -1,33 +1,33 @@
 import { apis } from "#api/apis";
-import { coreFunc } from "#core/coreFunc";
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_func } from "#core/coreFunc";
+import { core_debug, LogLevel } from "#core/debug";
 import { messStyle } from "#core/mess/style";
 import { Core_socket__refresh, Core_socket__user_status_type } from "#types/core/socket";
 import { Id } from "#types/Id";
 import { Ui_UserState } from "#types/ui/render";
 import { Vars_realm__role, Vars_realm__user } from "#types/var";
 import { uiFunc } from "#ui/helpers/uiFunc";
-import { render_dm } from "#ui/render/dm";
-import { render_events } from "#ui/render/event";
-import { render_realm } from "#ui/render/realm";
-import { render_user } from "#ui/render/user";
+import { uir_dm } from "#ui/render/dm";
+import { uir_events } from "#ui/render/event";
+import { uir_realm } from "#ui/render/realm";
+import { uir_user } from "#ui/render/user";
 import { changeCodeToString } from "#utils/code";
 import { LangPkg, langFunc } from "#utils/translate";
 import { apiVars } from "#var/api";
 import { vars } from "#var/var";
 import { delay } from "@wxn0brp/flanker-ui/utils";
 import { socket } from "../socket";
-import { setUserState } from "#ui/helpers/userStateManager";
+import { uih_setUserState } from "#ui/helpers/userStateManager";
 
-export function connect() {
-    debugFunc.msg(LogLevel.INFO, "connected to socket");
+export function sck_connect() {
+    core_debug.msg(LogLevel.INFO, "connected to socket");
     socket.emit("realm.get");
     socket.emit("self.status.get");
     socket.emit("dm.get");
 }
 
-export function error(evt_name: string, ...data: any[]) {
-    debugFunc.msg(LogLevel.ERROR, evt_name, ...data);
+export function sck_error(evt_name: string, ...data: any[]) {
+    core_debug.msg(LogLevel.ERROR, evt_name, ...data);
     if (data.length == 0) return;
 
     const first = data[0];
@@ -39,16 +39,16 @@ export function error(evt_name: string, ...data: any[]) {
     uiFunc.uiMsg(first);
 }
 
-export function connection_error(type: string, msg: string) {
-    debugFunc.msg(LogLevel.ERROR, type, msg);
+export function sck_connection_error(type: string, msg: string) {
+    core_debug.msg(LogLevel.ERROR, type, msg);
 }
 
-export function error_valid(evt: string, name: string, ...data: any[]) {
+export function sck_error_valid(evt: string, name: string, ...data: any[]) {
     uiFunc.uiMsgT(LangPkg.socket.valid_error);
-    debugFunc.msg(LogLevel.ERROR, `Valid error: ${evt} - ${name}`, ...data)
+    core_debug.msg(LogLevel.ERROR, `Valid error: ${evt} - ${name}`, ...data)
 }
 
-export function error_spam(type: string, ...data: any[]) {
+export function sck_error_spam(type: string, ...data: any[]) {
     const pkg = LangPkg.socket.spam;
     const map = {
         "last warning": pkg.last,
@@ -60,10 +60,10 @@ export function error_spam(type: string, ...data: any[]) {
     uiFunc.uiMsgT(text, [], ...data);
 }
 
-export function connect_error(data: Error) {
+export function sck_connect_error(data: Error) {
     if (!localStorage.getItem("token")) window.location.href = "/login?err=true";
 
-    debugFunc.msg(LogLevel.SOCKET_ERROR, data);
+    core_debug.msg(LogLevel.SOCKET_ERROR, data);
     const dataStr = data.toString();
     if (dataStr.includes("Error: Authentication error")) {
         window.location.href = "/login?err=true";
@@ -89,13 +89,13 @@ export function connect_error(data: Error) {
     });
 }
 
-export function system_refreshToken(newToken: string, cb: (value: boolean) => void) {
+export function sck_system_refreshToken(newToken: string, cb: (value: boolean) => void) {
     localStorage.setItem("token", newToken);
     socket.opts.token = newToken;
     cb(true);
 }
 
-export async function refreshData(settings: string | string[] | Core_socket__refresh, ...moreData: any[]) {
+export async function sck_refreshData(settings: string | string[] | Core_socket__refresh, ...moreData: any[]) {
     let events = [];
 
     if (Array.isArray(settings)) {
@@ -117,13 +117,13 @@ export async function refreshData(settings: string | string[] | Core_socket__ref
     });
 }
 
-export function self_status_get(status: Core_socket__user_status_type, text: string) {
+export function sck_self_status_get(status: Core_socket__user_status_type, text: string) {
     vars.user.status = status;
     vars.user.statusText = text;
-    render_user.localUserProfile();
+    uir_user.localUserProfile();
 }
 
-export function message_mark_read(to: Id, chnl: Id, id: Id) {
+export function sck_message_mark_read(to: Id, chnl: Id, id: Id) {
     if (!to || !chnl || !id) return;
     try {
         // generate last message storage if needed
@@ -131,14 +131,14 @@ export function message_mark_read(to: Id, chnl: Id, id: Id) {
         apiVars.lastMess[to][chnl] = apiVars.lastMess[to][chnl] || { read: null, mess: null };
 
         apiVars.lastMess[to][chnl].read = id;
-        if (to.startsWith("$")) render_dm.chats();
+        if (to.startsWith("$")) uir_dm.chats();
     } catch { }
 }
 
-export function realm_users_sync(users: Vars_realm__user[], roles: Vars_realm__role[]) {
+export function sck_realm_users_sync(users: Vars_realm__user[], roles: Vars_realm__role[]) {
     vars.realm.users = users;
     vars.realm.roles = roles;
-    render_realm.usersInChat();
+    uir_realm.usersInChat();
     messStyle.colorRole();
 }
 
@@ -146,28 +146,28 @@ interface Core_socket__realm_users_activity_sync extends Ui_UserState {
     uid: Id
 }
 
-export function realm_users_activity_sync(userActivity: Core_socket__realm_users_activity_sync[]) {
+export function sck_realm_users_activity_sync(userActivity: Core_socket__realm_users_activity_sync[]) {
     userActivity.forEach(user => {
         const { uid, status, activity } = user;
         if (!status && !activity) return;
 
-        setUserState(uid, user);
+        uih_setUserState(uid, user);
     })
 }
 
-export function realm_event_notify(realm: Id, evt: Id) {
+export function sck_realm_event_notify(realm: Id, evt: Id) {
     socket.emit("realm.event.get.topic", realm, evt, async (topic: string) => {
         const text = langFunc(LangPkg.ui.event.notif, `<b>"${topic}"</b>`, `<b>${await apis.www.changeChat(realm)}</b>`);
         uiFunc.uiMsg(text, {
             onClick: () => {
-                coreFunc.changeChat(realm).then(() => {
-                    render_events.show();
+                core_func.changeChat(realm).then(() => {
+                    uir_events.show();
                 });
             }
         });
     })
 }
 
-export function user_status_update(id: Id, status: Core_socket__user_status_type, text: string) {
-    setUserState(id, { status, statusText: text });
+export function sck_user_status_update(id: Id, status: Core_socket__user_status_type, text: string) {
+    uih_setUserState(id, { status, statusText: text });
 }

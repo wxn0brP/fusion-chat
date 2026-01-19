@@ -6,7 +6,7 @@ import { uiFunc } from "../helpers/uiFunc";
 import { vars } from "#var/var";
 import { LangPkg, langFunc } from "#utils/translate";
 import { Id } from "#types/Id";
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_debug, LogLevel } from "#core/debug";
 
 interface voiceFuncVar {
     local_stream: null | MediaStream;
@@ -54,7 +54,7 @@ export const voiceFunc = {
         };
 
         mediaRecorder.onstop = () => {
-            if (buffer.length == 0) return debugFunc.msg(LogLevel.WARN, "no voice data");
+            if (buffer.length == 0) return core_debug.msg(LogLevel.WARN, "no voice data");
 
             socket.emit("voice.sendData", buffer);
             buffer = [];
@@ -211,7 +211,7 @@ socket.on("voice.sendData", (from: Id, data: any) => {
 
 socket.on("connect", () => {
     if (!voiceFuncVar.joined) return;
-    debugFunc.msg(LogLevel.INFO, "reconnected to voice channel");
+    core_debug.msg(LogLevel.INFO, "reconnected to voice channel");
     voiceFunc.joinToVoiceChannel(voiceFuncVar.joined as Id);
 });
 

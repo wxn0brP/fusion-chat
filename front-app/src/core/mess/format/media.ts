@@ -1,4 +1,4 @@
-import { createMediaPopup } from "#ui/components/media";
+import { uic_createMediaPopup } from "#ui/components/media";
 
 export async function format_media(link: string) {
     if (!link) return;
@@ -27,7 +27,7 @@ export async function format_media(link: string) {
         ele.style.height = "auto";
         ele.style.borderRadius = "2rem";
         ele.style.cursor = "zoom-in";
-        ele.onclick = () => createMediaPopup(link, { isVideo: true });
+        ele.onclick = () => uic_createMediaPopup(link, { isVideo: true });
         return ele;
     }
 
@@ -38,7 +38,7 @@ export async function format_media(link: string) {
         ele.style.maxWidth = "100%";
         ele.style.height = "auto";
         ele.style.cursor = "zoom-in";
-        ele.onclick = () => createMediaPopup(link, { isVideo: false });
+        ele.onclick = () => uic_createMediaPopup(link, { isVideo: false });
         return ele;
     }
 

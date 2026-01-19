@@ -1,5 +1,5 @@
 import { apis } from "#api/apis";
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_debug, LogLevel } from "#core/debug";
 import { socket } from "#core/socket/socket";
 import { Channel_Type } from "#types/channel";
 import { uiFunc } from "#ui/helpers/uiFunc";
@@ -17,7 +17,7 @@ import { Settings_rs__Category, Settings_rs__Channel, Settings_rs__Role } from "
 export const renderChannels = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.categories || !settings.channels) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
+    if (!settings || !settings.categories || !settings.channels) return core_debug.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
 
     const categoriesContainer = rs_data.html.category;
     categoriesContainer.innerHTML = `<h1>${LangPkg.settings_realm.categories_and_channels}</h1>`;
@@ -278,7 +278,7 @@ export const renderEditChannel = async function (channel: Settings_rs__Channel) 
 export const renderEditCategory = function (category: Settings_rs__Category) {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.categories) return debugFunc.msg(LogLevel.ERROR, "No settings data");
+    if (!settings || !settings.categories) return core_debug.msg(LogLevel.ERROR, "No settings data");
 
     const containerElement = rs_data.html.editChannel;
     containerElement.innerHTML = `<h1>${LangPkg.settings_realm.edit_category}</h1>`;

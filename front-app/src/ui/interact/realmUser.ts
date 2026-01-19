@@ -12,7 +12,7 @@ function getId() {
     return renderHTML.realmUserProfile.getAttribute("data-id");
 }
 
-export namespace realmUserInteract {
+export namespace uii_realmUser {
     export function removeRole(id: Id, role: number) {
         socket.emit("realm.user.role.remove", vars.chat.to, id, role);
     }
@@ -49,4 +49,4 @@ export namespace realmUserInteract {
     }
 }
 
-mglInt.realmUserProfile = realmUserInteract;
+mglInt.realmUserProfile = uii_realmUser;

@@ -1,14 +1,14 @@
 import { Id } from "#types/Id";
 import { uiFunc } from "../helpers/uiFunc";
 import { socket } from "#core/socket/socket";
-import { mainView } from "../components/mainView";
+import { uic_mainView } from "../components/mainView";
 import { mainViewHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
 import { Vars_mainView__page } from "#types/var";
 import { LangPkg } from "#utils/translate";
 import { vars } from "#var/var";
 
-export namespace mainViewInteract {
+export namespace uii_mainView {
     export function showNav() {
         if (mainViewHTML.nav.clientHeight == 0) {
             mainViewHTML.nav.fadeIn();
@@ -24,7 +24,7 @@ export namespace mainViewInteract {
     }
 
     export function changeView(page: Vars_mainView__page) {
-        mainView.changeView(page);
+        uic_mainView.changeView(page);
     }
 
     export function requestFriendResponse(user_id: Id, accept: boolean) {
@@ -41,4 +41,4 @@ export namespace mainViewInteract {
     }
 }
 
-mglInt.mainView = mainViewInteract;
+mglInt.mainView = uii_mainView;

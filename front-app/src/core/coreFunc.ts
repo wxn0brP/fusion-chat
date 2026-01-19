@@ -4,9 +4,9 @@ import { Core_socket__blocked, Core_socket__dm } from "../types/core/socket";
 import { Id } from "../types/Id";
 import { Vars_realm__thread } from "../types/var";
 import { customEmoji } from "../ui/components/emoji";
-import { mainView } from "../ui/components/mainView";
-import { render_dm } from "../ui/render/dm";
-import { render_forum } from "../ui/render/forum";
+import { uic_mainView } from "../ui/components/mainView";
+import { uir_dm } from "../ui/render/dm";
+import { uir_forum } from "../ui/render/forum";
 import { renderState } from "../ui/render/var";
 import { LangPkg } from "../utils/translate";
 import { utils } from "../utils/utils";
@@ -19,7 +19,7 @@ import { messStyle } from "./mess/style";
 import { socketEvt } from "./socket/engine";
 import { socket } from "./socket/socket";
 
-export namespace coreFunc {
+export namespace core_func {
     export async function changeChat(id: Id, chnl: Id | "main" | null = null) {
         messHTML.div.innerHTML = "";
         customEmoji.categories = [];
@@ -37,7 +37,7 @@ export namespace coreFunc {
             messHTML.nav.style.display = "none";
             mainViewHTML.div.style.display = "";
             messHTML.div.style.display = "none";
-            mainView.show();
+            uic_mainView.show();
             this.markSelectedChat();
 
             return;
@@ -71,12 +71,12 @@ export namespace coreFunc {
                         });
                     });
                 })
-                render_dm.dm_get(data[0], data[1]);
+                uir_dm.sck_dm_get(data[0], data[1]);
             }
 
-            coreFunc.loadChat();
-            coreFunc.fetchPinned();
-            coreFunc.dmPlaceholder(id.substring(1));
+            core_func.loadChat();
+            core_func.fetchPinned();
+            core_func.dmPlaceholder(id.substring(1));
             navHTML.main__call.style.display = "";
             messHTML.nav_priv.style.display = "";
             messHTML.nav_realm.style.display = "none";
@@ -96,7 +96,7 @@ export namespace coreFunc {
                 socketEvt["realm.users.activity.sync"].emitDataId(id);
             });
         }
-        coreFunc.markSelectedChat();
+        core_func.markSelectedChat();
     }
 
     export function changeChnl(id: Id) {
@@ -108,8 +108,8 @@ export namespace coreFunc {
         document.querySelector("#channel_" + utils.escape(id))?.classList?.add("channel_textActive");
         coreHTML.messages_nav__realm__description.innerHTML = vars.realm.desc[id] || "";
 
-        coreFunc.loadChat();
-        coreFunc.fetchPinned();
+        core_func.loadChat();
+        core_func.fetchPinned();
         if (!id.startsWith("&")) {
             setTimeout(() => {
                 socketEvt["realm.thread.list"].emitId(vars.chat.to + "=" + vars.chat.chnl, vars.chat.to, vars.chat.chnl);
@@ -143,8 +143,8 @@ export namespace coreFunc {
     }
 
     export function loadChat() {
-        coreFunc.loadMess();
-        setTimeout(coreFunc.focusInp, 100);
+        core_func.loadMess();
+        setTimeout(core_func.focusInp, 100);
         setTimeout(() => {
             messHTML.div.scrollTop = messHTML.div.scrollHeight;
         }, 300);
@@ -221,7 +221,7 @@ export namespace coreFunc {
         }) as Vars_realm__thread[];
 
         messHTML.div.innerHTML = "";
-        render_forum(forms, id);
+        uir_forum(forms, id);
         messHTML.input.placeholder = LangPkg.ui.message.read_only + "!";
         messHTML.input.disabled = true;
         messHTML.bar.style.display = "none";
@@ -232,4 +232,4 @@ export namespace coreFunc {
     }
 }
 
-mglVar.coreFunc = coreFunc;
+mglVar.coreFunc = core_func;

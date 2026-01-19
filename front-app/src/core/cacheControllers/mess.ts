@@ -2,7 +2,7 @@ import { Core_mess__dbMessage } from "#types/core/mess";
 import { Id } from "#types/Id";
 import { utils } from "#utils/utils";
 import { vars } from "#var/var";
-import { message_fetch } from "../socket/logic/mess";
+import { sck_message_fetch } from "../socket/logic/mess";
 import { openDB, IDBPDatabase } from "idb";
 
 const DB_NAME = "messages";
@@ -106,7 +106,7 @@ class MessageCacheController {
         const data = await this.getMessagesRaw(to, chnl);
         vars.chat.actMess = data.length;
         data.reverse();
-        message_fetch(data);
+        sck_message_fetch(data);
     }
 
     async deleteMessage(chat: Id, id: Id) {

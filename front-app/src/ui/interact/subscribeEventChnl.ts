@@ -3,7 +3,7 @@ import { mglInt } from "#var/mgl";
 import { socket } from "#core/socket/socket";
 import { Id } from "#types/Id";
 
-export namespace subscribeEventChnl {
+export namespace uii_subscribeEventChnl {
     export const popup: HTMLDivElement = document.querySelector("#subscribeEventChnl");
     export const realms: HTMLSelectElement = popup.querySelector("#subscribeEventChnl_realms");
     export const channels: HTMLSelectElement = popup.querySelector("#subscribeEventChnl_channels");
@@ -55,4 +55,4 @@ export namespace subscribeEventChnl {
     }
 }
 
-mglInt.subscribeEventChnl = subscribeEventChnl;
+mglInt.subscribeEventChnl = uii_subscribeEventChnl;

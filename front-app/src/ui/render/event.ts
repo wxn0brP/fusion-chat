@@ -11,7 +11,7 @@ import { Ui_render__event } from "#types/ui/render";
 import { uiFunc } from "../helpers/uiFunc";
 import { formatMess } from "#core/mess/format";
 
-export namespace render_events {
+export namespace uir_events {
     export function show() {
         if (vars.chat.to == "main" || vars.chat.to.startsWith("$")) return;
         socket.emit("realm.event.list", vars.chat.to, false, (events: Ui_render__event[]) => {
@@ -321,4 +321,4 @@ export namespace render_events {
     }
 }
 
-mglInt.realmEvents = render_events;
+mglInt.realmEvents = uir_events;

@@ -1,6 +1,6 @@
 import { apis } from "../api/apis";
 import { Id } from "../types/Id";
-import { uiInteract } from "../ui/interact/ui";
+import { uii_main } from "../ui/interact/ui";
 
 export namespace utils {
     export function ss(): boolean {
@@ -43,7 +43,7 @@ export namespace utils {
             navigator.clipboard.writeText(text).then(() => {
                 resolve(true);
             }).catch(() => {
-                uiInteract.clipboardError(text);
+                uii_main.clipboardError(text);
                 resolve(false);
             });
         })

@@ -6,7 +6,7 @@ import { permissionFunc, PermissionFlags } from "#utils/perm";
 import { utils } from "#utils/utils";
 import { vars } from "#var/var";
 
-export namespace contextMenu {
+export namespace uic_contextMenu {
     export function showMenu(e: MouseEvent, ele: HTMLElement, id: Id) {
         ele.setAttribute("_id", id);
         return contextMenuLib.menuShower(ele, e);

@@ -1,4 +1,4 @@
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_debug, LogLevel } from "#core/debug";
 import { LangPkg, langFunc } from "#utils/translate";
 import { Ui_helper_uiMessage__opts, Ui_helper_uiMsg__opts } from "#types/ui/helpers";
 import { delay } from "@wxn0brp/flanker-ui/utils";
@@ -57,7 +57,7 @@ export namespace uiFunc {
     }
 
     export function uiMsg(data: string, opts: Ui_helper_uiMsg__opts = {}) {
-        debugFunc.msg(LogLevel.INFO, "uiMsg:", data);
+        core_debug.msg(LogLevel.INFO, "uiMsg:", data);
 
         opts = {
             extraTime: 0,

@@ -382,8 +382,8 @@ class MediaPopup {
     }
 }
 
-export function createMediaPopup(media: string, options = {}) {
+export function uic_createMediaPopup(media: string, options = {}) {
     return new MediaPopup(mediaPopupDiv, media, options);
 }
 
-mglInt.createMediaPopup = createMediaPopup;
+mglInt.createMediaPopup = uic_createMediaPopup;

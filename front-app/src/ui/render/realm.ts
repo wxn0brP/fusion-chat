@@ -2,17 +2,17 @@ import { vars } from "#var/var";
 import { Id } from "#types/Id";
 import { apis } from "#api/apis";
 import { utils } from "#utils/utils";
-import { coreFunc } from "#core/coreFunc";
+import { core_func } from "#core/coreFunc";
 import { socket } from "#core/socket/socket";
-import { contextMenu } from "../components/contextMenu";
+import { uic_contextMenu } from "../components/contextMenu";
 import { navHTML, renderHTML } from "#var/html";
-import { updateUserProfileMarker } from "./userStatusMarker";
+import { uir_updateUserProfileMarker } from "./userStatusMarker";
 import { apiVars } from "#var/api";
-import { realmUserProfile } from "../components/realmUserProfile";
+import { uic_realmUserProfile } from "../components/realmUserProfile";
 import { Vars_realms } from "#types/var";
 
-export namespace render_realm {
-    export async function realms(data: Vars_realms[]) {
+export namespace uir_realm {
+    export async function sck_realms(data: Vars_realms[]) {
         renderHTML.realms__content.innerHTML = "";
         vars.realms = data;
 
@@ -31,14 +31,14 @@ export namespace render_realm {
             renderHTML.realms__content.appendChild(realmDiv);
 
             realmDiv.addEventListener("click", () => {
-                coreFunc.changeChat(id);
+                core_func.changeChat(id);
             });
 
-            contextMenu.menuClickEvent(realmDiv, (e) => {
-                contextMenu.realm(e, id);
+            uic_contextMenu.menuClickEvent(realmDiv, (e) => {
+                uic_contextMenu.realm(e, id);
             });
         }
-        coreFunc.markSelectedChat();
+        core_func.markSelectedChat();
     }
 
     export async function usersInChat() {
@@ -79,8 +79,8 @@ export namespace render_realm {
                 });
             }
 
-            contextMenu.menuClickEvent(userDiv, (e) => {
-                realmUserProfile.render(userID);
+            uic_contextMenu.menuClickEvent(userDiv, (e) => {
+                uic_realmUserProfile.render(userID);
             })
 
             const userImg = document.createElement("img");
@@ -103,8 +103,8 @@ export namespace render_realm {
 
             userDiv.appendChild(textContainer);
             navHTML.realm__users.appendChild(userDiv);
-            render_realm.realmUserStatus(userID);
-            updateUserProfileMarker(userID, apiVars.user_state[userID]?.status.get());
+            uir_realm.realmUserStatus(userID);
+            uir_updateUserProfileMarker(userID, apiVars.user_state[userID]?.status.get());
         }
     }
 
@@ -113,11 +113,11 @@ export namespace render_realm {
         if (!ele) return;
         const data = apiVars.user_state[id];
         if (!data) {
-            updateUserProfileMarker(id, "offline");
+            uir_updateUserProfileMarker(id, "offline");
             return;
         }
 
-        updateUserProfileMarker(id, data.status.get() || "offline");
+        uir_updateUserProfileMarker(id, data.status.get() || "offline");
 
         const act = data.activity.get();
         if (!act?.state) {

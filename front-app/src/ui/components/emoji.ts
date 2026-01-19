@@ -10,7 +10,7 @@ export const customEmoji: Ui_EmojiData = {
     emojis: {},
 }
 
-export namespace emojiFunc {
+export namespace uic_emoji {
     export function getMathEmojisName(searchEmojiName: string) {
         const categories = [...customEmoji.categories, ...emojiData.categories];
         const maths = {};
@@ -115,8 +115,8 @@ export namespace emojiFunc {
     }
 }
 
-emojiHTML.input.addEventListener("input", emojiFunc.renderEmoji);
-emojiFunc.renderEmoji();
+emojiHTML.input.addEventListener("input", uic_emoji.renderEmoji);
+uic_emoji.renderEmoji();
 
-mglVar.emojiFunc = emojiFunc;
+mglVar.emojiFunc = uic_emoji;
 mglVar.customEmoji = customEmoji;

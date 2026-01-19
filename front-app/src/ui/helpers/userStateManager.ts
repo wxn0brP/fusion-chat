@@ -4,8 +4,8 @@ import { Ui_UserState } from "#types/ui/render";
 import { Vars_user__activity } from "#types/var";
 import { createUpdater } from "#ui/render/utils";
 import { apiVars } from "#var/api";
-import { render_realm } from "../render/realm";
-import { updateUserProfileMarker } from "../render/userStatusMarker";
+import { uir_realm } from "../render/realm";
+import { uir_updateUserProfileMarker } from "../render/userStatusMarker";
 
 const dataTemp = apiVars.user_state;
 
@@ -22,11 +22,11 @@ function initUser(id: Id) {
 }
 
 function updateUI(id: Id) {
-    render_realm.realmUserStatus(id);
-    updateUserProfileMarker(id, dataTemp[id].status.get());
+    uir_realm.realmUserStatus(id);
+    uir_updateUserProfileMarker(id, dataTemp[id].status.get());
 }
 
-export function setUserState(id: Id, data: Ui_UserState) {
+export function uih_setUserState(id: Id, data: Ui_UserState) {
     const { status, statusText, activity } = data;
     initUser(id);
 

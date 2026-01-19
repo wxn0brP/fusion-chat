@@ -2,10 +2,10 @@
 import { Id } from "../types/Id";
 import { uiFunc } from "../ui/helpers/uiFunc";
 import { Api_fileFunc_read__options } from "../types/api";
-import { debugFunc, LogLevel } from "../core/debug";
+import { core_debug, LogLevel } from "../core/debug";
 import { LangPkg } from "../utils/translate";
 
-export namespace fileFunc {
+export namespace api_file {
     export function read(options: Api_fileFunc_read__options) {
         const { file, callback, maxSize, maxName, endpoint } = options;
         if (!file || !callback || !maxSize || !maxName || !endpoint) {
@@ -59,7 +59,7 @@ export namespace fileFunc {
         const opt: Api_fileFunc_read__options = {
             file,
             callback: () => {
-                debugFunc.msg(LogLevel.INFO, LangPkg.ui.file.uploaded);
+                core_debug.msg(LogLevel.INFO, LangPkg.ui.file.uploaded);
             },
             maxSize: 4 * 1024 * 1024,
             maxName: 60,
@@ -73,7 +73,7 @@ export namespace fileFunc {
         const opt: Api_fileFunc_read__options = {
             file,
             callback: () => {
-                debugFunc.msg(LogLevel.INFO, LangPkg.ui.file.uploaded);
+                core_debug.msg(LogLevel.INFO, LangPkg.ui.file.uploaded);
             },
             maxSize: 4 * 1024 * 1024,
             maxName: 60,
@@ -90,7 +90,7 @@ export namespace fileFunc {
         const opts: Api_fileFunc_read__options = {
             file: file,
             callback: () => {
-                debugFunc.msg(LogLevel.INFO, LangPkg.ui.file.uploaded);
+                core_debug.msg(LogLevel.INFO, LangPkg.ui.file.uploaded);
             },
             maxSize: 4 * 1024 * 1024,
             maxName: 100,

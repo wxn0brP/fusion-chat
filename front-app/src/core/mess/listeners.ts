@@ -1,8 +1,8 @@
-import { messFunc } from "./mess";
+import { core_messFunc } from "./mess";
 import { messStyle } from "./style";
 import { vars } from "#var/var";
 import { messHTML } from "#var/html";
-import { uiInteract } from "#ui/interact/ui";
+import { uii_main } from "#ui/interact/ui";
 
 const { input } = messHTML;
 
@@ -11,7 +11,7 @@ input.addEventListener("keydown", (e) => {
     if (e.shiftKey) return; //if shift + enter - new line
 
     e.preventDefault();
-    messFunc.sendMess();
+    core_messFunc.sendMess();
 });
 
 input.addEventListener("keydown", (e) => {
@@ -27,7 +27,7 @@ input.addEventListener("keydown", (e) => {
     const id = lastUserMessage.id.split("mess__")[1];
     if (!id) return;
 
-    uiInteract.editMess(id);
+    uii_main.editMess(id);
 });
 
 input.addEventListener("keydown", (e) => {
@@ -68,7 +68,7 @@ function pasteImage(e: ClipboardEvent) {
         e.preventDefault();
 
         const file = item.getAsFile();
-        messFunc.sendFile(file);
+        core_messFunc.sendFile(file);
     }
 }
 
@@ -105,5 +105,5 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
     if (e.key != "Delete") return;
     if (!vars.chat.selectedMess) return;
 
-    uiInteract.deleteMess(vars.chat.selectedMess);
+    uii_main.deleteMess(vars.chat.selectedMess);
 })

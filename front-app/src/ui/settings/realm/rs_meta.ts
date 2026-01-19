@@ -1,6 +1,6 @@
-import { fileFunc } from "#api/file";
-import { coreFunc } from "#core/coreFunc";
-import { debugFunc, LogLevel } from "#core/debug";
+import { api_file } from "#api/file";
+import { core_func } from "#core/coreFunc";
+import { core_debug, LogLevel } from "#core/debug";
 import { socket } from "#core/socket/socket";
 import { uiFunc } from "#ui/helpers/uiFunc";
 import { LangPkg } from "#utils/translate";
@@ -12,7 +12,7 @@ import rs_dataF from "./rs_var";
 export const renderMeta = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.meta) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
+    if (!settings || !settings.meta) return core_debug.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
     const metaDiv = rs_data.html.meta;
     metaDiv.innerHTML = `<h1>${LangPkg.settings_realm.basic_settings}</h1>`;
 
@@ -66,7 +66,7 @@ export const renderMeta = function () {
         if (name !== meta.name) return uiFunc.uiMsgT(LangPkg.settings_realm.delete_wrong_name);
 
         saveAndExitSettings();
-        coreFunc.changeChat("main");
+        core_func.changeChat("main");
         setTimeout(() => {
             socket.emit("realm.delete", rs_data.realmId, name);
         }, 1000);
@@ -76,6 +76,6 @@ export const renderMeta = function () {
         settings.meta.name = nameInput.value;
 
         if (img)
-            fileFunc.realm(img as File, rs_data.realmId);
+            api_file.realm(img as File, rs_data.realmId);
     }
 }

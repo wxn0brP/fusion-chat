@@ -2,15 +2,15 @@ import { Id } from "#types/Id";
 import { vars } from "#var/var";
 import { renderState } from "./var";
 import { uiFunc } from "../helpers/uiFunc";
-import { coreFunc } from "#core/coreFunc";
+import { core_func } from "#core/coreFunc";
 import { voiceFunc } from "../components/voice";
 import { Channel_Type } from "#types/channel";
 import { navHTML } from "#var/html";
-import { contextMenu } from "../components/contextMenu";
+import { uic_contextMenu } from "../components/contextMenu";
 import { Ui_render__category, Ui_render__channel } from "#types/ui/render";
 import { LangPkg } from "#utils/translate";
 import { socket } from "#core/socket/socket";
-import { render_events } from "./event";
+import { uir_events } from "./event";
 import { socketEvt } from "#core/socket/engine";
 
 function initRealmState(permission: number = 0) {
@@ -58,7 +58,7 @@ function addMenuButton(sid: Id) {
     menuBtn.innerHTML = "⬇️";
     menuBtn.addEventListener("click", (e) => {
         setTimeout(() => {
-            contextMenu.realm(e, sid);
+            uic_contextMenu.realm(e, sid);
         }, 20); // wait for click event end
     });
     navHTML.realm__name.appendChild(menuBtn);
@@ -72,8 +72,8 @@ function createChannel(channel: Ui_render__channel, root: HTMLElement, sid: Id) 
     btn.id = "channel_" + cid;
     btn.classList.add("channel_" + type);
 
-    contextMenu.menuClickEvent(btn, (e) => {
-        contextMenu.channel(e, cid, { type });
+    uic_contextMenu.menuClickEvent(btn, (e) => {
+        uic_contextMenu.channel(e, cid, { type });
     });
 
     const typeEmoticon = getChannelTypeEmoticon(type);
@@ -97,11 +97,11 @@ export function getChannelTypeEmoticon(type: Channel_Type) {
 
 function handleChannelClick(type: Channel_Type, cid: Id, sid: Id) {
     if (type === "text" || type === "announcement" || type === "open_announcement") {
-        coreFunc.changeChnl(cid);
+        core_func.changeChnl(cid);
     } else if (type === "voice") {
         handleVoiceChannelJoin(cid, sid);
     } else if (type === "forum") {
-        coreFunc.changeToForum(cid);
+        core_func.changeToForum(cid);
     }
 }
 
@@ -151,7 +151,7 @@ function downPanel_events(panel: HTMLElement) {
     events.title = "Events";
     events.id = "navs__realm__events";
     events.classList.add("btn");
-    events.addEventListener("click", render_events.show);
+    events.addEventListener("click", uir_events.show);
     panel.appendChild(events);
 
     socket.emit("realm.event.list", vars.chat.to, true, (len: number) => {
@@ -159,7 +159,7 @@ function downPanel_events(panel: HTMLElement) {
     });
 }
 
-export function realmInit(sid: Id, name: string, categories: Ui_render__category[], permission: number) {
+export function sck_realmInit(sid: Id, name: string, categories: Ui_render__category[], permission: number) {
     initRealmState(permission);
     createRealmNameSection(name, sid);
 
@@ -177,7 +177,7 @@ export function realmInit(sid: Id, name: string, categories: Ui_render__category
     if (vars.chat.chnl === null)
         vars.chat.chnl = findFirstTextChannel(categories);
 
-    coreFunc.changeChnl(vars.chat.chnl);
+    core_func.changeChnl(vars.chat.chnl);
 
     socketEvt["realm.thread.list"].emitId(sid + "=null", sid, null);
 }

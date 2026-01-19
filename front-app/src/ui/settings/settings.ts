@@ -1,14 +1,14 @@
 import { Id } from "#types/Id";
 import { mglInt } from "#var/mgl";
 import { Settings } from "./realm/types";
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_debug, LogLevel } from "#core/debug";
 import { settingsData } from "./settingsData";
 import { SettingsManager } from "./settingsLib";
 import { socket } from "#core/socket/socket";
 import { RealmSettingsManager } from "./realm/realmSettings";
 const settingDiv = document.querySelector<HTMLDivElement>("#settings");
 
-export namespace settingsFunc {
+export namespace settings_func {
     export async function showUserSettings() {
         new SettingsManager(
             await settingsData.user(),
@@ -18,7 +18,7 @@ export namespace settingsFunc {
         );
     }
 
-    export function showRealmSettings(settings: Settings, id: Id) {
+    export function sck_showRealmSettings(settings: Settings, id: Id) {
         const settingsManager = new RealmSettingsManager(
             settings,
             id,
@@ -28,7 +28,7 @@ export namespace settingsFunc {
                     socket.emit("realm.settings.set", id, data, (...errs) => {
                         if (errs.length == 1 && errs[0] === false) return res(true);
                         res(false);
-                        debugFunc.msg(LogLevel.ERROR, "Error saving realm settings: ", ...errs);
+                        core_debug.msg(LogLevel.ERROR, "Error saving realm settings: ", ...errs);
                     });
                 })
             },
@@ -38,6 +38,6 @@ export namespace settingsFunc {
     }
 }
 
-socket.on("realm.settings.get", settingsFunc.showRealmSettings);
+socket.on("realm.settings.get", settings_func.sck_showRealmSettings);
 
-mglInt.settingsFunc = settingsFunc;
+mglInt.settingsFunc = settings_func;

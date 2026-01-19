@@ -1,15 +1,15 @@
 import { navHTML } from "#var/html";
 import { vars } from "#var/var";
-import { coreFunc } from "#core/coreFunc";
+import { core_func } from "#core/coreFunc";
 import { utils } from "#utils/utils";
 import { apis } from "#api/apis";
 import { socket } from "#core/socket/socket";
 import { Core_socket__blocked, Core_socket__dm } from "#types/core/socket";
-import { updateUserProfileMarker } from "./userStatusMarker";
+import { uir_updateUserProfileMarker } from "./userStatusMarker";
 import { apiVars } from "#var/api";
 import { sortPrivs } from "./utils";
 
-export namespace render_dm {
+export namespace uir_dm {
     export async function chats() {
         navHTML.priv.innerHTML = "";
 
@@ -32,7 +32,7 @@ export namespace render_dm {
             navHTML.priv.appendChild(privDiv);
 
             privDiv.addEventListener("click", () => {
-                coreFunc.changeChat("$" + id);
+                core_func.changeChat("$" + id);
                 setTimeout(() => {
                     privsRead();
                 }, 100);
@@ -42,11 +42,11 @@ export namespace render_dm {
                 e.preventDefault();
                 socket.emit("user.profile", id);
             });
-            updateUserProfileMarker(id, apiVars.user_state[id]?.status.get());
+            uir_updateUserProfileMarker(id, apiVars.user_state[id]?.status.get());
         }
 
         privsRead();
-        coreFunc.markSelectedChat();
+        core_func.markSelectedChat();
     }
 
     export function privsRead() {
@@ -68,7 +68,7 @@ export namespace render_dm {
         });
     }
 
-    export function dm_get(data: Core_socket__dm[], blocked: Core_socket__blocked[]) {
+    export function sck_dm_get(data: Core_socket__dm[], blocked: Core_socket__blocked[]) {
         data.forEach((priv) => {
             const id = "$" + priv.priv;
 
@@ -79,9 +79,9 @@ export namespace render_dm {
             }
         })
         vars.privs = data.map(d => d.priv);
-        render_dm.chats();
+        uir_dm.chats();
 
         vars.blocked = blocked;
-        if (vars.chat.to.startsWith("$")) coreFunc.dmPlaceholder(vars.chat.to.substring(1));
+        if (vars.chat.to.startsWith("$")) core_func.dmPlaceholder(vars.chat.to.substring(1));
     }
 }

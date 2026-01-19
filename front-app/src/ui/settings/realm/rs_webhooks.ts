@@ -1,4 +1,4 @@
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_debug, LogLevel } from "#core/debug";
 import { socket } from "#core/socket/socket";
 import { Id } from "#types/Id";
 import { uiFunc } from "#ui/helpers/uiFunc";
@@ -18,7 +18,7 @@ const webhook_available_channels_type = [
 export const renderWebhooks = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.webhooks) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
+    if (!settings || !settings.webhooks) return core_debug.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
 
     const container = rs_data.html.webhook;
     container.innerHTML = `<h1>${LangPkg.settings_realm.webhooks.webhook}</h1>`;

@@ -1,7 +1,7 @@
 import { apis } from "../api/apis";
 import { mglInt } from "../var/mgl";
 
-export namespace debugFunc {
+export namespace core_debug {
     export let isDebug = localStorage.getItem("config.debug") == "true";
     export let lvl = parseInt(localStorage.getItem("config.debugLvl"), 10) || 0
 
@@ -33,19 +33,19 @@ export enum LogLevel {
 
 mglInt.debug = {
     enable(info: boolean, warn: boolean, error: boolean, socketError: boolean) {
-        debugFunc.isDebug = info || warn || error || socketError;
+        core_debug.isDebug = info || warn || error || socketError;
         const lvl =
             (info ? 0b0001 : 0) |
             (warn ? 0b0010 : 0) |
             (error ? 0b0100 : 0) |
             (socketError ? 0b1000 : 0);
-        localStorage.setItem("config.debug", debugFunc.isDebug.toString());
+        localStorage.setItem("config.debug", core_debug.isDebug.toString());
         localStorage.setItem("config.debugLvl", lvl.toString());
     },
     disable() {
-        debugFunc.isDebug = false;
-        debugFunc.lvl = 0;
-        localStorage.setItem("config.debug", debugFunc.isDebug.toString());
+        core_debug.isDebug = false;
+        core_debug.lvl = 0;
+        localStorage.setItem("config.debug", core_debug.isDebug.toString());
         localStorage.setItem("config.debugLvl", "0");
     },
 }

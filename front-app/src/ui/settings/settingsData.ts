@@ -1,15 +1,15 @@
 import { vars } from "#var/var";
 import { apis } from "#api/apis";
-import { fileFunc } from "#api/file";
+import { api_file } from "#api/file";
 import { uiFunc } from "../helpers/uiFunc";
-import { render_user } from "../render/user";
+import { uir_user } from "../render/user";
 import { socket } from "#core/socket/socket";
 import { staticData } from "#var/staticData";
-import { reloadProfileImages } from "../helpers/reloadImages";
+import { uih_reloadProfileImages } from "../helpers/reloadImages";
 import { Settings_settingsManager__category } from "#types/ui/settings";
 import { LangPkg, LangRef, load_translate } from "#utils/translate";
 import { apiVars } from "#var/api";
-import { setUserState } from "../helpers/userStateManager";
+import { uih_setUserState } from "../helpers/userStateManager";
 
 interface SettingsData {
     user: () => Promise<Settings_settingsManager__category[]>;
@@ -80,9 +80,9 @@ export const settingsData: SettingsData = {
             },
             save: (div, tmpData) => {
                 if (tmpData.img) {
-                    fileFunc.profile(tmpData.img);
+                    api_file.profile(tmpData.img);
                     setTimeout(() => {
-                        reloadProfileImages(vars.user._id);
+                        uih_reloadProfileImages(vars.user._id);
                     }, 3000);
                 }
 
@@ -197,14 +197,14 @@ export const settingsData: SettingsData = {
         }
         if (settings["Status"] != undefined || settings["Status text"] != undefined) {
             socket.emit("self.status.update", vars.user.status, vars.user.statusText);
-            render_user.localUserProfile();
-            setUserState(vars.user._id, { status: vars.user.status, statusText: vars.user.statusText });
+            uir_user.localUserProfile();
+            uih_setUserState(vars.user._id, { status: vars.user.status, statusText: vars.user.statusText });
         }
 
         if (settings["Nickname"] != undefined) {
             socket.emit("profile.set_nickname", settings["Nickname"]);
             apiVars.temp.user.main[vars.user._id] = settings["Nickname"];
-            render_user.localUserProfile();
+            uir_user.localUserProfile();
         }
 
         const lang = settings["Language"];

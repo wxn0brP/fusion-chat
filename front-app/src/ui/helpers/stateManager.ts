@@ -1,16 +1,16 @@
 import { apis } from "#api/apis";
-import { coreFunc } from "#core/coreFunc";
+import { core_func } from "#core/coreFunc";
 import { socket } from "#core/socket/socket";
 import { Id } from "#types/Id";
-import { mainView } from "#ui/components/mainView";
-import { render_events } from "#ui/render/event";
+import { uic_mainView } from "#ui/components/mainView";
+import { uir_events } from "#ui/render/event";
 import { LangPkg, langFunc } from "#utils/translate";
 import { utils } from "#utils/utils";
 import { vars } from "#var/var";
 import { delay } from "@wxn0brp/flanker-ui/utils";
 import { uiFunc } from "./uiFunc";
 
-export namespace stateManager {
+export namespace uih_stateManager {
     export function handle(type: string, ...data: string[]) {
         const fn = stateManagerFunc[type];
         if (!fn) return false;
@@ -78,19 +78,19 @@ export namespace stateManager {
 const stateManagerFunc = {
     chat(id: string) {
         if (!utils.validId(id)) return;
-        coreFunc.changeChat(id as Id);
+        core_func.changeChat(id as Id);
     },
 
     chnl(id: string) {
         if (!utils.validId(id)) return;
-        coreFunc.changeChnl(id as Id);
+        core_func.changeChnl(id as Id);
     },
 
     cc(ids: string) {
         const [chat, chnl] = ids.split("_");
         if (!utils.validId(chat)) return;
         if (!utils.validId(chnl) && chnl != "main") return;
-        coreFunc.changeChat(chat as Id, chnl as Id);
+        core_func.changeChat(chat as Id, chnl as Id);
     },
 
     async call(id: string) {
@@ -101,10 +101,10 @@ const stateManagerFunc = {
     },
 
     realmEvt() {
-        render_events.show();
+        uir_events.show();
     },
 
     friendReq() {
-        mainView.changeView("requests");
+        uic_mainView.changeView("requests");
     },
 }

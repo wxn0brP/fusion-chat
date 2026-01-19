@@ -1,19 +1,19 @@
-import { messFunc } from "./mess";
+import { core_messFunc } from "./mess";
 import { messStyle } from "./style";
 import { vars } from "#var/var";
 import { apis } from "#api/apis";
-import { coreFunc } from "../coreFunc";
+import { core_func } from "../coreFunc";
 import { socket } from "../socket/socket";
 import { uiFunc } from "#ui/helpers/uiFunc";
 import { Vars_realm__thread } from "#types/var";
 import { messCmd, messCmds, setCurrentCmd } from "./cmd";
 import { emojiHTML, messHTML } from "#var/html";
 import { mglInt } from "#var/mgl";
-import { emojiFunc, customEmoji } from "#ui/components/emoji";
+import { uic_emoji, customEmoji } from "#ui/components/emoji";
 import { LangPkg } from "#utils/translate";
 import { Id } from "#types/Id";
 
-export namespace messInteract {
+export namespace core_messInteract {
     export function replyClose() {
         messHTML.replyClose.style.display = "none";
         if (vars.temp.replyId) (document.querySelector("#mess__" + vars.temp.replyId) as HTMLElement).style.backgroundColor = "";
@@ -24,7 +24,7 @@ export namespace messInteract {
         messHTML.editClose.style.display = "none";
         messHTML.input.value = "";
         vars.temp.editId = null;
-        coreFunc.focusInp();
+        core_func.focusInp();
         messStyle.sendBtnStyle();
         messStyle.messageHeight();
         messStyle.setSelectionStart();
@@ -66,7 +66,7 @@ export namespace messInteract {
             emojiHTML.div.removeEventListener("emocji", evt);
             emojiHTML.div.fadeOut();
             setTimeout(() => {
-                coreFunc.focusInp();
+                core_func.focusInp();
                 messStyle.setSelectionStart();
             }, 100);
         }
@@ -74,7 +74,7 @@ export namespace messInteract {
         setTimeout(() => {
             emojiHTML.div.addEventListener("emocji", evt);
             emojiHTML.input.value = "";
-            emojiFunc.renderEmoji();
+            uic_emoji.renderEmoji();
 
             const to = vars.chat.to;
             if (to == "main" || to.startsWith("$")) return;
@@ -97,14 +97,14 @@ export namespace messInteract {
                     }
                 });
 
-                emojiFunc.renderEmoji();
+                uic_emoji.renderEmoji();
             });
         }, 100);
     }
 
     export function emocji() {
-        messInteract.emocjiPopup((emoticon: string) => {
-            messInteract.handleEmocji(emoticon);
+        core_messInteract.emocjiPopup((emoticon: string) => {
+            core_messInteract.handleEmocji(emoticon);
             setTimeout(() => {
                 messStyle.setSelectionStart();
             }, 100);
@@ -133,7 +133,7 @@ export namespace messInteract {
             return;
         }
         vars.chat.pinned.forEach((m) => {
-            messFunc.addMess(m);
+            core_messFunc.addMess(m);
         });
     }
 
@@ -157,11 +157,11 @@ export namespace messInteract {
             \`- <span class="thread__author">${await apis.www.changeUserID(author)}</span> |  
             <span class="thread__name">${name}</span>`;
         div.addEventListener("click", () => {
-            coreFunc.changeChnl("&" + _id);
+            core_func.changeChnl("&" + _id);
         });
         messDiv.add(div);
     }
 }
 
-messInteract.replyClose();
-mglInt.mess = messInteract;
+core_messInteract.replyClose();
+mglInt.mess = core_messInteract;

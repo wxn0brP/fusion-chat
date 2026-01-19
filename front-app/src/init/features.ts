@@ -1,5 +1,5 @@
 import { vars } from "../var/var";
-import { messFunc } from "../core/mess/mess";
+import { core_messFunc } from "../core/mess/mess";
 import { setupSwipe } from "../lib/swipeLib";
 import { staticData } from "../var/staticData";
 import { navHTML } from "../var/html";
@@ -56,7 +56,7 @@ setupSwipe(
 
         const files = e.dataTransfer.files;
         for (const file of files) {
-            messFunc.sendFile(file);
+            core_messFunc.sendFile(file);
         }
     });
 })();

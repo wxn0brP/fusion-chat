@@ -5,11 +5,11 @@ import { renderHTML } from "#var/html";
 import { apis } from "#api/apis";
 import { apiVars } from "#var/api";
 import { permissionFunc, PermissionFlags } from "#utils/perm";
-import { realmUserInteract } from "../interact/realmUser";
+import { uii_realmUser } from "../interact/realmUser";
 import { utils } from "#utils/utils"; import { initPopup } from "#ui/render/utils";
 const popup = renderHTML.realmUserProfile;
 
-export namespace realmUserProfile {
+export namespace uic_realmUserProfile {
     export function renderRoles(id: Id, canEditRole: boolean = false) {
         const userRoles = vars.realm.users.find(u => u.uid == id)?.roles || [];
         const roles = vars.realm.roles;
@@ -40,7 +40,7 @@ export namespace realmUserProfile {
             btn.innerHTML = "X";
             btn.clA("btn");
             btn.addEventListener("click", () => {
-                realmUserInteract.removeRole(id, roles.findIndex(role => role.name == r));
+                uii_realmUser.removeRole(id, roles.findIndex(role => role.name == r));
                 li.remove();
             });
             li.prepend(btn);
@@ -56,7 +56,7 @@ export namespace realmUserProfile {
         popup.querySelector("[data-id=status]").innerHTML = user_state.status.get() + " | " + user_state.statusText.get();
 
         const canEditRole = permissionFunc.hasPermission(vars.realm.permission || 0, PermissionFlags.ManageRoles);
-        realmUserProfile.renderRoles(id, canEditRole);
+        uic_realmUserProfile.renderRoles(id, canEditRole);
 
         popup.querySelector<HTMLButtonElement>("[data-role=role]").style.display = canEditRole ? "" : "none";
         popup.querySelector<HTMLButtonElement>("[data-role=kick]").style.display =

@@ -1,6 +1,6 @@
 import { messStyle } from "./style";
 import { vars } from "#var/var";
-import { coreFunc } from "../coreFunc";
+import { core_func } from "../coreFunc";
 import { socket } from "../socket/socket";
 import { messHTML } from "#var/html";
 import { LangPkg } from "#utils/translate";
@@ -194,7 +194,7 @@ export const messCmd = {
                 messStyle.setSelectionStart();
             }, 100)
 
-            coreFunc.focusInp();
+            core_func.focusInp();
             return;
         }
 
@@ -229,7 +229,7 @@ export const messCmd = {
                         messStyle.setSelectionStart();
                     }, 100)
 
-                    coreFunc.focusInp();
+                    core_func.focusInp();
                 }
             });
 

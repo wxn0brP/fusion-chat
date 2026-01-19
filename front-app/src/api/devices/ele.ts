@@ -1,7 +1,7 @@
 import { vars } from "#var/var";
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_debug, LogLevel } from "#core/debug";
 import { socket } from "#core/socket/socket";
-import { stateManager } from "#ui/helpers/stateManager";
+import { uih_stateManager } from "#ui/helpers/stateManager";
 
 export const send = (data) => {
     // @ts-ignore
@@ -12,7 +12,7 @@ export const receiveMessage = (data) => {
     data = JSON.parse(data);
     switch (data.type) {
         case "debug":
-            debugFunc.msg(LogLevel.INFO, data.msg);
+            core_debug.msg(LogLevel.INFO, data.msg);
             break;
         case "status":
             if (!vars.settings.desktopHandling) return;
@@ -26,7 +26,7 @@ export const receiveMessage = (data) => {
         case "ctrl":
             if (typeof data.ctrl == "object" && !Array.isArray(data.ctrl)) data.ctrl = [data.ctrl];
             const ctrl = data.ctrl.map(c => ({ type: c[0], value: c.slice(1) }));
-            stateManager.handleArray(ctrl);
+            uih_stateManager.handleArray(ctrl);
             break;
     }
 }

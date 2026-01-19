@@ -1,6 +1,6 @@
 import { socket } from "#core/socket/socket";
-import { debugFunc, LogLevel } from "#core/debug";
-import { stateManager } from "#ui/helpers/stateManager";
+import { core_debug, LogLevel } from "#core/debug";
+import { uih_stateManager } from "#ui/helpers/stateManager";
 
 export const send = (data) => {
     // @ts-ignore
@@ -11,7 +11,7 @@ export const receiveMessage = (data) => {
     data = JSON.parse(data);
     switch (data.type) {
         case "debug":
-            debugFunc.msg(LogLevel.INFO, data.msg);
+            core_debug.msg(LogLevel.INFO, data.msg);
             break;
         case "close":
             socket.disconnect();
@@ -22,7 +22,7 @@ export const receiveMessage = (data) => {
         case "ctrl":
             if (typeof data.ctrl == "object" && !Array.isArray(data.ctrl)) data.ctrl = [data.ctrl];
             const ctrl = data.ctrl.map(c => ({ type: c[0], value: c.slice(1) }));
-            stateManager.handleArray(ctrl);
+            uih_stateManager.handleArray(ctrl);
             break;
     }
 }
@@ -53,7 +53,7 @@ const processMediaRN = {
             source.connect(this.destination);
             source.start();
         } catch (error) {
-            debugFunc.msg(LogLevel.ERROR, 'Error processing audio data: ' + error);
+            core_debug.msg(LogLevel.ERROR, 'Error processing audio data: ' + error);
         }
     },
 
@@ -76,7 +76,7 @@ setTimeout(() => {
     try {
         processMediaRN.init();
     } catch (error) {
-        debugFunc.msg(LogLevel.ERROR, error);
+        core_debug.msg(LogLevel.ERROR, error);
     }
 }, 1000);
 

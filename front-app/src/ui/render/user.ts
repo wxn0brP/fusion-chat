@@ -1,25 +1,25 @@
 import { vars } from "#var/var";
 import { apis } from "#api/apis";
-import { coreFunc } from "#core/coreFunc";
+import { core_func } from "#core/coreFunc";
 import { socket } from "#core/socket/socket";
-import { mainView } from "../components/mainView";
-import { mainViewInteract } from "../interact/mainView";
+import { uic_mainView } from "../components/mainView";
+import { uii_mainView } from "../interact/mainView";
 import { navHTML, renderHTML } from "#var/html";
 import { Core_socket__friendStatus, Core_socket__user_profile } from "#types/core/socket";
 import { utils } from "#utils/utils";
 import { LangPkg } from "#utils/translate";
-import { updateUserProfileMarker } from "./userStatusMarker";
-import { setUserState } from "#ui/helpers/userStateManager";
+import { uir_updateUserProfileMarker } from "./userStatusMarker";
+import { uih_setUserState } from "#ui/helpers/userStateManager";
 import { initPopup } from "./utils";
 
-export namespace render_user {
+export namespace uir_user {
     export async function localUserProfile() {
         navHTML.user__name.innerHTML = await apis.www.changeUserID(vars.user._id);
         navHTML.user__status.innerHTML = vars.user.statusText || vars.user.status || "Online";
-        updateUserProfileMarker(vars.user._id, vars.user.status || "online");
+        uir_updateUserProfileMarker(vars.user._id, vars.user.status || "online");
     }
 
-    export function userProfile(data: Core_socket__user_profile) {
+    export function sck_userProfile(data: Core_socket__user_profile) {
         if (!data) return;
         const targetIsMe = data._id == vars.user._id;
         const imgLink = "/api/profile/img?id=" + data._id;
@@ -37,7 +37,7 @@ export namespace render_user {
             <div id="userProfileAbout"></div>
         `.trim();
 
-        if (data.statusText || data.status) setUserState(data._id, { status: data.status, statusText: data.statusText });
+        if (data.statusText || data.status) uih_setUserState(data._id, { status: data.status, statusText: data.statusText });
         renderHTML.userProfile.querySelector("#userProfileInfo").setAttribute("data-status-id", data._id);
 
         if (!targetIsMe) {
@@ -47,21 +47,21 @@ export namespace render_user {
             switch (data.friendStatus) {
                 case Core_socket__friendStatus.NOT_FRIEND:
                     friendBtnText = LangPkg.ui.friend.add;
-                    friendBtn.onclick = () => mainViewInteract.addFriend(data._id);
+                    friendBtn.onclick = () => uii_mainView.addFriend(data._id);
                     break;
                 case Core_socket__friendStatus.IS_FRIEND:
                     friendBtnText = LangPkg.ui.friend.remove;
-                    friendBtn.onclick = () => mainView.removeFriend(data._id);
+                    friendBtn.onclick = () => uic_mainView.removeFriend(data._id);
                     break;
                 case Core_socket__friendStatus.REQUEST_SENT:
                     friendBtnText = LangPkg.ui.friend.request_sent;
-                    friendBtn.onclick = () => mainView.removeFriendRequest(data._id);
+                    friendBtn.onclick = () => uic_mainView.removeFriendRequest(data._id);
                     break;
                 case Core_socket__friendStatus.REQUEST_RECEIVED:
                     friendBtnText = LangPkg.ui.friend.request_received;
                     friendBtn.onclick = () => {
-                        coreFunc.changeChat("main");
-                        mainView.changeView("requests");
+                        core_func.changeChat("main");
+                        uic_mainView.changeView("requests");
                     }
                     break;
             }
@@ -84,7 +84,7 @@ export namespace render_user {
             openDmBtn.style.marginLeft = "10px";
             openDmBtn.innerHTML = LangPkg.ui.friend.open_dm;
             openDmBtn.onclick = () => {
-                coreFunc.changeChat("$" + data._id);
+                core_func.changeChat("$" + data._id);
             }
             btns.appendChild(openDmBtn);
         }
@@ -106,7 +106,7 @@ export namespace render_user {
                     : ""}
             `.trim();
 
-            setUserState(data._id, { activity: utils.rmRef(act) });
+            uih_setUserState(data._id, { activity: utils.rmRef(act) });
 
             if (act.startTime) {
                 const timeP = activityDiv.querySelector("#userProfileActivityTime");
@@ -126,6 +126,6 @@ export namespace render_user {
         }
 
         initPopup(renderHTML.userProfile);
-        setUserState(data._id, data);
+        uih_setUserState(data._id, data);
     }
 }

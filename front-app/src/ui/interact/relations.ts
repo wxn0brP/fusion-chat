@@ -7,7 +7,7 @@ import { LangPkg } from "#utils/translate";
 
 const makeRealmDiv = otherHTML.makeRealm;
 
-export namespace buttonFunc {
+export namespace uii_button {
     export async function addDm() {
         const to = await uiFunc.prompt(LangPkg.ui.enter_dm);
         if (!to) return;
@@ -38,4 +38,4 @@ export namespace buttonFunc {
     }
 }
 
-mglVar.buttonFunc = buttonFunc;
+mglVar.buttonFunc = uii_button;

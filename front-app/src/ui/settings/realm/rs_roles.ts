@@ -1,4 +1,4 @@
-import { debugFunc, LogLevel } from "#core/debug";
+import { core_debug, LogLevel } from "#core/debug";
 import { uiFunc } from "#ui/helpers/uiFunc";
 import { genId } from "#utils/genId";
 import { permissionFunc } from "#utils/perm";
@@ -11,7 +11,7 @@ import { Settings_rs__Role } from "./types";
 export const renderRoles = function () {
     const rs_data = rs_dataF();
     const settings = rs_data.settings;
-    if (!settings || !settings.roles) return debugFunc.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
+    if (!settings || !settings.roles) return core_debug.msg(LogLevel.ERROR, LangPkg.settings_realm.no_data);
 
     const container = rs_data.html.role;
     container.innerHTML = `<h1>${LangPkg.settings_realm.roles}</h1>`;

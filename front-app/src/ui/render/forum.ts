@@ -1,6 +1,6 @@
 import { apis } from "#api/apis";
-import { coreFunc } from "#core/coreFunc";
-import { realm_thread_list } from "#core/socket/logic/mess";
+import { core_func } from "#core/coreFunc";
+import { sck_realm_thread_list } from "#core/socket/logic/mess";
 import { socket } from "#core/socket/socket";
 import { Id } from "#types/Id";
 import { Vars_realm__thread } from "#types/var";
@@ -9,7 +9,7 @@ import { messHTML } from "#var/html";
 import { vars } from "#var/var";
 import { uiFunc } from "../helpers/uiFunc";
 
-export async function render_forum(forums: Vars_realm__thread[], chnlId: Id) {
+export async function uir_forum(forums: Vars_realm__thread[], chnlId: Id) {
     const container = document.createElement("div");
 
     const addBtn = document.createElement("button");
@@ -20,7 +20,7 @@ export async function render_forum(forums: Vars_realm__thread[], chnlId: Id) {
         const name = await uiFunc.prompt(LangPkg.ui.create_thread_name);
         if (!name) return;
         socket.emit("realm.thread.create", vars.chat.to, chnlId, name, null, (id: Id) => {
-            coreFunc.changeChnl("&" + id);
+            core_func.changeChnl("&" + id);
         });
     });
     container.appendChild(addBtn);
@@ -37,8 +37,8 @@ export async function render_forum(forums: Vars_realm__thread[], chnlId: Id) {
         `;
         container.appendChild(div);
         div.addEventListener("click", () => {
-            realm_thread_list([forum]);
-            coreFunc.changeChnl("&" + forum._id);
+            sck_realm_thread_list([forum]);
+            core_func.changeChnl("&" + forum._id);
         });
     }
     messHTML.div.appendChild(container);

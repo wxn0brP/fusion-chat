@@ -1,18 +1,18 @@
 import { vars } from "#var/var";
 import { mainViewHTML } from "#var/html";
-import { coreFunc } from "#core/coreFunc";
+import { core_func } from "#core/coreFunc";
 import { apis } from "#api/apis";
 import { socket } from "#core/socket/socket";
 import { uiFunc } from "../helpers/uiFunc";
 import { Id } from "#types/Id";
 import { Vars_mainView__friend, Vars_mainView__page } from "#types/var";
 import { LangPkg, langFunc } from "#utils/translate";
-import { updateUserProfileMarker } from "../render/userStatusMarker";
+import { uir_updateUserProfileMarker } from "../render/userStatusMarker";
 import { apiVars } from "#var/api";
 import { socketEvt } from "#core/socket/engine";
-import { setUserState } from "#ui/helpers/userStateManager";
+import { uih_setUserState } from "#ui/helpers/userStateManager";
 
-export namespace mainView {
+export namespace uic_mainView {
     export function show() {
         socket.emit("friend.get.all");
         socket.emit("friend.requests.get");
@@ -114,11 +114,11 @@ async function renderFriends() {
             socketEvt["user.profile"].emitDataId(friend._id);
         });
         friendDiv.addEventListener("click", () => {
-            coreFunc.changeChat("$" + friend._id);
+            core_func.changeChat("$" + friend._id);
         });
         mainViewHTML.friendsContainer.appendChild(friendDiv);
 
-        setUserState(friend._id, {
+        uih_setUserState(friend._id, {
             status: friend?.status,
             statusText: friend?.text
         });
@@ -158,18 +158,18 @@ async function renderRequests() {
         requestDiv.querySelector(".friend__avatar").addEventListener("click", showUser);
 
         mainViewHTML.requestsContainer.appendChild(requestDiv);
-        updateUserProfileMarker(request, apiVars.user_state[request]?.status.get());
+        uir_updateUserProfileMarker(request, apiVars.user_state[request]?.status.get());
     }
 }
 
-mainView.changeView("online");
+uic_mainView.changeView("online");
 
-export function friend_get_all(friends: Vars_mainView__friend[]) {
+export function sck_friend_get_all(friends: Vars_mainView__friend[]) {
     vars.mainView.friends = friends;
     renderFriends();
 }
 
-export function friend_requests_get(requests: Id[]) {
+export function sck_friend_requests_get(requests: Id[]) {
     vars.mainView.requests = requests;
     renderRequests();
 }
@@ -178,8 +178,8 @@ socket.on("friend.request", async (from: string) => {
     const text = langFunc(LangPkg.ui.friend.request, await apis.www.changeUserID(from));
     uiFunc.uiMsg(text, {
         onClick: () => {
-            coreFunc.changeChat("main");
-            mainView.changeView("requests");
+            core_func.changeChat("main");
+            uic_mainView.changeView("requests");
         }
     });
 

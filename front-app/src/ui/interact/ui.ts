@@ -1,7 +1,7 @@
 import { Id } from "#types/Id";
 import { vars } from "#var/var";
 import { messHTML } from "#var/html";
-import { coreFunc } from "#core/coreFunc";
+import { core_func } from "#core/coreFunc";
 import { messStyle } from "#core/mess/style";
 import { socket } from "#core/socket/socket";
 import { uiFunc, promptDiv } from "../helpers/uiFunc";
@@ -9,7 +9,7 @@ import { KeyState } from "#var/keys";
 import { LangPkg } from "#utils/translate";
 import { socketEvt } from "#core/socket/engine";
 
-export namespace uiInteract {
+export namespace uii_main {
     export function editMess(id: Id) {
         const messageDiv = document.querySelector("#mess__" + id + " .mess_content");
         if (!messageDiv) return;
@@ -18,7 +18,7 @@ export namespace uiInteract {
         vars.temp.editId = id;
 
         messHTML.editClose.style.display = "block";
-        coreFunc.focusInp(true);
+        core_func.focusInp(true);
         messStyle.sendBtnStyle();
         messStyle.messageHeight();
         messStyle.setSelectionStart();
