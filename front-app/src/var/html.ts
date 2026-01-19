@@ -75,16 +75,6 @@ function other() {
     }
 }
 
-function voice() {
-    return {
-        div: qs("#voice_call"),
-        mediaContainer: qs("#voice_call_media"),
-        users: qs("#voice_call_users"),
-        muteMic: qs("#voice_call_mute_mic"),
-        voiceShow: qs("#realms__voice_show"),
-    }
-}
-
 function emoji() {
     return {
         div: qs("#emojiDiv"),
@@ -100,7 +90,6 @@ export const coreHTML = core();
 export const renderHTML = render();
 export const mainViewHTML = mainView();
 export const otherHTML = other();
-export const voiceHTML = voice();
 export const emojiHTML = emoji();
 
 export const mglHTML = { // magistral for html variables
@@ -110,7 +99,6 @@ export const mglHTML = { // magistral for html variables
     render: renderHTML,
     mainView: mainViewHTML,
     other: otherHTML,
-    voice: voiceHTML,
     emoji: emojiHTML
 }
 
