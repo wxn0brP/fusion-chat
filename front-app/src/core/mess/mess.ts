@@ -50,7 +50,7 @@ export namespace core_messFunc {
         core_messStyle.messageHeight();
     }
 
-    export async function addMess(data: Core_mess__dbMessage, scroll: boolean = true, up: boolean = false) {
+    export function addMess(data: Core_mess__dbMessage, scroll: boolean = true, up: boolean = false) {
         if (!data) return;
 
         /*
@@ -80,7 +80,11 @@ export namespace core_messFunc {
         fromDivText.classList.add("mess_meta_text");
 
         const fromDivTextName = document.createElement("span");
-        fromDivTextName.innerHTML = await apis.www.changeUserID(data.fr);
+        fromDivTextName.innerHTML = ""
+        apis.www.changeUserID(data.fr).then((name) => {
+            fromDivTextName.innerHTML = name;
+        });
+
         fromDivTextName.classList.add("mess_author_name");
         if (!["%", "^", "("].includes(data.fr[0])) { // if not system/api let show profile
             fromDivTextName.addEventListener("click", () => {
@@ -99,7 +103,7 @@ export namespace core_messFunc {
 
         const messContentDiv = document.createElement("div");
         messContentDiv.classList.add("mess_content");
-        await formatMess(data.msg, messContentDiv);
+        formatMess(data.msg, messContentDiv);
         messContentDiv.setAttribute("_plain", data.msg);
         messDiv.appendChild(messContentDiv);
 

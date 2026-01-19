@@ -1,6 +1,6 @@
 import { uic_createMediaPopup } from "#ui/components/media";
 
-export async function format_media(link: string) {
+export function format_media(link: string) {
     if (!link) return;
 
     function check(link: string) {
@@ -43,7 +43,7 @@ export async function format_media(link: string) {
     }
 
     if (link.includes("youtube.com") || link.includes("youtu.be")) {
-        function extractYouTubeVideoId(link) {
+        function extractYouTubeVideoId(link: string) {
             const match = link.match(/(?:\?v=|\/embed\/|\.be\/|\/v\/|\/\d{1,2}\/|\/e\/|watch\?v=|youtu\.be\/|youtube\.com\/(?:v|e|embed)\/|youtube\.com\/user\/[^#\/]+#p\/[^#\/]+\/)([^"&?\/ ]{11})/);
             return (match && match[1]) ? match[1] : null;
         }
@@ -62,7 +62,7 @@ export async function format_media(link: string) {
 
     if (link.includes("tiktok.com")) {
         const iframe = document.createElement("iframe");
-        function extractTikTokVideoId(link) {
+        function extractTikTokVideoId(link: string) {
             const regex = /tiktok\.com\/(?:@[\w.-]+\/video\/|v\/|embed\/v2\/)([\w-]+)/;
             const match = link.match(regex);
             return match ? match[1] : null;
@@ -82,20 +82,23 @@ export async function format_media(link: string) {
         const l = link.split("?") || [link];
         link = l[0];
         if (!link.endsWith("/")) link += "/";
-
-        const api = await fetch(`${link}.json?limit=2`).then(res => res.json());
-        const post = api[0]?.data.children[0]?.data;
         const ele = document.createElement("div");
 
-        const title = post.title;
-        const author = post.author;
-        ele.innerHTML = `autor: ${author}<br />tytuł: ${title}`
+        fetch(`${link}.json?limit=2`).then(res => res.json()).then(api => {
+            const post = api[0]?.data.children[0]?.data;
+
+            const title = post.title;
+            const author = post.author;
+
+            ele.innerHTML = `autor: ${author}<br />tytuł: ${title}`;
+        });
         return ele;
     }
 
     if (link.includes("spotify.com")) {
         const iframe = document.createElement("iframe");
-        function extractSpotifyId(link) {
+
+        function extractSpotifyId(link: string) {
             const trackMatch = link.match(/track\/([a-zA-Z0-9]+)/);
             if (trackMatch && trackMatch[1]) {
                 return "track/" + trackMatch[1];
@@ -106,6 +109,7 @@ export async function format_media(link: string) {
             }
             return null;
         }
+
         const videoId = extractSpotifyId(link);
         if (!videoId) return null;
         iframe.src = `https://open.spotify.com/embed/${videoId}`;

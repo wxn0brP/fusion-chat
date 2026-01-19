@@ -51,7 +51,7 @@ export async function sck_mess(data: Core_mess__receivedMessage) {
     if (isPrivateChat) uir_dm.privsRead();
 
     // add message to chat
-    await core_messFunc.addMess(convertReceivedMessageToDbMessage(data));
+    core_messFunc.addMess(convertReceivedMessageToDbMessage(data));
     core_messStyle.hideFromMessageInfo();
     core_messStyle.colorRole();
 
@@ -76,11 +76,11 @@ function convertReceivedMessageToDbMessage(data: Core_mess__receivedMessage): Co
     return mess;
 }
 
-export async function sck_message_fetch(data: Core_mess__dbMessage[]) {
+export function sck_message_fetch(data: Core_mess__dbMessage[]) {
     try {
         for (const mess of data) {
             try {
-                await core_messFunc.addMess(mess, false, true);
+                core_messFunc.addMess(mess, false, true);
             } catch (e) {
                 console.error(e);
                 console.error(mess);
@@ -161,7 +161,7 @@ export async function sck_message_react(uid: Id, realm: Id, messId: Id, react: s
     core_messStyle.styleMessReacts(mess.querySelector(".mess_reacts"));
 }
 
-export async function sck_message_search(data: Core_mess__dbMessage[]) {
+export function sck_message_search(data: Core_mess__dbMessage[]) {
     if (data.length == 0) {
         messHTML.div.innerHTML += LangPkg.ui.message.search_no_results;
         return;
@@ -169,7 +169,7 @@ export async function sck_message_search(data: Core_mess__dbMessage[]) {
     messHTML.div.innerHTML = "<h2>" + LangPkg.ui.message.search_results + ":</h2>";
 
     for (const mess of data) {
-        await core_messFunc.addMess(mess, false);
+        core_messFunc.addMess(mess, false);
     }
 }
 

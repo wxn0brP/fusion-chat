@@ -126,14 +126,14 @@ export namespace core_messInteract {
         messCmd.handleCommandInput();
     }
 
-    export async function displayPinned() {
+    export function displayPinned() {
         messHTML.div.innerHTML = "<h2>" + LangPkg.ui.pinned_messages + "</h2>";
         if (vars.chat.pinned.length == 0) {
             messHTML.div.innerHTML += LangPkg.ui.no_pinned_messages;
             return;
         }
         for (const message of vars.chat.pinned) {
-            await core_messFunc.addMess(message);
+            core_messFunc.addMess(message);
         }
     }
 

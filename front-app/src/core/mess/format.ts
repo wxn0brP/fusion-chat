@@ -2,11 +2,11 @@
 import { format_media } from "./format/media";
 import { format_text } from "./format/text";
 
-export async function formatMess(mess_plain: string, div: HTMLDivElement) {
+export function formatMess(mess_plain: string, div: HTMLDivElement) {
     let mess = format_text(mess_plain);
     div.innerHTML = mess;
 
-    const elements = await getElements(mess_plain);
+    const elements = getElements(mess_plain);
     for (const element of elements) {
         div.appendChild(document.createElement("br"));
         div.appendChild(element);
@@ -17,12 +17,12 @@ export async function formatMess(mess_plain: string, div: HTMLDivElement) {
     }
 }
 
-async function getElements(text: string) {
+function getElements(text: string) {
     const regex = /(https?:\/\/[^\s]+)/g;
     const matches = text.match(regex);
     if (!matches) return [];
 
-    const all = await Promise.all(matches.map(format_media));
+    const all = matches.map(format_media);
     return all.filter(ele => !!ele);
 }
 
