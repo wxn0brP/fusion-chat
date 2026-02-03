@@ -62,7 +62,7 @@ jobs:
         ./gradlew assembleRelease
         
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v6
       with:
         name: app-release
         path: fc-app/fc-mobile/android/app/build/outputs/apk/release/
