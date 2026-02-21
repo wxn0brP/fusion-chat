@@ -11,12 +11,12 @@ import { genId } from "@wxn0brp/db";
 export async function bots_get(
 	suser: Socket_User,
 ): Promise<Socket_StandardRes> {
-	const botsData = await db.userData.find<any>(suser._id, {
+	const botsData = await db.userData.c(suser._id).find({
 		$exists: { botID: true },
 	});
 	const botsID = botsData.map((b) => b.botID);
 	const botsPromises = botsID.map(async (id) => {
-		const bot = await db.botData.findOne<Db_BotData.name>(id, {
+		const bot = await db.botData.c<Db_BotData.name>(id).findOne({
 			_id: "name",
 		});
 		return { id, name: bot.name };
@@ -33,20 +33,20 @@ export async function bots_delete(
 	const validE = new ValidError("bots.delete");
 	if (!valid.id(id)) return validE.valid("id");
 
-	const botExists = await db.userData.findOne(suser._id, { botID: id });
+	const botExists = await db.userData.c(suser._id).findOne({ botID: id });
 	if (!botExists)
 		return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
-	const realms = await db.botData.find<Db_BotData.realm>(id, {
+	const realms = await db.botData.c<Db_BotData.realm>(id).find({
 		$exists: { realm: true },
 	});
 	for (const realm of realms) {
-		await db.realmUser.removeOne(realm.realm, { bot: id });
+		await db.realmUser.c(realm.realm).removeOne({ bot: id });
 	}
 
-	await db.userData.removeOne(suser._id, { botID: id });
+	await db.userData.c(suser._id).removeOne({ botID: id });
 	await db.botData.removeCollection(id);
-	await db.data.add("rm", { _id: id });
+	await db.data.c("rm").add({ _id: id });
 
 	return { err: false };
 }
@@ -59,11 +59,11 @@ export async function bots_create(
 	if (!valid.str(name, 0, 30)) return validE.valid("name");
 
 	const id = genId();
-	await db.userData.add(suser._id, { botID: id }, false);
+	await db.userData.c(suser._id).add({ botID: id }, false);
 
 	await db.botData.ensureCollection(id);
-	await db.botData.add(id, { _id: "owner", owner: suser._id }, false);
-	await db.botData.add(id, { _id: "name", name }, false);
+	await db.botData.c(id).add({ _id: "owner", owner: suser._id }, false);
+	await db.botData.c(id).add({ _id: "name", name }, false);
 
 	return { err: false, res: [id] };
 }

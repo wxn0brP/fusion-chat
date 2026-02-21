@@ -53,7 +53,7 @@ io.of("/").onConnect(async (socket: FCSocket) => {
 
 	socket.logError = (e) => {
 		lo("Error: ", e);
-		db.logs.add("socket.io", {
+		db.logs.c("gl").add({
 			error: e.message,
 			stackTrace: e.stack,
 		});
@@ -78,16 +78,14 @@ io.of("/").onConnect(async (socket: FCSocket) => {
 
 	setTimeout(async () => {
 		if (socket.isShouldRefresh) {
-			// @ts-ignore
-			const oldToken = socket.handshake.auth.token;
+			const oldToken = socket.authData.token;
 			const newToken = await createUser({ _id: socket.user._id });
 			socket.emit(
 				"system.refreshToken",
 				newToken,
 				function confirm(confirm: boolean) {
 					if (!confirm) return;
-					db.data.updateOne(
-						"token",
+					db.data.c("token").updateOne(
 						{ token: oldToken },
 						{ token: newToken },
 					);

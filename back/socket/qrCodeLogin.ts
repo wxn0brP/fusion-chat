@@ -82,7 +82,7 @@ async function roleAuth(socket: Socket_QRCodeLogin, data: RoleAuth_handshake) {
         if (user.name !== data.fr) return emitError(socket, validE.err("auth"));
 
         const newToken = await createUser(user);
-        await db.data.add("token", { token: newToken }, false);
+        await db.data.c("token").add({ token: newToken }, false);
         to_socket.emit("get", newToken, user.name, user._id);
 
         if (cb && typeof cb === "function") cb();

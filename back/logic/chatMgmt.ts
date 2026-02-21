@@ -50,7 +50,7 @@ export async function chatExists(chatId: Id) {
 export async function createChat(name: string, ownerId: Id): Promise<Id> {
     const chatId = genId();
 
-    await db.realmConf.add(chatId, {
+    await db.realmConf.c(chatId).add({
         name,
         owner: ownerId,
         img: false,
@@ -63,8 +63,7 @@ export async function createChat(name: string, ownerId: Id): Promise<Id> {
     });
 
     const categoryId = genId();
-    await db.realmConf.add(
-        chatId,
+    await db.realmConf.c(chatId).add(
         {
             cid: categoryId,
             name: "general",
@@ -73,8 +72,7 @@ export async function createChat(name: string, ownerId: Id): Promise<Id> {
         false,
     );
 
-    await db.realmConf.add(
-        chatId,
+    await db.realmConf.c(chatId).add(
         {
             chid: genId(),
             name: "main",
@@ -86,8 +84,7 @@ export async function createChat(name: string, ownerId: Id): Promise<Id> {
         false,
     );
 
-    await db.realmConf.add(
-        chatId,
+    await db.realmConf.c(chatId).add(
         {
             chid: genId(),
             name: "general",
@@ -115,8 +112,7 @@ export async function createChat(name: string, ownerId: Id): Promise<Id> {
  * @return A Promise that resolves when the user is added to the chat
  */
 export async function addUserToChat(chatId: Id, userId: Id, roles: Id[] = []) {
-    await db.realmUser.add(
-        chatId,
+    await db.realmUser.c(chatId).add(
         {
             u: userId,
             r: roles,
@@ -124,8 +120,7 @@ export async function addUserToChat(chatId: Id, userId: Id, roles: Id[] = []) {
         false,
     );
 
-    await db.userData.add(
-        userId,
+    await db.userData.c(userId).add(
         {
             realm: chatId,
         },
@@ -141,8 +136,8 @@ export async function addUserToChat(chatId: Id, userId: Id, roles: Id[] = []) {
  * @return A promise that resolves when the user is removed from the chat
  */
 export async function exitChat(chatId: Id, userId: Id) {
-    await db.realmUser.removeOne(chatId, { u: userId });
-    await db.userData.removeOne(userId, { realm: chatId });
+    await db.realmUser.c(chatId).removeOne({ u: userId });
+    await db.userData.c(userId).removeOne({ realm: chatId });
 }
 
 /**
@@ -152,16 +147,14 @@ export async function exitChat(chatId: Id, userId: Id) {
  * @param fromId - the ID of the user granting the privilege
  */
 export async function createPriv(toId: Id, fromId: Id) {
-    await db.userData.add(
-        toId,
+    await db.userData.c(toId).add(
         {
             priv: fromId,
         },
         false,
     );
 
-    await db.userData.add(
-        fromId,
+    await db.userData.c(fromId).add(
         {
             priv: toId,
         },

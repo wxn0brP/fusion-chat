@@ -45,7 +45,7 @@ announcementRouter.get("/announcement", async (req, res) => {
 			msg: "end",
 		});
 
-	const chnlData = await db.realmConf.findOne<any>(realm, { chid: chnl });
+	const chnlData = await db.realmConf.c("realmConf").findOne({ realm, chid: chnl });
 	if (!chnlData)
 		return res.json({
 			err: true,
@@ -59,8 +59,7 @@ announcementRouter.get("/announcement", async (req, res) => {
 			msg: "channel is not open announcement",
 		});
 
-	let data = await db.mess.find<any>(
-		realm,
+	let data = await db.mess.c(realm).find(
 		{ chnl },
 		{ reverse: true, limit: end + start },
 	);

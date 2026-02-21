@@ -34,7 +34,7 @@ export async function realm_webhook_token_get(
 			InternalCode.UserError.Socket.RealmEdit_NotAuthorized,
 		);
 
-	const webhook = await db.realmConf.findOne<Db_RealmConf.webhook>(realmId, {
+	const webhook = await db.realmConf.c<Db_RealmConf.webhook>(realmId).findOne({
 		whid: webhookId,
 	});
 	if (!webhook)

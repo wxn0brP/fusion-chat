@@ -41,6 +41,6 @@ export default async (
 	}
 
 	for (const item of changes.itemsToRemove) {
-		await db.data.add("rm", { _id: item.whid });
+		await db.data.c("rm").add({ _id: item.whid });
 	}
 };

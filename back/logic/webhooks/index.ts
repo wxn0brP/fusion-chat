@@ -20,7 +20,7 @@ export async function addCustom(webhookInfo: Logic_Webhook.webhook_builder) {
 		required: required || [],
 	};
 
-	await db.realmConf.add(chat, webhook, false);
+	await db.realmConf.c(chat).add(webhook, false);
 }
 
 export async function handleCustom(
@@ -34,7 +34,7 @@ export async function handleCustom(
 
 	if (!token) return { code: 400, msg: "Invalid token" };
 
-	const wh = await db.realmConf.findOne<Db_RealmConf.webhook>(token.chat, {
+	const wh = await db.realmConf.c<Db_RealmConf.webhook>(token.chat).findOne({
 		whid: token.id,
 	});
 	if (!wh) return { code: 404, msg: "Webhook not found" };

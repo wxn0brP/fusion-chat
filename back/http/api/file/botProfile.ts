@@ -29,8 +29,7 @@ const botProfileEngine = new FileUploadEngine({
 		return await canUserEditBot(suser, botId);
 	},
 	postProcessCallback: async (filePath: string, req: FFRequest) => {
-		await db.botData.updateOneOrAdd(
-			req.headers.id as Id,
+		await db.botData.c(req.headers.id as Id).updateOneOrAdd(
 			{ _id: "img" },
 			{},
 		);

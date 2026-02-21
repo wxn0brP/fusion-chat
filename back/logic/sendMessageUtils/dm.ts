@@ -13,7 +13,7 @@ const userDmCache = new AnotherCache(getCacheSettings("UserDm"));
 async function blocked(fr: Id, to: Id, combined: Id): Promise<boolean> {
 	if (blockedCache.has(combined)) return blockedCache.get(combined);
 
-	const blocked = await db.userData.findOne("blocked", {
+	const blocked = await db.userData.c("blocked").findOne({
 		$or: [
 			{ fr: fr, to: to },
 			{ fr: to, to: fr },
@@ -27,8 +27,8 @@ async function blocked(fr: Id, to: Id, combined: Id): Promise<boolean> {
 async function exists(fr: Id, to: Id, combined: Id): Promise<boolean> {
 	if (userDmCache.has(combined)) return userDmCache.get(combined);
 
-	const priv = await db.userData.findOne(fr, { priv: to });
-	const toPriv = await db.userData.findOne(to, { priv: fr });
+	const priv = await db.userData.c(fr).findOne({ priv: to });
+	const toPriv = await db.userData.c(to).findOne({ priv: fr });
 	const exists = !!priv && !!toPriv;
 	userDmCache.set(combined, exists);
 	return exists;

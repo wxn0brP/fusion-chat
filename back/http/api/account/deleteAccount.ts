@@ -27,7 +27,7 @@ deleteAccountRouter.get("/get", async (req, res) => {
 			msg: "invalid token",
 		});
 
-	const user = await db.data.findOne<Db_Data.user>("user", {
+	const user = await db.data.c<Db_Data.user>("user").findOne({
 		_id: tokenData.user,
 	});
 	if (!user)
@@ -66,7 +66,7 @@ deleteAccountRouter.post("/confirm", async (req, res) => {
 			msg: "invalid token",
 		});
 
-	const user = await db.data.findOne<Db_Data.user>("user", {
+	const user = await db.data.c<Db_Data.user>("user").findOne({
 		_id: tokenData.user,
 	});
 	if (!user)
@@ -85,7 +85,7 @@ deleteAccountRouter.post("/confirm", async (req, res) => {
 			msg: "invalid password",
 		});
 
-	const existingTask = await db.system.findOne("tasks", {
+	const existingTask = await db.system.c("tasks").findOne({
 		type: "deleteAccount",
 		data: { user: user._id },
 	});
@@ -128,7 +128,7 @@ deleteAccountRouter.post("/undo", async (req, res) => {
 			msg: "invalid token",
 		});
 
-	const task = await db.system.findOne<any>("tasks", {
+	const task = await db.system.c("tasks").findOne({
 		type: "deleteAccount",
 		data: { user: tokenData.user },
 	});
@@ -139,7 +139,7 @@ deleteAccountRouter.post("/undo", async (req, res) => {
 			msg: "pending process is not found",
 		});
 
-	await db.system.removeOne("tasks", {
+	await db.system.c("tasks").removeOne({
 		type: "deleteAccount",
 		data: { user: tokenData.user },
 	});

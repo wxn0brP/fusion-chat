@@ -23,7 +23,7 @@ inviteBotRouter.get("/meta", authenticateMiddleware, async (req, res) => {
 			msg: "id",
 		});
 
-	const botExists = await db.botData.findOne(id, { _id: "owner" });
+	const botExists = await db.botData.c(id).findOne({ _id: "owner" });
 	if (!botExists)
 		return res.json({
 			err: true,
@@ -37,14 +37,16 @@ inviteBotRouter.get("/meta", authenticateMiddleware, async (req, res) => {
 	};
 
 	botRes.name = await db.botData
-		.findOne<any>(id, { _id: "name" })
+		.c(id)
+		.findOne({ _id: "name" })
 		.then((b) => b.name);
 
-	const userRealms = await db.userData.find<any>(req.user, {
+	const userRealms = await db.userData.c(req.user).find({
 		$exists: { realm: true },
 	});
 	const botRealms = await db.botData
-		.find<any>(id, { $exists: { realm: true } })
+		.c(id)
+		.find({ $exists: { realm: true } })
 		.then((b) => b.map((r) => r.realm));
 	const availableRealms = userRealms
 		.filter((s) => !botRealms.includes(s.realm))

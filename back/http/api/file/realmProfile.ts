@@ -31,7 +31,7 @@ const realmProfileEngine = new FileUploadEngine({
 	},
 	postProcessCallback: async (filePath: string, req: FFRequest) => {
 		const realmId = req.headers.realm as Id;
-		await db.realmConf.updateOne(realmId, { _id: "set" }, { img: true });
+		await db.realmConf.c(realmId).updateOne({ _id: "set" }, { img: true });
 		sendToRealmUsers(realmId, "refreshData", "realm.get");
 	},
 });

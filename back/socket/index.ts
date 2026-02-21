@@ -7,7 +7,7 @@ import "./qrCodeLogin";
 import { io } from "./server";
 
 export async function sendToRealmUsers(realm: string, channel: string, ...args: any[]) {
-	const users = await db.realmUser.find<Db_RealmUser.data>(realm, {});
+	const users = await db.realmUser.c<Db_RealmUser.data>(realm).find({});
 	for (const user of users) {
 		const room = "bot" in user ?
 			"bot-" + user.bot :

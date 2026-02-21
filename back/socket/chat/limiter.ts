@@ -113,7 +113,7 @@ class SocketEventLimiter {
 
 				const room = io.room("user-" + this.socket.user._id);
 				room.emit("error.spam", "ban", spamThresholds.banDuration);
-				room.clients.forEach((socket) => {
+				room.sockets.forEach((socket) => {
 					socket.ws.close();
 				})
 				return;

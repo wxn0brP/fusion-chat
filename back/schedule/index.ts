@@ -42,7 +42,7 @@ function processTask(task: Db_System.task) {
 }
 
 export function loadTasks() {
-	db.system.find<Db_System.task>("tasks", {}).then((tasks) => {
+	db.system.c<Db_System.task>("tasks").find({}).then((tasks) => {
 		tasks.forEach((task) => processTask(task));
 	});
 }
@@ -53,13 +53,13 @@ export async function cancelTask(taskId: Id) {
 }
 
 export async function removeTask(taskId: Id) {
-	await db.system.removeOne("tasks", { _id: taskId });
+	await db.system.c<Db_System.task>("tasks").removeOne({ _id: taskId });
 	if (!activeTasks.has(taskId)) return;
 	activeTasks.delete(taskId);
 }
 
 export async function addTask(taskReq: Omit<Db_System.task, "_id">) {
-	const task = await db.system.add<Db_System.task>("tasks", taskReq as any);
+	const task = await db.system.c<Db_System.task>("tasks").add(taskReq);
 	processTask(task);
 	return task._id;
 }

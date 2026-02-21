@@ -31,9 +31,7 @@ import { sendToUser } from "../..";
 export async function realm_get(
 	suser: Socket_User,
 ): Promise<Socket_StandardRes> {
-	const realms = await db.userData.find<Db_UserData.realm>(
-		suser._id,
-		// @ts-ignore
+	const realms = await db.userData.c<Db_UserData.realm>(suser._id).find(
 		{ $exists: { realm: true } },
 	);
 	if (realms.length == 0) return { err: false, res: [[]] };
@@ -45,7 +43,7 @@ export async function realm_get(
 		};
 		const id = realm.realm;
 
-		const realmSet = await db.realmConf.findOne<Db_RealmConf.meta>(id, {
+		const realmSet = await db.realmConf.c<Db_RealmConf.meta>(id).findOne({
 			_id: "set",
 		});
 		realm.img = realmSet.img || false;
@@ -59,15 +57,13 @@ export async function realm_get(
 }
 
 export async function dm_get(suser: Socket_User): Promise<Socket_StandardRes> {
-	// @ts-ignore
-	const privs = await db.userData.find<Db_UserData.priv>(suser._id, { $exists: { priv: true } });
+	const privs = await db.userData.c<Db_UserData.priv>(suser._id).find({ $exists: { priv: true } });
 	if (privs.length == 0) return { err: false, res: [[]] };
 
 	for (let i = 0; i < privs.length; i++) {
 		const priv = privs[i] as Db_UserData.priv & { lastMessId: Id };
 		const id = combineId(suser._id, priv.priv);
-		const lastMess = await db.mess.find<Db_Mess.Message>(
-			id,
+		const lastMess = await db.mess.c<Db_Mess.Message>(id).find(
 			{},
 			{ reverse: true, limit: 1 },
 		);
@@ -76,7 +72,7 @@ export async function dm_get(suser: Socket_User): Promise<Socket_StandardRes> {
 	}
 
 	const blocked = (
-		await db.userData.find<{ fr: Id; to: Id }>("blocked", {
+		await db.userData.c<{ fr: Id; to: Id }>("blocked").find({
 			$or: [{ fr: suser._id }, { to: suser._id }],
 		})
 	)
@@ -127,7 +123,7 @@ export async function dm_create(
 	if (nameOrId == suser._id || nameOrId == suser.name)
 		return validE.err(InternalCode.UserError.Socket.Dm_CreateSelf);
 
-	const user = await db.data.findOne<Db_Data.user>("user", {
+	const user = await db.data.c<Db_Data.user>("user").findOne({
 		$or: [{ name: nameOrId }, { _id: nameOrId }],
 	});
 	if (user._id == suser._id)
@@ -136,7 +132,7 @@ export async function dm_create(
 
 	const toId = user._id;
 
-	const priv = await db.userData.findOne<Db_UserData.priv>(suser._id, {
+	const priv = await db.userData.c<Db_UserData.priv>(suser._id).findOne({
 		priv: toId,
 	});
 	if (priv) return validE.err(InternalCode.UserError.Socket.Dm_AlreadyExists);
@@ -157,13 +153,13 @@ export async function realm_join(
 	const validE = new ValidError("realm.join");
 	if (!valid.id(id)) return validE.valid("id");
 
-	const exists = await db.userData.findOne(suser._id, { realm: id });
+	const exists = await db.userData.c(suser._id).findOne({ realm: id });
 	if (exists)
 		return validE.err(
 			InternalCode.UserError.Socket.RealmJoin_AlreadyJoined,
 		);
 
-	const isBaned = await db.realmData.findOne(id, { ban: suser._id });
+	const isBaned = await db.realmData.c(id).findOne({ ban: suser._id });
 	if (isBaned)
 		return validE.err(InternalCode.UserError.Socket.RealmJoin_UserIsBanned);
 
@@ -186,7 +182,7 @@ export async function realm_mute(
 	if (!isUserInRealm)
 		return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-	await db.userData.updateOne(suser._id, { realm: id }, { muted: time });
+	await db.userData.c(suser._id).updateOne({ realm: id }, { muted: time });
 	return { err: false };
 }
 
@@ -200,7 +196,7 @@ export async function dm_block(
 	if (!valid.bool(blocked)) return validE.valid("blocked");
 
 	if (blocked) {
-		const exists = await db.userData.findOne("blocked", {
+		const exists = await db.userData.c("blocked").findOne({
 			fr: suser._id,
 			to: id,
 		});
@@ -209,10 +205,10 @@ export async function dm_block(
 				InternalCode.UserError.Socket.Dm_BlockAlreadyBlocked,
 			);
 
-		await db.userData.add("blocked", { fr: suser._id, to: id }, false);
+		await db.userData.c("blocked").add({ fr: suser._id, to: id }, false);
 		await friend_remove(suser, id);
 	} else {
-		await db.userData.removeOne("blocked", { fr: suser._id, to: id });
+		await db.userData.c("blocked").removeOne({ fr: suser._id, to: id });
 	}
 	clearBlockedCache(suser._id, id);
 

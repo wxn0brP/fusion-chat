@@ -2,27 +2,27 @@ import db from "#db";
 import { Id } from "#id";
 
 export default async (id: Id) => {
-	await db.data.removeOne("user", { _id: id });
-	await db.data.add("rm", { _id: id });
-	await db.data.remove("fireToken", { user: id });
+	await db.data.c("user").removeOne({ _id: id });
+	await db.data.c("rm").add({ _id: id });
+	await db.data.c("fireToken").removeOne({ user: id });
 
-	const realms = await db.userData.find<any>(id, {
+	const realms = await db.userData.c(id).find({
 		$exists: { realm: true },
 	});
 	for (const realm of realms) {
-		await db.realmUser.removeOne(realm.realm, { uid: id });
+		await db.realmUser.c(realm.realm).removeOne({ uid: id });
 	}
 
-	const bots = await db.userData.find<any>(id, { $exists: { botID: true } });
+	const bots = await db.userData.c(id).find({ $exists: { botID: true } });
 	for (const bot of bots) {
-		const botRealms = await db.botData.find<any>(bot.botID, {
+		const botRealms = await db.botData.c(bot.botID).find({
 			$exists: { realm: true },
 		});
 		for (const realm of botRealms) {
-			await db.realmUser.removeOne(realm.realm, { bot: bot.botID });
+			await db.realmUser.c(realm.realm).removeOne({ bot: bot.botID });
 		}
 		await db.botData.removeCollection(bot.botID);
-		await db.data.add("rm", { _id: bot.botID });
+		await db.data.c("rm").add({ _id: bot.botID });
 	}
 
 	await db.userData.removeCollection(id);

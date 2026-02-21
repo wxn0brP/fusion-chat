@@ -12,9 +12,9 @@ export const chatIdRoute: RouteHandler = async (req, res) => {
 			msg: "chat",
 		});
 
-	const chatI = await db.realmConf.findOne<any>(chat, { _id: "set" });
+	const chatI = await db.realmConf.c(chat).findOne({ _id: "set" });
 	if (!chatI) {
-		const rm = await db.data.findOne("rm", { _id: chat });
+		const rm = await db.data.c("rm").findOne({ _id: chat });
 		if (rm) return res.json({ err: false, name: "Deleted Chat " + chat });
 		return res.json({
 			err: true,

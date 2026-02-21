@@ -7,8 +7,7 @@ import { sendToUser } from "../../socket";
 export default async (data: { realm: Id; evt: Id }, taskId: Id) => {
 	if (!activeTasks.has(taskId)) return;
 
-	const users = await db.realmData.find<Pick<Db_RealmData.event_user, "u">>(
-		data.realm,
+	const users = await db.realmData.c<Pick<Db_RealmData.event_user, "u">>(data.realm).find(
 		{ uevt: data.evt },
 		{},
 		{},

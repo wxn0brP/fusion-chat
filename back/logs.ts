@@ -3,7 +3,7 @@ import db from "./dataBase";
 process.on("uncaughtException", (e) => {
 	try {
 		console.error("Uncaught Exception: ", e);
-		db.logs.add("uncaughtException", {
+		db.logs.c("uncaughtException").add({
 			error: e.message,
 			stackTrace: e.stack,
 		});
@@ -15,7 +15,7 @@ process.on("uncaughtException", (e) => {
 process.on("unhandledRejection", (reason, promise) => {
 	try {
 		console.error("Unhandled Rejection: ", reason);
-		db.logs.add("unhandledRejection", {
+		db.logs.c("unhandledRejection").add({
 			reason: reason,
 			promise: promise,
 		});

@@ -24,7 +24,7 @@ export async function webPushSend(opts: WebPush_Opts) {
         if (io.room("user-" + opts.to).size > 0)
             return;
 
-    const subscriptions = await db.data.find<{ u: string, data: PushSubscription, _id: string }>("webPush", { u: opts.to });
+    const subscriptions = await db.data.c<{ u: string, data: PushSubscription, _id: string }>("webPush").find({ u: opts.to });
     if (subscriptions.length == 0) return;
 
     const url = new URL(webCfg.url);
@@ -61,6 +61,6 @@ export async function webPushSend(opts: WebPush_Opts) {
         });
 
         if (subToDel.length > 0)
-            db.data.remove("webPush", { $in: { _id: subToDel } });
+            db.data.c("webPush").remove({ $in: { _id: subToDel } });
     } catch { }
 }

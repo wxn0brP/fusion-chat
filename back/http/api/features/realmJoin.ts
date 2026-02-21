@@ -19,10 +19,10 @@ realmJoinRouter.get("/meta", authenticateMiddleware, async (req, res) => {
 			msg: "id",
 		});
 
-	const userExists = await db.userData.findOne(req.user, { realm: id });
+	const userExists = await db.userData.c(req.user).findOne({ realm: id });
 	if (userExists) return res.json({ err: false, state: 1 });
 
-	const isBaned = await db.realmData.findOne(id, { ban: req.user });
+	const isBaned = await db.realmData.c(id).findOne({ ban: req.user });
 	if (isBaned) return res.json({ err: false, state: 2 });
 
 	const realmRes = {
@@ -30,7 +30,7 @@ realmJoinRouter.get("/meta", authenticateMiddleware, async (req, res) => {
 		img: undefined,
 	};
 
-	const realmMeta = await db.realmConf.findOne<Db_RealmConf.meta>(id, {
+	const realmMeta = await db.realmConf.c<Db_RealmConf.meta>(id).findOne({
 		_id: "set",
 	});
 	realmRes.name = realmMeta.name;

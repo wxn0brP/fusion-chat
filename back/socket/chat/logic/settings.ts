@@ -20,8 +20,7 @@ export async function self_status_update(
 	if (!status) status = "online";
 	if (!text) text = "";
 
-	await db.userData.updateOneOrAdd(
-		suser._id,
+	await db.userData.c(suser._id).updateOneOrAdd(
 		{ _id: "status" },
 		{ status, text },
 	);
@@ -32,7 +31,7 @@ export async function self_status_update(
 export async function self_status_get(
 	suser: Socket_User,
 ): Promise<Socket_StandardRes> {
-	const status = await db.userData.findOne<Db_UserData.status>(suser._id, {
+	const status = await db.userData.c<Db_UserData.status>(suser._id).findOne({
 		_id: "status",
 	});
 	const activity = await statusMgmtGetCache(suser._id);
@@ -48,11 +47,15 @@ export async function profile_set_nickname(
 	const validE = new ValidError("profile.set_nickname");
 	if (!valid.str(nickname, 0, 30)) return validE.valid("nickname");
 
-	const updated = await db.userData.updateOne(
-		suser._id,
-		{ $exists: { nick: true } },
+	const updated = await db.userData.c(suser._id).updateOne(
+		{
+			$exists: {
+				nick: true
+			}
+		},
 		{ nick: nickname },
 	);
-	if (!updated) await db.userData.add(suser._id, { nick: nickname }, false);
+	if (!updated)
+		await db.userData.c(suser._id).add({ nick: nickname }, false);
 	return { err: false };
 }

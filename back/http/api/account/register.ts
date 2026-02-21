@@ -27,7 +27,7 @@ registerRouter.post("/register", async function (req, res) {
 			msg: "email",
 		});
 
-	const existingUserByName = await db.data.findOne("user", { name });
+	const existingUserByName = await db.data.c("user").findOne({ name });
 	if (existingUserByName)
 		return res.json({
 			err: true,
@@ -35,7 +35,7 @@ registerRouter.post("/register", async function (req, res) {
 			msg: "User with this name already exists!",
 		});
 
-	const existingUserByEmail = await db.data.findOne("user", { email });
+	const existingUserByEmail = await db.data.c("user").findOne({ email });
 	if (existingUserByEmail)
 		return res.json({
 			err: true,
@@ -127,7 +127,7 @@ registerRouter.post("/register/verify", async function (req, res) {
 	}
 
 	const { name, email, password } = req.session.tmp_user;
-	const newUser = await db.data.add("user", { name, email, password });
+	const newUser = await db.data.c("user").add({ name, email, password });
 	if (!newUser)
 		return res.json({
 			err: true,

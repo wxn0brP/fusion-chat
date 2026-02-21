@@ -20,8 +20,7 @@ export const eventIdRoute: RouteHandler = async (req, res) => {
 
 	let name = cache.get(id);
 	if (!name) {
-		const data = await db.realmData.findOne(
-			"announcement.channels",
+		const data = await db.realmData.c("announcement.channels").findOne(
 			(data, ctx) => {
 				const { tr, tc } = data;
 				return ctx.combineId(tr, tc) == ctx.id;
@@ -37,7 +36,7 @@ export const eventIdRoute: RouteHandler = async (req, res) => {
 				msg: "event not found",
 			});
 
-		const chnl = await db.realmConf.findOne<any>(data.tr, { chid: data.tc });
+		const chnl = await db.realmConf.c(data.tr).findOne({ chid: data.tc });
 		if (!chnl)
 			return res.json({
 				err: true,
@@ -45,8 +44,7 @@ export const eventIdRoute: RouteHandler = async (req, res) => {
 				msg: "event not found",
 			});
 
-		const realmName = await db.realmConf
-			.findOne<any>(data.tr, { _id: "set" })
+		const realmName = await db.realmConf.c(data.tr).findOne({ _id: "set" })
 			.then(({ name }) => name);
 		name = realmName + " > " + chnl.name;
 		cache.set(id, name);

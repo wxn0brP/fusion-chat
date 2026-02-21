@@ -21,15 +21,15 @@ export default (socket: GLSocket) => {
 	});
 
 	socket.on("logout", async (cb?: Function) => {
-		// @ts-ignore
-		const token = socket.handshake.auth.token;
-		db.data.removeOne("token", { token });
-		db.data.removeOne("fireToken", { fc: token });
+		const token = socket.authData.token;
+		db.data.c("token").removeOne({ token });
+		db.data.c("fireToken").removeOne({ fc: token });
 		socket.user = null;
 		if (cb) cb();
 		setTimeout(() => {
-			// @ts-ignore
-			if (socket.connected) socket.disconnect();
+			try {
+				socket.disconnect();
+			} catch { }
 		}, 100);
 	});
 
@@ -37,7 +37,7 @@ export default (socket: GLSocket) => {
 };
 
 async function updateFriendList(id: Id) {
-	const friendsGraph = await db.dataGraph.find("friends", id);
+	const friendsGraph = await db.dataGraph.c("friends").find({ $or: [{ a: id }, { b: id }] });
 	const friends = friendsGraph.map((f) => {
 		if (f.a == id) return f.b;
 		return f.a;

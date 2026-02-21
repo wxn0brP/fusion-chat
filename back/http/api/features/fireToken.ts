@@ -28,16 +28,15 @@ fireTokenRouter.post("/fireToken", async (req, res) => {
 			msg: "invalid fcToken",
 		});
 
-	const pairIsset = await db.data.findOne("fireToken", {
+	const pairIsset = await db.data.c("fireToken").findOne({
 		fc: userToken.token,
 		fire: fireToken,
 	});
 	if (pairIsset) return res.json({ err: false, msg: "ok" });
 
-	await db.data.removeOne("fireToken", { fire: fireToken }); // remove if token is registered for another user
+	await db.data.c("fireToken").removeOne({ fire: fireToken }); // remove if token is registered for another user
 
-	await db.data.add(
-		"fireToken",
+	await db.data.c("fireToken").add(
 		{
 			fc: userToken.token,
 			fire: fireToken,

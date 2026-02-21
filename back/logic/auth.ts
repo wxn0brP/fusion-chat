@@ -21,14 +21,15 @@ export async function authUser(
 		const { id } = data;
 		if (!id) return false;
 
-		const tokenD = await db.data.findOne("token", { token });
+		const tokenD = await db.data.c("token").findOne({ token });
 		if (!tokenD) return false;
 
-		const user = await db.data.findOne<any>(
-			"user",
+		const user = await db.data.c("user").findOne(
 			{ _id: id },
 			{},
-			{ select: ["_id", "name", "email"] },
+			{
+				select: ["_id", "name", "email"]
+			},
 		);
 		if (!user) return false;
 

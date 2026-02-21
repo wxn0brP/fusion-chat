@@ -120,7 +120,7 @@ async function fetchRequiredData(id: Id, sections: Section[]) {
 	if (!sections.some((section) => sectionsRequiringDb.includes(section))) {
 		return null;
 	}
-	return await db.realmConf.find(id, {});
+	return await db.realmConf.c(id).find({});
 }
 
 /**
@@ -173,7 +173,7 @@ async function processSection(
 			data.banUsers = dbData.filter((d) => !!d.ban).map((u) => u.ban);
 			break;
 		case "users":
-			const users = await db.realmUser.find(realmId, {});
+			const users = await db.realmUser.c(realmId).find({});
 			data.users = users.map((u) => {
 				let uid = u.u;
 				if (u.bot) uid = "^" + u.bot;
@@ -218,25 +218,24 @@ async function getAdjustedRoles(realm: Id, userId: Id) {
 
 async function getSubscribedChannels(realmId: Id) {
 	// Omit<Db_RealmData.announcement_channels, "tr"> & { name: string }
-	const channels = await db.realmData.find<any>(
-		"announcement.channels",
-		{ tr: realmId },
+	const channels = await db.realmData.c<any>("announcement.channels").find(
+		{
+			tr: realmId,
+		},
 		{},
-		{},
-		{ exclude: ["tr"] },
-	);
+		{
+			exclude: ["tr"],
+		});
 
 	const realms = groupBySource(channels);
 
 	for (const realm of realms) {
-		const names = await db.realmConf.find<
+		const names = await db.realmConf.c<
 			Pick<Db_RealmConf.channel, "chid" | "name">
-		>(
-			realm.sr,
+		>(realm.sr).find(
 			{
 				$or: realm.scs.map((sc) => ({ chid: sc })),
 			},
-			{},
 			{},
 			{
 				select: ["chid", "name"],

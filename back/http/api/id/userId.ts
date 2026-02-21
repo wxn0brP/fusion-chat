@@ -20,14 +20,14 @@ export const userIdRoute: RouteHandler = async (req, res) => {
 		});
 
 	if (chat) {
-		const userData = await db.realmData.findOne<any>(chat, { uid: id });
+		const userData = await db.realmData.c(chat).findOne({ uid: id });
 		if (userData)
 			return res.json({ err: false, name: userData.name, c: 1 });
 	}
 
-	const user = await db.data.findOne<any>("user", { _id: id });
+	const user = await db.data.c("user").findOne({ _id: id });
 	if (!user) {
-		const rm = await db.data.findOne("rm", { _id: id });
+		const rm = await db.data.c("rm").findOne({ _id: id });
 		if (rm)
 			return res.json({ err: false, name: "Deleted User " + id, c: -1 });
 		return res.json({
@@ -37,7 +37,7 @@ export const userIdRoute: RouteHandler = async (req, res) => {
 		});
 	}
 
-	const nickData = await db.userData.findOne<any>(id, {
+	const nickData = await db.userData.c(id).findOne({
 		$exists: { nick: true },
 	});
 	if (nickData) return res.json({ err: false, name: nickData.nick, c: 0 });

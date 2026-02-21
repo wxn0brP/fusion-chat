@@ -34,7 +34,7 @@ export async function realm_setup(
 	if (!isUserInRealm)
 		return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-	const realmMeta = await db.realmConf.findOne<Db_RealmConf.meta>(id, {
+	const realmMeta = await db.realmConf.c<Db_RealmConf.meta>(id).findOne({
 		_id: "set",
 	});
 	if (!realmMeta)
@@ -46,11 +46,11 @@ export async function realm_setup(
 	const permSys = new permissionSystem(id);
 
 	const buildChannels = [];
-	const categories = await db.realmConf.find<Db_RealmConf.category>(id, {
+	const categories = await db.realmConf.c<Db_RealmConf.category>(id).find({
 		$exists: { cid: true },
 	});
-	// @ts-ignore
-	const channels = await db.realmConf.find<Db_RealmConf.channel>(id, { $exists: { chid: true } });
+
+	const channels = await db.realmConf.c<Db_RealmConf.channel>(id).find({ $exists: { chid: true } });
 	const sortedCategories = categories.sort((a, b) => a.i - b.i);
 
 	for (let i = 0; i < sortedCategories.length; i++) {
@@ -109,7 +109,7 @@ export async function realm_users_sync(
 	const rolesMap = new Map();
 	for (const role of roles) rolesMap.set(role._id, role.name);
 
-	const users = await db.realmUser.find(id, {});
+	const users = await db.realmUser.c(id).find({});
 	const usersData = users.map((u) => {
 		const uid = u.u || u.bot;
 		let symbolUID = uid;
@@ -135,7 +135,7 @@ export async function realm_users_activity_sync(
 	if (!isUserInRealm)
 		return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-	const users = await db.realmUser.find(id, {});
+	const users = await db.realmUser.c(id).find({});
 	const usersData = users.map(async (u) => {
 		const uid = u.u || u.bot;
 		let symbolUID = uid;
@@ -146,7 +146,7 @@ export async function realm_users_activity_sync(
 		if (u.bot) userOnline = io.room("bot-" + uid).size > 0;
 		if (!userOnline) return { uid: symbolUID };
 
-		const st = await db.userData.findOne<Db_UserData.status>(uid, {
+		const st = await db.userData.c<Db_UserData.status>(uid).findOne({
 			_id: "status",
 		});
 		const statusText = st?.text;
@@ -174,7 +174,7 @@ export async function realm_delete(
 	if (!valid.id(id)) return validE.valid("id");
 	if (!valid.str(name, 0, 30)) return validE.valid("name");
 
-	const realmMeta = await db.realmConf.findOne<Db_RealmConf.meta>(id, {
+	const realmMeta = await db.realmConf.c<Db_RealmConf.meta>(id).findOne({
 		_id: "set",
 	});
 	if (realmMeta.name != name) return validE.valid("name");
@@ -189,10 +189,10 @@ export async function realm_delete(
 			InternalCode.UserError.Socket.RealmEdit_NotAuthorized,
 		);
 
-	const users = await db.realmUser
-		.find(id, {})
+	const users = await db.realmUser.c(id)
+		.find({})
 		.then((users) => users.map((u) => u.u));
-	for (const user of users) await db.userData.removeOne(user, { realm: id });
+	for (const user of users) await db.userData.c(user).removeOne({ realm: id });
 
 	db.realmConf.removeCollection(id);
 	db.realmUser.removeCollection(id);
@@ -227,11 +227,11 @@ export async function realm_user_kick(
 			InternalCode.UserError.Socket.RealmEdit_NotAuthorized,
 		);
 
-	await db.userData.removeOne(uid, { realm: realmId });
-	await db.realmUser.removeOne(realmId, { uid });
+	await db.userData.c(uid).removeOne({ realm: realmId });
+	await db.realmUser.c(realmId).removeOne({ uid });
 
 	if (ban) {
-		await db.realmUser.add(realmId, { ban: uid }, false);
+		await db.realmUser.c(realmId).add({ ban: uid }, false);
 	}
 
 	sendToUser(uid, "refreshData", "realm.get");
@@ -258,7 +258,7 @@ export async function realm_user_unban(
 			InternalCode.UserError.Socket.RealmEdit_NotAuthorized,
 		);
 
-	await db.realmUser.removeOne(realmId, { ban: uid });
+	await db.realmUser.c(realmId).removeOne({ ban: uid });
 	return { err: false };
 }
 
@@ -273,7 +273,7 @@ export async function realm_emojis_sync(
 	if (!isUserInRealm)
 		return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-	const emojis = await db.realmConf.find(realmId, {
+	const emojis = await db.realmConf.c(realmId).find({
 		$exists: { emoji: true },
 	});
 	return { err: false, res: [emojis] };
@@ -309,14 +309,14 @@ export async function realm_announcement_channel_subscribe(
 		tc: targetChannelId,
 	};
 
-	const exists = await db.realmData.findOne("announcement.channels", data);
+	const exists = await db.realmData.c("announcement.channels").findOne(data);
 	if (exists)
 		return validE.err(
 			InternalCode.UserError.Socket
 				.RealmAnnouncementSubscribe_AlreadySubscribed,
 		);
 
-	await db.realmData.add("announcement.channels", data, false);
+	await db.realmData.c("announcement.channels").add(data, false);
 	clearEventCache(targetRealmId);
 
 	return { err: false };
@@ -345,7 +345,7 @@ export async function realm_announcement_channel_unsubscribe(
 			InternalCode.UserError.Socket.RealmEdit_NotAuthorized,
 		);
 
-	await db.realmData.removeOne("announcement.channels", {
+	await db.realmData.c("announcement.channels").removeOne({
 		sr: sourceRealmId,
 		sc: sourceChannelId,
 		tr: targetRealmId,
@@ -360,8 +360,7 @@ export async function realm_announcement_channel_unsubscribe(
 export async function realm_announcement_channel_available(
 	suser: Socket_User,
 ): Promise<Socket_StandardRes> {
-	// @ts-ignore
-	const userRealms = await db.userData.find<Db_UserData.realm>(suser._id, { $exists: { realm: true } });
+	const userRealms = await db.userData.c(suser._id).find({ $exists: { realm: true } });
 	const realmsWithAdmin = [];
 	for (const userRealmId of userRealms) {
 		const permSys = new permissionSystem(userRealmId.realm);
@@ -397,14 +396,11 @@ export async function realm_announcement_channel_list(
 		);
 
 	const subscribedChannels =
-		await db.realmData.find<Db_RealmData.announcement_channels>(
-			"announcement.channels",
-			{ tr: realmId },
-		);
+		await db.realmData.c<Db_RealmData.announcement_channels>("announcement.channels").find({ tr: realmId });
 	// Pick<Db_RealmConf.channel, "chid" | "name">
 	const channels = await db.realmConf
-		.find<any>(
-			realmId,
+		.c(realmId)
+		.find(
 			{
 				$exists: {
 					chid: true,
@@ -446,7 +442,7 @@ export async function realm_thread_create(
 	if (!valid.str(name, 0, 30)) return validE.valid("name");
 	if (replyMsgId && !valid.id(replyMsgId)) return validE.valid("replyMsgId");
 
-	const chnlType = await db.realmConf.findOne<Db_RealmConf.channel>(realmId, {
+	const chnlType = await db.realmConf.c<Db_RealmConf.channel>(realmId).findOne({
 		chid: channelId,
 	});
 	if (!chnlType) return validE.valid("channelId");
@@ -466,8 +462,7 @@ export async function realm_thread_create(
 	};
 	if (replyMsgId) threadObj.reply = replyMsgId;
 
-	const thread = await db.realmData.add<Db_RealmData.thread>(
-		realmId,
+	const thread = await db.realmData.c<Db_RealmData.thread>(realmId).add(
 		threadObj,
 		true,
 	);
@@ -490,9 +485,7 @@ export async function realm_thread_delete(
 			InternalCode.UserError.Socket.RealmEdit_NotAuthorized,
 		);
 
-	const thread = await db.realmData.findOne<Db_RealmData.thread>(realmId, {
-		_id: threadId,
-	});
+	const thread = await db.realmData.c<Db_RealmData.thread>(realmId).findOne({ _id: threadId, });
 	if (!thread)
 		return validE.err(InternalCode.UserError.Socket.ThreadDelete_NotFound);
 
@@ -508,8 +501,8 @@ export async function realm_thread_delete(
 			); // if admin, can delete any thread
 	}
 
-	await db.realmData.removeOne(realmId, { _id: threadId });
-	await db.mess.remove(realmId, { chnl: "&" + threadId });
+	await db.realmData.c(realmId).removeOne({ _id: threadId });
+	await db.mess.c(realmId).remove({ chnl: "&" + threadId });
 	sendToRealmUsers(realmId, "realm.thread.delete", threadId);
 
 	return { err: false };
@@ -530,7 +523,7 @@ export async function realm_thread_list(
 		return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
 	if (channelId === null) {
-		const threads = await db.realmData.find<any>(realmId, {
+		const threads = await db.realmData.c(realmId).find({
 			$exists: { thread: true },
 		});
 		const chnlCache: Record<Id, Db_RealmConf.channel["type"]> = {};
@@ -538,8 +531,7 @@ export async function realm_thread_list(
 			async function getChnlType() {
 				if (t.thread in chnlCache)
 					return chnlCache[t.thread] as Db_RealmConf.channel["type"];
-				const chnl = await db.realmConf.findOne<Db_RealmConf.channel>(
-					realmId,
+				const chnl = await db.realmConf.c<Db_RealmConf.channel>(realmId).findOne(
 					{
 						chid: t.thread,
 					},
@@ -564,7 +556,7 @@ export async function realm_thread_list(
 			InternalCode.UserError.Socket.RealmThreadList_NotAuthorized,
 		);
 
-	const threads = await db.realmData.find(realmId, { thread: channelId });
+	const threads = await db.realmData.c(realmId).find({ thread: channelId });
 	return { err: false, res: [threads] };
 }
 
@@ -579,7 +571,7 @@ export async function realm_event_create(
 	if (!eventCreateSchema(req)) return validE.valid("req");
 	if (req.type === "voice") {
 		if (!valid.id(req.where)) return validE.valid("req.where");
-		const chnl = await db.realmConf.findOne<Db_RealmConf.channel>(realmId, {
+		const chnl = await db.realmConf.c<Db_RealmConf.channel>(realmId).findOne({
 			chid: req.where,
 		});
 		if (!chnl) return validE.valid("req.where");
@@ -611,10 +603,7 @@ export async function realm_event_create(
 	if (req.desc) data.desc = req.desc;
 	if (req.img) data.img = req.img;
 
-	const { _id } = (await db.realmData.add(
-		realmId,
-		data,
-	)) as Db_RealmData.event;
+	const { _id } = await db.realmData.c<Db_RealmData.event>(realmId).add(data);
 
 	const task: Omit<Db_System.task, "_id"> = {
 		type: "event",
@@ -649,13 +638,13 @@ export async function realm_event_delete(
 			InternalCode.UserError.Socket.RealmEdit_NotAuthorized,
 		);
 
-	const taskId = await db.system.findOne<Db_System.task>("tasks", {
+	const taskId = await db.system.c<Db_System.task>("tasks").findOne({
 		type: "event",
 		data: { evt: eventId },
 	});
 	if (taskId) await cancelTask(taskId._id);
-	await db.realmData.removeOne(realmId, { _id: eventId, evt: true });
-	await db.realmData.remove(realmId, { uevt: eventId });
+	await db.realmData.c(realmId).removeOne({ _id: eventId, evt: true });
+	await db.realmData.c(realmId).remove({ uevt: eventId });
 
 	return { err: false };
 }
@@ -672,13 +661,12 @@ export async function realm_event_list(
 	if (!isUserInRealm)
 		return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-	const events = await db.realmData.find<Db_RealmData.event>(realmId, {
+	const events = await db.realmData.c<Db_RealmData.event>(realmId).find({
 		evt: true,
 	});
 	if (len) return { err: false, res: [events.length] };
 
-	const eventsUsers = await db.realmData.find<Db_RealmData.event_user>(
-		realmId,
+	const eventsUsers = await db.realmData.c<Db_RealmData.event_user>(realmId).find(
 		{ $exists: { uevt: true } },
 	);
 	const data = [];
@@ -707,8 +695,7 @@ export async function realm_event_join(
 	if (!isUserInRealm)
 		return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-	const joined = await db.realmData.findOne<Db_RealmData.event_user>(
-		realmId,
+	const joined = await db.realmData.c<Db_RealmData.event_user>(realmId).findOne(
 		{
 			u: suser._id,
 			uevt: eventId,
@@ -719,7 +706,7 @@ export async function realm_event_join(
 			InternalCode.UserError.Socket.RealmEventJoin_AlreadyJoined,
 		);
 
-	await db.realmData.add(realmId, { u: suser._id, uevt: eventId });
+	await db.realmData.c(realmId).add({ u: suser._id, uevt: eventId });
 
 	return { err: false };
 }
@@ -737,7 +724,7 @@ export async function realm_event_leave(
 	if (!isUserInRealm)
 		return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-	await db.realmData.removeOne(realmId, { u: suser._id, uevt: eventId });
+	await db.realmData.c(realmId).removeOne({ u: suser._id, uevt: eventId });
 
 	return { err: false };
 }
@@ -755,7 +742,7 @@ export async function realm_event_get_topic(
 	if (!isUserInRealm)
 		return validE.err(InternalCode.UserError.Socket.UserNotOnRealm);
 
-	const event = await db.realmData.findOne<Db_RealmData.event>(realmId, {
+	const event = await db.realmData.c<Db_RealmData.event>(realmId).findOne({
 		_id: eventId,
 		evt: true,
 	});

@@ -11,7 +11,7 @@ import Db_RealmRoles from "#types/db/realmRoles";
 import { Id } from "#id";
 import Db_RealmUser from "#types/db/realmUser";
 import Db_RealmConf from "#types/db/realmConf";
-import CollectionManager from "@wxn0brp/db-core/helpers/CollectionManager";
+import { Collection } from "@wxn0brp/db-core/helpers/collection";
 
 /**
  * A hierarchical role-based permission system for managing roles and permissions in a workspace.
@@ -19,8 +19,8 @@ import CollectionManager from "@wxn0brp/db-core/helpers/CollectionManager";
  * Managers with higher-level roles can assign roles and permissions to users with lower-level roles.
  */
 export default class PermissionSystem {
-	realmRoles: CollectionManager;
-	realmUser: CollectionManager;
+	realmRoles: Collection<Db_RealmRoles.role>;
+	realmUser: Collection<Db_RealmUser.user | Db_RealmUser.bot>;
 	realmId: string;
 
 	/**
@@ -132,7 +132,7 @@ export default class PermissionSystem {
 			}
 		}
 
-		return await this.realmRoles.add<Db_RealmRoles.role>({
+		return await this.realmRoles.add({
 			name,
 			lvl,
 			p,
@@ -295,7 +295,7 @@ export default class PermissionSystem {
 	 * @returns The role, or null if not found.
 	 */
 	async getRole(roleId: Id) {
-		return await this.realmRoles.findOne<any>({ _id: roleId });
+		return await this.realmRoles.findOne({ _id: roleId });
 	}
 
 	/**
@@ -303,7 +303,7 @@ export default class PermissionSystem {
 	 * @returns The sorted list of roles.
 	 */
 	async getAllRolesSorted() {
-		const roles = await this.realmRoles.find<Db_RealmRoles.role>({});
+		const roles = await this.realmRoles.find({});
 		return roles.sort((a, b) => a.lvl - b.lvl);
 	}
 
@@ -313,9 +313,7 @@ export default class PermissionSystem {
 	 * @returns The sorted list of roles assigned to the user.
 	 */
 	async getUserRolesSorted(userId: Id) {
-		const userData = await this.realmUser.findOne<
-			Db_RealmUser.user | Db_RealmUser.bot
-		>({
+		const userData = await this.realmUser.findOne({
 			$or: [{ u: userId }, { bot: userId }],
 		});
 		if (!userData) return [];
@@ -324,7 +322,7 @@ export default class PermissionSystem {
 		if (userRoles.length === 0) return [];
 
 		const rolesMap = new Map<Id, Db_RealmRoles.role>();
-		const roles = await this.realmRoles.find<Db_RealmRoles.role>({
+		const roles = await this.realmRoles.find({
 			$or: userRoles.map((a) => ({ _id: a })),
 		});
 
@@ -420,11 +418,14 @@ export default class PermissionSystem {
 			userHighestRoleLvl || (await this.getUserHighestRole(userId))?.lvl;
 		if (userHighestRoleLvl === 0) return true;
 
-		const realmOwner = await db.realmConf.findOne<Db_RealmConf.meta>(
-			this.realmId,
-			{ _id: "set" },
+		const realmOwner = await db.realmConf.c<Db_RealmConf.meta>(this.realmId).findOne(
+			{
+				_id: "set",
+			},
 			{},
-			{ select: ["owner"] },
+			{
+				select: ["owner"]
+			}
 		);
 		if (realmOwner && realmOwner.owner === userId) return true;
 

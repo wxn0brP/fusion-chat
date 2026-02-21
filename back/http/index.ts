@@ -8,7 +8,6 @@ const app = new FalconFrame();
 
 app.use(bannedIp);
 app.setOrigin("*");
-app.setVar("disable compression", true);
 
 app.static("front/static");
 if (process.env.IS_TECHNICAL_BREAK == "true") {

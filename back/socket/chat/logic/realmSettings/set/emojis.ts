@@ -26,8 +26,8 @@ export default async (
  */
 async function processEmojis(id: Id, changes: ProcessDbChangesResult) {
 	/* Note:
-        changes.itemsToAdd - This array is not utilized in this function as the addition of emojis to the database is managed through an express upload endpoint elsewhere in the codebase. This function primarily handles the removal and updating of emoji entries based on the changes detected.
-    */
+		changes.itemsToAdd - This array is not utilized in this function as the addition of emojis to the database is managed through an express upload endpoint elsewhere in the codebase. This function primarily handles the removal and updating of emoji entries based on the changes detected.
+	*/
 
 	// Clean up removed emoji files
 	const basePath = `userFiles/realms/${id}/emojis/`;
@@ -41,13 +41,13 @@ async function processEmojis(id: Id, changes: ProcessDbChangesResult) {
 		const statements = changes.itemsToRemove.map((e) => ({
 			emoji: e.emoji,
 		}));
-		await db.realmConf.remove(id, {
+		await db.realmConf.c(id).remove({
 			$or: statements,
 		});
 	}
 
 	// Update emojis
 	for (const item of changes.itemsToUpdate) {
-		await db.realmConf.updateOne(id, { emoji: item.emoji }, item);
+		await db.realmConf.c(id).updateOne({ emoji: item.emoji }, item);
 	}
 }

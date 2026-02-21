@@ -18,13 +18,11 @@ export async function invite(userID: Id, botID: Id, realmID: Id) {
 			msg: "You don't have permission to edit this realm",
 		};
 
-	const botName = await db.botData.findOne<Db_BotData.name>(botID, {
-		_id: "name",
-	});
+	const botName = await db.botData.c<Db_BotData.name>(botID).findOne({ _id: "name" });
 	const role = await permSys.createRole(botName.name);
 
-	await db.botData.add(botID, { realm: realmID }, false);
-	await db.realmUser.add(realmID, { bot: botID, r: [role._id] }, false);
+	await db.botData.c(botID).add({ realm: realmID }, false);
+	await db.realmUser.c(realmID).add({ bot: botID, r: [role._id] }, false);
 
 	return { err: false, msg: "ok" };
 }

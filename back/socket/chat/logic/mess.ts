@@ -42,7 +42,7 @@ export async function message_edit(
 		? combineId(suser._id, chatId.replace("$", ""))
 		: chatId;
 
-	const mess = await db.mess.findOne<Db_Mess.Message>(dbChatId, { _id });
+	const mess = await db.mess.c<Db_Mess.Message>(dbChatId).findOne({ _id });
 	if (!mess) {
 		return validE.err(
 			InternalCode.UserError.Socket.MessageEdit_MessageNotFound,
@@ -55,7 +55,7 @@ export async function message_edit(
 	}
 
 	const time = Math.floor(new Date().getTime() / 1000).toString(36);
-	await db.mess.updateOne(dbChatId, { _id }, { msg, lastEdit: time });
+	await db.mess.c(dbChatId).updateOne({ _id }, { msg, lastEdit: time });
 
 	if (isDmChat) {
 		sendToUser(suser._id, "message.edit", _id, msg, time, chatId);
@@ -95,7 +95,7 @@ export async function message_delete(
 		? combineId(suser._id, chatId.replace("$", ""))
 		: chatId;
 
-	const mess = await db.mess.findOne<Db_Mess.Message>(dbChatId, { _id });
+	const mess = await db.mess.c<Db_Mess.Message>(dbChatId).findOne({ _id });
 	if (!mess) {
 		return validE.err(
 			InternalCode.UserError.Socket.MessageDelete_MessageNotFound,
@@ -113,7 +113,7 @@ export async function message_delete(
 			);
 	}
 
-	await db.mess.removeOne(dbChatId, { _id });
+	await db.mess.c(dbChatId).removeOne({ _id });
 	if (isDmChat) {
 		sendToUser(suser._id, "message.delete", _id, chatId);
 		sendToUser(
@@ -124,7 +124,7 @@ export async function message_delete(
 		);
 	} else {
 		sendToRealmUsers(dbChatId, "message.delete", _id, dbChatId);
-		const threads = await db.realmData.find<Db_RealmData.thread>(dbChatId, {
+		const threads = await db.realmData.c<Db_RealmData.thread>(dbChatId).find({
 			reply: _id,
 		});
 		for (const thread of threads) {
@@ -149,8 +149,7 @@ export async function messages_delete(
 		? combineId(suser._id, chatId.replace("$", ""))
 		: chatId;
 
-	// @ts-ignore
-	const messages = await db.mess.find<Db_Mess.Message>(dbChatId, { $in: { _id: ids } });
+	const messages = await db.mess.c<Db_Mess.Message>(dbChatId).find({ $in: { _id: ids as any } });
 	if (messages.some((mess) => mess.fr !== suser._id)) {
 		if (isDmChat)
 			return validE.err(
@@ -169,18 +168,15 @@ export async function messages_delete(
 
 	if (!isDmChat) {
 		for (const mess of messages) {
-			const threads = await db.realmData.find<Db_RealmData.thread>(
-				dbChatId,
-				{
-					reply: mess._id,
-				},
-			);
+			const threads = await db.realmData.c<Db_RealmData.thread>(dbChatId).find({
+				reply: mess._id,
+			});
 			for (const thread of threads) {
-				await realm_thread_delete(suser, chatId, thread._id);
+				await realm_thread_delete(suser, dbChatId, thread._id);
 			}
 		}
 	}
-	await db.mess.remove(dbChatId, { $in: { _id: ids } });
+	await db.mess.c(dbChatId).remove({ $in: { _id: ids } });
 	if (isDmChat) {
 		sendToUser(suser._id, "messages.delete", ids, chatId);
 		sendToUser(
@@ -191,8 +187,7 @@ export async function messages_delete(
 		);
 	} else {
 		sendToRealmUsers(dbChatId, "messages.delete", ids, dbChatId);
-		// @ts-ignore
-		const threads = await db.realmData.find<Db_RealmData.thread>(dbChatId, { $in: { reply: ids }, });
+		const threads = await db.realmData.c<Db_RealmData.thread>(dbChatId).find({ $in: { reply: ids as any }, });
 		for (const thread of threads) {
 			await realm_thread_delete(suser, dbChatId, thread._id);
 		}
@@ -227,8 +222,7 @@ export async function message_fetch(
 			);
 	}
 
-	const responeAll = await db.mess.find(
-		dbChatId,
+	const responeAll = await db.mess.c(dbChatId).find(
 		{ chnl },
 		{ reverse: true, limit: end + start },
 	);
@@ -261,7 +255,7 @@ export async function message_fetch_id(
 			);
 	}
 
-	const res = await db.mess.findOne(dbChatId, { _id: mess_id });
+	const res = await db.mess.c(dbChatId).findOne({ _id: mess_id });
 	return { err: false, res: [res] };
 }
 
@@ -289,8 +283,7 @@ export async function message_mark_read(
 		const dbChatId = isDmChat
 			? combineId(suser._id, chatId.replace("$", ""))
 			: chatId;
-		const lastIdMess = await db.mess.find<Db_Mess.Message>(
-			dbChatId,
+		const lastIdMess = await db.mess.c<Db_Mess.Message>(dbChatId).find(
 			{ chnl },
 			{ reverse: true, limit: 1 },
 		);
@@ -299,9 +292,8 @@ export async function message_mark_read(
 		res = mess_id;
 	}
 
-	await db.userData.updateOne(suser._id, search, {
+	await db.userData.c(suser._id).updateOne(search, {
 		$merge: {
-			// @ts-ignore
 			last: {
 				[chnl]: mess_id,
 			},
@@ -327,7 +319,7 @@ export async function message_react(
 		? combineId(suser._id, chatId.replace("$", ""))
 		: chatId;
 
-	const msg = await db.mess.findOne<Db_Mess.Message>(dbChatId, {
+	const msg = await db.mess.c<Db_Mess.Message>(dbChatId).findOne({
 		_id: msgId,
 	});
 	if (!msg)
@@ -352,7 +344,7 @@ export async function message_react(
 		reacts[react].push(suser._id);
 	}
 
-	await db.mess.updateOne(dbChatId, { _id: msgId }, { reacts });
+	await db.mess.c(dbChatId).updateOne({ _id: msgId }, { reacts });
 
 	if (chatId.startsWith("$")) {
 		sendToUser(
@@ -402,8 +394,7 @@ export async function message_search(
 		? combineId(suser._id, chatId.replace("$", ""))
 		: chatId;
 
-	const res = await db.mess.find(
-		dbChatId,
+	const res = await db.mess.c(dbChatId).find(
 		(data, context) => {
 			if (data.chnl != chnl) return false;
 			return context.filterMessages(context.query, data);
@@ -434,7 +425,7 @@ export async function message_pin(
 		? combineId(suser._id, chatId.replace("$", ""))
 		: chatId;
 
-	await db.mess.updateOne(dbChatId, { _id: msg_id }, { pinned: pin });
+	await db.mess.c(dbChatId).updateOne({ _id: msg_id }, { pinned: pin });
 	const refreshData = {
 		evt: "message.fetch.pinned",
 		realm: chatId,
@@ -484,7 +475,7 @@ export async function message_fetch_pinned(
 		? combineId(suser._id, chatId.replace("$", ""))
 		: chatId;
 
-	const res = await db.mess.find(dbChatId, { chnl, pinned: true });
+	const res = await db.mess.c(dbChatId).find({ chnl, pinned: true });
 
 	return { err: false, res: [res] };
 }

@@ -131,7 +131,7 @@ function validateData(data: Socket_RealmSettings, schema: ValidateFunction) {
  */
 async function fetchRequiredData(id: Id, sections: Section[]) {
 	if (sections.some((section) => db_data_req_sect.includes(section)))
-		return await db.realmConf.find<Settings_AllData>(id);
+		return await db.realmConf.c<Settings_AllData>(id).find();
 
 	return null;
 }

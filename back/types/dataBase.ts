@@ -1,8 +1,8 @@
-import { Graph, Valthera } from "@wxn0brp/db";
+import { Valthera } from "@wxn0brp/db/valthera";
 
 export interface FC_DataBases {
 	data?: Valthera;
-	dataGraph?: Graph;
+	dataGraph?: Valthera;
 	system?: Valthera;
 	logs?: Valthera;
 
@@ -14,5 +14,5 @@ export interface FC_DataBases {
 	realmRoles?: Valthera;
 	realmUser?: Valthera;
 	realmData?: Valthera;
-	realmDataGraph?: Graph;
+	realmDataGraph?: Valthera;
 }

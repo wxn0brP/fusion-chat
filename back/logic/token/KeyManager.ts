@@ -6,7 +6,7 @@ import {
 	importPKCS8,
 } from "jose";
 import db from "#db";
-import { Valthera } from "@wxn0brp/db";
+import { Valthera } from "@wxn0brp/db/valthera";
 
 enum KeyIndex {
 	GENERAL,
@@ -24,7 +24,7 @@ class KeyManager {
 	}
 
 	async getKeyPair(index = KeyIndex.GENERAL) {
-		const keyPair = await this.db.findOne<any>("encryptionKeys", { index });
+		const keyPair = await this.db.c("encryptionKeys").findOne({ index });
 		if (!keyPair) return null;
 
 		return {
@@ -38,8 +38,7 @@ class KeyManager {
 		const publicKeyPEM = await exportSPKI(publicKey);
 		const privateKeyPEM = await exportPKCS8(privateKey);
 
-		await this.db.add(
-			"encryptionKeys",
+		await this.db.c("encryptionKeys").add(
 			{
 				index,
 				pub: publicKeyPEM,
@@ -52,7 +51,7 @@ class KeyManager {
 	async initKeyPairs() {
 		for (const index of Object.values(KeyIndex)) {
 			if (typeof index !== "number") continue;
-			const exists = await this.db.findOne("encryptionKeys", { index });
+			const exists = await this.db.c("encryptionKeys").findOne({ index });
 			if (exists) continue;
 			await this.addKeyPair(index);
 		}

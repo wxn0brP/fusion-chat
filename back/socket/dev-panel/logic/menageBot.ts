@@ -27,7 +27,10 @@ export async function canUserEditBot(
 	}
 
 	const bots = await db.userData
-		.find<Db_UserData.bot>(suser._id, { $exists: { botID: true } })
+		.c<Db_UserData.bot>(suser._id)
+		.find({
+			$exists: { botID: true },
+		})
 		.then((b) => b.map((b) => b.botID));
 	cache.set(suser._id, bots);
 	return bots.includes(id);
@@ -46,13 +49,13 @@ export async function bot_edit(
 	if (!canEdit)
 		return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
-	const perm = await db.userData.findOne<Db_UserData.bot>(suser._id, {
+	const perm = await db.userData.c<Db_UserData.bot>(suser._id).findOne({
 		botID: id,
 	});
 	if (!perm)
 		return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
-	await db.botData.updateOne(id, { _id: "name" }, { name: info.name });
+	await db.botData.c(id).updateOne({ _id: "name" }, { name: info.name });
 
 	return { err: false };
 }
@@ -68,7 +71,7 @@ export async function bot_get_realms(
 	if (!canEdit)
 		return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
-	const realms = await db.botData.find<Db_BotData.realm>(id, {
+	const realms = await db.botData.c<Db_BotData.realm>(id).find({
 		$exists: { realm: true },
 	});
 	const res = realms.map((r) => r.realm);
@@ -88,12 +91,12 @@ export async function bot_realm_exit(
 	if (!canEdit)
 		return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
-	const bot = await db.botData.findOne<Db_BotData.realm>(id, { realm });
+	const bot = await db.botData.c<Db_BotData.realm>(id).findOne({ realm });
 	if (!bot)
 		return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
-	await db.realmUser.removeOne(realm, { bot: id });
-	await db.botData.removeOne(id, { realm });
+	await db.realmUser.c(realm).removeOne({ bot: id });
+	await db.botData.c(id).removeOne({ realm });
 	return { err: false };
 }
 
@@ -113,7 +116,7 @@ export async function bot_generate_token(
 		_id: id,
 	};
 	const token = await create(payload, false, KeyIndex.BOT_TOKEN);
-	await db.botData.updateOneOrAdd(id, { _id: "token" }, { token });
+	await db.botData.c(id).updateOneOrAdd({ _id: "token" }, { token });
 	return { err: false, res: [token] };
 }
 
@@ -128,7 +131,7 @@ export async function bot_profile_remove(
 	if (!canEdit)
 		return validE.err(InternalCode.UserError.Socket.DevPanel_BotNotFound);
 
-	await db.botData.removeOne(id, { _id: "img" });
+	await db.botData.c(id).removeOne({ _id: "img" });
 	const path = "userFiles/profiles/" + id + ".png";
 	if (fs.existsSync(path)) fs.unlinkSync(path);
 

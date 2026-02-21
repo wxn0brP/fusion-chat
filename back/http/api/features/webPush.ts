@@ -30,16 +30,15 @@ webPushRouter.post("/webPush", async (req, res) => {
 			msg: "invalid fcToken",
 		});
 
-	const pairIsset = await db.data.findOne("webPush", {
+	const pairIsset = await db.data.c("webPush").findOne({
 		u: userToken.user,
 		sub,
 	});
 	if (pairIsset) return res.json({ err: false, msg: "ok" });
 
-	await db.data.removeOne("webPush", { sub }); // remove if token is registered for another user
+	await db.data.c("webPush").removeOne({ sub }); // remove if token is registered for another user
 
-	await db.data.add(
-		"webPush",
+	await db.data.c("webPush").add(
 		{
 			sub,
 			u: userToken.user,

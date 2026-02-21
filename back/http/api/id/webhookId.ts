@@ -19,9 +19,9 @@ export const webhookIdRoute: RouteHandler = async (req, res) => {
 			msg: "chat",
 		});
 
-	const webhook = await db.realmConf.findOne<any>(chat, { whid: id });
+	const webhook = await db.realmConf.c(chat).findOne({ whid: id });
 	if (!webhook) {
-		const rm = await db.data.findOne("rm", { _id: id });
+		const rm = await db.data.c("rm").findOne({ _id: id });
 		if (rm) return res.json({ err: false, name: "Deleted Webhook " + id });
 		return res.json({
 			err: true,

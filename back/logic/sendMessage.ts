@@ -54,7 +54,7 @@ export default async function sendMessage(
 	if (req.enc) data.enc = req.enc;
 	if (req.res) data.res = req.res;
 
-	const message = await db.mess.add<Message>(processedTo, data);
+	const message = await db.mess.c<Message>(processedTo).add(data);
 	data._id = message._id;
 
 	if (req.silent) data.silent = req.silent || false;
@@ -156,22 +156,21 @@ async function processIdAndPerm(
 }
 
 async function sendReamNotification(to: Id, user: User, data: Message) {
-	const realm = await db.realmConf.findOne<Db_RealmConf.meta>(to, {
+	const realm = await db.realmConf.c<Db_RealmConf.meta>(to).findOne({
 		_id: "set",
 	});
 	const fromMsg = `${realm.name} @${user.name}`;
 	data.to = to;
 
 	db.realmUser
-		// @ts-ignore
-		.find<Db_RealmUser.user>(to, { $exists: { u: true } })
+		.c<Db_RealmUser.user>(to)
+		.find({ $exists: { u: true } })
 		.then((chat) => {
 			chat.forEach(async (chat_user) => {
 				const uid = chat_user.u;
 				if (uid == user._id) return;
 
-				const realm = await db.userData.findOne<Db_UserData.realm>(
-					uid,
+				const realm = await db.userData.c<Db_UserData.realm>(uid).findOne(
 					{
 						realm: to,
 					},
@@ -198,8 +197,8 @@ async function sendReamNotification(to: Id, user: User, data: Message) {
 		});
 
 	db.realmUser
-		// @ts-ignore
-		.find<Db_RealmUser.bot>(to, { $exists: { bot: true } })
+		.c<Db_RealmUser.bot>(to)
+		.find({ $exists: { bot: true } })
 		.then((botUsers) => {
 			botUsers.forEach((bot) => {
 				io.room("bot-" + bot.bot).emit("mess", data);

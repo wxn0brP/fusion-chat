@@ -9,16 +9,7 @@ import SocketEventLimiter, { bannedUsers } from "../chat/limiter";
 import { io } from "../server";
 import register from "./register";
 
-io.of("/dev-panel").auth(async ({ headers }) => {
-	// @ts-ignore
-	const authData = socket.handshake.auth;
-	if (!authData)
-		return {
-			status: 401,
-			msg: "Unauthorized",
-		};
-
-	const token = authData.token;
+io.of("/dev-panel").auth(async ({ token }) => {
 	if (!token)
 		return {
 			status: 401,
@@ -54,7 +45,7 @@ io.of("/dev-panel").auth(async ({ headers }) => {
 io.of("/dev-panel").onConnect((socket: FCSocket) => {
 	socket.logError = (e) => {
 		lo("Error: ", e);
-		db.logs.add("socket.io", {
+		db.logs.c("gl").add({
 			error: e.message,
 			stackTrace: e.stack,
 		});

@@ -68,7 +68,7 @@ emojiRouter.post(
 			});
 		}
 
-		const emojisCount = await db.realmConf.find(realm, {
+		const emojisCount = await db.realmConf.c(realm).find({
 			$exists: { emoji: true },
 		});
 		// TODO add emoji count config
@@ -121,7 +121,7 @@ emojiRouter.post(
 				return;
 			}
 
-			await db.realmConf.add<Db_RealmConf.emoji>(realm, newEmoji, false);
+			await db.realmConf.c<Db_RealmConf.emoji>(realm).add(newEmoji, false);
 
 			res.json({ err: false, msg: "Emoji uploaded successfully." });
 		});

@@ -28,12 +28,12 @@ export default async function firebaseSend(options: FireBaseSend_Data) {
 		if (io.room("user-" + to).size > 0)
 			return;
 
-	let tokens = await db.data.find<any>("fireToken", { user: to });
+	let tokens = await db.data.c("fireToken").find({ user: to });
 	if (tokens.length == 0) return;
 
 	const workedTokens = [];
 	for (const data of tokens) {
-		const rm = async () => await db.data.removeOne("fireToken", data);
+		const rm = async () => await db.data.c("fireToken").removeOne(data);
 
 		const exp = data.exp;
 		if (exp * 1000 < Date.now()) {
@@ -41,7 +41,7 @@ export default async function firebaseSend(options: FireBaseSend_Data) {
 			continue;
 		}
 
-		const tokenLogged = await db.data.findOne("token", { token: data.fc });
+		const tokenLogged = await db.data.c("token").findOne({ token: data.fc });
 		if (!tokenLogged) {
 			await rm();
 			continue;

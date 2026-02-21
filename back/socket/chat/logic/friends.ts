@@ -27,7 +27,7 @@ export async function friend_request(
 	if (!valid.str(nameOrId, 0, 30) && !valid.id(nameOrId))
 		return validE.valid("nameOrId");
 
-	const userExists = await db.data.findOne<Db_Data.user>("user", {
+	const userExists = await db.data.c("user").findOne({
 		$or: [{ name: nameOrId }, { _id: nameOrId }],
 	});
 	if (!userExists)
@@ -38,13 +38,13 @@ export async function friend_request(
 		return validE.err(InternalCode.UserError.Socket.FriendRequest_Self);
 	const id = userExists._id;
 
-	const friendExists = await db.dataGraph.findOne("friends", suser._id, id);
+	const friendExists = await db.dataGraph.c("friends").findOne({ $or: [{ a: suser._id, b: id }, { a: id, b: suser._id }] });
 	if (friendExists)
 		return validE.err(
 			InternalCode.UserError.Socket.FriendRequest_AlreadyFriend,
 		);
 
-	const friendRequestExists = await db.data.find("friendRequests", {
+	const friendRequestExists = await db.data.c("friendRequests").find({
 		$or: [
 			{ from: id, to: suser._id },
 			{ from: suser._id, to: id },
@@ -55,7 +55,7 @@ export async function friend_request(
 			InternalCode.UserError.Socket.FriendRequest_AlreadySent,
 		);
 
-	await db.data.add("friendRequests", { from: suser._id, to: id }, false);
+	await db.data.c("friendRequests").add({ from: suser._id, to: id }, false);
 	sendToUser(id, "friend.request", suser._id);
 	await firebaseSend({
 		to: id,
@@ -74,15 +74,15 @@ export async function friend_response(
 	if (!valid.id(id)) return validE.valid("id");
 	if (!valid.bool(accept)) return validE.valid("accept");
 
-	await db.data.removeOne("friendRequests", { from: id, to: suser._id });
+	await db.data.c("friendRequests").removeOne({ from: id, to: suser._id });
 
-	const friendExists = await db.dataGraph.findOne("friends", suser._id, id);
+	const friendExists = await db.dataGraph.c("friends").findOne({ $or: [{ a: suser._id, b: id }, { a: id, b: suser._id }] });
 	if (friendExists)
 		return validE.err(
 			InternalCode.UserError.Socket.FriendRequest_AlreadyFriend,
 		);
 
-	if (accept) await db.dataGraph.add("friends", id, suser._id);
+	if (accept) await db.dataGraph.c("friends").add({ a: id, b: suser._id }, false);
 
 	sendToUser(id, "friend.response", suser._id, accept);
 	if (accept) sendToUser(suser._id, "refreshData", "friend.get.all");
@@ -105,7 +105,7 @@ export async function friend_request_remove(
 	const validE = new ValidError("friend.request.remove");
 	if (!valid.id(id)) return validE.valid("id");
 
-	await db.data.removeOne("friendRequests", { from: suser._id, to: id });
+	await db.data.c("friendRequests").removeOne({ from: suser._id, to: id });
 
 	sendToUser(id, "refreshData", "friend.requests.get");
 	return { err: false };
@@ -118,13 +118,13 @@ export async function friend_remove(
 	const validE = new ValidError("friend.remove");
 	if (!valid.id(id)) return validE.valid("id");
 
-	const friendExists = await db.dataGraph.findOne("friends", suser._id, id);
+	const friendExists = await db.dataGraph.c("friends").findOne({ $or: [{ a: suser._id, b: id }, { a: id, b: suser._id }] });
 	if (!friendExists)
 		return validE.err(
 			InternalCode.UserError.Socket.FriendRemove_FriendNotFound,
 		);
 
-	await db.dataGraph.remove("friends", suser._id, id);
+	await db.dataGraph.c("friends").removeOne({ $or: [{ a: suser._id, b: id }, { a: id, b: suser._id }] });
 
 	sendToUser(id, "refreshData", "friend.get.all");
 	sendToUser(suser._id, "refreshData", "friend.get.all");
@@ -134,7 +134,7 @@ export async function friend_remove(
 export async function friend_get_all(
 	suser: Socket_User,
 ): Promise<Socket_StandardRes> {
-	const friendsGraph = await db.dataGraph.find("friends", suser._id);
+	const friendsGraph = await db.dataGraph.c("friends").find({ $or: [{ a: suser._id }, { b: suser._id }] });
 	const friends = friendsGraph.map((f) => {
 		if (f.a == suser._id) return f.b;
 		return f.a;
@@ -148,7 +148,7 @@ export async function friend_get_all(
 				status: "offline",
 			};
 
-		const status = await db.userData.findOne<Db_UserData.status>(f, {
+		const status = await db.userData.c<Db_UserData.status>(f).findOne({
 			_id: "status",
 		});
 		return {
@@ -166,10 +166,9 @@ export async function friend_get_all(
 export async function friend_requests_get(
 	suser: Socket_User,
 ): Promise<Socket_StandardRes> {
-	const friendRequestsData = (await db.data.find<Db_Data.friendRequest>(
-		"friendRequests",
+	const friendRequestsData = await db.data.c<Db_Data.friendRequest>("friendRequests").find(
 		{ to: suser._id },
-	)) as Db_Data.friendRequest[];
+	)
 	const friendRequests = friendRequestsData.map((f) => f.from);
 	return { err: false, res: [friendRequests] };
 }
@@ -181,18 +180,13 @@ export async function user_profile(
 	const validE = new ValidError("user.profile");
 	if (!valid.id(id)) return validE.valid("id");
 
-	const userN = await db.data.findOne<Db_Data.user>("user", { _id: id });
+	const userN = await db.data.c<Db_Data.user>("user").findOne({ _id: id });
 	if (!userN)
 		return validE.err(
 			InternalCode.UserError.Socket.UserProfile_UserNotFound,
 		);
 
-	let userStatus = await db.userData.findOne<Partial<Db_UserData.status>>(
-		id,
-		{
-			_id: "status",
-		},
-	);
+	let userStatus = await db.userData.c<Partial<Db_UserData.status>>(id).findOne({ _id: "status", });
 	const userOnline = io.room("user-" + id).size > 0;
 	if (!userStatus) userStatus = {};
 
@@ -203,12 +197,11 @@ export async function user_profile(
 	if (!userOnline && !userStatusType) userStatusType = "offline";
 
 	let friendStatus = friendStatusEnum.NOT_FRIEND;
-	const isFriend = await db.dataGraph.findOne("friends", suser._id, id);
+	const isFriend = await db.dataGraph.c("friends").findOne({ $or: [{ a: suser._id, b: id }, { a: id, b: suser._id }] });
 	if (isFriend) {
 		friendStatus = friendStatusEnum.IS_FRIEND;
 	} else {
-		const isFriendRequest = await db.data.findOne<Db_Data.friendRequest>(
-			"friendRequests",
+		const isFriendRequest = await db.data.c<Db_Data.friendRequest>("friendRequests").findOne(
 			{
 				$or: [
 					{ from: suser._id, to: id },
@@ -224,7 +217,7 @@ export async function user_profile(
 		}
 	}
 
-	const userIsBlocked = await db.userData.findOne("blocked", {
+	const userIsBlocked = await db.data.c("blocked").findOne({
 		fr: suser._id,
 		to: id,
 	});

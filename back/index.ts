@@ -3,12 +3,12 @@ import http from "http";
 import { app } from "./http";
 import { io } from "./socket/server";
 import "./socket";
-Error.stackTraceLimit = 100;
 
+Error.stackTraceLimit = 100;
 app.setVar("layout", "front/main/layout.html");
 
 const server = http.createServer(app.getApp());
-io.createServer(server);
+io.attachToHttpServer(server);
 
 lo("__________________" + (new Date() + "").split(" ").slice(1, 5).join(" "));
 server.listen(parseInt(process.env.PORT), function () {

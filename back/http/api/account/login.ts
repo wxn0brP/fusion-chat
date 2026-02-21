@@ -23,9 +23,9 @@ loginRouter.post("/login", async (req, res) => {
 			msg: "password",
 		});
 
-	let user = await db.data.findOne<Db_Data.user>("user", { name });
+	let user = await db.data.c<Db_Data.user>("user").findOne({ name });
 	if (!user) {
-		user = await db.data.findOne<any>("user", { email: name });
+		user = await db.data.c<Db_Data.user>("user").findOne({ email: name });
 		if (!user) {
 			await global.delay(randomDelay(500, 1500));
 			return res.json({
@@ -55,7 +55,7 @@ loginRouter.post("/login", async (req, res) => {
 		from: user.name,
 		user_id: user._id,
 	});
-	await db.data.add("token", { token }, false);
+	await db.data.c("token").add({ token }, false);
 
 	if (global.logsConfig.mail.loginWarn) {
 		const deviceInfo = req.headers["user-agent"] || "Unknown Device";

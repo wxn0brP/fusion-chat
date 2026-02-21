@@ -8,9 +8,7 @@ import {
 } from "./imports";
 
 export default async (id: Id, data: Socket_RealmSettings) => {
-	const old_data = await db.realmUser.find<
-		Db_RealmUser.user | Db_RealmUser.bot
-	>(id, {});
+	const old_data = await db.realmUser.c<Db_RealmUser.user | Db_RealmUser.bot>(id).find({});
 	let new_data = data.users;
 
 	const new_users = new_data
@@ -59,9 +57,10 @@ async function saveDbChanges(
 	const itemsToUpdate = changes.itemsToUpdate;
 
 	for (const item of itemsToUpdate) {
-		await db.realmUser.updateOne(
-			realmId,
-			{ [trackName]: item[trackName] },
+		await db.realmUser.c(realmId).updateOne(
+			{
+				[trackName]: item[trackName]
+			},
 			item,
 		);
 	}

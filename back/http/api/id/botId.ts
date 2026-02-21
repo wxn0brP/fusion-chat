@@ -20,13 +20,13 @@ export const botIdRoute: RouteHandler = async (req, res) => {
 		});
 
 	if (chat) {
-		const botNick = await db.realmData.findOne<any>(chat, { bid: id });
+		const botNick = await db.realmData.c(chat).findOne({ bid: id });
 		if (botNick) return res.json({ err: false, name: botNick.name });
 	}
 
-	const bot = await db.botData.findOne<any>(id, { _id: "name" });
+	const bot = await db.botData.c(id).findOne({ _id: "name" });
 	if (!bot) {
-		const rm = await db.data.findOne("rm", { _id: id });
+		const rm = await db.data.c("rm").findOne({ _id: id });
 		if (rm) return res.json({ err: false, name: "Deleted Bot " + id });
 		return res.json({
 			err: true,

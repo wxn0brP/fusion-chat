@@ -13,7 +13,7 @@ export async function checkIsUserOnRealm(
 	if (cache.has(`${userId}:${realm}`))
 		return cache.get(`${userId}:${realm}`);
 
-	const result = await db.realmUser.findOne<Db_RealmUser.user>(realm, {
+	const result = await db.realmUser.c<Db_RealmUser.user>(realm).findOne({
 		u: userId,
 	});
 	cache.set(`${userId}:${realm}`, !!result);

@@ -9,7 +9,7 @@ export default async (data: { user: Id }, taskId: Id) => {
 	if (!activeTasks.has(taskId)) return;
 
 	const uid = data.user;
-	const user = await db.data.findOne<Db_Data.user>("user", { _id: uid });
+	const user = await db.data.c<Db_Data.user>("user").findOne({ _id: uid });
 	if (!user) return;
 
 	await deleteAccount(uid);
@@ -17,5 +17,5 @@ export default async (data: { user: Id }, taskId: Id) => {
 	if (global.logsConfig.mail.deletedAccount)
 		sendMail("deletedAccount", user.email, name);
 
-	await db.system.removeOne("tasks", { _id: taskId });
+	await db.system.c("tasks").removeOne({ _id: taskId });
 };

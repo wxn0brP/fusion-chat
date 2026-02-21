@@ -47,8 +47,7 @@ async function getSubscribed(
 
 	if (!realmData) {
 		const chnls =
-			await db.realmData.find<Db_RealmData.announcement_channels>(
-				"announcement.channels",
+			await db.realmData.c<Db_RealmData.announcement_channels>("announcement.channels").find(
 				{ sr: realm },
 			);
 

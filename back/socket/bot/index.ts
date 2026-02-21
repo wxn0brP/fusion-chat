@@ -23,14 +23,14 @@ io.of("/bot").auth(async ({ headers }) => {
 	const tokenData = await decode(token, KeyIndex.BOT_TOKEN);
 	const _id = tokenData._id as Id;
 
-	const isValid = await db.botData.findOne(_id, { token });
+	const isValid = await db.botData.c(_id).findOne({ token });
 	if (!isValid)
 		return {
 			status: 401,
 			msg: "Unauthorized",
 		}
 
-	const userName = await db.botData.findOne<Db_BotData.name>(_id, { _id: "name" }).then((d) => d.name);
+	const userName = await db.botData.c<Db_BotData.name>(_id).findOne({ _id: "name" }).then((d) => d.name);
 
 	const user: Socket_User = {
 		_id,
@@ -62,7 +62,7 @@ io.of("/bot").auth(async ({ headers }) => {
 io.of("/bot").onConnect((socket: FCSocket) => {
 	socket.logError = (e) => {
 		lo("Error: ", e);
-		db.logs.add("socket.io", {
+		db.logs.c("gl").add({
 			error: e.message,
 			stackTrace: e.stack,
 		});
