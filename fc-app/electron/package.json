@@ -13,7 +13,7 @@
         "@types/opn": "^5.5.0",
         "@types/source-map-support": "^0.5.10",
         "@types/ws": "^8.18.1",
-        "electron": "^39.2.7",
+        "electron": "^40.0.0",
         "electron-builder": "^26.0.12",
         "electron-packager": "^17.1.2"
     },
