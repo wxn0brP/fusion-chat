@@ -8,7 +8,7 @@
 		"build": "bun build src/small/* src/dev-panel/start.ts --outdir dist --minify --sourcemap --splitting"
 	},
 	"devDependencies": {
-		"typescript": "*"
+		"typescript": "^5"
 	},
 	"dependencies": {
 		"@wxn0brp/flanker-ui": "^0.4.6",
