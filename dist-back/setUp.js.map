@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "sources": ["../back/setUp.ts"],
+  "sourcesContent": [
+    "import fs from \"fs\";\n\nfunction dir(path: string) {\n\tif (!fs.existsSync(path)) fs.mkdirSync(path);\n}\nfunction file(path: string, value: string = \"\", prefix: string = \"config/\") {\n\tif (!fs.existsSync(prefix + path)) fs.writeFileSync(prefix + path, value);\n}\nfunction preFile(path: string, pre: string = path, prefix: string = \"config/\") {\n\tif (!fs.existsSync(prefix + path + \".js\"))\n\t\tfs.copyFileSync(\n\t\t\t\"dist-back/config-base/\" + pre + \".js\",\n\t\t\tprefix + path + \".js\",\n\t\t);\n}\n\ndir(\"data\");\ndir(\"config\");\ndir(\"userFiles\");\ndir(\"userFiles/users\");\ndir(\"userFiles/profiles\");\ndir(\"userFiles/realms\");\nfile(\"bannedIP.json\", \"[]\");\nfile(\"mailConfig.json\", \"{}\");\npreFile(\"file\");\npreFile(\"database\");\npreFile(\"logs\");\npreFile(\"cache\");\n"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAEA,SAAS,GAAG,CAAC,MAAc;AAAA,EAC1B,IAAI,CAAC,GAAG,WAAW,IAAI;AAAA,IAAG,GAAG,UAAU,IAAI;AAAA;AAE5C,SAAS,IAAI,CAAC,MAAc,QAAgB,IAAI,SAAiB,WAAW;AAAA,EAC3E,IAAI,CAAC,GAAG,WAAW,SAAS,IAAI;AAAA,IAAG,GAAG,cAAc,SAAS,MAAM,KAAK;AAAA;AAEzE,SAAS,OAAO,CAAC,MAAc,MAAc,MAAM,SAAiB,WAAW;AAAA,EAC9E,IAAI,CAAC,GAAG,WAAW,SAAS,OAAO,KAAK;AAAA,IACvC,GAAG,aACF,2BAA2B,MAAM,OACjC,SAAS,OAAO,KACjB;AAAA;AAAA;AAAA,EAGF,IAAI,MAAM;AAAA,EACV,IAAI,QAAQ;AAAA,EACZ,IAAI,WAAW;AAAA,EACf,IAAI,iBAAiB;AAAA,EACrB,IAAI,oBAAoB;AAAA,EACxB,IAAI,kBAAkB;AAAA,EACtB,KAAK,iBAAiB,IAAI;AAAA,EAC1B,KAAK,mBAAmB,IAAI;AAAA,EAC5B,QAAQ,MAAM;AAAA,EACd,QAAQ,UAAU;AAAA,EAClB,QAAQ,MAAM;AAAA,EACd,QAAQ,OAAO;AAAA;",
+  "debugId": "A922A7D9C904F8B464756E2164756E21",
+  "names": []
+}

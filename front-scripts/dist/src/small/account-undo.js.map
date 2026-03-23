@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "sources": ["../src/small/account-undo.ts"],
+  "sourcesContent": [
+    "import \"@wxn0brp/flanker-ui/html\";\n\nconst urlParams = new URLSearchParams(window.location.search);\nconst token = urlParams.get(\"token\");\nif (!token)\n    qs(\"#err\").innerHTML = \"Token is required.\";\n\nfetch(\"/api/account/delete/get?token=\" + token).then(res => res.json()).then(res => {\n    if (res.err)\n        return qs(\"#err\").innerHTML = res.msg;\n\n    qs(\"#user\").innerHTML = res.name;\n});\n\nqs(\"button\").addEventListener(\"click\", () => {\n    const xhr = new XMLHttpRequest();\n    xhr.open(\"POST\", \"/api/account/delete/undo\", false);\n    xhr.setRequestHeader(\"Content-Type\", \"application/json\");\n    xhr.send(JSON.stringify({ token }));\n\n    const res = JSON.parse(xhr.responseText);\n    if (res.err)\n        return qs(\"#err\").innerHTML = res.msg;\n\n    location.href = \"/\";\n});"
+  ],
+  "mappings": "0CAEA,IAAM,EAAY,IAAI,gBAAgB,OAAO,SAAS,MAAM,EACtD,EAAQ,EAAU,IAAI,OAAO,EACnC,GAAI,CAAC,EACD,GAAG,MAAM,EAAE,UAAY,qBAE3B,MAAM,iCAAmC,CAAK,EAAE,KAAK,KAAO,EAAI,KAAK,CAAC,EAAE,KAAK,KAAO,CAChF,GAAI,EAAI,IACJ,OAAO,GAAG,MAAM,EAAE,UAAY,EAAI,IAEtC,GAAG,OAAO,EAAE,UAAY,EAAI,KAC/B,EAED,GAAG,QAAQ,EAAE,iBAAiB,QAAS,IAAM,CACzC,IAAM,EAAM,IAAI,eAChB,EAAI,KAAK,OAAQ,2BAA4B,EAAK,EAClD,EAAI,iBAAiB,eAAgB,kBAAkB,EACvD,EAAI,KAAK,KAAK,UAAU,CAAE,OAAM,CAAC,CAAC,EAElC,IAAM,EAAM,KAAK,MAAM,EAAI,YAAY,EACvC,GAAI,EAAI,IACJ,OAAO,GAAG,MAAM,EAAE,UAAY,EAAI,IAEtC,SAAS,KAAO,IACnB",
+  "debugId": "9AC9B29B6149BAF264756E2164756E21",
+  "names": []
+}

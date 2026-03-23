@@ -1,0 +1,77 @@
+<nav>
+	<img src="/favicon.svg" alt="logo" />
+	<a href="/">HOME</a>
+	<a href="/app">APP</a>
+	<a href="/get">GET</a>
+	<a href="/tos">TOS</a>
+    <span id="burger">☰</span>
+</nav>
+
+<style>
+	nav{
+		padding: 13px;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+	}
+
+	nav img{
+		width: 40px;
+		margin-right: 15px;
+		margin-left: 20px;
+	}
+
+	nav a{
+		display: block;
+		color: white;
+		text-align: center;
+		padding: 14px 25px;
+		text-decoration: none;
+		font-size: 20px;
+		user-select: none;
+	}
+	
+	#burger{
+		display: none;
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		color: white;
+		font-size: 30px;
+		cursor: pointer;
+	}
+
+	@media screen and (max-width: 600px){
+		#burger{
+			display: block;
+		}
+
+		nav{
+			display: block;
+		}
+
+		nav a{
+			display: none;
+		}
+
+		.res-nav a{
+			display: block;
+			width: 100vw;
+			height: 30px;
+			text-align: left;
+			margin-block: 1em;
+			font-size: 1.3em;
+		}
+
+		.res-nav{
+			margin-bottom: 1em;
+		}
+	}
+</style>
+
+<script>
+	const nav = document.querySelector("nav");
+	document.querySelector("#burger").addEventListener("click", () => {
+		nav.classList.toggle("res-nav");
+	});
+</script>

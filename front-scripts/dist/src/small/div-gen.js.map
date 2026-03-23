@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "sources": ["../src/small/div-gen.ts"],
+  "sourcesContent": [
+    "const div_gen = document.querySelector(\"#div-gen\");\nfunction genDiv() {\n    let div = document.createElement(\"div\");\n    div.classList.add(\"card\");\n    div_gen.appendChild(div);\n}\nfor (let i = 0; i < 260; i++) genDiv();\nexport { }"
+  ],
+  "mappings": "AAAA,IAAM,EAAU,SAAS,cAAc,UAAU,EACjD,SAAS,CAAM,EAAG,CACd,IAAI,EAAM,SAAS,cAAc,KAAK,EACtC,EAAI,UAAU,IAAI,MAAM,EACxB,EAAQ,YAAY,CAAG,EAE3B,QAAS,EAAI,EAAG,EAAI,IAAK,IAAK,EAAO",
+  "debugId": "45A9E9BDA795311664756E2164756E21",
+  "names": []
+}
