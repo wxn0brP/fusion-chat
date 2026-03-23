@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "sources": ["../src/small/register-code.ts"],
+  "sourcesContent": [
+    "import \"@wxn0brp/flanker-ui/html\";\n\nconst codeDiv = qi(\"#code\");\nconst errDiv = qs(\"#err\");\n\nqs(\"form\").addEventListener(\"submit\", (e) => {\n    e.preventDefault();\n    const code = codeDiv.value;\n    if (!code)\n        return errDiv.innerHTML = \"Code is required.\";\n\n    const xhr = new XMLHttpRequest();\n    xhr.open(\"POST\", \"/api/register/verify\", false);\n    xhr.setRequestHeader('Content-Type', 'application/json');\n    xhr.send(JSON.stringify({ code: code }));\n    const res = JSON.parse(xhr.responseText);\n    if (res.err)\n        return errDiv.innerHTML = res.msg;\n\n    location.href = \"/login\";\n});"
+  ],
+  "mappings": "0CAEA,IAAM,EAAU,GAAG,OAAO,EACpB,EAAS,GAAG,MAAM,EAExB,GAAG,MAAM,EAAE,iBAAiB,SAAU,CAAC,IAAM,CACzC,EAAE,eAAe,EACjB,IAAM,EAAO,EAAQ,MACrB,GAAI,CAAC,EACD,OAAO,EAAO,UAAY,oBAE9B,IAAM,EAAM,IAAI,eAChB,EAAI,KAAK,OAAQ,uBAAwB,EAAK,EAC9C,EAAI,iBAAiB,eAAgB,kBAAkB,EACvD,EAAI,KAAK,KAAK,UAAU,CAAE,KAAM,CAAK,CAAC,CAAC,EACvC,IAAM,EAAM,KAAK,MAAM,EAAI,YAAY,EACvC,GAAI,EAAI,IACJ,OAAO,EAAO,UAAY,EAAI,IAElC,SAAS,KAAO,SACnB",
+  "debugId": "C3D465D90C792A4764756E2164756E21",
+  "names": []
+}

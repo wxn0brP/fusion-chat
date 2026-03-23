@@ -1,0 +1,3 @@
+
+//# debugId=270259049961332464756E2164756E21
+//# sourceMappingURL=announcement-format.js.map

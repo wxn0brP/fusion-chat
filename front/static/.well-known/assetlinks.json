@@ -1,0 +1,23 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.fusionchat",
+            "sha256_cert_fingerprints": [
+                "A4:80:C6:EE:98:80:8E:F2:45:6D:20:D4:04:A8:C7:43:12:19:86:2E:51:C8:7A:15:7C:A6:61:16:2B:21:28:01"
+            ]
+        }
+    },
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "web",
+            "site": "https://fusion.ct8.pl"
+        }
+    }
+]
